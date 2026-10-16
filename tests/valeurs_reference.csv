@@ -103,3 +103,20 @@ BNA;2024T4;BNA_2024T4.pdf;1;CHG_OPER;cumul_N;379506;milliers de dinars;379.506;c
 BNA;2024T4;BNA_2024T4.pdf;1;CREDITS;cumul_N;13391310;milliers de dinars;13391.31;commentaire p.2 : 13.391 millions de dinars
 BNA;2024T4;BNA_2024T4.pdf;1;DEPOTS;cumul_N;12911964;milliers de dinars;12911.964;
 BNA;2024T4;BNA_2024T4.pdf;1;CAP_PROPRES;cumul_N;1906547;milliers de dinars;1906.547;
+BT;2020T2;BT_2020T2.pdf;1;PNB;trim_N;105826;milliers de dinars;105.826;
+BT;2020T2;BT_2020T2.pdf;1;PNB;cumul_N;185898;milliers de dinars;185.898;commentaire p.4 : 185.898 mille dinars
+BT;2020T2;BT_2020T2.pdf;1;PNB;cumul_N1;180092;milliers de dinars;180.092;
+BT;2020T2;BT_2020T2.pdf;1;PNB;exercice_N1;358496;milliers de dinars;358.496;
+BT;2020T2;BT_2020T2.pdf;1;CHG_OPER;trim_N;33450;milliers de dinars;33.45;
+BT;2020T2;BT_2020T2.pdf;1;CHG_OPER;cumul_N;65366;milliers de dinars;65.366;commentaire p.4 : 65.366 mille dinars ; = frais de personnel + charges générales (sans dotations)
+BT;2020T2;BT_2020T2.pdf;1;CREDITS;cumul_N;4605297;milliers de dinars;4605.297;commentaire p.3 : 4.605.297
+BT;2020T2;BT_2020T2.pdf;1;DEPOTS;cumul_N;4181814;milliers de dinars;4181.814;commentaire p.3 : 4.181.814 mille dinars
+BT;2020T2;BT_2020T2.pdf;1;CAP_PROPRES;cumul_N;918367;milliers de dinars;918.367;
+BT;2023T4;BT_2023T4.pdf;1;PNB;trim_N;141410;milliers de dinars;141.41;
+BT;2023T4;BT_2023T4.pdf;1;PNB;cumul_N;477949;milliers de dinars;477.949;commentaire p.4 : 477.949 mille dinars
+BT;2023T4;BT_2023T4.pdf;1;PNB;cumul_N1;423857;milliers de dinars;423.857;
+BT;2023T4;BT_2023T4.pdf;1;CHG_OPER;trim_N;37287;milliers de dinars;37.287;
+BT;2023T4;BT_2023T4.pdf;1;CHG_OPER;cumul_N;144970;milliers de dinars;144.97;commentaire p.4 : 144.970 mille dinars
+BT;2023T4;BT_2023T4.pdf;1;CREDITS;cumul_N;5824270;milliers de dinars;5824.27;commentaire p.3 : 5.824.270 mille dinars
+BT;2023T4;BT_2023T4.pdf;1;DEPOTS;cumul_N;5803572;milliers de dinars;5803.572;commentaire p.3 : 5.803.572 mille dinars
+BT;2023T4;BT_2023T4.pdf;1;CAP_PROPRES;cumul_N;1130983;milliers de dinars;1130.983;

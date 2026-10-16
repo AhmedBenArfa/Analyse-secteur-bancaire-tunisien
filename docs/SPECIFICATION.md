@@ -500,6 +500,10 @@ info-bulles personnalisées ; signets « trimestre » / « année ».
 - Données provisoires, non auditées, publiées par les banques elles-mêmes.
 - Retraitements en cours d'année : la somme des trimestres publiés peut différer du cumul
   annuel publié ; les chiffres annuels viennent toujours du cumul (voir 5.2).
-- Définitions des postes parfois différentes d'une banque à l'autre.
+- Définitions des postes parfois différentes d'une banque à l'autre. Exemple : les charges
+  opératoires publiées par la BT ne comprennent que les frais de personnel et les charges
+  générales (pas de dotations aux amortissements) ; la BNA ne détaille que ces deux postes mais
+  son total comprend un reste non détaillé. On garde le total publié (`gabarits.csv`, colonne
+  « remarque »), sans le recalculer.
 - ROE et ROA seulement en semestriel et annuel ; résultats semestriels non audités, annualisés.
 - Les valeurs extraites automatiquement ont été contrôlées par échantillon (voir `docs/validation.md`).

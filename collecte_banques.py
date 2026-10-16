@@ -878,9 +878,29 @@ def _jetons_par_colonne(frags: list[dict], bords: list[float]) -> list[Jeton]:
                                 s[0]["x0"], s[-1]["x1"]))
         return sortie
     cases: dict[int, list[dict]] = {}
+    # 1) chiffres : on regroupe les morceaux d'un même nombre, on coupe une série qui finit sur
+    #    un bord de colonne et continue au-delà, puis chaque nombre va à la colonne dont le bord est
+    #    le plus proche de sa fin (les nombres en gras dépassent de quelques points : BT 2026T1)
+    ecart_moyen = (bords[-1] - bords[0]) / (len(bords) - 1) if len(bords) > 1 else 50
+    for serie in _series([m for m in frags if _est_chiffre(m["text"])]):
+        morceaux, courant = [], []
+        for i, m in enumerate(serie):
+            courant.append(m)
+            if i + 1 < len(serie) and any(abs(m["x1"] - b) <= 2.5 for b in bords):
+                morceaux.append(courant)
+                courant = []
+        if courant:
+            morceaux.append(courant)
+        for morceau in morceaux:
+            x1 = morceau[-1]["x1"]
+            k = len(bords) if x1 > bords[-1] + 0.4 * ecart_moyen else \
+                min(range(len(bords)), key=lambda i: (abs(bords[i] - x1), -i))
+            cases.setdefault(k, []).extend(morceau)
+    # 2) tirets (case vide, ou signe moins détaché « - 113 ») : premier bord à leur droite
     for m in frags:
-        k = next((i for i, b in enumerate(bords) if m["x1"] <= b + 2.5), len(bords))
-        cases.setdefault(k, []).append(m)
+        if not _est_chiffre(m["text"]):
+            k = next((i for i, b in enumerate(bords) if m["x1"] <= b + 2.5), len(bords))
+            cases.setdefault(k, []).append(m)
     sortie = []
     for k in sorted(cases):
         ms = sorted(cases[k], key=lambda m: m["x0"])
@@ -905,7 +925,15 @@ def mots_page(page) -> list[dict]:
         return abs(b) < 1e-6 and abs(cc) < 1e-6 and a > 0 and d > 0
 
     chars = [dict(c, upright=True) if not c.get("upright", True) and droit(c) else c for c in page.chars]
-    return extract_words(chars, x_tolerance=1.2, y_tolerance=2.5, keep_blank_chars=False)
+    mots = extract_words(chars, x_tolerance=1.2, y_tolerance=2.5, keep_blank_chars=False)
+    # tirets typographiques (‐ ‑ – − ) ramenés au tiret simple : « ‐416 » est un nombre négatif
+    # (BT 2019T4) et « ‐ » seul une case vide (BNA)
+    for m in mots:
+        m["text"] = m["text"].translate(TIRETS)
+    return mots
+
+
+TIRETS = str.maketrans({"‐": "-", "‑": "-", "‒": "-", "–": "-", "−": "-"})
 
 
 def analyser_page(page, num_page: int) -> PageAnalysee:
