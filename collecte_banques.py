@@ -623,7 +623,7 @@ REGLES = [
     ("REV_PORTEF",   r"revenus? (du |des )?portefeuille"),
     ("PROD_EXPL",    r"produits d'?\s?exploitation bancaires?"),
     ("CHG_EXPL",     r"charges d'?\s?exploitation bancaires?"),
-    ("PNB",          r"produit net bancaire"),
+    ("PNB",          r"produits? nets? bancaires?"),      # BH : « PRODUITS NET BANCAIRE »
     ("AUTRES_PROD",  r"autres produits d'?\s?exploitation"),
     ("CHG_OPER",     r"charges operatoires"),
     ("FRAIS_PERS",   r"frais (de |du )?personnel"),
