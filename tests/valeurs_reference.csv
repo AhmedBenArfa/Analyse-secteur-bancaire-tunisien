@@ -86,3 +86,20 @@ UIB;2026T2;UIB_2026T2.pdf;1;CHG_OPER;trim_N;73884;milliers de dinars;73.884;
 UIB;2026T2;UIB_2026T2.pdf;1;CHG_OPER;cumul_N;148238;milliers de dinars;148.238;
 UIB;2026T2;UIB_2026T2.pdf;1;CREDITS;cumul_N;6479908;milliers de dinars;6479.908;commentaire p.3 : 6 479,9 MTND
 UIB;2026T2;UIB_2026T2.pdf;1;DEPOTS;cumul_N;7183567;milliers de dinars;7183.567;commentaire p.3 : 7 183,6 MTND
+BNA;2020T2;BNA_2020T2.pdf;1;PNB;trim_N;149399;milliers de dinars;149.399;
+BNA;2020T2;BNA_2020T2.pdf;1;PNB;cumul_N;312845;milliers de dinars;312.845;commentaire p.3 : PNB de 313 millions de dinars
+BNA;2020T2;BNA_2020T2.pdf;1;PNB;cumul_N1;305943;milliers de dinars;305.943;
+BNA;2020T2;BNA_2020T2.pdf;1;PNB;exercice_N1;654294;milliers de dinars;654.294;
+BNA;2020T2;BNA_2020T2.pdf;1;CHG_OPER;trim_N;85721;milliers de dinars;85.721;
+BNA;2020T2;BNA_2020T2.pdf;1;CHG_OPER;cumul_N;156557;milliers de dinars;156.557;commentaire p.3 : 157 millions de dinars
+BNA;2020T2;BNA_2020T2.pdf;1;CREDITS;cumul_N;11186748;milliers de dinars;11186.748;commentaire p.3 : 11.187 millions de dinars
+BNA;2020T2;BNA_2020T2.pdf;1;DEPOTS;cumul_N;8630019;milliers de dinars;8630.019;
+BNA;2020T2;BNA_2020T2.pdf;1;CAP_PROPRES;cumul_N;1523168;milliers de dinars;1523.168;libellé « 10- Capitaux Propres * » décalé sous la ligne des chiffres
+BNA;2024T4;BNA_2024T4.pdf;1;PNB;trim_N;248388;milliers de dinars;248.388;
+BNA;2024T4;BNA_2024T4.pdf;1;PNB;cumul_N;990812;milliers de dinars;990.812;commentaire p.3 : PNB de 991 millions de dinars
+BNA;2024T4;BNA_2024T4.pdf;1;PNB;cumul_N1;979919;milliers de dinars;979.919;
+BNA;2024T4;BNA_2024T4.pdf;1;CHG_OPER;trim_N;94899;milliers de dinars;94.899;
+BNA;2024T4;BNA_2024T4.pdf;1;CHG_OPER;cumul_N;379506;milliers de dinars;379.506;commentaire p.3 : 380 millions de dinars
+BNA;2024T4;BNA_2024T4.pdf;1;CREDITS;cumul_N;13391310;milliers de dinars;13391.31;commentaire p.2 : 13.391 millions de dinars
+BNA;2024T4;BNA_2024T4.pdf;1;DEPOTS;cumul_N;12911964;milliers de dinars;12911.964;
+BNA;2024T4;BNA_2024T4.pdf;1;CAP_PROPRES;cumul_N;1906547;milliers de dinars;1906.547;

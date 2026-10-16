@@ -1,0 +1,3 @@
+banque;premier_trimestre;dernier_trimestre;trimestres;colonnes;unite;libelles;documents_verifies;remarque
+BNA;2019T4;2026T3;1,2,3;trim_N|trim_N1|cumul_N|cumul_N1|exercice_N1;milliers de dinars;;BNA_2020T2, 2021T2, 2022T2, 2023T2, 2024T2, 2025T2, 2026T1 (bulletin), 2026T2;« unité : en 1000 DT ». En-têtes variables (« 2ème Trimestre », « 1er Semestre », « CUMUL A LA FIN DU », années seules) mais ordre constant. Dates écrites avec des points (31.12.2019). Colonne « Variations » en % ignorée.
+BNA;2019T4;2026T3;4;trim_N|trim_N1|cumul_N|cumul_N1;milliers de dinars;;BNA_2019T4, 2020T4, 2021T4, 2022T4, 2023T4, 2024T4, 2025T4;Au T4, pas de colonne 31/12/N-1 (le cumul N-1 est le 31/12/N-1).

@@ -34,7 +34,12 @@ doivent être cherchés dans les Bulletins Officiels (une pause est faite entre 
 1. Pages société du site de la BVMT
    (`/societes/<banque>/indicateurs-dactivite-trimestriels/<banque>-indicateurs-dactivite-trimestriels-JJ-MM-AAAA.pdf`).
 2. Dossier des indicateurs du site du CMF (`indic_2trim26_uib.pdf`, `ind_2eme_trim_2026_biat.pdf`…).
-3. En dernier recours, les Bulletins Officiels quotidiens du CMF publiés dans les 45 jours
+3. Pour les documents encore manquants : la liste des indicateurs publiée par le CMF
+   (`https://www.cmf.tn/?page=1&q=indicateurs-d-activit-`). Les liens sont gardés dans
+   `donnees/liste_indicateurs_cmf.csv` ; option `--rafraichir-liste-cmf` pour relire la liste
+   (par exemple après le 20 du mois qui suit un trimestre), `--sans-liste-cmf` pour sauter l'étape.
+   Chaque PDF candidat est vérifié (date d'arrêté et nom de la banque dans le document).
+4. En dernier recours, les Bulletins Officiels quotidiens du CMF publiés dans les 45 jours
    après la fin du trimestre : seules les pages de la banque sont gardées.
 
 Chaque PDF est vérifié : il doit citer la date d'arrêté du trimestre visé.
@@ -43,8 +48,10 @@ Chaque PDF est vérifié : il doit citer la date d'arrêté du trimestre visé.
 
 | Fichier | Contenu |
 |---|---|
-| `indicateurs_banques_long.csv` | Table de faits : une ligne par banque × trimestre × indicateur × colonne |
-| `controle_extraction.csv` | Statut de chaque document : ok, retraitement possible, a verifier, echec, pdf manquant |
+| `indicateurs_banques_long.csv` | Valeurs brutes : une ligne par document × indicateur × colonne lue |
+| `indicateurs_versions.csv` | Table pour Power BI : une ligne par banque × période × indicateur × mesure (trim / cumul) × version (`initiale` = document du trimestre ; `revisee_T<q>_N+1` = colonne N-1 du document de l'année suivante ; `revisee_31-12_T<q>_N+1` = colonne 31/12/N-1 d'un T1–T3 suivant, provisoire, pour le cumul annuel et les soldes au 31/12 seulement), avec `valeur_retenue`, `source_valeur` et `ecart_vs_retenue` (règle : `docs/SPECIFICATION.md`, 5.2) |
+| `controle_annuel.csv` | Somme des 4 trimestres retenus vs cumul T4 retenu : `ok`, `en attente de révision`, `ecart` |
+| `controle_extraction.csv` | Statut de chaque document : ok, retraitement possible, ecart trimestre/cumul, a verifier, echec, pdf manquant |
 | `manifeste_telechargements.csv` | URL et fichier de chaque document |
 | `dim_indicateur.csv` | Codes, libellés, catégorie et nature (flux / stock) |
 | `dim_banque.csv` | Banques — complétez les colonnes `actionnariat` et `groupe` à la main |
@@ -68,12 +75,23 @@ parfois inversé). Le nom de chaque colonne (trimestre / cumul, année N / N-1, 
 est lu dans l'en-tête du tableau ; si l'en-tête n'est pas lisible, l'ordre habituel est supposé
 et le document passe en `a verifier`.
 
+**Gabarits (`gabarits.csv`)** : pour chaque banque et chaque période de mise en page
+(premier et dernier trimestre, trimestres concernés), l'ordre des colonnes, l'unité et les
+libellés particuliers (`CODE=regex`, séparés par `||`). Quand un gabarit existe, il décide ;
+la lecture de l'en-tête et l'unité déduite du PNB deviennent des contrôles qui signalent tout
+désaccord. Le nom du gabarit appliqué figure dans `controle_extraction.csv` et dans les données.
+
 ## Contrôles (`controle_extraction.csv`)
 
 - produits − charges d'exploitation = PNB (à 2 % près) ;
 - PNB cumulé présent ; au T1, trimestre = cumul ; aux autres trimestres, trimestre ≤ cumul ;
 - ordres de grandeur plausibles (PNB, charges opératoires, crédits, dépôts, capitaux propres,
   coefficient d'exploitation, crédits / dépôts) ;
+- `ecart trimestre/cumul` : le trimestre publié diffère de plus de 0,1 % de « cumul du trimestre
+  − cumul du trimestre précédent » (document précédent de la même année). Cas constaté au T3 2025
+  chez BIAT et UIB : le premier semestre a été retraité après la publication du T2. Règle dans
+  Power BI : cumul publié pour l'année et le cumul annuel, trimestre publié pour l'analyse
+  trimestrielle (voir `docs/SPECIFICATION.md`, section 5.2) ;
 - `retraitement possible` : le cumul N-1 d'un document diffère du cumul N publié un an plus tôt
   pour le même trimestre. Ce sont souvent de vrais retraitements de la banque (signalés « chiffres
   retraités » dans le PDF) ; on garde le chiffre de l'année N tel que publié dans le document de l'année N.

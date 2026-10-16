@@ -145,14 +145,16 @@ def ligne_manifeste(code, ar, statut, source="", url="", fichier="", pages=""):
 
 def telecharger_sites(client: cb.Client, codes: list[str], liste: list[Arrete], m: dict):
     for code in codes:
-        combo_connu = None
+        combos_connus: list[cb.Combo] = []   # essayés en premier, sans exclure les autres
         suffixes_ok: list[str] = []
         for ar in sorted(liste, key=lambda a: a.date, reverse=True):
             cle = (code, ar.cle)
             if m.get(cle, {}).get("statut") == "ok" and Path(m[cle]["fichier"]).exists():
                 continue
-            cands = urls_candidates(ar, [combo_connu] if combo_connu else cb.combinaisons(code))
-            cands.sort(key=lambda c: 0 if any(s in c[0] for s in suffixes_ok) else 1)
+            combos = combos_connus + [c for c in cb.combinaisons(code) if c not in combos_connus]
+            cands = urls_candidates(ar, combos)
+            cands.sort(key=lambda c: (0 if any(s in c[0] for s in suffixes_ok) else 1,
+                                      0 if c[1] in combos_connus else 1))
             trouve = None
             for url, combo in cands:
                 contenu = client.pdf(url)
@@ -169,7 +171,8 @@ def telecharger_sites(client: cb.Client, codes: list[str], liste: list[Arrete], 
                     print(f"    ignoré (autre date) : {url}")
                     continue
                 trouve = (url, contenu)
-                combo_connu = combo_connu or combo
+                if combo not in combos_connus:
+                    combos_connus.append(combo)
                 suffixe = url.split("-etats-financiers-", 1)[1].rsplit("-", 3)[0]
                 if suffixe not in suffixes_ok:
                     suffixes_ok.insert(0, suffixe)

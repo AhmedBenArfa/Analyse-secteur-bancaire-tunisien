@@ -87,8 +87,10 @@ BANQUES = {
               "slugs": ["uib"],
               "motif_bo": r"UNION\s+INTERNATIONALE\s+DE\s+BANQUES"},
     "WIB":   {"nom": "Wifak International Bank",                "ticker": "WIFAK",
-              "slugs": ["wifak", "wib", "wifak-bank", "el-wifak", "wifak-international-bank"],
-              "motif_bo": r"WIFAK\s+INTERNATIONAL\s+BANK|EL\s+WIFAK"},
+              "slugs": ["wifak", "wib", "wifak-bank", "el-wifak", "wifak-international-bank",
+                        "el-wifack", "wifack"],
+              # ancien nom : « EL WIFACK LEASING » / « BANQUE EL WIFACK » (avec un C)
+              "motif_bo": r"WIFA?C?K\s+INTERNATIONAL\s+BANK|EL[\s\-]+WIFA?C?K"},
 }
 
 MOIS_FR = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet",
@@ -309,16 +311,21 @@ def telecharger_sites(client: Client, codes: list[str], liste_t: list[Trimestre]
     for code in codes:
         conf = BANQUES[code]
         ordre_prefere: list[str] = []  # gabarits d'URL qui ont déjà marché pour cette banque
-        combo_connu: Combo | None = None  # une fois trouvé, on n'essaie plus que ce couple
+        # noms de la banque dans les URL qui ont déjà marché : essayés en premier, mais les autres
+        # restent essayés ensuite (une banque change de nom de fichier d'une année à l'autre :
+        # BH publie « bh_bank » en 2026 mais « bh » en 2019)
+        combos_connus: list[Combo] = []
         # du plus récent au plus ancien : les documents récents existent presque toujours,
         # ce qui permet d'apprendre vite le bon nom de la banque dans les URL
         for t in reversed(liste_t):
             cle = (code, str(t))
             if manifeste.get(cle, {}).get("statut") == "ok" and Path(manifeste[cle]["fichier"]).exists():
                 continue
-            cands = urls_candidates(code, t, [combo_connu] if combo_connu else combinaisons(code))
-            # on teste d'abord les gabarits qui ont déjà fonctionné
-            cands.sort(key=lambda c: 0 if any(g in c[0] for g in ordre_prefere) else 1)
+            combos = combos_connus + [c for c in combinaisons(code) if c not in combos_connus]
+            cands = urls_candidates(code, t, combos)
+            # on teste d'abord les gabarits d'URL et les noms qui ont déjà fonctionné (tri stable)
+            cands.sort(key=lambda c: (0 if any(g in c[0] for g in ordre_prefere) else 1,
+                                      0 if c[1] in combos_connus else 1))
             trouve = None
             for url, combo in cands:
                 contenu = client.pdf(url)
@@ -330,7 +337,8 @@ def telecharger_sites(client: Client, codes: list[str], liste_t: list[Trimestre]
                     continue
                 if bon_document(textes, t):
                     trouve = (url, contenu)
-                    combo_connu = combo_connu or combo
+                    if combo not in combos_connus:
+                        combos_connus.append(combo)
                     break
                 print(f"    ignoré (autre période) : {url}")
             if trouve:
@@ -351,6 +359,122 @@ def telecharger_sites(client: Client, codes: list[str], liste_t: list[Trimestre]
             ecrire_manifeste(manifeste)
 
 
+# ---------------------------------------------------------------------------
+# Liste des indicateurs publiée par le CMF (avant les Bulletins Officiels)
+# ---------------------------------------------------------------------------
+
+URL_LISTE_CMF = "https://www.cmf.tn/?page={page}&q=indicateurs-d-activit-"
+LISTE_CMF = DOSSIER / "liste_indicateurs_cmf.csv"
+# mots qui désignent une autre société que la banque (filiales d'assurance, leasing…)
+MOTS_AUTRES_SOCIETES = {"assurance", "assurances", "leasing", "lease", "sicar", "sicav", "vie", "mag",
+                        "capital", "invest", "intermediation", "finance"}
+
+
+def lire_liste_cmf(client: "Client", max_pages: int, rafraichir: bool) -> list[str]:
+    """URL des PDF d'indicateurs listés par le CMF. La liste est gardée dans donnees/ ;
+    elle n'est relue sur le site qu'avec `rafraichir` (ou si elle n'existe pas). On s'arrête
+    à la première page qui n'apporte aucun lien nouveau."""
+    if LISTE_CMF.exists() and not rafraichir:
+        with LISTE_CMF.open(encoding="utf-8") as f:
+            return [r["url"] for r in csv.DictReader(f)]
+    urls: list[str] = []
+    for page in range(1, max_pages + 1):
+        time.sleep(PAUSE)
+        client.nb += 1
+        try:
+            r = client.s.get(URL_LISTE_CMF.format(page=page), timeout=TIMEOUT)
+        except requests.RequestException:
+            break
+        if r.status_code != 200:
+            break
+        # le CMF écrit ses liens avec ou sans guillemets : <a href=https://…/ind_2eme_trim_2026_biat.pdf>
+        liens = re.findall(r"""href=["']?([^"'\s>]+?\.pdf)""", r.text, re.I)
+        nouveaux = []
+        for l in liens:
+            if "/indicateurs/" not in l:
+                continue
+            u = requests.compat.urljoin("https://www.cmf.tn/", l.replace(" ", "%20"))
+            if u not in urls and u not in nouveaux:
+                nouveaux.append(u)
+        if not nouveaux:
+            break
+        urls += nouveaux
+        print(f"  liste du CMF, page {page} : {len(nouveaux)} liens")
+    LISTE_CMF.parent.mkdir(parents=True, exist_ok=True)
+    with LISTE_CMF.open("w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["url"])
+        w.writerows([u] for u in urls)
+    return urls
+
+
+def jetons_nom(url: str) -> list[str]:
+    nom = requests.utils.unquote(url.rsplit("/", 1)[-1]).lower().removesuffix(".pdf")
+    return [j for j in re.split(r"[^a-z0-9]+", nom) if j]
+
+
+def candidats_liste_cmf(code: str, t: Trimestre, urls: list[str]) -> list[str]:
+    """PDF de la liste du CMF qui peuvent être le document (banque, trimestre), du plus
+    probable au moins probable. Le contenu est vérifié ensuite (bon_document)."""
+    conf = BANQUES[code]
+    noms_banque = {tuple(s.replace("-", "_").split("_")) for s in conf["slugs"] + conf.get("prefixes", [])}
+    noms_banque.add((conf["ticker"].lower(),))
+    yy, aaaa = f"{t.annee % 100:02d}", str(t.annee)
+    sortie = []
+    for u in urls:
+        j = jetons_nom(u)
+        if MOTS_AUTRES_SOCIETES & set(j):
+            continue
+        if not any(tuple(j[i:i + len(n)]) == n for n in noms_banque for i in range(len(j))):
+            continue
+        nom = "_".join(j)
+        annee = re.search(rf"(?<!\d)({aaaa}|{yy})(?!\d)|trim{yy}(?!\d)|trim{aaaa}", nom)
+        rang = re.search(rf"(?<![a-z0-9]){t.num}(er|ere|eme|e|t|trim)|(?<!\d){t.num}trim", nom)
+        autre_annee = re.search(r"(?<!\d)20\d\d(?!\d)|trim\d\d(?!\d)", nom) and not annee
+        if autre_annee:
+            continue
+        score = (0 if annee else 2) + (0 if rang else 1)
+        sortie.append((score, u))
+    return [u for _, u in sorted(sortie)]
+
+
+def telecharger_liste_cmf(client: "Client", manifeste: dict, max_pages: int, rafraichir: bool,
+                          perimetre: set[tuple[str, str]] | None = None):
+    """Pour chaque document manquant (du périmètre demandé), cherche dans la liste des indicateurs du CMF."""
+    manquants = sorted(cle for cle, r in manifeste.items()
+                       if r["statut"] != "ok" and (perimetre is None or cle in perimetre))
+    if not manquants:
+        return
+    print(f"\nListe des indicateurs du CMF : {len(manquants)} documents manquants")
+    urls = lire_liste_cmf(client, max_pages, rafraichir)
+    print(f"  {len(urls)} PDF d'indicateurs dans la liste")
+    for code, tri in manquants:
+        t = Trimestre.depuis_texte(tri)
+        trouve = None
+        for url in candidats_liste_cmf(code, t, urls)[:6]:
+            contenu = client.pdf(url)
+            if not contenu:
+                continue
+            try:
+                textes = texte_pdf(contenu, max_pages=3)
+            except Exception:
+                continue
+            haut = sans_accents(" ".join(textes)[:3000]).upper()
+            if bon_document(textes, t) and re.search(BANQUES[code]["motif_bo"], haut):
+                trouve = (url, contenu)
+                break
+        if trouve:
+            url, contenu = trouve
+            p = chemin_pdf(code, t)
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_bytes(contenu)
+            manifeste[(code, tri)] = {"banque": code, "trimestre": tri, "date_arrete": t.fin.isoformat(),
+                                      "statut": "ok", "source": "liste_cmf", "url": url,
+                                      "fichier": str(p), "pages": ""}
+            ecrire_manifeste(manifeste)
+            print(f"  OK  {code} {tri}  <- {url}")
+
+
 def urls_bulletin(d: dt.date) -> list[str]:
     base = "https://www.cmf.tn/sites/default/files/pdfs/publications/bulletin-officiel/"
     return [base + f"bo{d:%y%m%d}.pdf", base + f"bo{d:%d%m%Y}.pdf"]
@@ -362,14 +486,16 @@ def debut_avis(txt: str) -> bool:
     return "INDICATEURS D" in haut and "PUBLIE" in haut
 
 
-def telecharger_bulletins(client: Client, manifeste: dict, garder: bool, jours: int = 45):
-    """Pour chaque trimestre où il manque des banques, parcourt les Bulletins Officiels publiés
-    dans les `jours` suivant la fin du trimestre et extrait les pages de chaque banque manquante."""
+def telecharger_bulletins(client: Client, manifeste: dict, garder: bool, jours: int = 45,
+                          perimetre: set[tuple[str, str]] | None = None):
+    """Pour chaque trimestre où il manque des banques (du périmètre demandé), parcourt les Bulletins
+    Officiels publiés dans les `jours` suivant la fin du trimestre et extrait les pages de chaque
+    banque manquante."""
     from pypdf import PdfReader, PdfWriter
 
     manquants: dict[str, set[str]] = {}
     for (code, tri), r in manifeste.items():
-        if r["statut"] != "ok":
+        if r["statut"] != "ok" and (perimetre is None or (code, tri) in perimetre):
             manquants.setdefault(tri, set()).add(code)
     if not manquants:
         return
@@ -440,9 +566,13 @@ def cmd_telecharger(args):
     manifeste = lire_manifeste()
     client = Client()
     print(f"{len(codes)} banques × {len(liste_t)} trimestres ({args.debut} -> {args.fin})")
-    telecharger_sites(client, codes, liste_t, manifeste)
+    perimetre = {(c, str(t)) for c in codes for t in liste_t}
+    if not args.sans_sites:
+        telecharger_sites(client, codes, liste_t, manifeste)
+    if not args.sans_liste_cmf:
+        telecharger_liste_cmf(client, manifeste, args.pages_liste_cmf, args.rafraichir_liste_cmf, perimetre)
     if not args.sans_bulletins:
-        telecharger_bulletins(client, manifeste, garder=args.garder_bulletins)
+        telecharger_bulletins(client, manifeste, garder=args.garder_bulletins, perimetre=perimetre)
     ok = sum(1 for r in manifeste.values() if r["statut"] == "ok")
     print(f"\nTerminé : {ok}/{len(manifeste)} documents trouvés, {client.nb} requêtes. Détail : {MANIFESTE}")
 
@@ -484,7 +614,7 @@ INDICATEURS = [
     ("DEP_TERME",     "Dépôts à terme et assimilés",             "Bilan",    "stock"),
     ("DEP_AUTRES",    "Autres dépôts et avoirs",                 "Bilan",    "stock"),
     ("EMPRUNTS",      "Emprunts et ressources spéciales",        "Bilan",    "stock"),
-    ("CAP_PROPRES",   "Capitaux propres",                        "Bilan",    "stock"),
+    ("CAP_PROPRES",   "Capitaux propres hors résultat de la période", "Bilan", "stock"),
 ]
 NATURE = {c: n for c, _, _, n in INDICATEURS}
 
@@ -499,23 +629,36 @@ REGLES = [
     ("FRAIS_PERS",   r"frais (de |du )?personnel"),
     ("CHG_GEN",      r"charges generales"),
     ("DOT_AMORT",    r"dotations? aux amortissements"),
-    ("INT_ENCOURUS", r"interets? (et charges assimilees )?encourus|interets? (et charges )?payes"),
+    ("INT_ENCOURUS", r"interets? (et charges assimilees )?encourus|interets? (et charges )?payes"
+                     r"|^charges encourues( et charges)?"),                   # Wifak (banque islamique)
     ("COMM_CHG",     r"commissions? encourues|commissions? (en )?charges?"),
     ("COMM_PROD",    r"commissions? (en )?produits?|commissions? percues"),
     ("PORTEF",       r"structure du portefeuille"),
     ("PORTEF_COMM",  r"portefeuille ?(titres?)? ?commercial"),
     ("PORTEF_INV",   r"portefeuille ?(titres?)? ?d'?\s?investissement"),
-    ("CREDITS",      r"encours (net )?des credits|credits (a|nets? a) la clientele|encours des engagements"),
+    ("CREDITS",      r"encours (net )?des credits|credits (a|nets? a) la clientele|encours des engagements"
+                     r"|encours (net )?des financements|financements (nets? )?a la clientele"),   # Wifak
     ("DEP_VUE",      r"depots? a vue"),
-    ("DEP_EPARGNE",  r"depots? d'?\s?epargne|comptes d'?\s?epargne"),
-    ("DEP_TERME",    r"depots? a terme"),
+    ("DEP_EPARGNE",  r"depots? d'?\s?epargne|comptes d'?\s?epargne|^tawfir"),          # Wifak : Tawfir
+    ("DEP_TERME",    r"depots? a terme|istithmar"),                                    # Wifak : comptes Istithmars
     ("DEP_AUTRES",   r"autres depots"),
     ("DEPOTS",       r"encours (des |de )?depots|depots (de la )?clientele"),
-    ("EMPRUNTS",     r"emprunts? et ressources speciales"),
+    ("EMPRUNTS",     r"emprunts? et ressources speciales|dettes de financements?( et ressources speciales)?"),
     ("CAP_PROPRES",  r"capitaux propres"),
-    ("INT_PERCUS",   r"^interets?( et revenus assimiles)?( percus)?$|^interets? et revenus"),
+    ("INT_PERCUS",   r"^interets?( et revenus assimiles)?( percus)?$|^interets? et revenus"
+                     r"|^marges? et revenus assimiles"),                              # Wifak
 ]
 REGLES_C = [(c, re.compile(m)) for c, m in REGLES]
+
+# Libellés à ne jamais rattacher à un indicateur, même s'ils contiennent ses mots-clés.
+# Wifak : « Pertes sur portefeuille titres commercial et opérations financières » est une charge,
+# pas le solde du portefeuille commercial (PORTEF_COMM).
+EXCLUSIONS = [re.compile(r"^pertes? sur portefeuille")]
+
+# Indicateurs publiés sur plusieurs lignes à additionner (dans la même section du tableau).
+# Wifak : « Revenus du portefeuille commercial & opérations financières » + « Revenus du
+# portefeuille d'investissement » = REV_PORTEF.
+CODES_A_ADDITIONNER = {"REV_PORTEF"}
 COLONNES = ["trim_N", "trim_N1", "cumul_N", "cumul_N1", "exercice_N1"]
 
 RE_FRAGMENT = re.compile(r"^\(?-?\d[\d.,]*\)?$")   # nombre ou morceau de nombre : "1", "56", "686,141"
@@ -535,14 +678,86 @@ PLAGES_MDT = {"PNB": (5, 5000), "PROD_EXPL": (5, 10000), "CHG_OPER": (2, 3000),
 CODES_RETRAITEMENT = ["PNB", "PROD_EXPL", "CHG_EXPL", "CHG_OPER", "CREDITS", "DEPOTS"]
 
 
-def code_libelle(lib: str) -> str | None:
+def code_libelle(lib: str, regles_banque: list[tuple[str, re.Pattern]] = ()) -> str | None:
+    """Code de l'indicateur d'un libellé. Les règles propres à la banque (gabarit) passent
+    avant les règles générales."""
     n = normaliser(lib)
     n = re.sub(r"^(\d+\s*)+", "", n).strip()       # numérotation "1", "3-"
-    if not n:
+    n = re.sub(r"^[a-h] (?=\w)", "", n)             # sous-numérotation "a-", "b-" (BNA : « a- Intérêts »)
+    if not n or any(rx.search(n) for rx in EXCLUSIONS):
         return None
-    for code, rx in REGLES_C:
+    for code, rx in list(regles_banque) + REGLES_C:
         if rx.search(n):
-            return code
+            return None if code == "AUCUN" else code      # AUCUN : ligne à ignorer (gabarit)
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Gabarits : mise en page de chaque banque par période (gabarits.csv)
+# ---------------------------------------------------------------------------
+
+FICHIER_GABARITS = Path(__file__).resolve().parent / "gabarits.csv"
+FACTEURS_UNITE = {"dinars": 1e-6, "milliers de dinars": 1e-3, "millions de dinars": 1.0}
+
+
+@dataclass
+class Gabarit:
+    banque: str
+    debut: Trimestre
+    fin: Trimestre
+    trimestres: set[int]                      # numéros de trimestre concernés (T4 souvent différent)
+    colonnes: list[str]                       # nom de chaque colonne de chiffres, de gauche à droite
+    unite: str                                # clé de FACTEURS_UNITE
+    libelles: list[tuple[str, re.Pattern]]    # règles de libellés propres à la banque
+    ligne: int                                # numéro de ligne dans gabarits.csv (traçabilité)
+
+    @property
+    def nom(self) -> str:
+        return f"{self.banque} {self.debut}-{self.fin} T{''.join(str(q) for q in sorted(self.trimestres))}"
+
+
+def charger_gabarits(chemin: Path = FICHIER_GABARITS) -> list[Gabarit]:
+    """Format (séparateur « ; ») : banque ; premier_trimestre ; dernier_trimestre ; trimestres (« 1,2,3 »
+    ou « 4 ») ; colonnes (« trim_N|trim_N1|cumul_N|cumul_N1|exercice_N1 », _ignorer pour une colonne
+    de variation) ; unite ; libelles (« CODE=regex », séparés par « || », regex sur le libellé
+    normalisé : minuscules, sans accents) ; documents_verifies ; remarque."""
+    if not chemin.exists():
+        return []
+    sortie = []
+    with chemin.open(encoding="utf-8-sig") as f:
+        for i, r in enumerate(csv.DictReader(f, delimiter=";"), start=2):
+            if not (r.get("banque") or "").strip() or r["banque"].startswith("#"):
+                continue
+            colonnes = [c.strip() for c in r["colonnes"].split("|")]
+            inconnues = [c for c in colonnes if c not in COLONNES + ["_ignorer"]]
+            if inconnues or r["unite"] not in FACTEURS_UNITE:
+                raise ValueError(f"gabarits.csv ligne {i} : colonnes {inconnues} ou unité « {r['unite']} » inconnues")
+            libelles = []
+            for regle in filter(None, (x.strip() for x in (r.get("libelles") or "").split("||"))):
+                code, motif = regle.split("=", 1)
+                if code.strip() not in NATURE and code.strip() != "AUCUN":
+                    raise ValueError(f"gabarits.csv ligne {i} : code inconnu {code}")
+                libelles.append((code.strip(), re.compile(motif.strip())))
+            sortie.append(Gabarit(r["banque"].strip(), Trimestre.depuis_texte(r["premier_trimestre"]),
+                                  Trimestre.depuis_texte(r["dernier_trimestre"]),
+                                  {int(q) for q in r["trimestres"].split(",")}, colonnes, r["unite"],
+                                  libelles, i))
+    return sortie
+
+
+_GABARITS: list[Gabarit] | None = None
+
+
+def gabarit_pour(banque: str | None, t: Trimestre | None) -> Gabarit | None:
+    global _GABARITS
+    if banque is None or t is None:
+        return None
+    if _GABARITS is None:
+        _GABARITS = charger_gabarits()
+    cles = lambda x: (x.annee, x.num)
+    for g in _GABARITS:
+        if g.banque == banque and t.num in g.trimestres and cles(g.debut) <= cles(t) <= cles(g.fin):
+            return g
     return None
 
 
@@ -639,7 +854,9 @@ def bords_colonnes(rangees: list[list[dict]]) -> list[float]:
             groupes[-1].append(f)
         else:
             groupes.append([f])
-    seuil = max(3, 0.3 * n_rangees)
+    # 20 % des rangées : sur une page de suite (BNA 2021T3, page 2), les colonnes trimestrielles
+    # n'existent que sur les 3 lignes de charges opératoires, les autres étant des encours
+    seuil = max(2, 0.2 * n_rangees)
     bords = [max(x for x, _ in g) for g in groupes if len({r for _, r in g}) >= seuil]
     # deux bords à moins de 8 pt : le premier est la fin d'un groupe de milliers, pas une colonne
     propres: list[float] = []
@@ -732,10 +949,18 @@ def type_colonne(entete: str, t: Trimestre) -> str | None:
     """Nature d'une colonne d'après son en-tête (« DEUXIEME TRIMESTRE 2025 »,
     « Du 01/04/2025 Au 30/06/2025 », « DU DEBUT DE L'EXERCICE ... AU 30/06/2024 », « 31/12/2024 »)."""
     n = sans_accents(entete).lower()
-    annees = [int(a) for a in re.findall(r"(?<!\d)(20\d\d)(?!\d)", n)]
+    # années sur 4 chiffres, ou sur 2 chiffres dans une date (30/06/26) ou après un mois (juin-26)
+    mois = "|".join(MOIS_FR)
+    annees = []
+    for m in re.finditer(rf"(?<!\d)(20\d\d)(?!\d)|\d{{2}}/\d{{2}}/(\d{{2}})(?!\d)|(?:{mois})\s*-?\s*(\d{{2}})(?!\d)", n):
+        a = m.group(1) or m.group(2) or m.group(3)
+        annees.append((m.start(), int(a) if len(a) == 4 else 2000 + int(a)))
     if not annees:
+        # colonne de variation, sans date (Wifak : « Variation », « % »)
+        if re.search(r"\bvariations?\b|\bevolution\b|\becart\b", n) or n.strip() in ("%", "en %"):
+            return "_ignorer"
         return None
-    suffixe = {t.annee: "N", t.annee - 1: "N1"}.get(annees[-1])
+    suffixe = {t.annee: "N", t.annee - 1: "N1"}.get(max(annees)[1])
     if suffixe is None:
         return None
     debut_trim = ["01/01", "01/04", "01/07", "01/10"][t.num - 1]
@@ -743,9 +968,9 @@ def type_colonne(entete: str, t: Trimestre) -> str | None:
         return f"trim_{suffixe}"
     if "debut" in n or "cumul" in n or re.search(r"\bdu\b", n):
         return f"cumul_{suffixe}"
-    if "31/12" in n and suffixe == "N1":
+    if ("31/12" in n or "decembre" in n) and suffixe == "N1":
         return "exercice_N1"
-    if re.search(r"\d{2}/\d{2}/20\d\d", n):
+    if re.search(r"\d{2}/\d{2}/(20)?\d\d", n) or re.search(rf"(?:{mois})\s*-?\s*\d{{2}}", n):
         return f"cumul_{suffixe}"
     return None
 
@@ -782,7 +1007,8 @@ def colonnes_entete(ap: PageAnalysee, haut_tableau: float, t: Trimestre) -> list
     noms = [type_colonne(" ".join(x), t) for x in textes]
     if t.num == 4 and "exercice_N1" in noms and "cumul_N1" not in noms:
         noms[noms.index("exercice_N1")] = "cumul_N1"   # au T4, le 31/12/N-1 est le cumul N-1
-    if None in noms or len(set(noms)) != len(noms):
+    utiles = [x for x in noms if x != "_ignorer"]
+    if None in noms or len(set(utiles)) != len(utiles) or not utiles:
         return None
     return noms
 
@@ -869,39 +1095,263 @@ def controle_retraitements(docs: dict[tuple[str, str], dict[tuple[str, str], flo
     return alertes
 
 
-def extraire_pdf(chemin: Path, t: Trimestre | None = None) -> tuple[list[dict], list[str]]:
-    """Renvoie (lignes extraites, alertes) pour un PDF."""
+def controle_trimestre_cumul(docs: dict[tuple[str, str], dict[tuple[str, str], float]]) -> dict[tuple[str, str], list[str]]:
+    """Compare le trimestre publié (trim_N) à cumul_N(T) - cumul_N(T-1), T-1 étant lu dans le
+    document du trimestre précédent de la même année. Un écart signale le plus souvent un
+    retraitement des trimestres précédents, invisible dans le document du trimestre T."""
+    alertes: dict[tuple[str, str], list[str]] = {}
+    for (code, tri), vals in docs.items():
+        t = Trimestre.depuis_texte(tri)
+        if t.num == 1:
+            continue
+        prec = docs.get((code, str(Trimestre(t.annee, t.num - 1))))
+        if not prec:
+            continue
+        for c in CODES_RETRAITEMENT:
+            if NATURE[c] != "flux":
+                continue
+            publie, cumul, cumul_prec = vals.get((c, "trim_N")), vals.get((c, "cumul_N")), prec.get((c, "cumul_N"))
+            if None in (publie, cumul, cumul_prec):
+                continue
+            calcule = cumul - cumul_prec
+            if abs(publie - calcule) > max(0.001, 0.001 * abs(publie)):
+                alertes.setdefault((code, tri), []).append(
+                    f"écart trimestre/cumul : {c} trimestre publié {publie:,.3f}, cumul {tri} - cumul "
+                    f"{t.annee}T{t.num - 1} = {calcule:,.3f} (écart {publie - calcule:+,.3f} MDT)")
+    return alertes
+
+
+# Versions des chiffres d'une même période (colonne `version`, reprise dans `source_valeur`) :
+#   initiale                 : document du trimestre lui-même (trim_N, cumul_N) ;
+#   revisee_T<q>_N+1         : colonne N-1 (trim_N1, cumul_N1) du document du même trimestre
+#                              de l'année suivante ;
+#   revisee_31-12_T<q>_N+1   : colonne « 31/12/N-1 » (exercice_N1) d'un document T1, T2 ou T3 de
+#                              l'année suivante ; seulement pour le cumul au T4 (flux) et le solde
+#                              au 31/12 (stocks), jamais pour le T4 seul. Version provisoire.
+# Valeur retenue : revisee_T<q>_N+1 > revisee_31-12 du document le plus récent (T3 > T2 > T1) > initiale.
+PREMIERE_PERIODE = Trimestre(2019, 4)
+# 2 milliers de dinars : arrondi des banques qui publient en milliers. Le 1e-6 absorbe les erreurs
+# de calcul en virgule flottante (0,002 calculé vaut parfois 0,0020000000001).
+TOLERANCE_ARRONDI_MDT = 0.002 + 1e-6
+
+# Totaux et leurs composantes (coefficient : +1 ajouté, -1 retranché)
+GROUPES = {
+    "PROD_EXPL": {"INT_PERCUS": 1, "COMM_PROD": 1, "REV_PORTEF": 1},
+    "CHG_EXPL": {"INT_ENCOURUS": 1, "COMM_CHG": 1},
+    "PNB": {"PROD_EXPL": 1, "CHG_EXPL": -1},
+    "CHG_OPER": {"FRAIS_PERS": 1, "CHG_GEN": 1, "DOT_AMORT": 1},
+    "DEPOTS": {"DEP_VUE": 1, "DEP_EPARGNE": 1, "DEP_TERME": 1, "DEP_AUTRES": 1},
+    "PORTEF": {"PORTEF_COMM": 1, "PORTEF_INV": 1},
+}
+PARENT = {comp: total for total, comps in GROUPES.items() for comp in comps if total != "PNB"}
+
+
+def version_admise(code_indicateur: str, version: str) -> bool:
+    """Règle fixe : les capitaux propres ne prennent jamais la colonne 31/12 provisoire
+    (sa définition change d'un document à l'autre : avant / après affectation du résultat)."""
+    return not (code_indicateur == "CAP_PROPRES" and version.startswith("revisee_31-12_"))
+
+
+def priorite_version(version: str) -> int:
+    """Plus petit = prioritaire."""
+    if version == "initiale":
+        return 9
+    if version.startswith("revisee_31-12_"):
+        return 4 - int(version.split("_")[2][1])     # T3 -> 1, T2 -> 2, T1 -> 3
+    return 0                                          # revisee_T<q>_N+1
+
+
+def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]]) -> list[dict]:
+    """docs : (banque, trimestre du document) -> (lignes extraites, nom du fichier).
+    Renvoie une ligne par banque × période × indicateur × mesure × version, avec la valeur
+    retenue, sa source, et l'écart de chaque version à la valeur retenue."""
+    valeurs: dict[tuple[str, str, str, str], dict[str, tuple[float, str, int, str]]] = {}
+    for (code, tri), (lignes, fichier) in docs.items():
+        t = Trimestre.depuis_texte(tri)
+        for l in lignes:
+            col = l["colonne"]
+            if col in ("trim_N", "cumul_N"):
+                p, version = t, "initiale"
+            elif col in ("trim_N1", "cumul_N1"):
+                p, version = Trimestre(t.annee - 1, t.num), f"revisee_T{t.num}_N+1"
+            elif col == "exercice_N1" and t.num in (1, 2, 3):
+                p, version = Trimestre(t.annee - 1, 4), f"revisee_31-12_T{t.num}_N+1"
+            else:
+                continue
+            if (p.annee, p.num) < (PREMIERE_PERIODE.annee, PREMIERE_PERIODE.num):
+                continue
+            mesure = "trim" if col.startswith("trim") else "cumul"
+            valeurs.setdefault((code, str(p), l["code_indicateur"], mesure), {})[version] = \
+                (l["valeur_mdt"], fichier, l["page"], l.get("note", ""))
+
+    # 1) version retenue de chaque série : priorité, sauf versions exclues par règle fixe
+    sources: dict[tuple[str, str, str, str], str | None] = {}
+    for cle, vers in valeurs.items():
+        admises = [v for v in vers if version_admise(cle[2], v)]
+        sources[cle] = min(admises, key=priorite_version) if admises else None
+    # 2) reclassement à total constant : une composante prend la même version que son total
+    for (code, per, ind, mesure), vers in valeurs.items():
+        total = PARENT.get(ind)
+        src_total = sources.get((code, per, total, mesure)) if total else None
+        if src_total and src_total in vers and version_admise(ind, src_total):
+            sources[(code, per, ind, mesure)] = src_total
+
+    def ecart(code, per, ind, mesure, version) -> float | None:
+        vers, src = valeurs.get((code, per, ind, mesure)), sources.get((code, per, ind, mesure))
+        if not vers or src is None or version not in vers:
+            return None
+        return vers[version][0] - vers[src][0]
+
+    def statut_revision(code, per, ind, mesure, version) -> str:
+        """correction : le total change au-delà de l'arrondi ; reclassement : total stable,
+        composantes qui bougent en sens inverse ; vide : sous la tolérance."""
+        if not version_admise(ind, version):
+            return "exclue (capitaux propres, 31/12 provisoire)"
+        d = ecart(code, per, ind, mesure, version)
+        if d is None:
+            return ""
+        if ind in GROUPES:
+            if abs(d) > TOLERANCE_ARRONDI_MDT:
+                return "correction"
+            dc = [coef * x for c, coef in GROUPES[ind].items()
+                  if (x := ecart(code, per, c, mesure, version)) is not None and abs(x) > TOLERANCE_ARRONDI_MDT]
+            return "reclassement" if any(x > 0 for x in dc) and any(x < 0 for x in dc) else ""
+        if abs(d) <= TOLERANCE_ARRONDI_MDT:
+            return ""
+        parent = PARENT.get(ind)
+        if parent and statut_revision(code, per, parent, mesure, version) == "reclassement":
+            return "reclassement"
+        return "correction"
+
+    sortie = []
+    for (code, per, ind, mesure), vers in sorted(valeurs.items()):
+        source = sources[(code, per, ind, mesure)]
+        retenue = vers[source][0] if source else None
+        p = Trimestre.depuis_texte(per)
+        for version in sorted(vers, key=priorite_version):
+            v, fichier, page, note = vers[version]
+            sortie.append({"banque": code, "trimestre": per, "date_arrete": p.fin.isoformat(),
+                           "annee": p.annee, "num_trimestre": p.num, "code_indicateur": ind,
+                           "mesure": mesure, "version": version, "valeur_mdt": v,
+                           "fichier": fichier, "page": page,
+                           "valeur_retenue": retenue, "source_valeur": source or "",
+                           "ecart_vs_retenue": None if retenue is None else round(v - retenue, 9),
+                           "statut_revision": "retenue" if version == source
+                           else statut_revision(code, per, ind, mesure, version),
+                           "note_definition": note})
+    return sortie
+
+
+def controle_somme_annuelle(versions: list[dict]) -> list[dict]:
+    """Avec les valeurs retenues : somme des 4 trimestres = cumul du T4, pour chaque flux.
+    statut : ok ; « en attente de révision » quand le cumul retenu est la version provisoire
+    31/12/N-1 (le T4 seul attend le document T4 suivant) ; « ecart » sinon."""
+    retenue: dict[tuple[str, str, str, str], tuple[float, str]] = {}
+    for r in versions:
+        retenue[(r["banque"], r["trimestre"], r["code_indicateur"], r["mesure"])] = \
+            (r["valeur_retenue"], r["source_valeur"])
+    sortie = []
+    for (code, tri, ind, mesure), (cumul, source) in sorted(retenue.items()):
+        t = Trimestre.depuis_texte(tri)
+        if mesure != "cumul" or t.num != 4 or NATURE[ind] != "flux" or ind not in CODES_RETRAITEMENT:
+            continue
+        trims = [retenue.get((code, f"{t.annee}T{q}", ind, "trim")) for q in (1, 2, 3, 4)]
+        if None in trims:
+            continue
+        somme = sum(v for v, _ in trims)
+        # tolérance : l'arrondi des chiffres publiés en milliers de dinars (1 à 2 milliers)
+        if abs(somme - cumul) <= TOLERANCE_ARRONDI_MDT:
+            statut = "ok"
+        elif source.startswith("revisee_31-12_"):
+            statut = "en attente de révision"
+        else:
+            statut = "ecart"
+        sortie.append({"banque": code, "annee": t.annee, "code_indicateur": ind, "somme_trimestres": somme,
+                       "cumul_T4": cumul, "source_cumul": source, "ecart": somme - cumul, "statut": statut})
+    return sortie
+
+
+def comparaison_revisions_31_12(versions: list[dict]) -> list[str]:
+    """Quand le T4 suivant (revisee_T4_N+1) et une colonne 31/12/N-1 d'un T1–T3 existent tous deux,
+    signale les écarts entre eux (ils figurent aussi dans ecart_vs_retenue, table Revisions)."""
+    alertes = []
+    for r in versions:
+        if (r["version"].startswith("revisee_31-12_") and r["source_valeur"] == "revisee_T4_N+1"
+                and abs(r["ecart_vs_retenue"]) > TOLERANCE_ARRONDI_MDT):
+            alertes.append(f"{r['banque']} {r['annee']} {r['code_indicateur']} : 31/12 du document "
+                           f"{r['version'].split('_')[2]} {r['annee'] + 1} = {r['valeur_mdt']:,.3f}, "
+                           f"T4 {r['annee'] + 1} (N-1) = {r['valeur_retenue']:,.3f} "
+                           f"(écart {r['ecart_vs_retenue']:+,.3f} MDT, {r['statut_revision'] or 'sous la tolérance'})")
+    return alertes
+
+
+def definition_capitaux_propres(texte: str) -> str:
+    """Définition des capitaux propres annoncée par les notes du document (information seulement)."""
+    n = re.sub(r"\s+", " ", sans_accents(texte).lower().replace("’", "'"))
+    trouve = []
+    if "avant affectation" in n:
+        trouve.append("avant affectation du résultat")
+    if "apres affectation" in n:
+        trouve.append("après affectation du résultat")
+    if re.search(r"non tenu des? resultats?|n'incluent pas (le|les) resultats?|"
+                 r"resultats? .{0,120}ne sont pas inclus", n):
+        trouve.append("résultat de la période non inclus")
+    return " + ".join(trouve)
+
+
+def extraire_pdf(chemin: Path, t: Trimestre | None = None,
+                 banque: str | None = None) -> tuple[list[dict], list[str]]:
+    """Renvoie (lignes extraites, alertes) pour un PDF. Si un gabarit existe pour la banque et le
+    trimestre (gabarits.csv), il fixe l'ordre des colonnes, l'unité et les libellés particuliers ;
+    la lecture de l'en-tête et la règle d'unité servent alors de contrôles."""
     import pdfplumber
 
     alertes: list[str] = []
+    gab = gabarit_pour(banque, t)
+    regles = gab.libelles if gab else []
     toutes: list[Ligne] = []
     pages: dict[int, PageAnalysee] = {}
-    texte_complet = ""
+    texte_complet = ""   # 4 premières pages (tableau) : sert à deviner l'unité
+    texte_notes = ""     # toutes les pages : notes (définition des capitaux propres…)
     with pdfplumber.open(chemin) as pdf:
-        for i, page in enumerate(pdf.pages[:4], start=1):
-            texte_complet += (page.extract_text() or "") + "\n"
-            pages[i] = analyser_page(page, i)
-            toutes += pages[i].lignes
+        for i, page in enumerate(pdf.pages[:12], start=1):
+            texte = page.extract_text() or ""
+            texte_notes += texte + "\n"
+            if i <= 4:
+                texte_complet += texte + "\n"
+                pages[i] = analyser_page(page, i)
+                toutes += pages[i].lignes
 
-    # libellés sur deux lignes : on recolle un libellé sans nombre à la ligne suivante
+    # libellés sur deux lignes : on recolle un libellé sans nombre à la ligne suivante ;
+    # une ligne de chiffres sans libellé prend celui de la ligne juste en dessous s'il en est tout
+    # proche (BNA : « 10- Capitaux Propres * », décalé de quelques points vers le bas)
     fusion: list[Ligne] = []
     attente = ""
-    for l in toutes:
+    consommees: set[int] = set()
+    for i, l in enumerate(toutes):
+        if i in consommees:
+            continue
         if l.libelle and not l.nombres:
-            attente = (attente + " " + l.libelle).strip() if code_libelle(l.libelle) is None else l.libelle
+            attente = (attente + " " + l.libelle).strip() if code_libelle(l.libelle, regles) is None else l.libelle
             continue
         if l.nombres:
             lib = l.libelle
-            if attente and (not lib or code_libelle(lib) is None):
+            if attente and (not lib or code_libelle(lib, regles) is None):
                 lib = (attente + " " + lib).strip()
+            elif not lib and i + 1 < len(toutes):
+                s = toutes[i + 1]
+                if s.libelle and not s.nombres and s.page == l.page and 0 <= s.top - l.top <= 6:
+                    lib = s.libelle
+                    consommees.add(i + 1)
             fusion.append(Ligne(lib, l.nombres, l.page, l.top))
         attente = ""
 
     # reconnaissance des indicateurs, en suivant la section parente (produits / charges)
     trouves: dict[str, Ligne] = {}
+    supplements: dict[str, list[Ligne]] = {}   # lignes de plus à additionner (CODES_A_ADDITIONNER)
     parent = None
     for l in fusion:
-        c = code_libelle(l.libelle)
+        c = code_libelle(l.libelle, regles)
         if c is None and parent and re.search(r"^[\s\-–•]*\d*\s*-?\s*interets?", normaliser(l.libelle)):
             c = "INT_ENCOURUS" if parent == "CHG_EXPL" else "INT_PERCUS"
         if c is None and parent and re.search(r"commissions?", normaliser(l.libelle)):
@@ -916,6 +1366,8 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None) -> tuple[list[dict], 
             parent = None
         if c and c not in trouves:
             trouves[c] = l
+        elif c in CODES_A_ADDITIONNER and parent == "PROD_EXPL":
+            supplements.setdefault(c, []).append(l)
         if c == "CAP_PROPRES":
             break
 
@@ -930,13 +1382,25 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None) -> tuple[list[dict], 
             ap = pages[num_page]
             lignes_tab = [l for l in fusion if l.page == num_page and
                           sum(j.colonne is not None for j in l.nombres) >= 2]
-            noms = None
+            lu = None
             if lignes_tab and t:
-                noms = colonnes_entete(ap, min(l.top for l in lignes_tab), t)
-            if noms is None:
-                noms = COLONNES_DEFAUT.get(len(ap.bords))
-                alertes.append(f"page {num_page} : en-tête des colonnes non reconnu, "
-                               f"ordre supposé {noms} ({len(ap.bords)} colonnes)")
+                lu = colonnes_entete(ap, min(l.top for l in lignes_tab), t)
+            if gab:
+                # le gabarit décide ; l'en-tête lu n'est qu'un contrôle
+                if len(ap.bords) == len(gab.colonnes):
+                    noms = gab.colonnes
+                    if lu and lu != gab.colonnes:
+                        alertes.append(f"page {num_page} : en-tête lu {lu} ≠ gabarit {gab.colonnes}")
+                else:
+                    noms = lu
+                    alertes.append(f"page {num_page} : {len(ap.bords)} colonnes détectées, le gabarit "
+                                   f"({gab.nom}) en prévoit {len(gab.colonnes)}")
+            else:
+                noms = lu
+                if noms is None:
+                    noms = COLONNES_DEFAUT.get(len(ap.bords))
+                    alertes.append(f"page {num_page} : en-tête des colonnes non reconnu, "
+                                   f"ordre supposé {noms} ({len(ap.bords)} colonnes)")
             noms_page[num_page] = noms
         return noms_page[num_page]
 
@@ -944,23 +1408,42 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None) -> tuple[list[dict], 
         noms = noms_colonnes(l.page) or []
         res: dict[str, float | None] = {}
         for j in l.nombres:
-            if j.colonne is not None and j.colonne < len(noms) and noms[j.colonne] not in res:
+            if j.colonne is None or j.colonne >= len(noms) or noms[j.colonne] == "_ignorer":
+                continue
+            if noms[j.colonne] not in res:
                 res[noms[j.colonne]] = None if j.texte == "-" else valeur(j.texte)
         return res
 
+    def additionner(a: dict[str, float | None], b: dict[str, float | None]) -> dict[str, float | None]:
+        return {col: (a.get(col) or 0) + (b.get(col) or 0) if None not in (a.get(col), b.get(col))
+                else (a.get(col) if b.get(col) is None else b.get(col)) for col in set(a) | set(b)}
+
     valeurs = {c: affecter(l) for c, l in trouves.items()}
+    libelles = {c: l.libelle for c, l in trouves.items()}
+    for c, autres in supplements.items():
+        for l in autres:
+            valeurs[c] = additionner(valeurs[c], affecter(l))
+            libelles[c] += " + " + l.libelle
     facteur, unite = detecter_facteur(texte_complet, valeurs["PNB"].get("cumul_N"))
+    if gab:
+        # le gabarit décide ; l'unité déduite de l'ordre de grandeur du PNB n'est qu'un contrôle
+        if facteur != FACTEURS_UNITE[gab.unite]:
+            alertes.append(f"unité déduite du PNB ({unite}) ≠ gabarit ({gab.unite})")
+        facteur, unite = FACTEURS_UNITE[gab.unite], gab.unite
     alertes += controles(valeurs, facteur, t)
+    note_cp = definition_capitaux_propres(texte_notes)
 
     lignes = []
     for c, cols in valeurs.items():
         for col, v in cols.items():
             if v is None:
                 continue
-            lignes.append({"code_indicateur": c, "libelle_source": trouves[c].libelle,
+            lignes.append({"code_indicateur": c, "libelle_source": libelles[c],
                            "colonne": col, "valeur_source": v, "unite_source": unite,
                            "valeur_mdt": round(v * facteur, 9),   # 9 décimales : le millime
-                           "page": trouves[c].page})
+                           "page": trouves[c].page,
+                           "note": note_cp if c == "CAP_PROPRES" else "",
+                           "gabarit": gab.nom if gab else ""})
     manquants = [c for c in ("PROD_EXPL", "CHG_EXPL", "CHG_OPER", "CREDITS", "DEPOTS") if c not in trouves]
     if manquants:
         alertes.append("non trouvés : " + ", ".join(manquants))
@@ -975,21 +1458,23 @@ def cmd_extraire(args):
     controle = DOSSIER / "controle_extraction.csv"
     champs = ["banque", "trimestre", "date_arrete", "annee", "num_trimestre", "code_indicateur",
               "libelle_source", "colonne", "valeur_source", "unite_source", "valeur_mdt",
-              "source", "fichier", "page"]
+              "source", "fichier", "page", "note", "gabarit"]
     # 1) extraction de chaque document
     resultats: dict[tuple[str, str], tuple[list[dict], list[str]]] = {}
     for (code, tri), r in sorted(manifeste.items()):
         if r["statut"] != "ok" or not r["fichier"] or not Path(r["fichier"]).exists():
             continue
         try:
-            resultats[(code, tri)] = extraire_pdf(Path(r["fichier"]), Trimestre.depuis_texte(tri))
+            resultats[(code, tri)] = extraire_pdf(Path(r["fichier"]), Trimestre.depuis_texte(tri), code)
         except Exception as e:  # PDF illisible
             resultats[(code, tri)] = ([], [f"erreur de lecture : {e}"])
 
-    # 2) comparaison avec le document du même trimestre de l'année précédente
+    # 2) comparaisons entre documents : même trimestre de l'année précédente,
+    #    et trimestre précédent de la même année (trimestre publié vs différence des cumuls)
     docs = {cle: {(l["code_indicateur"], l["colonne"]): l["valeur_mdt"] for l in lignes}
             for cle, (lignes, _) in resultats.items()}
     retraitements = controle_retraitements(docs)
+    ecarts_trim = controle_trimestre_cumul(docs)
 
     # 3) écriture
     n_ok = 0
@@ -997,7 +1482,7 @@ def cmd_extraire(args):
          controle.open("w", newline="", encoding="utf-8-sig") as fc:
         w = csv.DictWriter(f, fieldnames=champs, delimiter=";")
         wc = csv.writer(fc, delimiter=";")
-        wc.writerow(["banque", "trimestre", "statut", "nb_valeurs", "alertes", "fichier"])
+        wc.writerow(["banque", "trimestre", "statut", "nb_valeurs", "alertes", "fichier", "gabarit"])
         w.writeheader()
         for (code, tri), r in sorted(manifeste.items()):
             if (code, tri) not in resultats:
@@ -1006,15 +1491,18 @@ def cmd_extraire(args):
             t = Trimestre.depuis_texte(tri)
             lignes, alertes = resultats[(code, tri)]
             retr = retraitements.get((code, tri), [])
+            ecarts = ecarts_trim.get((code, tri), [])
             if not lignes:
                 statut = "echec"
             elif alertes:
                 statut = "a verifier"
+            elif ecarts:
+                statut = "ecart trimestre/cumul"
             else:
                 statut = "retraitement possible" if retr else "ok"
             n_ok += statut == "ok"
-            alertes = alertes + retr
-            wc.writerow([code, tri, statut, len(lignes), " | ".join(alertes), r["fichier"]])
+            alertes = alertes + ecarts + retr
+            g = gabarit_pour(code, t)
             for l in lignes:
                 l.update({"banque": code, "trimestre": tri, "date_arrete": t.fin.isoformat(),
                           "annee": t.annee, "num_trimestre": t.num,
@@ -1022,9 +1510,41 @@ def cmd_extraire(args):
                 w.writerow(l)
             print(f"  {statut:<11} {code} {tri}  ({len(lignes)} valeurs) {'; '.join(alertes)}")
 
+    # 4) versions initiale / révisée de chaque période, et valeur retenue pour l'analyse
+    versions = table_versions({cle: (lignes, Path(manifeste[cle]["fichier"]).name)
+                               for cle, (lignes, _) in resultats.items()})
+    fichier_versions = DOSSIER / "indicateurs_versions.csv"
+    champs_v = ["banque", "trimestre", "date_arrete", "annee", "num_trimestre", "code_indicateur",
+                "mesure", "version", "valeur_mdt", "fichier", "page", "valeur_retenue", "source_valeur",
+                "ecart_vs_retenue", "statut_revision", "note_definition"]
+    with fichier_versions.open("w", newline="", encoding="utf-8-sig") as f:
+        w = csv.DictWriter(f, fieldnames=champs_v, delimiter=";")
+        w.writeheader()
+        w.writerows(versions)
+
+    # 5) somme des 4 trimestres retenus = cumul T4 retenu ; comparaison des deux révisions du 31/12
+    sommes = controle_somme_annuelle(versions)
+    fichier_sommes = DOSSIER / "controle_annuel.csv"
+    with fichier_sommes.open("w", newline="", encoding="utf-8-sig") as f:
+        w = csv.DictWriter(f, fieldnames=["banque", "annee", "code_indicateur", "somme_trimestres",
+                                          "cumul_T4", "source_cumul", "ecart", "statut"], delimiter=";")
+        w.writeheader()
+        w.writerows(sommes)
+    compte = {s: sum(r["statut"] == s for r in sommes) for s in ("ok", "en attente de révision", "ecart")}
+    print(f"\nSomme des 4 trimestres retenus = cumul T4 : {compte}")
+    for r in sommes:
+        if r["statut"] == "ecart":
+            print(f"  ecart : {r['banque']} {r['annee']} {r['code_indicateur']} somme {r['somme_trimestres']:,.3f} "
+                  f"≠ cumul T4 {r['cumul_T4']:,.3f} ({r['source_cumul']}, écart {r['ecart']:+,.3f} MDT)")
+    revisions_31_12 = comparaison_revisions_31_12(versions)
+    print(f"Révision provisoire 31/12 vs T4 suivant : {len(revisions_31_12)} écart(s)")
+    for a in revisions_31_12:
+        print("  " + a)
+
     ecrire_dimensions()
     print(f"\n{n_ok} documents extraits sans alerte.")
-    print(f"Données : {sortie}\nContrôle : {controle}")
+    print(f"Données : {sortie}\nVersions : {fichier_versions}\nContrôle : {controle}\n"
+          f"Contrôle annuel : {fichier_sommes}")
 
 
 def ecrire_dimensions():
@@ -1063,10 +1583,21 @@ def main():
         p.add_argument("--fin", type=Trimestre.depuis_texte, default=dernier_trimestre_publiable())
         p.add_argument("--banques", help="codes séparés par des virgules (défaut : toutes)")
 
+    def options_recherche(p):
+        p.add_argument("--sans-sites", action="store_true",
+                       help="ne pas essayer les URL des sites (seulement liste du CMF et bulletins)")
+        p.add_argument("--sans-liste-cmf", action="store_true",
+                       help="ne pas chercher dans la liste des indicateurs du CMF")
+        p.add_argument("--rafraichir-liste-cmf", action="store_true",
+                       help="relire la liste du CMF sur le site (sinon : donnees/liste_indicateurs_cmf.csv)")
+        p.add_argument("--pages-liste-cmf", type=int, default=150,
+                       help="nombre maximal de pages de la liste du CMF à lire (défaut : 150)")
+        p.add_argument("--sans-bulletins", action="store_true", help="ne pas fouiller les Bulletins Officiels")
+        p.add_argument("--garder-bulletins", action="store_true", help="garder les bulletins complets en cache")
+
     p = sous.add_parser("telecharger", help="télécharge les PDF")
     options_periode(p)
-    p.add_argument("--sans-bulletins", action="store_true", help="ne pas fouiller les Bulletins Officiels")
-    p.add_argument("--garder-bulletins", action="store_true", help="garder les bulletins complets en cache")
+    options_recherche(p)
     p.set_defaults(f=cmd_telecharger)
 
     p = sous.add_parser("extraire", help="extrait les tableaux en CSV")
@@ -1074,8 +1605,7 @@ def main():
 
     p = sous.add_parser("tout", help="télécharge puis extrait")
     options_periode(p)
-    p.add_argument("--sans-bulletins", action="store_true")
-    p.add_argument("--garder-bulletins", action="store_true")
+    options_recherche(p)
     p.set_defaults(f=lambda a: (cmd_telecharger(a), cmd_extraire(a)))
 
     p = sous.add_parser("urls", help="affiche les URL qui seront testées")
