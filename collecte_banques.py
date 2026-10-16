@@ -250,8 +250,11 @@ def urls_candidates(code: str, t: Trimestre, combos: list[Combo]) -> list[tuple[
 
     def noms(s: str) -> list[str]:
         s2 = s.replace("-", "_")
+        rangs = ["1er", "1ere", "1eme"] if n == 1 else [f"{n}eme"]
+        # vu sur le CMF au T2 2026 : ind_2eme_trim_2026_biat.pdf, ind_2eme_trim_2026_amen_bank.pdf
+        recents = [f"ind_{r}_trim_{f.year}_{s2}.pdf" for r in rangs]
         return [f"indic_{n}trim{yy}_{s2}.pdf", f"ind_{n}trim{yy}_{s2}.pdf",
-                f"indic_{n}trim{f.year}_{s2}.pdf", f"ind_{n}eme_trim_{s2}.pdf",
+                f"indic_{n}trim{f.year}_{s2}.pdf", *recents, f"ind_{n}eme_trim_{s2}.pdf",
                 f"ind_{n}eme_trim{yy}_{s2}.pdf"]
 
     urls: list[tuple[str, Combo]] = []
@@ -515,9 +518,21 @@ REGLES = [
 REGLES_C = [(c, re.compile(m)) for c, m in REGLES]
 COLONNES = ["trim_N", "trim_N1", "cumul_N", "cumul_N1", "exercice_N1"]
 
-RE_NOMBRE = re.compile(r"^\(?-?\d[\d.,]*\)?$")
-RE_TIRET = re.compile(r"^[-–—]+$")
+RE_FRAGMENT = re.compile(r"^\(?-?\d[\d.,]*\)?$")   # nombre ou morceau de nombre : "1", "56", "686,141"
+RE_TIRET = re.compile(r"^[-–—‐]+$")
 RE_POURCENT = re.compile(r"%$")
+RE_RENVOI = re.compile(r"^(\(\d\)|\(\*+\)|\*+)$")    # renvoi de note : (1), (*)
+
+# Colonnes par défaut quand l'en-tête du tableau n'est pas lisible (selon le nombre de colonnes)
+COLONNES_DEFAUT = {5: COLONNES, 4: ["trim_N", "trim_N1", "cumul_N", "cumul_N1"],
+                   3: ["cumul_N", "cumul_N1", "exercice_N1"]}
+
+# Ordres de grandeur plausibles en MDT (au-delà : erreur d'unité ou de colonne probable)
+PLAGES_MDT = {"PNB": (5, 5000), "PROD_EXPL": (5, 10000), "CHG_OPER": (2, 3000),
+              "CREDITS": (200, 60000), "DEPOTS": (200, 60000), "CAP_PROPRES": (20, 10000)}
+
+# Indicateurs comparés d'un document à celui de l'année précédente (même trimestre)
+CODES_RETRAITEMENT = ["PNB", "PROD_EXPL", "CHG_EXPL", "CHG_OPER", "CREDITS", "DEPOTS"]
 
 
 def code_libelle(lib: str) -> str | None:
@@ -552,9 +567,10 @@ def valeur(txt: str) -> float | None:
 
 @dataclass
 class Jeton:
-    texte: str
+    texte: str                 # nombre recollé ("6 479 908") ou "-" pour une case vide
     x0: float
     x1: float
+    colonne: int | None = None  # rang de la colonne sur la page (None si aucune colonne détectée)
 
     @property
     def centre(self):
@@ -564,12 +580,119 @@ class Jeton:
 @dataclass
 class Ligne:
     libelle: str
-    nombres: list[Jeton] = field(default_factory=list)   # valeurs (None pour un tiret)
+    nombres: list[Jeton] = field(default_factory=list)
     page: int = 0
+    top: float = 0.0
 
 
-def lignes_page(page, num_page: int) -> list[Ligne]:
-    mots = page.extract_words(x_tolerance=1.2, y_tolerance=2.5, keep_blank_chars=False)
+@dataclass
+class PageAnalysee:
+    lignes: list[Ligne]
+    bords: list[float]   # bord droit de chaque colonne de chiffres, de gauche à droite
+    mots: list[dict]     # mots bruts de la page (pour lire l'en-tête du tableau)
+
+
+def _est_chiffre(t: str) -> bool:
+    return bool(RE_FRAGMENT.match(t))
+
+
+def _est_case(t: str) -> bool:
+    return _est_chiffre(t) or bool(RE_TIRET.match(t))
+
+
+def _ecart_max(m: dict) -> float:
+    """Écart maximal entre deux morceaux d'un même nombre : environ une espace (0,45 × corps)."""
+    return max(2.5, 0.45 * (m["bottom"] - m["top"]))
+
+
+def _series(frags: list[dict]) -> list[list[dict]]:
+    """Regroupe les morceaux de chiffres proches (séparateur de milliers) en séries."""
+    series: list[list[dict]] = []
+    for m in frags:
+        if series and m["x0"] - series[-1][-1]["x1"] <= _ecart_max(m):
+            series[-1].append(m)
+        else:
+            series.append([m])
+    return series
+
+
+def bords_colonnes(rangees: list[list[dict]]) -> list[float]:
+    """Bords droits des colonnes de chiffres (les montants sont alignés à droite).
+
+    On prend la fin de chaque série de chiffres sur les rangées qui en ont au moins deux
+    (lignes du tableau), on regroupe les positions proches et on garde celles qui reviennent
+    sur assez de rangées. Les tirets (cases vides, souvent centrés) sont ignorés."""
+    fins: list[tuple[float, int]] = []
+    n_rangees = 0
+    for i, frags in enumerate(rangees):
+        series = [s for s in _series([m for m in frags if _est_chiffre(m["text"])])]
+        if len(series) < 2:
+            continue
+        n_rangees += 1
+        fins += [(s[-1]["x1"], i) for s in series]
+    if not fins:
+        return []
+    fins.sort()
+    groupes: list[list[tuple[float, int]]] = [[fins[0]]]
+    for f in fins[1:]:
+        if f[0] - groupes[-1][-1][0] <= 2.5:
+            groupes[-1].append(f)
+        else:
+            groupes.append([f])
+    seuil = max(3, 0.3 * n_rangees)
+    bords = [max(x for x, _ in g) for g in groupes if len({r for _, r in g}) >= seuil]
+    # deux bords à moins de 8 pt : le premier est la fin d'un groupe de milliers, pas une colonne
+    propres: list[float] = []
+    for b in bords:
+        if propres and b - propres[-1] < 8:
+            propres[-1] = b
+        else:
+            propres.append(b)
+    return propres
+
+
+def _jetons_par_colonne(frags: list[dict], bords: list[float]) -> list[Jeton]:
+    """Rattache chaque morceau à sa colonne (premier bord droit à sa droite), puis recolle."""
+    if not bords:
+        sortie = []
+        for s in _series(frags):
+            txt = " ".join(m["text"] for m in s)
+            sortie.append(Jeton("-" if all(RE_TIRET.match(m["text"]) for m in s) else txt,
+                                s[0]["x0"], s[-1]["x1"]))
+        return sortie
+    cases: dict[int, list[dict]] = {}
+    for m in frags:
+        k = next((i for i, b in enumerate(bords) if m["x1"] <= b + 2.5), len(bords))
+        cases.setdefault(k, []).append(m)
+    sortie = []
+    for k in sorted(cases):
+        ms = sorted(cases[k], key=lambda m: m["x0"])
+        chiffres = [m["text"] for m in ms if _est_chiffre(m["text"])]
+        if not chiffres:
+            txt = "-"                                        # case vide
+        else:
+            signe = "-" if RE_TIRET.match(ms[0]["text"]) else ""   # « - 113 » : nombre négatif
+            txt = signe + " ".join(chiffres)
+        sortie.append(Jeton(txt, ms[0]["x0"], ms[-1]["x1"], k))
+    return sortie
+
+
+def mots_page(page) -> list[dict]:
+    """Mots de la page. Certains PDF étirent le texte horizontalement : pdfplumber marque alors
+    les caractères « non droits » et les lit comme du texte vertical, un caractère par mot.
+    Un caractère dont la matrice n'a ni rotation ni inclinaison est remis droit."""
+    from pdfplumber.utils import extract_words
+
+    def droit(c):
+        a, b, cc, d = c["matrix"][:4]
+        return abs(b) < 1e-6 and abs(cc) < 1e-6 and a > 0 and d > 0
+
+    chars = [dict(c, upright=True) if not c.get("upright", True) and droit(c) else c for c in page.chars]
+    return extract_words(chars, x_tolerance=1.2, y_tolerance=2.5, keep_blank_chars=False)
+
+
+def analyser_page(page, num_page: int) -> PageAnalysee:
+    mots = mots_page(page)
     mots.sort(key=lambda m: (round(m["top"]), m["x0"]))
     groupes: list[list[dict]] = []
     for m in mots:
@@ -578,34 +701,90 @@ def lignes_page(page, num_page: int) -> list[Ligne]:
         else:
             groupes.append([m])
 
-    sortie = []
+    rangees = []   # (mots du libellé, morceaux de chiffres, haut de la rangée)
     for g in groupes:
         g.sort(key=lambda m: m["x0"])
-        libelle, nombres = [], []
-        for m in g:
+        utiles = []
+        for i, m in enumerate(g):
             t = m["text"]
-            if RE_POURCENT.search(t):
-                continue                       # colonne de variation : ignorée
-            if re.fullmatch(r"\(\d\)|\(\*+\)|\*+", t):
-                continue                       # renvoi de note : (1), (*)
-            if RE_TIRET.match(t) and libelle:
-                nombres.append(Jeton("-", m["x0"], m["x1"]))
-                continue
-            if RE_NOMBRE.match(t) and (libelle or nombres):
-                prec = nombres[-1] if nombres else None
-                # regroupe les milliers : "6" "479" "908" -> "6 479 908"
-                if (prec and prec.texte != "-" and re.fullmatch(r"\d{3}\)?", t)
-                        and m["x0"] - prec.x1 < 5.5):
-                    prec.texte += " " + t
-                    prec.x1 = m["x1"]
-                else:
-                    nombres.append(Jeton(t, m["x0"], m["x1"]))
-                continue
-            if nombres:                         # du texte après des nombres : on l'ignore (renvois)
-                continue
-            libelle.append(t)
-        sortie.append(Ligne(" ".join(libelle), nombres, num_page))
-    return sortie
+            if RE_POURCENT.search(t) or RE_RENVOI.match(t):
+                continue                   # colonne de variation, renvoi de note
+            if i + 1 < len(g) and g[i + 1]["text"] == "%":
+                continue                   # « 5,2 % » : le nombre d'une variation
+            utiles.append(m)
+        # les cases de chiffres sont la fin de la rangée ; ce qui précède est le libellé
+        debut = len(utiles)
+        while debut > 0 and _est_case(utiles[debut - 1]["text"]):
+            debut -= 1
+        rangees.append(([m["text"] for m in utiles[:debut]], utiles[debut:], g[0]["top"]))
+
+    bords = bords_colonnes([frags for _, frags, _ in rangees])
+    lignes = [Ligne(" ".join(lib), _jetons_par_colonne(frags, bords), num_page, top)
+              for lib, frags, top in rangees]
+    return PageAnalysee(lignes, bords, mots)
+
+
+def lignes_page(page, num_page: int) -> list[Ligne]:
+    return analyser_page(page, num_page).lignes
+
+
+def type_colonne(entete: str, t: Trimestre) -> str | None:
+    """Nature d'une colonne d'après son en-tête (« DEUXIEME TRIMESTRE 2025 »,
+    « Du 01/04/2025 Au 30/06/2025 », « DU DEBUT DE L'EXERCICE ... AU 30/06/2024 », « 31/12/2024 »)."""
+    n = sans_accents(entete).lower()
+    annees = [int(a) for a in re.findall(r"(?<!\d)(20\d\d)(?!\d)", n)]
+    if not annees:
+        return None
+    suffixe = {t.annee: "N", t.annee - 1: "N1"}.get(annees[-1])
+    if suffixe is None:
+        return None
+    debut_trim = ["01/01", "01/04", "01/07", "01/10"][t.num - 1]
+    if "trimestre" in n or re.search(rf"\bdu\b.*{debut_trim}", n):
+        return f"trim_{suffixe}"
+    if "debut" in n or "cumul" in n or re.search(r"\bdu\b", n):
+        return f"cumul_{suffixe}"
+    if "31/12" in n and suffixe == "N1":
+        return "exercice_N1"
+    if re.search(r"\d{2}/\d{2}/20\d\d", n):
+        return f"cumul_{suffixe}"
+    return None
+
+
+def colonnes_entete(ap: PageAnalysee, haut_tableau: float, t: Trimestre) -> list[str] | None:
+    """Lit l'en-tête au-dessus du tableau et renvoie le nom de chaque colonne, ou None."""
+    bords = ap.bords
+    if len(bords) < 2:
+        return None
+    gauche = bords[0] - 1.5 * (bords[1] - bords[0])
+    # rangées au-dessus du tableau, en remontant jusqu'à une ligne de texte courant
+    # (phrase d'introduction : plusieurs mots à gauche ET des mots dans la zone des colonnes ;
+    # un libellé seul, à gauche, est simplement ignoré)
+    rangees: dict[float, list[dict]] = {}
+    for m in ap.mots:
+        if haut_tableau - 65 <= m["top"] < haut_tableau - 1:
+            cle = next((k for k in rangees if abs(k - m["top"]) <= 3), m["top"])
+            rangees.setdefault(cle, []).append(m)
+    entete: list[dict] = []
+    for cle in sorted(rangees, reverse=True):
+        r = rangees[cle]
+        a_gauche = sum((m["x0"] + m["x1"]) / 2 < gauche for m in r)
+        if a_gauche >= 3 and any((m["x0"] + m["x1"]) / 2 > bords[0] for m in r):
+            break
+        entete += r
+    textes: list[list[str]] = [[] for _ in bords]
+    for m in sorted(entete, key=lambda m: (round(m["top"]), m["x0"])):
+        c = (m["x0"] + m["x1"]) / 2
+        if c < gauche:
+            continue
+        k = next((i for i, b in enumerate(bords) if c <= b + 6), None)
+        if k is not None:
+            textes[k].append(m["text"])
+    noms = [type_colonne(" ".join(x), t) for x in textes]
+    if t.num == 4 and "exercice_N1" in noms and "cumul_N1" not in noms:
+        noms[noms.index("exercice_N1")] = "cumul_N1"   # au T4, le 31/12/N-1 est le cumul N-1
+    if None in noms or len(set(noms)) != len(noms):
+        return None
+    return noms
 
 
 def detecter_facteur(texte: str, pnb_cumul: float | None) -> tuple[float, str]:
@@ -627,17 +806,82 @@ def detecter_facteur(texte: str, pnb_cumul: float | None) -> tuple[float, str]:
     return 1e-3, "milliers de dinars (supposé)"
 
 
+def controles(valeurs: dict[str, dict[str, float | None]], facteur: float, t: Trimestre | None) -> list[str]:
+    """Contrôles de cohérence d'un document (valeurs dans l'unité du PDF)."""
+    alertes = []
+
+    def get(c, col):
+        v = valeurs.get(c, {}).get(col)
+        return None if v is None else v * facteur
+
+    for col in ("cumul_N", "trim_N"):
+        p, ch, pnb = get("PROD_EXPL", col), get("CHG_EXPL", col), get("PNB", col)
+        if None not in (p, ch, pnb) and pnb:
+            ecart = abs((p - ch) - pnb) / abs(pnb)
+            if ecart > 0.02:
+                alertes.append(f"{col} : produits - charges ≠ PNB (écart {ecart:.1%})")
+    if get("PNB", "cumul_N") is None:
+        alertes.append("PNB cumulé absent")
+    if t:
+        for c in ("PNB", "PROD_EXPL", "CHG_OPER"):
+            trim, cumul = get(c, "trim_N"), get(c, "cumul_N")
+            if None in (trim, cumul):
+                continue
+            if t.num == 1 and abs(trim - cumul) > 0.001 * abs(cumul):
+                alertes.append(f"T1 : {c} trimestre ({trim:.3f}) ≠ cumul ({cumul:.3f})")
+            if t.num > 1 and trim > cumul:
+                alertes.append(f"{c} : trimestre > cumul, ordre des colonnes à vérifier")
+    for c, (bas, haut) in PLAGES_MDT.items():
+        for col in ("trim_N", "cumul_N"):
+            v = get(c, col)
+            if v is None or (col == "trim_N" and NATURE[c] == "stock"):
+                continue
+            mini = bas / 4 if col == "trim_N" else bas
+            if not (mini <= v <= haut):
+                alertes.append(f"{c} {col} = {v:,.3f} MDT : hors de l'ordre de grandeur plausible "
+                               f"({mini:g} à {haut:g} MDT)")
+    pnb, chg = get("PNB", "cumul_N"), get("CHG_OPER", "cumul_N")
+    if pnb and chg and not (0.15 <= chg / pnb <= 1.5):
+        alertes.append(f"coefficient d'exploitation de {chg / pnb:.0%} : invraisemblable")
+    cred, dep = get("CREDITS", "cumul_N"), get("DEPOTS", "cumul_N")
+    if cred and dep and not (0.3 <= cred / dep <= 3):
+        alertes.append(f"crédits / dépôts de {cred / dep:.0%} : invraisemblable")
+    return alertes
+
+
+def controle_retraitements(docs: dict[tuple[str, str], dict[tuple[str, str], float]]) -> dict[tuple[str, str], list[str]]:
+    """Compare cumul_N1 d'un document au cumul_N du même trimestre de l'année précédente.
+    docs : (banque, trimestre) -> {(code, colonne): valeur_mdt}."""
+    alertes: dict[tuple[str, str], list[str]] = {}
+    for (code, tri), vals in docs.items():
+        t = Trimestre.depuis_texte(tri)
+        prec = docs.get((code, str(Trimestre(t.annee - 1, t.num))))
+        if not prec:
+            continue
+        for c in CODES_RETRAITEMENT:
+            a, b = vals.get((c, "cumul_N1")), prec.get((c, "cumul_N"))
+            if a is None or b is None:
+                continue
+            if abs(a - b) > max(0.001, 0.0005 * abs(b)):
+                alertes.setdefault((code, tri), []).append(
+                    f"retraitement possible : {c} {t.annee - 1} = {a:,.3f} ici, "
+                    f"{b:,.3f} dans le document de {t.annee - 1}T{t.num} (écart {a - b:+,.3f} MDT)")
+    return alertes
+
+
 def extraire_pdf(chemin: Path, t: Trimestre | None = None) -> tuple[list[dict], list[str]]:
     """Renvoie (lignes extraites, alertes) pour un PDF."""
     import pdfplumber
 
     alertes: list[str] = []
     toutes: list[Ligne] = []
+    pages: dict[int, PageAnalysee] = {}
     texte_complet = ""
     with pdfplumber.open(chemin) as pdf:
         for i, page in enumerate(pdf.pages[:4], start=1):
             texte_complet += (page.extract_text() or "") + "\n"
-            toutes += lignes_page(page, i)
+            pages[i] = analyser_page(page, i)
+            toutes += pages[i].lignes
 
     # libellés sur deux lignes : on recolle un libellé sans nombre à la ligne suivante
     fusion: list[Ligne] = []
@@ -650,7 +894,7 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None) -> tuple[list[dict], 
             lib = l.libelle
             if attente and (not lib or code_libelle(lib) is None):
                 lib = (attente + " " + lib).strip()
-            fusion.append(Ligne(lib, l.nombres, l.page))
+            fusion.append(Ligne(lib, l.nombres, l.page, l.top))
         attente = ""
 
     # reconnaissance des indicateurs, en suivant la section parente (produits / charges)
@@ -678,46 +922,35 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None) -> tuple[list[dict], 
     if "PNB" not in trouves:
         return [], ["PNB introuvable : tableau non reconnu (PDF scanné ou mise en page inhabituelle ?)"]
 
-    # centres des colonnes : la ligne de flux qui a le plus de valeurs sert de référence
-    ref = max((trouves[c] for c in trouves if NATURE[c] == "flux" and trouves[c].page == trouves["PNB"].page),
-              key=lambda l: len(l.nombres))
-    centres = [j.centre for j in ref.nombres][:5]
-    if len(centres) < 4:
-        alertes.append(f"seulement {len(centres)} colonnes détectées sur la ligne de référence")
+    # nom de chaque colonne : d'après l'en-tête du tableau si on sait le lire, sinon ordre habituel
+    noms_page: dict[int, list[str] | None] = {}
+
+    def noms_colonnes(num_page: int) -> list[str] | None:
+        if num_page not in noms_page:
+            ap = pages[num_page]
+            lignes_tab = [l for l in fusion if l.page == num_page and
+                          sum(j.colonne is not None for j in l.nombres) >= 2]
+            noms = None
+            if lignes_tab and t:
+                noms = colonnes_entete(ap, min(l.top for l in lignes_tab), t)
+            if noms is None:
+                noms = COLONNES_DEFAUT.get(len(ap.bords))
+                alertes.append(f"page {num_page} : en-tête des colonnes non reconnu, "
+                               f"ordre supposé {noms} ({len(ap.bords)} colonnes)")
+            noms_page[num_page] = noms
+        return noms_page[num_page]
 
     def affecter(l: Ligne) -> dict[str, float | None]:
+        noms = noms_colonnes(l.page) or []
         res: dict[str, float | None] = {}
-        if l.page == ref.page and len(centres) >= 3:
-            for j in l.nombres:
-                k = min(range(len(centres)), key=lambda i: abs(centres[i] - j.centre))
-                if COLONNES[k] not in res:
-                    res[COLONNES[k]] = None if j.texte == "-" else valeur(j.texte)
-        else:  # autre page : affectation par position
-            vals = [None if j.texte == "-" else valeur(j.texte) for j in l.nombres]
-            noms = COLONNES if len(vals) >= 4 else ["cumul_N", "cumul_N1", "exercice_N1"]
-            res = dict(zip(noms, vals))
+        for j in l.nombres:
+            if j.colonne is not None and j.colonne < len(noms) and noms[j.colonne] not in res:
+                res[noms[j.colonne]] = None if j.texte == "-" else valeur(j.texte)
         return res
 
     valeurs = {c: affecter(l) for c, l in trouves.items()}
     facteur, unite = detecter_facteur(texte_complet, valeurs["PNB"].get("cumul_N"))
-
-    # contrôles de cohérence
-    def get(c, col):
-        return valeurs.get(c, {}).get(col)
-    for col in ("cumul_N", "trim_N"):
-        p, ch, pnb = get("PROD_EXPL", col), get("CHG_EXPL", col), get("PNB", col)
-        if None not in (p, ch, pnb) and pnb:
-            ecart = abs((p - ch) - pnb) / abs(pnb)
-            if ecart > 0.02:
-                alertes.append(f"{col} : produits - charges ≠ PNB (écart {ecart:.1%})")
-    if get("PNB", "cumul_N") is None:
-        alertes.append("PNB cumulé absent")
-    trim, cumul = get("PNB", "trim_N"), get("PNB", "cumul_N")
-    if t and None not in (trim, cumul):
-        if t.num == 1 and abs(trim - cumul) > 0.01 * abs(cumul):
-            alertes.append("T1 : trimestre ≠ cumul, ordre des colonnes à vérifier")
-        if t.num > 1 and trim > cumul:
-            alertes.append("trimestre > cumul, ordre des colonnes à vérifier")
+    alertes += controles(valeurs, facteur, t)
 
     lignes = []
     for c, cols in valeurs.items():
@@ -726,7 +959,8 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None) -> tuple[list[dict], 
                 continue
             lignes.append({"code_indicateur": c, "libelle_source": trouves[c].libelle,
                            "colonne": col, "valeur_source": v, "unite_source": unite,
-                           "valeur_mdt": round(v * facteur, 6), "page": trouves[c].page})
+                           "valeur_mdt": round(v * facteur, 9),   # 9 décimales : le millime
+                           "page": trouves[c].page})
     manquants = [c for c in ("PROD_EXPL", "CHG_EXPL", "CHG_OPER", "CREDITS", "DEPOTS") if c not in trouves]
     if manquants:
         alertes.append("non trouvés : " + ", ".join(manquants))
@@ -742,6 +976,22 @@ def cmd_extraire(args):
     champs = ["banque", "trimestre", "date_arrete", "annee", "num_trimestre", "code_indicateur",
               "libelle_source", "colonne", "valeur_source", "unite_source", "valeur_mdt",
               "source", "fichier", "page"]
+    # 1) extraction de chaque document
+    resultats: dict[tuple[str, str], tuple[list[dict], list[str]]] = {}
+    for (code, tri), r in sorted(manifeste.items()):
+        if r["statut"] != "ok" or not r["fichier"] or not Path(r["fichier"]).exists():
+            continue
+        try:
+            resultats[(code, tri)] = extraire_pdf(Path(r["fichier"]), Trimestre.depuis_texte(tri))
+        except Exception as e:  # PDF illisible
+            resultats[(code, tri)] = ([], [f"erreur de lecture : {e}"])
+
+    # 2) comparaison avec le document du même trimestre de l'année précédente
+    docs = {cle: {(l["code_indicateur"], l["colonne"]): l["valeur_mdt"] for l in lignes}
+            for cle, (lignes, _) in resultats.items()}
+    retraitements = controle_retraitements(docs)
+
+    # 3) écriture
     n_ok = 0
     with sortie.open("w", newline="", encoding="utf-8-sig") as f, \
          controle.open("w", newline="", encoding="utf-8-sig") as fc:
@@ -750,16 +1000,20 @@ def cmd_extraire(args):
         wc.writerow(["banque", "trimestre", "statut", "nb_valeurs", "alertes", "fichier"])
         w.writeheader()
         for (code, tri), r in sorted(manifeste.items()):
-            if r["statut"] != "ok" or not r["fichier"] or not Path(r["fichier"]).exists():
+            if (code, tri) not in resultats:
                 wc.writerow([code, tri, "pdf manquant", 0, "", ""])
                 continue
             t = Trimestre.depuis_texte(tri)
-            try:
-                lignes, alertes = extraire_pdf(Path(r["fichier"]), t)
-            except Exception as e:  # PDF illisible
-                lignes, alertes = [], [f"erreur de lecture : {e}"]
-            statut = "ok" if lignes and not alertes else ("a verifier" if lignes else "echec")
+            lignes, alertes = resultats[(code, tri)]
+            retr = retraitements.get((code, tri), [])
+            if not lignes:
+                statut = "echec"
+            elif alertes:
+                statut = "a verifier"
+            else:
+                statut = "retraitement possible" if retr else "ok"
             n_ok += statut == "ok"
+            alertes = alertes + retr
             wc.writerow([code, tri, statut, len(lignes), " | ".join(alertes), r["fichier"]])
             for l in lignes:
                 l.update({"banque": code, "trimestre": tri, "date_arrete": t.fin.isoformat(),

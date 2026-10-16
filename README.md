@@ -33,7 +33,7 @@ doivent être cherchés dans les Bulletins Officiels (une pause est faite entre 
 
 1. Pages société du site de la BVMT
    (`/societes/<banque>/indicateurs-dactivite-trimestriels/<banque>-indicateurs-dactivite-trimestriels-JJ-MM-AAAA.pdf`).
-2. Dossier des indicateurs du site du CMF (`indic_2trim26_uib.pdf`…).
+2. Dossier des indicateurs du site du CMF (`indic_2trim26_uib.pdf`, `ind_2eme_trim_2026_biat.pdf`…).
 3. En dernier recours, les Bulletins Officiels quotidiens du CMF publiés dans les 45 jours
    après la fin du trimestre : seules les pages de la banque sont gardées.
 
@@ -44,7 +44,7 @@ Chaque PDF est vérifié : il doit citer la date d'arrêté du trimestre visé.
 | Fichier | Contenu |
 |---|---|
 | `indicateurs_banques_long.csv` | Table de faits : une ligne par banque × trimestre × indicateur × colonne |
-| `controle_extraction.csv` | Statut de chaque document : ok, a verifier, echec, pdf manquant |
+| `controle_extraction.csv` | Statut de chaque document : ok, retraitement possible, a verifier, echec, pdf manquant |
 | `manifeste_telechargements.csv` | URL et fichier de chaque document |
 | `dim_indicateur.csv` | Codes, libellés, catégorie et nature (flux / stock) |
 | `dim_banque.csv` | Banques — complétez les colonnes `actionnariat` et `groupe` à la main |
@@ -57,7 +57,36 @@ Colonnes de valeurs (`colonne`) :
 - `exercice_N1` : fin de l'exercice précédent
 
 `valeur_mdt` est en millions de dinars, quelle que soit l'unité du document
-(l'unité est déduite de l'ordre de grandeur du PNB).
+(l'unité est déduite de l'ordre de grandeur du PNB), avec 9 décimales pour garder le millime.
+
+## Lecture des tableaux
+
+Les montants sont alignés à droite : le script repère le bord droit de chaque colonne de
+chiffres sur la page, rattache chaque morceau de nombre (« 6 », « 479 », « 908 ») à sa colonne,
+puis le recolle. Il se fie à la position sur la page, pas à l'ordre du texte du PDF (qui est
+parfois inversé). Le nom de chaque colonne (trimestre / cumul, année N / N-1, exercice N-1)
+est lu dans l'en-tête du tableau ; si l'en-tête n'est pas lisible, l'ordre habituel est supposé
+et le document passe en `a verifier`.
+
+## Contrôles (`controle_extraction.csv`)
+
+- produits − charges d'exploitation = PNB (à 2 % près) ;
+- PNB cumulé présent ; au T1, trimestre = cumul ; aux autres trimestres, trimestre ≤ cumul ;
+- ordres de grandeur plausibles (PNB, charges opératoires, crédits, dépôts, capitaux propres,
+  coefficient d'exploitation, crédits / dépôts) ;
+- `retraitement possible` : le cumul N-1 d'un document diffère du cumul N publié un an plus tôt
+  pour le même trimestre. Ce sont souvent de vrais retraitements de la banque (signalés « chiffres
+  retraités » dans le PDF) ; on garde le chiffre de l'année N tel que publié dans le document de l'année N.
+
+## Test de l'extraction
+
+```
+python tests/test_extraction.py     # ou : python -m pytest tests
+```
+
+Compare l'extraction aux valeurs relevées à la main dans les PDF (`tests/valeurs_reference.csv` :
+PNB du trimestre et cumulé, charges opératoires, crédits, dépôts, avec la page). Les PDF ne sont
+pas versionnés : il faut les avoir téléchargés avant de lancer le test.
 
 CSV séparés par `;`, décimales avec un **point** : dans Power Query, changez le type
 avec « Utilisation des paramètres régionaux » → Anglais (États-Unis).
@@ -78,14 +107,12 @@ Fichiers produits : `etats_financiers_long.csv`, `controle_etats_financiers.csv`
 
 ## Limites — à lire avant d'utiliser les chiffres
 
-- Le script n'a pas pu être testé sur les vrais sites (ils n'étaient pas accessibles
-  depuis l'environnement où il a été écrit). Il a été testé sur des PDF reproduisant
-  les mises en page de l'UIB et de la STB. Les premiers lancements révéleront peut-être
-  des noms d'URL ou des mises en page à ajouter.
+- L'extraction n'a été vérifiée à la main que sur 12 documents réels de deux banques
+  (BIAT et UIB, T1 2025 → T2 2026). Les autres banques et les années plus anciennes ont
+  d'autres mises en page : les premiers lancements révéleront des cas à ajouter.
+- Le site de la BVMT renvoie des pages vides aux scripts : seuls les liens directs vers les PDF
+  fonctionnent. Les noms de fichiers changent d'une période à l'autre.
 - Les PDF scannés (images) ne sont pas lisibles : statut `echec`, saisie manuelle nécessaire.
-- L'ordre des colonnes est supposé être : trimestre N, trimestre N-1, cumul N, cumul N-1, exercice N-1.
-  Le contrôle signale les cas suspects (trimestre > cumul, ou T1 ≠ cumul).
-- Contrôle de cohérence : produits − charges d'exploitation = PNB (à 2 % près).
 - Vérifiez à la main toutes les lignes `a verifier` du fichier de contrôle,
   et quelques lignes `ok` au hasard contre les PDF.
 - Ces indicateurs sont provisoires et non audités.
