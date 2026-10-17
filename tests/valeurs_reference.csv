@@ -120,3 +120,25 @@ BT;2023T4;BT_2023T4.pdf;1;CHG_OPER;cumul_N;144970;milliers de dinars;144.97;comm
 BT;2023T4;BT_2023T4.pdf;1;CREDITS;cumul_N;5824270;milliers de dinars;5824.27;commentaire p.3 : 5.824.270 mille dinars
 BT;2023T4;BT_2023T4.pdf;1;DEPOTS;cumul_N;5803572;milliers de dinars;5803.572;commentaire p.3 : 5.803.572 mille dinars
 BT;2023T4;BT_2023T4.pdf;1;CAP_PROPRES;cumul_N;1130983;milliers de dinars;1130.983;
+BH;2021T2;BH_2021T2.pdf;1;PNB;trim_N;137287476;dinars;137.287476;
+BH;2021T2;BH_2021T2.pdf;1;PNB;cumul_N;269978824;dinars;269.978824;
+BH;2021T2;BH_2021T2.pdf;1;PNB;cumul_N1;220502729;dinars;220.502729;2020 retraité (*)
+BH;2021T2;BH_2021T2.pdf;1;PNB;exercice_N1;506812279;dinars;506.812279;
+BH;2021T2;BH_2021T2.pdf;1;CHG_OPER;trim_N;44269438;dinars;44.269438;
+BH;2021T2;BH_2021T2.pdf;1;CHG_OPER;cumul_N;92141835;dinars;92.141835;= frais de personnel + charges générales (sans dotations)
+BH;2021T2;BH_2021T2.pdf;1;FRAIS_PERS;cumul_N;62083159;dinars;62.083159;
+BH;2021T2;BH_2021T2.pdf;1;CHG_GEN;cumul_N;30058676;dinars;30.058676;
+BH;2021T2;BH_2021T2.pdf;1;CREDITS;cumul_N;9546315832;dinars;9546.315832;
+BH;2021T2;BH_2021T2.pdf;1;DEPOTS;cumul_N;7283164805;dinars;7283.164805;
+BH;2021T2;BH_2021T2.pdf;1;CAP_PROPRES;cumul_N;1026221572;dinars;1026.221572;
+BH;2023T2;BH_2023T2.pdf;1;PNB;trim_N;167297;milliers de dinars;167.297;unité non annoncée dans le PDF (milliers d'après les montants)
+BH;2023T2;BH_2023T2.pdf;1;PNB;cumul_N;314180;milliers de dinars;314.18;
+BH;2023T2;BH_2023T2.pdf;1;PNB;cumul_N1;288565;milliers de dinars;288.565;
+BH;2023T2;BH_2023T2.pdf;1;PNB;exercice_N1;622893;milliers de dinars;622.893;
+BH;2023T2;BH_2023T2.pdf;1;CHG_OPER;trim_N;64811;milliers de dinars;64.811;
+BH;2023T2;BH_2023T2.pdf;1;CHG_OPER;cumul_N;125373;milliers de dinars;125.373;
+BH;2023T2;BH_2023T2.pdf;1;FRAIS_PERS;cumul_N;78018;milliers de dinars;78.018;
+BH;2023T2;BH_2023T2.pdf;1;CHG_GEN;cumul_N;47355;milliers de dinars;47.355;
+BH;2023T2;BH_2023T2.pdf;1;CREDITS;cumul_N;10575743;milliers de dinars;10575.743;nombre renvoyé à la ligne dans sa case (« 10 575 » / « 743 »)
+BH;2023T2;BH_2023T2.pdf;1;DEPOTS;cumul_N;8891745;milliers de dinars;8891.745;
+BH;2023T2;BH_2023T2.pdf;1;CAP_PROPRES;cumul_N;1192958;milliers de dinars;1192.958;

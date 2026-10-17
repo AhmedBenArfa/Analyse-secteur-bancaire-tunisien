@@ -100,6 +100,7 @@ Excel de référence ─────────> referentiel.xlsx
 | `Fait_Cours` | Dossier de CSV cours | combinaison des fichiers, types, suppression des doublons, colonne `Rendement` (variation du cours d'un jour à l'autre) |
 | `Controle` | `controle_extraction.csv` | pour la page « qualité des données » |
 | `Corrections` | `corrections_manuelles.csv` | remplacement des valeurs corrigées dans `Fait_Indicateurs` |
+| `Definitions_Charges` | `gabarits.csv` | colonnes `banque`, `premier_trimestre`, `dernier_trimestre`, `definition_charges_operatoires` (lignes distinctes) ; info-bulle du coefficient publié et page « qualité des données » |
 
 ### 5.2 Points d'attention
 
@@ -163,7 +164,7 @@ Excel de référence ─────────> referentiel.xlsx
   - `exclue (capitaux propres, 31/12 provisoire)` : voir ci-dessous.
   Totaux et composantes : produits = intérêts + commissions + revenus du portefeuille ;
   charges d'exploitation = intérêts encourus + commissions encourues ; PNB = produits − charges ;
-  charges opératoires = frais de personnel + charges générales + dotations ; dépôts = à vue +
+  charges opératoires = composantes publiées (voir 7.2, coefficient d'exploitation) ; dépôts = à vue +
   épargne + à terme + autres ; portefeuille = commercial + investissement.
 
   **Capitaux propres : règle fixe, toutes banques.** La colonne 31/12 provisoire n'est jamais
@@ -264,6 +265,7 @@ PNB depuis debut annee = CALCULATE ( [PNB cumul brut], LASTNONBLANK ( Dim_Date[D
 PNB annuel       = CALCULATE ( [PNB cumul brut], Dim_Date[Trimestre] = "T4" )   -- cumul au 31/12
 Charges operatoires = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "CHG_OPER" )
 Frais personnel  = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "FRAIS_PERS" )
+Charges generales = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "CHG_GEN" )
 Marge interets   =
     CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "INT_PERCUS" )
   - CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "INT_ENCOURUS" )
@@ -291,8 +293,48 @@ Capitaux propres hors resultat de la periode =
 
 ### 7.2 Ratios
 
+**Deux coefficients d'exploitation.** Les charges opératoires publiées n'ont pas le même contenu
+d'une banque à l'autre (colonne `definition_charges_operatoires` de `gabarits.csv`) :
+
+| Valeur | Contenu du total publié | Exemples |
+|---|---|---|
+| `sans dotations` | frais de personnel + charges générales d'exploitation | BT, BH |
+| `avec dotations publiees` | frais de personnel + charges générales + dotations aux amortissements, trois lignes publiées | |
+| `avec reste non detaille` | plus que frais de personnel + charges générales ; la différence (dotations ou autres) n'est pas détaillée | BNA |
+| `composantes non publiees` | seul le total est publié | |
+
+- **Coefficient harmonisé** = (frais de personnel + charges générales d'exploitation) / PNB.
+  Même définition pour toutes les banques qui publient ces deux lignes. **Les classements et
+  comparaisons entre banques (rang, médiane, secteur, matrices, couleurs) utilisent ce coefficient.**
+  Il est calculé banque par banque et trimestre par trimestre, seulement là où les deux
+  composantes et le PNB sont publiés ; le PNB du dénominateur est pris sur les mêmes lignes
+  (une banque sans composantes ne fausse pas le coefficient du secteur). Il est plus bas que le
+  coefficient publié quand le total publié comprend les dotations.
+- **Coefficient publié** = charges opératoires publiées / PNB : affiché pour information
+  (fiche banque, info-bulle avec la définition), jamais classé.
+- L'extraction contrôle le total publié contre ses composantes selon la définition du gabarit
+  (tolérance : 1 unité de la source par ligne). Un écart est signalé par le statut
+  `ecart composantes` dans `controle_extraction.csv` ; il vient de la banque quand le PDF le
+  confirme (BT 2020T3 : charges opératoires du trimestre 12 076 kDT, composantes 15 702 + 7 724 ;
+  BNA 2023T2 : 86 209 kDT pour des composantes de 69 096 + 17 219). Aucun chiffre n'est corrigé.
+
 ```dax
-Coef exploitation      = DIVIDE ( [Charges operatoires], [PNB] )
+-- Publié : définition propre à chaque banque (Definitions_Charges), pour information
+Coef exploitation publie = DIVIDE ( [Charges operatoires], [PNB] )
+-- Harmonisé : (frais de personnel + charges générales) / PNB, sur les lignes banque × trimestre
+-- où les deux composantes et le PNB existent ; sert à tous les classements et comparaisons
+Coef exploitation harmonise =
+VAR Lignes =
+    ADDCOLUMNS (
+        SUMMARIZE ( Fait_Indicateurs, Fait_Indicateurs[banque], Fait_Indicateurs[date_arrete] ),
+        "@Pers", [Frais personnel],
+        "@Gen", [Charges generales],
+        "@PNB", [PNB]
+    )
+VAR Completes =
+    FILTER ( Lignes, NOT ISBLANK ( [@Pers] ) && NOT ISBLANK ( [@Gen] ) && NOT ISBLANK ( [@PNB] ) )
+RETURN
+    DIVIDE ( SUMX ( Completes, [@Pers] + [@Gen] ), SUMX ( Completes, [@PNB] ) )
 Part marge interets    = DIVIDE ( [Marge interets], [PNB] )
 Part commissions       = DIVIDE ( [Marge commissions], [PNB] )
 Part portefeuille      = DIVIDE ( [Revenus portefeuille], [PNB] )
@@ -328,10 +370,14 @@ PNB secteur          = CALCULATE ( [PNB], REMOVEFILTERS ( Dim_Banque ) )
 Part de marche PNB   = DIVIDE ( [PNB], [PNB secteur] )
 Part de marche depots = DIVIDE ( [Depots], CALCULATE ( [Depots], REMOVEFILTERS ( Dim_Banque ) ) )
 HHI PNB              = SUMX ( ALL ( Dim_Banque ), [Part de marche PNB] ^ 2 ) * 10000
-Coef secteur         = CALCULATE ( [Coef exploitation], REMOVEFILTERS ( Dim_Banque ) )   -- moyenne pondérée
-Coef mediane         = MEDIANX ( ALL ( Dim_Banque ), [Coef exploitation] )
-Ecart coef / mediane = [Coef exploitation] - [Coef mediane]
-Rang coef            = RANKX ( ALL ( Dim_Banque ), [Coef exploitation],, ASC, DENSE )
+-- comparaisons entre banques : toujours le coefficient harmonisé (7.2)
+Coef secteur         = CALCULATE ( [Coef exploitation harmonise], REMOVEFILTERS ( Dim_Banque ) )   -- moyenne pondérée
+Coef mediane         = MEDIANX ( ALL ( Dim_Banque ), [Coef exploitation harmonise] )
+Ecart coef / mediane = [Coef exploitation harmonise] - [Coef mediane]
+Rang coef            =
+    IF ( NOT ISBLANK ( [Coef exploitation harmonise] ),
+         RANKX ( FILTER ( ALL ( Dim_Banque ), NOT ISBLANK ( [Coef exploitation harmonise] ) ),
+                 [Coef exploitation harmonise],, ASC, DENSE ) )
 Rang PNB             = RANKX ( ALL ( Dim_Banque ), [PNB],, DESC, DENSE )
 ```
 
@@ -444,6 +490,7 @@ Couleur coef  = IF ( [Ecart coef / mediane] <= 0, "#2E7D32", "#C62828" )
 Nb documents  = COUNTROWS ( Controle )
 Taux extraction ok = DIVIDE ( CALCULATE ( [Nb documents], Controle[statut] = "ok" ), [Nb documents] )
 Nb ecarts trim cumul = CALCULATE ( [Nb documents], Controle[statut] = "ecart trimestre/cumul" )
+Nb ecarts composantes = CALCULATE ( [Nb documents], Controle[statut] = "ecart composantes" )
 -- versions : part des valeurs affichées qui viennent d'une révision, et révisions significatives
 Part cumuls revises =
     DIVIDE ( CALCULATE ( COUNTROWS ( Fait_Indicateurs ),
@@ -461,7 +508,7 @@ Nb annees en attente = CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annue
 Nb ecarts annuels    = CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "ecart" )
 ```
 
-Paramètre de champ « Indicateur affiché » : PNB, Coef exploitation, Crédits / Dépôts,
+Paramètre de champ « Indicateur affiché » : PNB, Coef exploitation harmonise, Crédits / Dépôts,
 Part de marché, Var A/A % — pour un seul visuel où l'utilisateur choisit l'indicateur.
 
 ## 8. Ajouts par rapport au rapport de référence
@@ -488,7 +535,7 @@ Part de marché, Var A/A % — pour un seul visuel où l'utilisateur choisit l'i
 | 4. Structure du PNB | Barres empilées marge d'intérêts / commissions / portefeuille par banque |
 | 5. Bilan | Crédits, dépôts, crédits / dépôts, structure des dépôts |
 | 6. Bourse | Cours, performance, volatilité, performance boursière vs croissance du PNB |
-| 7. Fiche banque (extraction) | Tous les indicateurs d'une banque, accessible par clic droit |
+| 7. Fiche banque (extraction) | Tous les indicateurs d'une banque, accessible par clic droit ; coefficient publié à côté du coefficient harmonisé, avec la définition des charges opératoires de la banque |
 | 8. Rentabilité | ROE et ROA semestriels et annuels, matrice ROE × coefficient d'exploitation |
 | 9. Qualité des données | Contrôle d'extraction (statuts, dont `ecart trimestre/cumul` et `retraitement possible`, avec l'écart en MDT), sources, limites ; phrase expliquant pourquoi la somme des trimestres peut différer du cumul annuel |
 
@@ -501,9 +548,11 @@ info-bulles personnalisées ; signets « trimestre » / « année ».
 - Retraitements en cours d'année : la somme des trimestres publiés peut différer du cumul
   annuel publié ; les chiffres annuels viennent toujours du cumul (voir 5.2).
 - Définitions des postes parfois différentes d'une banque à l'autre. Exemple : les charges
-  opératoires publiées par la BT ne comprennent que les frais de personnel et les charges
+  opératoires publiées par la BT et la BH ne comprennent que les frais de personnel et les charges
   générales (pas de dotations aux amortissements) ; la BNA ne détaille que ces deux postes mais
-  son total comprend un reste non détaillé. On garde le total publié (`gabarits.csv`, colonne
-  « remarque »), sans le recalculer.
+  son total comprend un reste non détaillé. On garde le total publié, sans le recalculer
+  (`gabarits.csv`, colonne `definition_charges_operatoires`) ; les comparaisons entre banques
+  utilisent le coefficient d'exploitation harmonisé (frais de personnel + charges générales,
+  hors dotations), qui sous-estime le coût total des banques dont les dotations sont importantes.
 - ROE et ROA seulement en semestriel et annuel ; résultats semestriels non audités, annualisés.
 - Les valeurs extraites automatiquement ont été contrôlées par échantillon (voir `docs/validation.md`).

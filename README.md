@@ -51,7 +51,7 @@ Chaque PDF est vérifié : il doit citer la date d'arrêté du trimestre visé.
 | `indicateurs_banques_long.csv` | Valeurs brutes : une ligne par document × indicateur × colonne lue |
 | `indicateurs_versions.csv` | Table pour Power BI : une ligne par banque × période × indicateur × mesure (trim / cumul) × version (`initiale` = document du trimestre ; `revisee_T<q>_N+1` = colonne N-1 du document de l'année suivante ; `revisee_31-12_T<q>_N+1` = colonne 31/12/N-1 d'un T1–T3 suivant, provisoire, pour le cumul annuel et les soldes au 31/12 seulement), avec `valeur_retenue`, `source_valeur` et `ecart_vs_retenue` (règle : `docs/SPECIFICATION.md`, 5.2) |
 | `controle_annuel.csv` | Somme des 4 trimestres retenus vs cumul T4 retenu : `ok`, `en attente de révision`, `ecart` |
-| `controle_extraction.csv` | Statut de chaque document : ok, retraitement possible, ecart trimestre/cumul, a verifier, echec, pdf manquant |
+| `controle_extraction.csv` | Statut de chaque document : ok, retraitement possible, ecart trimestre/cumul, ecart composantes, a verifier, echec, pdf manquant |
 | `manifeste_telechargements.csv` | URL et fichier de chaque document |
 | `dim_indicateur.csv` | Codes, libellés, catégorie et nature (flux / stock) |
 | `dim_banque.csv` | Banques — complétez les colonnes `actionnariat` et `groupe` à la main |
@@ -77,7 +77,9 @@ et le document passe en `a verifier`.
 
 **Gabarits (`gabarits.csv`)** : pour chaque banque et chaque période de mise en page
 (premier et dernier trimestre, trimestres concernés), l'ordre des colonnes, l'unité et les
-libellés particuliers (`CODE=regex`, séparés par `||`). Quand un gabarit existe, il décide ;
+libellés particuliers (`CODE=regex`, séparés par `||`), et le contenu des charges opératoires
+publiées (`definition_charges_operatoires` : `sans dotations`, `avec dotations publiees`,
+`avec reste non detaille`, `composantes non publiees`). Quand un gabarit existe, il décide ;
 la lecture de l'en-tête et l'unité déduite du PNB deviennent des contrôles qui signalent tout
 désaccord. Le nom du gabarit appliqué figure dans `controle_extraction.csv` et dans les données.
 
@@ -92,6 +94,9 @@ désaccord. Le nom du gabarit appliqué figure dans `controle_extraction.csv` et
   chez BIAT et UIB : le premier semestre a été retraité après la publication du T2. Règle dans
   Power BI : cumul publié pour l'année et le cumul annuel, trimestre publié pour l'analyse
   trimestrielle (voir `docs/SPECIFICATION.md`, section 5.2) ;
+- `ecart composantes` : les charges opératoires publiées ne correspondent pas à leurs composantes
+  selon la définition du gabarit (ex. BT 2020T3, BNA 2023T2 : vérifié dans le PDF, c'est la
+  banque qui publie des chiffres incohérents ; rien n'est corrigé) ;
 - `retraitement possible` : le cumul N-1 d'un document diffère du cumul N publié un an plus tôt
   pour le même trimestre. Ce sont souvent de vrais retraitements de la banque (signalés « chiffres
   retraités » dans le PDF) ; on garde le chiffre de l'année N tel que publié dans le document de l'année N.
@@ -130,7 +135,8 @@ Fichiers produits : `etats_financiers_long.csv`, `controle_etats_financiers.csv`
   d'autres mises en page : les premiers lancements révéleront des cas à ajouter.
 - Le site de la BVMT renvoie des pages vides aux scripts : seuls les liens directs vers les PDF
   fonctionnent. Les noms de fichiers changent d'une période à l'autre.
-- Les PDF scannés (images) ne sont pas lisibles : statut `echec`, saisie manuelle nécessaire.
+- Les PDF scannés (images) ne sont pas lisibles : statut `echec`, saisie manuelle nécessaire
+  (cas connu : BH 2019T4, tableau en image).
 - Vérifiez à la main toutes les lignes `a verifier` du fichier de contrôle,
   et quelques lignes `ok` au hasard contre les PDF.
 - Ces indicateurs sont provisoires et non audités.

@@ -28,8 +28,7 @@ statuts = Counter()
 print(f"{'trim.':<7} {'statut':<22} {'PNB trim':>9} {'PNB cumul':>10} {'Ch.op cumul':>11} {'Crédits':>10} {'Dépôts':>10} {'Cap.pr.':>9}  gabarit / alertes")
 for (code, tri), (lignes, alertes) in sorted(resultats.items()):
     e, rt = ecarts.get((code, tri), []), retr.get((code, tri), [])
-    statut = ("echec" if not lignes else "a verifier" if alertes else "ecart trimestre/cumul" if e
-              else "retraitement possible" if rt else "ok")
+    statut = cb.statut_document(lignes, alertes, e, rt)
     statuts[statut] += 1
     v = docs[(code, tri)]
     f = lambda c, col: "-" if v.get((c, col)) is None else f"{v[(c, col)]:,.1f}"

@@ -698,6 +698,16 @@ def code_libelle(lib: str, regles_banque: list[tuple[str, re.Pattern]] = ()) -> 
 
 FICHIER_GABARITS = Path(__file__).resolve().parent / "gabarits.csv"
 FACTEURS_UNITE = {"dinars": 1e-6, "milliers de dinars": 1e-3, "millions de dinars": 1.0}
+# Contenu des charges opératoires publiées (colonne definition_charges_operatoires de gabarits.csv).
+# Le coefficient d'exploitation harmonisé n'utilise que frais de personnel + charges générales.
+DEFINITIONS_CHG_OPER = {
+    "sans dotations": "total publié = frais de personnel + charges générales d'exploitation",
+    "avec dotations publiees": "total publié = frais de personnel + charges générales + dotations "
+                               "aux amortissements, les trois lignes publiées",
+    "avec reste non detaille": "total publié > frais de personnel + charges générales ; la différence "
+                               "(dotations ou autres charges) n'est pas détaillée dans le PDF",
+    "composantes non publiees": "seul le total est publié ; coefficient harmonisé non calculable",
+}
 
 
 @dataclass
@@ -710,6 +720,7 @@ class Gabarit:
     unite: str                                # clé de FACTEURS_UNITE
     libelles: list[tuple[str, re.Pattern]]    # règles de libellés propres à la banque
     ligne: int                                # numéro de ligne dans gabarits.csv (traçabilité)
+    definition_chg_oper: str = ""             # clé de DEFINITIONS_CHG_OPER
 
     @property
     def nom(self) -> str:
@@ -720,7 +731,8 @@ def charger_gabarits(chemin: Path = FICHIER_GABARITS) -> list[Gabarit]:
     """Format (séparateur « ; ») : banque ; premier_trimestre ; dernier_trimestre ; trimestres (« 1,2,3 »
     ou « 4 ») ; colonnes (« trim_N|trim_N1|cumul_N|cumul_N1|exercice_N1 », _ignorer pour une colonne
     de variation) ; unite ; libelles (« CODE=regex », séparés par « || », regex sur le libellé
-    normalisé : minuscules, sans accents) ; documents_verifies ; remarque."""
+    normalisé : minuscules, sans accents) ; definition_charges_operatoires (clé de
+    DEFINITIONS_CHG_OPER) ; documents_verifies ; remarque."""
     if not chemin.exists():
         return []
     sortie = []
@@ -738,10 +750,14 @@ def charger_gabarits(chemin: Path = FICHIER_GABARITS) -> list[Gabarit]:
                 if code.strip() not in NATURE and code.strip() != "AUCUN":
                     raise ValueError(f"gabarits.csv ligne {i} : code inconnu {code}")
                 libelles.append((code.strip(), re.compile(motif.strip())))
+            definition = (r.get("definition_charges_operatoires") or "").strip()
+            if definition not in DEFINITIONS_CHG_OPER:
+                raise ValueError(f"gabarits.csv ligne {i} : definition_charges_operatoires « {definition} » "
+                                 f"inconnue ({', '.join(DEFINITIONS_CHG_OPER)})")
             sortie.append(Gabarit(r["banque"].strip(), Trimestre.depuis_texte(r["premier_trimestre"]),
                                   Trimestre.depuis_texte(r["dernier_trimestre"]),
                                   {int(q) for q in r["trimestres"].split(",")}, colonnes, r["unite"],
-                                  libelles, i))
+                                  libelles, i, definition))
     return sortie
 
 
@@ -1327,6 +1343,60 @@ def definition_capitaux_propres(texte: str) -> str:
     return " + ".join(trouve)
 
 
+PREFIXE_COMPOSANTES = "écart composantes : "
+
+
+def statut_document(lignes: list[dict], alertes: list[str], ecarts: list[str], retr: list[str]) -> str:
+    """Statut d'un document dans controle_extraction.csv. Un écart entre les charges opératoires
+    et leurs composantes vient de la banque (vérifié dans les PDF : BT 2020T3, BNA 2023T2) : il est
+    signalé sans bloquer, comme l'écart trimestre/cumul."""
+    bloquantes = [a for a in alertes if not a.startswith(PREFIXE_COMPOSANTES)]
+    if not lignes:
+        return "echec"
+    if bloquantes:
+        return "a verifier"
+    if len(bloquantes) < len(alertes):
+        return "ecart composantes"
+    if ecarts:
+        return "ecart trimestre/cumul"
+    return "retraitement possible" if retr else "ok"
+
+
+def controle_definition_chg_oper(valeurs: dict[str, dict[str, float | None]], definition: str) -> list[str]:
+    """Charges opératoires publiées comparées à leurs composantes, selon la définition du gabarit.
+    Valeurs en unité de la source ; tolérance : 1 unité par ligne additionnée (arrondi de la banque)."""
+    if definition not in ("sans dotations", "avec dotations publiees", "avec reste non detaille"):
+        return []
+    alertes = []
+    for col, total in valeurs.get("CHG_OPER", {}).items():
+        fp = valeurs.get("FRAIS_PERS", {}).get(col)
+        cg = valeurs.get("CHG_GEN", {}).get(col)
+        dot = valeurs.get("DOT_AMORT", {}).get(col)
+        if total is None:
+            continue
+        if fp is None or cg is None or (definition == "avec dotations publiees" and dot is None):
+            alertes.append(f"{PREFIXE_COMPOSANTES}charges opératoires {col} : composante absente (gabarit : {definition})")
+            continue
+        reste = total - fp - cg - (dot if definition == "avec dotations publiees" else 0)
+        if definition == "avec reste non detaille":
+            if reste < -2:
+                alertes.append(f"{PREFIXE_COMPOSANTES}charges opératoires {col} < frais de personnel + charges générales "
+                               f"(reste {reste:,.0f}, gabarit : {definition})")
+        elif abs(reste) > (3 if definition == "avec dotations publiees" else 2):
+            alertes.append(f"{PREFIXE_COMPOSANTES}charges opératoires {col} ≠ somme des composantes (écart {reste:,.0f}, "
+                           f"gabarit : {definition})")
+    return alertes
+
+
+def _suite_de_nombres(dessus: Ligne, l: Ligne) -> bool:
+    """Vrai si la ligne l (sans libellé) ne contient que des groupes de 3 chiffres placés juste
+    sous des nombres de la ligne du dessus, dans les mêmes colonnes : fin de nombres renvoyée
+    à la ligne dans une case trop étroite."""
+    cols_dessus = {j.colonne for j in dessus.nombres if j.texte != "-" and j.colonne is not None}
+    return (dessus.page == l.page and 0 < l.top - dessus.top <= 12
+            and all(re.fullmatch(r"\d{3}", j.texte) and j.colonne in cols_dessus for j in l.nombres))
+
+
 def extraire_pdf(chemin: Path, t: Trimestre | None = None,
                  banque: str | None = None) -> tuple[list[dict], list[str]]:
     """Renvoie (lignes extraites, alertes) pour un PDF. Si un gabarit existe pour la banque et le
@@ -1361,6 +1431,13 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
             continue
         if l.libelle and not l.nombres:
             attente = (attente + " " + l.libelle).strip() if code_libelle(l.libelle, regles) is None else l.libelle
+            continue
+        if l.nombres and not l.libelle and fusion and _suite_de_nombres(fusion[-1], l):
+            # nombre trop large pour sa case, renvoyé à la ligne : « 10 575 » puis « 743 » juste
+            # en dessous, dans la même colonne (BH 2023T2, encours des crédits)
+            par_col = {j.colonne: j for j in fusion[-1].nombres}
+            for j in l.nombres:
+                par_col[j.colonne].texte += " " + j.texte
             continue
         if l.nombres:
             lib = l.libelle
@@ -1459,6 +1536,8 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
             alertes.append(f"unité déduite du PNB ({unite}) ≠ gabarit ({gab.unite})")
         facteur, unite = FACTEURS_UNITE[gab.unite], gab.unite
     alertes += controles(valeurs, facteur, t)
+    if gab:
+        alertes += controle_definition_chg_oper(valeurs, gab.definition_chg_oper)
     note_cp = definition_capitaux_propres(texte_notes)
 
     lignes = []
@@ -1520,14 +1599,7 @@ def cmd_extraire(args):
             lignes, alertes = resultats[(code, tri)]
             retr = retraitements.get((code, tri), [])
             ecarts = ecarts_trim.get((code, tri), [])
-            if not lignes:
-                statut = "echec"
-            elif alertes:
-                statut = "a verifier"
-            elif ecarts:
-                statut = "ecart trimestre/cumul"
-            else:
-                statut = "retraitement possible" if retr else "ok"
+            statut = statut_document(lignes, alertes, ecarts, retr)
             n_ok += statut == "ok"
             alertes = alertes + ecarts + retr
             g = gabarit_pour(code, t)
