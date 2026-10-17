@@ -833,8 +833,11 @@ def _est_case(t: str) -> bool:
 
 
 def _ecart_max(m: dict) -> float:
-    """Écart maximal entre deux morceaux d'un même nombre : environ une espace (0,45 × corps)."""
-    return max(2.5, 0.45 * (m["bottom"] - m["top"]))
+    """Écart maximal entre deux morceaux d'un même nombre : environ une espace (0,45 × corps), ou
+    0,65 × la largeur d'un chiffre pour les polices à chiffres larges (STB 2024T2 : chiffres de
+    5,4 pt en gras « Traditional Arabic », espaces de 3,0 pt entre les groupes de milliers)."""
+    largeur = (m["x1"] - m["x0"]) / max(1, len(m["text"]))
+    return max(2.5, 0.45 * (m["bottom"] - m["top"]), 0.65 * largeur)
 
 
 def _series(frags: list[dict]) -> list[list[dict]]:
