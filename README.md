@@ -137,7 +137,8 @@ Fichiers produits : `etats_financiers_long.csv`, `controle_etats_financiers.csv`
 - Le site de la BVMT renvoie des pages vides aux scripts : seuls les liens directs vers les PDF
   fonctionnent. Les noms de fichiers changent d'une période à l'autre.
 - Les PDF scannés (images) ne sont pas lisibles : statut `echec`, saisie manuelle nécessaire
-  (cas connu : BH 2019T4, tableau en image).
+  (cas connus : BH 2019T4 ; BTE, 13 documents de 2020 à 2023, dont 2020 et 2021T1, T3 sans
+  reprise possible par le document suivant).
 - Vérifiez à la main toutes les lignes `a verifier` du fichier de contrôle,
   et quelques lignes `ok` au hasard contre les PDF.
 - Ces indicateurs sont provisoires et non audités.

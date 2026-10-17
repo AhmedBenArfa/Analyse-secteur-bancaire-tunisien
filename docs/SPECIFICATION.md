@@ -205,7 +205,12 @@ Excel de référence ─────────> referentiel.xlsx
   initiale figure dans `indicateurs_versions.csv` sans valeur, statut `illisible (image)`, et la
   valeur retenue vient des colonnes N-1 du document de l'année suivante (BH 2020T4, « (*) Chiffres
   retraités » : PNB 2019 = 492,929 MDT, PNB du T4 2019 = 156,644 MDT). Pas de saisie manuelle tant
-  que le document suivant donne les chiffres.
+  que le document suivant donne les chiffres. Seuil de détection : page avec images et moins de
+  1 000 caractères de texte. **BTE** : 13 documents dans ce cas (2020T1 à 2023T4, sauf 2022T2,
+  2023T1 et 2023T3) ; repris par le document suivant : 2021T2, 2022T1, 2022T3, 2023T2, 2023T4 en
+  entier, 2021T4 et 2022T4 pour le cumul annuel et les soldes seulement ; **non repris : 2020T1 à
+  2020T4, 2021T1 et 2021T3** (le document de l'année suivante est lui aussi une image) : valeurs
+  vides tant qu'aucune saisie manuelle n'est décidée.
 
   Les périodes de la dernière année publiée (2026) sont en version initiale. Toutes les versions
   restent dans `indicateurs_versions.csv` pour la traçabilité (colonnes `fichier`, `page`), avec
@@ -388,7 +393,7 @@ d'une banque à l'autre (colonne `definition_charges_operatoires` de `gabarits.c
 
 | Valeur | Contenu du total publié | Exemples |
 |---|---|---|
-| `sans dotations` | frais de personnel + charges générales d'exploitation | BT, BH, TJARI jusqu'au T3 2021 |
+| `sans dotations` | frais de personnel + charges générales d'exploitation | BT, BH, BTE, TJARI jusqu'au T3 2021 |
 | `avec dotations publiees` | frais de personnel + charges générales + dotations aux amortissements, trois lignes publiées | |
 | `avec reste non detaille` | plus que frais de personnel + charges générales ; la différence (dotations ou autres) n'est pas détaillée | BNA, ATB, TJARI à partir du T4 2021 (colonnes N-1 retraitées) |
 | `composantes non publiees` | seul le total est publié | |

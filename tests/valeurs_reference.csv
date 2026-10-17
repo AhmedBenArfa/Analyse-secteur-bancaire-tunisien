@@ -209,3 +209,25 @@ UBCI;2022T2;UBCI_2022T2.pdf;1;CHG_GEN;cumul_N;34551;milliers de dinars;34.551;
 UBCI;2022T2;UBCI_2022T2.pdf;1;CREDITS;cumul_N;2758871;milliers de dinars;2758.871;
 UBCI;2022T2;UBCI_2022T2.pdf;1;DEPOTS;cumul_N;3107441;milliers de dinars;3107.441;
 UBCI;2022T2;UBCI_2022T2.pdf;1;CAP_PROPRES;cumul_N;432198;milliers de dinars;432.198;
+BTE;2019T4;BTE_2019T4.pdf;1;PNB;trim_N;20795;milliers de dinars;20.795;unité non annoncée avant 2025 (milliers d'après les montants)
+BTE;2019T4;BTE_2019T4.pdf;1;PNB;trim_N1;18329;milliers de dinars;18.329;
+BTE;2019T4;BTE_2019T4.pdf;1;PNB;cumul_N;57589;milliers de dinars;57.589;
+BTE;2019T4;BTE_2019T4.pdf;1;PNB;cumul_N1;48446;milliers de dinars;48.446;
+BTE;2019T4;BTE_2019T4.pdf;1;CHG_OPER;trim_N;12780;milliers de dinars;12.78;
+BTE;2019T4;BTE_2019T4.pdf;1;CHG_OPER;cumul_N;38284;milliers de dinars;38.284;= frais de personnel + charges générales
+BTE;2019T4;BTE_2019T4.pdf;1;FRAIS_PERS;cumul_N;27838;milliers de dinars;27.838;
+BTE;2019T4;BTE_2019T4.pdf;1;CHG_GEN;cumul_N;10446;milliers de dinars;10.446;
+BTE;2019T4;BTE_2019T4.pdf;1;CREDITS;cumul_N;746590;milliers de dinars;746.59;« Encours nets de crédits »
+BTE;2019T4;BTE_2019T4.pdf;1;DEPOTS;cumul_N;672425;milliers de dinars;672.425;
+BTE;2019T4;BTE_2019T4.pdf;1;CAP_PROPRES;cumul_N;139982;milliers de dinars;139.982;
+BTE;2025T1;BTE_2025T1.pdf;1;PNB;trim_N;16591;milliers de dinars;16.591;T1 : une colonne par année (trimestre = cumul)
+BTE;2025T1;BTE_2025T1.pdf;1;PNB;cumul_N;16591;milliers de dinars;16.591;
+BTE;2025T1;BTE_2025T1.pdf;1;PNB;cumul_N1;15654;milliers de dinars;15.654;
+BTE;2025T1;BTE_2025T1.pdf;1;PNB;exercice_N1;66296;milliers de dinars;66.296;« au 31/12/2024 » après la variation
+BTE;2025T1;BTE_2025T1.pdf;1;CHG_EXPL;exercice_N1;94319;milliers de dinars;94.319;lu comme 94 319 MDT (unité devinée) avant le gabarit
+BTE;2025T1;BTE_2025T1.pdf;1;CHG_OPER;cumul_N;12551;milliers de dinars;12.551;
+BTE;2025T1;BTE_2025T1.pdf;1;FRAIS_PERS;cumul_N;8502;milliers de dinars;8.502;
+BTE;2025T1;BTE_2025T1.pdf;1;CHG_GEN;cumul_N;4050;milliers de dinars;4.05;
+BTE;2025T1;BTE_2025T1.pdf;1;CREDITS;cumul_N;1056335;milliers de dinars;1056.335;
+BTE;2025T1;BTE_2025T1.pdf;1;DEPOTS;cumul_N;1191125;milliers de dinars;1191.125;
+BTE;2025T1;BTE_2025T1.pdf;1;CAP_PROPRES;cumul_N;37276;milliers de dinars;37.276;

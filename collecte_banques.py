@@ -636,7 +636,7 @@ REGLES = [
     ("PORTEF",       r"structure du portefeuille"),
     ("PORTEF_COMM",  r"portefeuille ?(titres?)? ?commercial"),
     ("PORTEF_INV",   r"portefeuille ?(titres?)? ?d'?\s?investissement"),
-    ("CREDITS",      r"encours (net )?des credits|credits (a|nets? a) la clientele|encours des engagements"
+    ("CREDITS",      r"encours (nets? )?(des|de) credits|credits (a|nets? a) la clientele|encours des engagements"
                      r"|encours (net )?des financements|financements (nets? )?a la clientele"),   # Wifak
     ("DEP_VUE",      r"depots? a vue"),
     ("DEP_EPARGNE",  r"depots? d'?\s?epargne|comptes d'?\s?epargne|^tawfir"),          # Wifak : Tawfir
@@ -1534,7 +1534,7 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
                 texte_complet += texte + "\n"
                 pages[i] = analyser_page(page, i)
                 toutes += pages[i].lignes
-                if page.images and len(page.chars) < 500:
+                if page.images and len(page.chars) < 1000:     # BTE 2020–2023 : ~530 caractères (titre et renvois)
                     pages_image.append(i)
 
     # libellés sur deux lignes : on recolle un libellé sans nombre à la ligne suivante ;
@@ -1596,7 +1596,7 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
             break
 
     alerte_image = (f"{PREFIXE_ILLISIBLE}PNB non lu, page(s) {pages_image} en image sans couche texte "
-                    f"(moins de 500 caractères)")
+                    f"(moins de 1 000 caractères)")
     if "PNB" not in trouves:
         if pages_image:
             return [], [alerte_image]
