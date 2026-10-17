@@ -65,6 +65,16 @@ Fichiers versionnés à la racine (lus par le script ou par Power BI) :
 | `gabarits.csv` | Mise en page de chaque banque par période : ordre des colonnes, unité, libellés, contenu des charges opératoires |
 | `saisies_manuelles.csv` | Valeurs relevées sur l'image des tableaux publiés en image (BTE 2020–2021), avec fichier, page et vérification |
 | `evenements.csv` | Événements à annoter dans Power BI (don au Fonds 1818 en 2020, moratoire Covid de l'UIB en 2020, accord salarial du secteur en 2021, retraitement BH 2024), avec la source PDF et la page |
+| `exclusions_colonnes.csv` | Colonnes de comparaison (N-1) fausses dans le document de la banque, jamais retenues, avec la raison, le fichier et la page (WIB 2023T4) ; les colonnes N-1 où produits − charges ≠ PNB sont exclues automatiquement (UIB 2023T2) |
+
+Autres fichiers utiles :
+
+| Fichier | Contenu |
+|---|---|
+| `docs/revisions_importantes.csv` | Révisions de plus de 2 % des totaux (cumul) : valeur publiée, valeur retenue, fichiers ; produit par `python scripts/bilan_extraction.py` |
+| `scripts/bilan_extraction.py` | Bilan par banque (statuts, saisies, valeurs non disponibles, valeurs de référence, révisions importantes) |
+| `scripts/verifier_manifeste.py` | Contrôle du manifeste après un téléchargement (PDF présents, URL, orphelins) |
+| `scripts/diagnostic_pdf.py`, `scripts/essai_banque.py` | Diagnostic d'un PDF et extraction d'une banque seule, en lecture seule |
 
 Colonnes de valeurs (`colonne`) :
 

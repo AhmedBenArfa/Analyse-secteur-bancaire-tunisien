@@ -277,6 +277,8 @@ Excel de référence ─────────> referentiel.xlsx
     **la même version que son total**, l'écart est signalé ;
   - vide : écart sous la tolérance ;
   - `exclue (capitaux propres, 31/12 provisoire)` : voir ci-dessous ;
+  - `exclue (colonne incohérente : …)` et `exclue (exclusion écrite : …)` : colonne N-1 non retenue,
+    voir ci-dessous ;
   - `illisible (image)` : version initiale d'un document dont le tableau est une image.
   Totaux et composantes : produits = intérêts + commissions + revenus du portefeuille ;
   charges d'exploitation = intérêts encourus + commissions encourues ; PNB = produits − charges ;
@@ -292,6 +294,23 @@ Excel de référence ─────────> referentiel.xlsx
   d'information (`note_definition` : « avant affectation du résultat », « après affectation du
   résultat », « résultat de la période non inclus »). Le ROE et le ROA n'utilisent pas cet
   indicateur mais les capitaux propres des états financiers (7.7).
+
+  **Colonnes N-1 non retenues (décision du 17/10/2026).** Une colonne de comparaison
+  (`trim_N1`, `cumul_N1`, `exercice_N1`) fausse dans le document de la banque ne devient jamais
+  la valeur retenue, pour aucun indicateur ; ses valeurs restent dans `indicateurs_versions.csv`
+  avec le statut `exclue (…)` et la raison, et aucune variation n'est calculée avec elle
+  (`variations_comparables.csv`). Deux sources :
+  - règle automatique : produits − charges d'exploitation ≠ PNB (écart de plus de 2 %) dans la
+    colonne. Seul cas sur les 12 banques au 17/10/2026 : UIB 2023T2, colonne T2 2022 (charges
+    d'exploitation 125 105 = cumul du semestre ; UIB_2022T2.pdf publie 63 933) ;
+  - exclusion écrite dans `exclusions_colonnes.csv` (versionné : banque, trimestre du document,
+    colonne, raison, fichier, page), pour une erreur que les contrôles ne voient pas. Seul cas :
+    WIB 2023T4, colonne T4 2022 recopiée du T3 2022 (13 indicateurs identiques à ceux de
+    WIB_2023T3_bulletin.pdf, PNB 14 455 ; WIB_2022T4_bulletin.pdf publie 17 536).
+  La période garde alors la version suivante dans l'ordre de priorité (ici la version initiale).
+  Effet de bord connu : une vraie révision contenue dans la colonne exclue est perdue avec elle
+  (UIB, PNB du T2 2022 retraité de +0,170 MDT) ; le contrôle annuel 2022 de l'UIB signale l'écart
+  (somme des trimestres ≠ cumul révisé, de 0,04 à 0,17 MDT).
 
   **Comparaison des deux révisions du 31/12** : quand le document T4 de l'année suivante existe,
   il devient la source retenue et la version `revisee_31-12_…` reste comme ligne de comparaison ;
@@ -751,8 +770,9 @@ info-bulles personnalisées ; signets « trimestre » / « année ».
 - Erreurs de la banque dans les colonnes N-1 : deux cas vérifiés sur l'image. UIB 2023T2 :
   charges d'exploitation du T2 2022 égales au cumul du semestre (produits − charges ≠ PNB dans
   cette colonne, document « a verifier ») ; WIB 2023T4 : colonne T4 2022 recopiée du T3 2022
-  (cohérente en elle-même, repérée par le contrôle annuel 2022). La règle des révisions retient
-  ces colonnes comme version la plus récente.
+  (cohérente en elle-même, repérée par le contrôle annuel 2022). Ces deux colonnes ne sont pas
+  retenues (5.2, colonnes N-1 non retenues) ; la liste des révisions importantes est dans
+  `docs/revisions_importantes.csv` (`python scripts/bilan_extraction.py`).
 - Un document publié en image (BH 2019T4) n'est connu que par les colonnes N-1 du document de
   l'année suivante.
 - Définitions des postes parfois différentes d'une banque à l'autre. Exemple : les charges

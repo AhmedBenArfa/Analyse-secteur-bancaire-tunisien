@@ -1262,15 +1262,62 @@ def priorite_version(version: str) -> int:
     return 0                                          # revisee_T<q>_N+1
 
 
+# ---------------------------------------------------------------------------
+# Colonnes N-1 non retenues (erreurs de la banque, décision du 17/10/2026)
+# ---------------------------------------------------------------------------
+
+FICHIER_EXCLUSIONS = Path(__file__).resolve().parent / "exclusions_colonnes.csv"
+COLONNES_N1 = ("trim_N1", "cumul_N1", "exercice_N1")
+
+
+def charger_exclusions(chemin: Path = FICHIER_EXCLUSIONS) -> dict[tuple[str, str, str], str]:
+    """Exclusions écrites : (banque, trimestre du document, colonne) -> raison, avec le fichier et la
+    page. Pour une erreur que les contrôles ne voient pas (WIB 2023T4 : colonne du T4 2022 copiée du
+    T3 2022, cohérente en elle-même)."""
+    if not chemin.exists():
+        return {}
+    sortie = {}
+    with chemin.open(encoding="utf-8-sig") as f:
+        for i, r in enumerate(csv.DictReader(f, delimiter=";"), start=2):
+            if r["colonne"] not in COLONNES or not r["raison"].strip() or not r["fichier"].strip():
+                raise ValueError(f"exclusions_colonnes.csv ligne {i} : colonne inconnue, raison ou fichier vide")
+            sortie[(r["banque"], r["trimestre"], r["colonne"])] = \
+                f"exclusion écrite : {r['raison']} ({r['fichier']} p.{r['page']})"
+    return sortie
+
+
+def colonnes_exclues(docs: dict[tuple[str, str], tuple[list[dict], str]],
+                     ecrites: dict[tuple[str, str, str], str] | None = None) -> dict[tuple[str, str, str], str]:
+    """(banque, trimestre du document, colonne) -> raison, pour les colonnes qui ne donnent aucune
+    version : règle automatique, une colonne N-1 où produits − charges d'exploitation ≠ PNB (> 2 %)
+    n'est pas retenue (UIB 2023T2 : colonne T2 2022 des charges = cumul du semestre) ; plus les
+    exclusions écrites de exclusions_colonnes.csv (lu par défaut)."""
+    sortie = dict(charger_exclusions() if ecrites is None else ecrites)
+    for (code, tri), (lignes, _) in docs.items():
+        par_cle = {(l["code_indicateur"], l["colonne"]): l["valeur_mdt"] for l in lignes}
+        for col in COLONNES_N1:
+            p, ch, pnb = (par_cle.get((c, col)) for c in ("PROD_EXPL", "CHG_EXPL", "PNB"))
+            if None not in (p, ch, pnb) and pnb and abs((p - ch) - pnb) > 0.02 * abs(pnb):
+                sortie.setdefault((code, tri, col), f"colonne incohérente : produits - charges = {p - ch:,.3f} "
+                                                    f"≠ PNB {pnb:,.3f}")
+    return sortie
+
+
 def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]],
-                   illisibles: dict[tuple[str, str], str] | None = None) -> list[dict]:
+                   illisibles: dict[tuple[str, str], str] | None = None,
+                   exclues: dict[tuple[str, str, str], str] | None = None) -> list[dict]:
     """docs : (banque, trimestre du document) -> (lignes extraites, nom du fichier).
     illisibles : (banque, trimestre) -> fichier des documents dont le tableau est une image ; leur
     version initiale est listée sans valeur, statut « illisible (image) ».
+    exclues : colonnes non retenues (colonnes_exclues, calculé par défaut) ; leurs valeurs restent
+    listées, statut « exclue (…) », sans jamais devenir la valeur retenue.
     Renvoie une ligne par banque × période × indicateur × mesure × version, avec la valeur
     retenue, sa source, l'écart de chaque version à la valeur retenue, la nature de la révision
     et les ruptures de série (changement de méthode)."""
+    if exclues is None:
+        exclues = colonnes_exclues(docs)
     valeurs: dict[tuple[str, str, str, str], dict[str, tuple[float, str, int, str, str]]] = {}
+    exclusions: dict[tuple[str, str, str, str, str], str] = {}  # (banque, période, ind., mesure, version)
     for (code, tri), (lignes, fichier) in docs.items():
         t = Trimestre.depuis_texte(tri)
         for l in lignes:
@@ -1288,6 +1335,11 @@ def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]],
             mesure = "trim" if col.startswith("trim") else "cumul"
             valeurs.setdefault((code, str(p), l["code_indicateur"], mesure), {})[version] = \
                 (l["valeur_mdt"], fichier, l["page"], l.get("note", ""), l.get("mention_retraitement", ""))
+            if (code, tri, col) in exclues:
+                exclusions[(code, str(p), l["code_indicateur"], mesure, version)] = exclues[(code, tri, col)]
+
+    def admise(code, per, ind, mesure, version) -> bool:
+        return version_admise(ind, version) and (code, per, ind, mesure, version) not in exclusions
 
     # 0) nature de chaque révision (spécification 5.2, règle 4). L'écart à la version initiale est
     #    mesuré sur le CUMUL de la période (solde pour un stock ; trimestre seulement si le cumul
@@ -1299,7 +1351,7 @@ def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]],
     def ecart_cumul(code, per, ind, version) -> tuple[float, float] | None:
         for m in ("cumul", "trim"):
             vers = valeurs.get((code, per, ind, m), {})
-            if "initiale" in vers and version in vers:
+            if "initiale" in vers and version in vers and (code, per, ind, m, version) not in exclusions:
                 return vers[version][0] - vers["initiale"][0], vers["initiale"][0]
         return None
 
@@ -1330,13 +1382,13 @@ def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]],
     # 1) version retenue : toujours la plus récente révision admise (priorité), avec ou sans note
     sources: dict[tuple[str, str, str, str], str | None] = {}
     for cle, vers in valeurs.items():
-        admises = [v for v in vers if version_admise(cle[2], v)]
+        admises = [v for v in vers if admise(*cle, v)]
         sources[cle] = min(admises, key=priorite_version) if admises else None
     # 2) une composante prend la même version que son total
     for (code, per, ind, mesure), vers in valeurs.items():
         total = PARENT.get(ind)
         src_total = sources.get((code, per, total, mesure)) if total else None
-        if src_total and src_total in vers and version_admise(ind, src_total):
+        if src_total and src_total in vers and admise(code, per, ind, mesure, src_total):
             sources[(code, per, ind, mesure)] = src_total
 
     def statut_revision(code, per, ind, mesure, version) -> str:
@@ -1344,6 +1396,8 @@ def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]],
         la version retenue. Sans version initiale : vide."""
         if not version_admise(ind, version):
             return "exclue (capitaux propres, 31/12 provisoire)"
+        if (code, per, ind, mesure, version) in exclusions:
+            return f"exclue ({exclusions[(code, per, ind, mesure, version)]})"
         if version == "initiale":
             return natures.get((code, per, ind, sources.get((code, per, ind, mesure))), "")
         return natures.get((code, per, ind, version), "")
@@ -1406,16 +1460,22 @@ def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]],
 STATUT_NON_DISPONIBLE = "non disponible (image)"
 
 
-def variations_comparables(docs: dict[tuple[str, str], tuple[list[dict], str]]) -> list[dict]:
+def variations_comparables(docs: dict[tuple[str, str], tuple[list[dict], str]],
+                           exclues: dict[tuple[str, str, str], str] | None = None) -> list[dict]:
     """Variation sur un an calculée à l'intérieur d'un même document : colonne N contre colonne N-1
     (trimestre : trim_N / trim_N1 ; cumul ou solde : cumul_N / cumul_N1). Les deux chiffres sont
-    publiés ensemble, sur la même méthode : la variation reste juste quand la banque retraite N-1."""
+    publiés ensemble, sur la même méthode : la variation reste juste quand la banque retraite N-1.
+    Pas de variation quand l'une des deux colonnes est exclue (colonnes_exclues, calculé par défaut)."""
+    if exclues is None:
+        exclues = colonnes_exclues(docs)
     sortie = []
     for (code, tri), (lignes, fichier) in sorted(docs.items()):
         t = Trimestre.depuis_texte(tri)
         par_col = {(l["code_indicateur"], l["colonne"]): l for l in lignes}
         for (ind, col), l in sorted(par_col.items()):
             if col not in ("trim_N", "cumul_N"):
+                continue
+            if (code, tri, col) in exclues or (code, tri, col[:-1] + "N1") in exclues:
                 continue
             n1 = par_col.get((ind, col[:-1] + "N1"))
             if n1 is None:
@@ -1965,7 +2025,11 @@ def cmd_extraire(args):
     docs_fichiers = {cle: (lignes, Path(manifeste[cle]["fichier"]).name) for cle, (lignes, _) in resultats.items()}
     illisibles = {cle: Path(manifeste[cle]["fichier"]).name for cle, (lignes, alertes) in resultats.items()
                   if not lignes and any(a.startswith(PREFIXE_ILLISIBLE) for a in alertes)}
-    versions = table_versions(docs_fichiers, illisibles)
+    exclues = colonnes_exclues(docs_fichiers)
+    print(f"\nColonnes non retenues : {len(exclues)}")
+    for (code, tri, col), raison in sorted(exclues.items()):
+        print(f"  {code} {tri} {col} : {raison}")
+    versions = table_versions(docs_fichiers, illisibles, exclues)
     fichier_versions = DOSSIER / "indicateurs_versions.csv"
     champs_v = ["banque", "trimestre", "date_arrete", "annee", "num_trimestre", "code_indicateur",
                 "mesure", "version", "valeur_mdt", "fichier", "page", "valeur_retenue", "source_valeur",
@@ -1996,7 +2060,7 @@ def cmd_extraire(args):
         print("  " + a)
 
     # 6) variations sur un an à l'intérieur de chaque document (colonne N contre colonne N-1)
-    variations = variations_comparables(docs_fichiers)
+    variations = variations_comparables(docs_fichiers, exclues)
     fichier_variations = DOSSIER / "variations_comparables.csv"
     with fichier_variations.open("w", newline="", encoding="utf-8-sig") as f:
         w = csv.DictWriter(f, fieldnames=list(variations[0]) if variations else ["banque"], delimiter=";")

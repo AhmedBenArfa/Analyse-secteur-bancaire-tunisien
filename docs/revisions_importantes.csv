@@ -1,0 +1,119 @@
+﻿banque;periode;indicateur;publie_mdt;retenu_mdt;ecart_pct;version_retenue;fichier_publie;fichier_retenu;mention_retraitement
+AB;2021T2;CHG_OPER;82.659;89.069;+7.8;revisee_T2_N+1;AB_2021T2_bulletin.pdf;AB_2022T2.pdf;
+ATB;2019T4;PNB;252.236;239.420;-5.1;revisee_T4_N+1;ATB_2019T4.pdf;ATB_2020T4.pdf;
+ATB;2019T4;PROD_EXPL;587.113;574.363;-2.2;revisee_T4_N+1;ATB_2019T4.pdf;ATB_2020T4.pdf;
+ATB;2020T4;PNB;278.393;262.023;-5.9;revisee_T4_N+1;ATB_2020T4.pdf;ATB_2021T4.pdf;
+ATB;2020T4;PROD_EXPL;634.106;619.528;-2.3;revisee_T4_N+1;ATB_2020T4.pdf;ATB_2021T4.pdf;
+ATB;2021T2;PNB;136.302;129.426;-5.0;revisee_T2_N+1;ATB_2021T2.pdf;ATB_2022T2.pdf;
+ATB;2021T2;PROD_EXPL;287.782;281.051;-2.3;revisee_T2_N+1;ATB_2021T2.pdf;ATB_2022T2.pdf;
+ATB;2021T2;CHG_OPER;90.675;95.818;+5.7;revisee_T2_N+1;ATB_2021T2.pdf;ATB_2022T2.pdf;
+ATB;2021T4;PNB;297.975;290.352;-2.6;revisee_T4_N+1;ATB_2021T4.pdf;ATB_2022T4.pdf;
+ATB;2022T2;PNB;161.583;154.750;-4.2;revisee_T2_N+1;ATB_2022T2.pdf;ATB_2023T2.pdf;
+ATB;2022T2;PROD_EXPL;323.400;316.614;-2.1;revisee_T2_N+1;ATB_2022T2.pdf;ATB_2023T2.pdf;
+ATB;2022T4;PNB;328.250;319.694;-2.6;revisee_T4_N+1;ATB_2022T4.pdf;ATB_2023T4.pdf;
+ATB;2023T2;PNB;181.812;167.342;-8.0;revisee_T2_N+1;ATB_2023T2.pdf;ATB_2024T2.pdf;
+ATB;2023T2;PROD_EXPL;379.340;364.884;-3.8;revisee_T2_N+1;ATB_2023T2.pdf;ATB_2024T2.pdf;
+ATB;2024T4;PNB;391.292;380.166;-2.8;revisee_T4_N+1;ATB_2024T4.pdf;ATB_2025T4.pdf;
+ATB;2024T4;CHG_OPER;237.912;242.853;+2.1;revisee_T4_N+1;ATB_2024T4.pdf;ATB_2025T4.pdf;
+ATB;2025T4;PNB;359.320;348.016;-3.1;revisee_31-12_T2_N+1;ATB_2025T4.pdf;ATB_2026T2.pdf;
+ATB;2025T4;DEPOTS;6927.838;6778.696;-2.2;revisee_31-12_T2_N+1;ATB_2025T4.pdf;ATB_2026T2.pdf;
+BH;2020T1;CHG_OPER;48.520;46.993;-3.1;revisee_T1_N+1;BH_2020T1.pdf;BH_2021T1_bulletin.pdf;
+BH;2020T2;CHG_OPER;103.298;90.872;-12.0;revisee_T2_N+1;BH_2020T2.pdf;BH_2021T2.pdf;
+BH;2020T4;CHG_OPER;183.991;177.449;-3.6;revisee_T4_N+1;BH_2020T4.pdf;BH_2021T4.pdf;(*) Chiffres retraités
+BH;2021T2;CHG_OPER;92.142;98.822;+7.2;revisee_T2_N+1;BH_2021T2.pdf;BH_2022T2_bulletin.pdf;( * ) Chiffres retraités
+BH;2022T2;CHG_OPER;113.359;117.520;+3.7;revisee_T2_N+1;BH_2022T2_bulletin.pdf;BH_2023T2.pdf;
+BH;2022T4;CHG_EXPL;579.669;566.441;-2.3;revisee_T4_N+1;BH_2022T4_bulletin.pdf;BH_2023T4.pdf;
+BH;2024T4;PNB;765.932;701.188;-8.5;revisee_T4_N+1;BH_2024T4.pdf;BH_2025T4_bulletin.pdf;(3) Les chiffres de 2023 ont été retraités pour des raisons de comparabilité.
+BH;2024T4;PROD_EXPL;1503.984;1446.089;-3.8;revisee_T4_N+1;BH_2024T4.pdf;BH_2025T4_bulletin.pdf;(3) Les chiffres de 2023 ont été retraités pour des raisons de comparabilité.
+BH;2025T1;PNB;169.473;156.512;-7.6;revisee_T1_N+1;BH_2025T1.pdf;BH_2026T1.pdf;(3) Les chiffres de fin Mars 2024 ont été retraités pour des raisons de comparabilité.
+BH;2025T1;PROD_EXPL;358.998;346.037;-3.6;revisee_T1_N+1;BH_2025T1.pdf;BH_2026T1.pdf;(3) Les chiffres de fin Mars 2024 ont été retraités pour des raisons de comparabilité.
+BH;2025T2;PNB;346.054;318.124;-8.1;revisee_T2_N+1;BH_2025T2.pdf;BH_2026T2.pdf;
+BH;2025T2;PROD_EXPL;725.785;697.855;-3.8;revisee_T2_N+1;BH_2025T2.pdf;BH_2026T2.pdf;
+BIAT;2020T1;CHG_OPER;103.647;100.317;-3.2;revisee_T1_N+1;BIAT_2020T1.pdf;BIAT_2021T1.pdf;
+BIAT;2021T1;CHG_OPER;101.345;103.849;+2.5;revisee_T1_N+1;BIAT_2021T1.pdf;BIAT_2022T1.pdf;
+BIAT;2021T2;CHG_OPER;212.851;221.602;+4.1;revisee_T2_N+1;BIAT_2021T2.pdf;BIAT_2022T2.pdf;
+BIAT;2023T1;CHG_OPER;128.420;132.852;+3.5;revisee_T1_N+1;BIAT_2023T1.pdf;BIAT_2024T1.pdf;(*) les données de Mars 2022 ont été retraitées pour des besoins de comparabilité
+BIAT;2023T2;CHG_OPER;270.127;275.894;+2.1;revisee_T2_N+1;BIAT_2023T2.pdf;BIAT_2024T2.pdf;
+BNA;2020T2;CHG_OPER;156.557;138.435;-11.6;revisee_T2_N+1;BNA_2020T2.pdf;BNA_2021T2.pdf;Chiffres 2019 retraités pour les besoins de comparabilité
+BNA;2020T3;CHG_OPER;228.076;214.816;-5.8;revisee_T3_N+1;BNA_2020T3.pdf;BNA_2021T3.pdf;Chiffres 2019 retraités pour les besoins de comparabilité
+BNA;2021T2;PNB;375.341;383.124;+2.1;revisee_T2_N+1;BNA_2021T2.pdf;BNA_2022T2.pdf;Chiffre 2020 retraité pour les besoins de comparabilité
+BNA;2021T2;CHG_OPER;142.473;153.912;+8.0;revisee_T2_N+1;BNA_2021T2.pdf;BNA_2022T2.pdf;Chiffre 2020 retraité pour les besoins de comparabilité
+BNA;2021T4;PNB;828.621;849.997;+2.6;revisee_T4_N+1;BNA_2021T4.pdf;BNA_2022T4.pdf;
+BNA;2021T4;CHG_OPER;341.789;348.968;+2.1;revisee_T4_N+1;BNA_2021T4.pdf;BNA_2022T4.pdf;
+BNA;2022T2;CHG_OPER;167.455;161.124;-3.8;revisee_T2_N+1;BNA_2022T2.pdf;BNA_2023T2.pdf;
+BNA;2022T4;CHG_OPER;348.957;357.456;+2.4;revisee_T4_N+1;BNA_2022T4.pdf;BNA_2023T4.pdf;
+BNA;2024T2;CHG_OPER;189.679;185.534;-2.2;revisee_T2_N+1;BNA_2024T2.pdf;BNA_2025T2.pdf;
+BNA;2024T4;CHG_OPER;379.506;388.035;+2.2;revisee_T4_N+1;BNA_2024T4.pdf;BNA_2025T4.pdf;
+BT;2020T1;CHG_OPER;31.917;30.614;-4.1;revisee_T1_N+1;BT_2020T1.pdf;BT_2021T1.pdf;(*) Chiffres 2019 retraités pour les besoins de la comparabilité
+BT;2020T2;PNB;185.898;178.704;-3.9;revisee_T2_N+1;BT_2020T2.pdf;BT_2021T2.pdf;(*) Chiffres 2019 retraités pour les besoins de la comparabilité
+BT;2020T2;PROD_EXPL;309.344;302.149;-2.3;revisee_T2_N+1;BT_2020T2.pdf;BT_2021T2.pdf;(*) Chiffres 2019 retraités pour les besoins de la comparabilité
+BT;2020T2;CHG_OPER;65.366;53.415;-18.3;revisee_T2_N+1;BT_2020T2.pdf;BT_2021T2.pdf;(*) Chiffres 2019 retraités pour les besoins de la comparabilité
+BT;2020T3;CHG_OPER;77.442;79.426;+2.6;revisee_T3_N+1;BT_2020T3.pdf;BT_2021T3.pdf;(*) Chiffres septembre 2019 retraités pour les besoins de la comparabilité
+BT;2021T2;CHG_OPER;55.869;59.513;+6.5;revisee_T2_N+1;BT_2021T2.pdf;BT_2022T2.pdf;
+BT;2021T4;CHG_OPER;119.809;125.700;+4.9;revisee_T4_N+1;BT_2021T4.pdf;BT_2022T4.pdf;
+BT;2022T3;CHG_OPER;92.135;98.210;+6.6;revisee_T3_N+1;BT_2022T3.pdf;BT_2023T3.pdf;
+BT;2023T1;PNB;111.230;106.281;-4.4;revisee_T1_N+1;BT_2023T1.pdf;BT_2024T1.pdf;
+BT;2023T1;PROD_EXPL;190.114;185.165;-2.6;revisee_T1_N+1;BT_2023T1.pdf;BT_2024T1.pdf;
+BT;2024T2;CHG_OPER;77.388;79.388;+2.6;revisee_T2_N+1;BT_2024T2.pdf;BT_2025T2.pdf;
+BTE;2019T4;PNB;57.589;53.269;-7.5;revisee_T4_N+1;BTE_2019T4.pdf;BTE_2020T4.pdf;
+BTE;2019T4;PROD_EXPL;115.258;110.621;-4.0;revisee_T4_N+1;BTE_2019T4.pdf;BTE_2020T4.pdf;
+BTE;2019T4;CHG_OPER;38.284;39.302;+2.7;revisee_T4_N+1;BTE_2019T4.pdf;BTE_2020T4.pdf;
+BTE;2020T4;PNB;50.298;48.869;-2.8;revisee_31-12_T3_N+1;BTE_2020T4.pdf;BTE_2021T3.pdf;
+BTE;2023T1;PNB;18.287;16.275;-11.0;revisee_T1_N+1;BTE_2023T1.pdf;BTE_2024T1.pdf;
+BTE;2023T1;PROD_EXPL;34.405;33.495;-2.6;revisee_T1_N+1;BTE_2023T1.pdf;BTE_2024T1.pdf;
+BTE;2023T1;CHG_EXPL;16.118;17.220;+6.8;revisee_T1_N+1;BTE_2023T1.pdf;BTE_2024T1.pdf;
+BTE;2024T1;PNB;15.147;15.654;+3.3;revisee_T1_N+1;BTE_2024T1.pdf;BTE_2025T1.pdf;
+BTE;2024T2;CHG_OPER;26.240;29.905;+14.0;revisee_T2_N+1;BTE_2024T2.pdf;BTE_2025T2.pdf;
+BTE;2024T4;PNB;68.131;66.296;-2.7;revisee_T4_N+1;BTE_2024T4.pdf;BTE_2025T4.pdf;
+BTE;2025T1;PNB;16.591;15.936;-3.9;revisee_T1_N+1;BTE_2025T1.pdf;BTE_2026T1.pdf;
+BTE;2025T4;PNB;68.483;70.854;+3.5;revisee_31-12_T2_N+1;BTE_2025T4.pdf;BTE_2026T2.pdf;
+STB;2020T2;PNB;272.890;278.889;+2.2;revisee_T2_N+1;STB_2020T2.pdf;STB_2021T2.pdf;
+STB;2020T4;PNB;606.577;625.657;+3.1;revisee_T4_N+1;STB_2020T4.pdf;STB_2021T4.pdf;(2) données retraitées pour les besoins de comparabilité
+STB;2021T2;CHG_OPER;133.210;142.039;+6.6;revisee_T2_N+1;STB_2021T2.pdf;STB_2022T2.pdf;
+STB;2022T1;CHG_OPER;71.709;69.625;-2.9;revisee_T1_N+1;STB_2022T1.pdf;STB_2023T1.pdf;
+STB;2022T2;PNB;332.566;325.822;-2.0;revisee_T2_N+1;STB_2022T2.pdf;STB_2023T2.pdf;
+STB;2022T3;CHG_OPER;209.559;219.869;+4.9;revisee_T3_N+1;STB_2022T3.pdf;STB_2023T3.pdf;
+STB;2023T1;CHG_OPER;74.863;78.483;+4.8;revisee_T1_N+1;STB_2023T1.pdf;STB_2024T1.pdf;(*) les chiffres de Mars 2022 et Décembre 2022 ont été retraités pour les besoins de comparabilité
+STB;2023T2;PNB;347.339;340.131;-2.1;revisee_T2_N+1;STB_2023T2.pdf;STB_2024T2.pdf;* les données au 30/06/2022 ont été retraitées pour les besoins de comparabilité
+STB;2024T2;PNB;337.714;315.984;-6.4;revisee_T2_N+1;STB_2024T2.pdf;STB_2025T2.pdf;(*) Données au 30/06/2023 retraitées pour les besoins de la comparabilité
+STB;2024T2;PROD_EXPL;716.738;694.903;-3.0;revisee_T2_N+1;STB_2024T2.pdf;STB_2025T2.pdf;(*) Données au 30/06/2023 retraitées pour les besoins de la comparabilité
+TJARI;2020T3;CHG_OPER;166.188;162.359;-2.3;revisee_T3_N+1;TJARI_2020T3.pdf;TJARI_2021T3.pdf;1,2,3,4,5 et 6 Les chiffres de 2019 ont été retraités pour les besoins de la comparabilité.
+TJARI;2020T4;CHG_OPER;218.577;229.376;+4.9;revisee_T4_N+1;TJARI_2020T4.pdf;TJARI_2021T4.pdf;1,2,3,4 et 5 Les chiffres de 2019 ont été retraités pour les besoins de la comparabilité.
+TJARI;2021T1;CHG_OPER;57.522;59.883;+4.1;revisee_T1_N+1;TJARI_2021T1.pdf;TJARI_2022T1.pdf;(2), (3), (4), (5), (6), (7), (8) et (9) : Les chiffres de mars 2020 ont été retraités pour les besoins de la comparabilité.
+TJARI;2021T3;CHG_OPER;194.067;204.926;+5.6;revisee_T3_N+1;TJARI_2021T3.pdf;TJARI_2022T3.pdf;* : Les chiffres de septembre 2020 et de décembre 2020 ont été retraités pour les besoins de la comparabilité.
+TJARI;2024T1;CHG_OPER;88.636;85.323;-3.7;revisee_T1_N+1;TJARI_2024T1.pdf;TJARI_2025T1.pdf;
+UBCI;2020T2;PNB;106.638;120.089;+12.6;revisee_T2_N+1;UBCI_2020T2.pdf;UBCI_2021T2.pdf;
+UBCI;2020T2;PROD_EXPL;158.609;172.366;+8.7;revisee_T2_N+1;UBCI_2020T2.pdf;UBCI_2021T2.pdf;
+UBCI;2020T2;CHG_OPER;83.994;77.168;-8.1;revisee_T2_N+1;UBCI_2020T2.pdf;UBCI_2021T2.pdf;
+UBCI;2020T2;CREDITS;2432.767;2518.868;+3.5;revisee_T2_N+1;UBCI_2020T2.pdf;UBCI_2021T2.pdf;
+UBCI;2020T4;CREDITS;2419.448;2498.880;+3.3;revisee_T4_N+1;UBCI_2020T4.pdf;UBCI_2021T4.pdf;
+UBCI;2021T2;CHG_OPER;84.799;89.595;+5.7;revisee_T2_N+1;UBCI_2021T2.pdf;UBCI_2022T2.pdf;
+UBCI;2021T4;CHG_OPER;179.650;201.947;+12.4;revisee_T4_N+1;UBCI_2021T4.pdf;UBCI_2022T4.pdf;
+UBCI;2022T4;CHG_OPER;195.990;191.312;-2.4;revisee_T4_N+1;UBCI_2022T4.pdf;UBCI_2023T4.pdf;
+UBCI;2022T4;CREDITS;2891.050;2820.967;-2.4;revisee_T4_N+1;UBCI_2022T4.pdf;UBCI_2023T4.pdf;
+UBCI;2023T2;CHG_OPER;105.074;102.578;-2.4;revisee_T2_N+1;UBCI_2023T2.pdf;UBCI_2024T2.pdf;
+UBCI;2025T2;CREDITS;3828.072;3612.868;-5.6;revisee_T2_N+1;UBCI_2025T2.pdf;UBCI_2026T2.pdf;
+UBCI;2025T4;CREDITS;3768.833;3514.826;-6.7;revisee_31-12_T2_N+1;UBCI_2025T4.pdf;UBCI_2026T2.pdf;
+UIB;2020T1;PNB;101.456;108.708;+7.1;revisee_T1_N+1;UIB_2020T1.pdf;UIB_2021T1.pdf;( 1 ) Les chiffres arrêtés au 31/03/2019 ont été retraités pour les besoins de la comparabilité.
+UIB;2020T1;PROD_EXPL;170.687;177.947;+4.3;revisee_T1_N+1;UIB_2020T1.pdf;UIB_2021T1.pdf;( 1 ) Les chiffres arrêtés au 31/03/2019 ont été retraités pour les besoins de la comparabilité.
+UIB;2020T1;CHG_OPER;55.001;52.201;-5.1;revisee_T1_N+1;UIB_2020T1.pdf;UIB_2021T1.pdf;( 1 ) Les chiffres arrêtés au 31/03/2019 ont été retraités pour les besoins de la comparabilité.
+UIB;2020T2;PNB;123.685;196.264;+58.7;revisee_T2_N+1;UIB_2020T2.pdf;UIB_2021T2.pdf;( 1 ) Les chiffres arrêtés au 30/09/2017 ont été retraités pour les besoins de la comparabilité.
+UIB;2020T2;PROD_EXPL;258.161;330.740;+28.1;revisee_T2_N+1;UIB_2020T2.pdf;UIB_2021T2.pdf;( 1 ) Les chiffres arrêtés au 30/09/2017 ont été retraités pour les besoins de la comparabilité.
+UIB;2020T2;CHG_OPER;106.903;101.313;-5.2;revisee_T2_N+1;UIB_2020T2.pdf;UIB_2021T2.pdf;( 1 ) Les chiffres arrêtés au 30/09/2017 ont été retraités pour les besoins de la comparabilité.
+UIB;2020T3;PNB;207.717;296.439;+42.7;revisee_T3_N+1;UIB_2020T3.pdf;UIB_2021T3.pdf;( 1 ) Les chiffres arrêtés au 30/09/2019 ont été retraités pour les besoins de la comparabilité.
+UIB;2020T3;PROD_EXPL;405.703;494.426;+21.9;revisee_T3_N+1;UIB_2020T3.pdf;UIB_2021T3.pdf;( 1 ) Les chiffres arrêtés au 30/09/2019 ont été retraités pour les besoins de la comparabilité.
+UIB;2020T3;CHG_OPER;160.779;149.579;-7.0;revisee_T3_N+1;UIB_2020T3.pdf;UIB_2021T3.pdf;( 1 ) Les chiffres arrêtés au 30/09/2019 ont été retraités pour les besoins de la comparabilité.
+UIB;2021T1;CHG_OPER;56.195;59.537;+5.9;revisee_T1_N+1;UIB_2021T1.pdf;UIB_2022T1.pdf;( 1 ) Les chiffres arrêtés au 31/03/2020 ont été retraités pour les besoins de la comparabilité.
+UIB;2021T2;CHG_OPER;112.040;127.199;+13.5;revisee_T2_N+1;UIB_2021T2.pdf;UIB_2022T2.pdf;
+WIB;2019T4;PNB;21.132;22.370;+5.9;revisee_T4_N+1;WIB_2019T4.pdf;WIB_2020T4_bulletin.pdf;
+WIB;2020T2;PNB;13.539;13.236;-2.2;revisee_T2_N+1;WIB_2020T2.pdf;WIB_2021T2_bulletin.pdf;
+WIB;2020T2;CHG_OPER;14.334;14.838;+3.5;revisee_T2_N+1;WIB_2020T2.pdf;WIB_2021T2_bulletin.pdf;
+WIB;2020T4;CHG_OPER;31.245;30.522;-2.3;revisee_T4_N+1;WIB_2020T4_bulletin.pdf;WIB_2021T4_bulletin.pdf;
+WIB;2021T2;PNB;20.007;23.656;+18.2;revisee_T2_N+1;WIB_2021T2_bulletin.pdf;WIB_2022T2_bulletin.pdf;
+WIB;2021T2;PROD_EXPL;36.043;39.692;+10.1;revisee_T2_N+1;WIB_2021T2_bulletin.pdf;WIB_2022T2_bulletin.pdf;
+WIB;2021T2;CHG_OPER;17.188;18.043;+5.0;revisee_T2_N+1;WIB_2021T2_bulletin.pdf;WIB_2022T2_bulletin.pdf;
+WIB;2023T1;PNB;17.157;16.400;-4.4;revisee_T1_N+1;WIB_2023T1_bulletin.pdf;WIB_2024T1.pdf;
+WIB;2023T1;CHG_EXPL;14.361;14.739;+2.6;revisee_T1_N+1;WIB_2023T1_bulletin.pdf;WIB_2024T1.pdf;
+WIB;2023T4;PNB;73.095;74.608;+2.1;revisee_T4_N+1;WIB_2023T4_bulletin.pdf;WIB_2024T4.pdf;
+WIB;2024T4;CHG_OPER;59.011;61.361;+4.0;revisee_T4_N+1;WIB_2024T4.pdf;WIB_2025T4_bulletin.pdf;
+WIB;2025T4;CHG_OPER;77.605;75.513;-2.7;revisee_31-12_T2_N+1;WIB_2025T4_bulletin.pdf;WIB_2026T2.pdf;

@@ -244,6 +244,24 @@ def test_variations_comparables():
     assert proche(atb["valeur_N"] - atb["valeur_N1"], 33.975)
 
 
+def test_colonnes_n1_exclues():
+    """Erreurs de la banque dans une colonne N-1, jamais retenues (décision du 17/10/2026).
+    UIB 2023T2 (règle automatique) : colonne T2 2022, charges d'exploitation 125 105 = cumul du
+    semestre, produits - charges ≠ PNB ; UIB_2022T2.pdf publie 63 933.
+    WIB 2023T4 (exclusions_colonnes.csv) : colonne T4 2022 = copie du T3 2022, PNB 14 455 ;
+    WIB_2022T4_bulletin.pdf publie 17 536."""
+    for banque, docs_tri, per, ind, attendu, version in (
+            ("UIB", ["2022T2", "2023T2"], "2022T2", "CHG_EXPL", 63.933, "revisee_T2_N+1"),
+            ("WIB", ["2022T4", "2023T4"], "2022T4", "PNB", 17.536, "revisee_T4_N+1")):
+        docs = docs_banque(banque, docs_tri)
+        v = {r["version"]: r for r in versions_de(docs)
+             if r["trimestre"] == per and r["code_indicateur"] == ind and r["mesure"] == "trim"}
+        assert v["initiale"]["statut_revision"] == "retenue" and proche(v["initiale"]["valeur_retenue"], attendu), v
+        assert v[version]["statut_revision"].startswith("exclue ("), v[version]
+        var = cb.variations_comparables({cle: (lignes, p.name) for cle, (p, lignes, _) in docs.items()})
+        assert not [r for r in var if r["trimestre"] == docs_tri[1] and r["mesure"] == "trim"]
+
+
 def test_valeurs_reference():
     resultats = comparer()
     echecs = [r for r in resultats if r["statut"] != "ok"]
