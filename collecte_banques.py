@@ -1186,6 +1186,9 @@ PREMIERE_PERIODE = Trimestre(2019, 4)
 # 2 milliers de dinars : arrondi des banques qui publient en milliers. Le 1e-6 absorbe les erreurs
 # de calcul en virgule flottante (0,002 calculé vaut parfois 0,0020000000001).
 TOLERANCE_ARRONDI_MDT = 0.002 + 1e-6
+# Seuil de matérialité d'une révision (part de la valeur initiale) : au-delà, avec une note de
+# retraitement, c'est un changement de méthode ; en deçà, un retraitement mineur (spécification 5.2).
+SEUIL_MATERIALITE = 0.02
 
 # Totaux et leurs composantes (coefficient : +1 ajouté, -1 retranché)
 GROUPES = {
@@ -1265,23 +1268,61 @@ def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]],
             valeurs.setdefault((code, str(p), l["code_indicateur"], mesure), {})[version] = \
                 (l["valeur_mdt"], fichier, l["page"], l.get("note", ""), l.get("mention_retraitement", ""))
 
-    # 0) changements de méthode : version révisée publiée par un document qui annonce un retraitement
-    #    (« comparabilité », « chiffres retraités »), écart à l'initiale au-delà de l'arrondi. Une autre
-    #    version révisée de la même période qui redonne le même chiffre (à l'arrondi près) est le même
-    #    retraitement, même si son document n'a pas de note (BH : 31/12/2023 dans le T1 2024 sans
-    #    note, identique au T2 2024 annoté). Les niveaux gardent alors la version initiale.
-    changements: dict[tuple[str, str, str, str], set[str]] = {}
+    # 0) nature de chaque version révisée, comparée à la version initiale (seuil de matérialité,
+    #    spécification 5.2 règle 4) :
+    #    - total (PNB, produits, charges d'exploitation, charges opératoires, crédits, dépôts ; même
+    #      règle pour les indicateurs sans composantes) : écart > 2 % ET note de retraitement dans le
+    #      document → changement_methode (niveaux en version initiale) ; écart > 2 % sans note →
+    #      correction ; écart ≤ 2 % (avec ou sans note) → retraitement_mineur (révisée retenue) ;
+    #      sous l'arrondi (2 kDT) → vide. Une autre version qui redonne le même chiffre qu'un
+    #      changement de méthode est le même retraitement, même sans note (BH : 31/12/2024 à 744,228
+    #      dans le T1 2025 annoté et dans le T2 2025 sans note) ;
+    #    - composante : statut de son total pour la même version ; total stable (sous l'arrondi) mais
+    #      composante qui bouge → reclassement.
+    natures: dict[tuple[tuple[str, str, str, str], str], str] = {}
+
+    def nature_total(cle, vers) -> dict[str, str]:
+        init = vers["initiale"][0]
+        res, annonces = {}, []
+        for v, x in vers.items():
+            if v == "initiale":
+                continue
+            d = x[0] - init
+            if abs(d) <= TOLERANCE_ARRONDI_MDT:
+                res[v] = ""
+            elif abs(d) > SEUIL_MATERIALITE * abs(init):
+                res[v] = "changement_methode" if x[4] else "correction"
+                if x[4]:
+                    annonces.append(x[0])
+            else:
+                res[v] = "retraitement_mineur"
+        for v, n in res.items():      # même chiffre qu'un changement annoncé : même retraitement
+            if n == "correction" and any(abs(vers[v][0] - a) <= TOLERANCE_ARRONDI_MDT for a in annonces):
+                res[v] = "changement_methode"
+        return res
+
     for cle, vers in valeurs.items():
-        if "initiale" not in vers:
+        if "initiale" in vers and PARENT.get(cle[2]) is None:
+            for v, n in nature_total(cle, vers).items():
+                natures[(cle, v)] = n
+    for cle, vers in valeurs.items():
+        parent = PARENT.get(cle[2])
+        if "initiale" not in vers or parent is None:
             continue
-        initiale = vers["initiale"][0]
-        hors_arrondi = [v for v, x in vers.items()
-                        if v != "initiale" and abs(x[0] - initiale) > TOLERANCE_ARRONDI_MDT]
-        annonces = [vers[v][0] for v in hors_arrondi if vers[v][4]]
-        chg = {v for v in hors_arrondi
-               if any(abs(vers[v][0] - a) <= TOLERANCE_ARRONDI_MDT for a in annonces)}
-        if chg:
-            changements[cle] = chg
+        cle_p = (cle[0], cle[1], parent, cle[3])
+        propre = nature_total(cle, vers)
+        for v, n in propre.items():
+            if (cle_p, v) in natures:
+                n_total = natures[(cle_p, v)]
+                if n_total == "" and n != "":
+                    n_total = "reclassement"   # total stable, la composante bouge
+                natures[(cle, v)] = n_total if n != "" or n_total != "reclassement" else ""
+            else:
+                natures[(cle, v)] = n           # total absent de ce document : règle du total
+    changements: dict[tuple[str, str, str, str], set[str]] = {}
+    for (cle, v), n in natures.items():
+        if n == "changement_methode":
+            changements.setdefault(cle, set()).add(v)
 
     # 1) version retenue de chaque série : priorité, sauf versions exclues par règle fixe et
     #    changements de méthode
@@ -1289,42 +1330,23 @@ def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]],
     for cle, vers in valeurs.items():
         admises = [v for v in vers if version_admise(cle[2], v) and v not in changements.get(cle, ())]
         sources[cle] = min(admises, key=priorite_version) if admises else None
-    # 2) reclassement à total constant : une composante prend la même version que son total
+    # 2) une composante prend la même version que son total
     for (code, per, ind, mesure), vers in valeurs.items():
         total = PARENT.get(ind)
         src_total = sources.get((code, per, total, mesure)) if total else None
-        if src_total and src_total in vers and version_admise(ind, src_total):
+        if src_total and src_total in vers and version_admise(ind, src_total) \
+                and src_total not in changements.get((code, per, ind, mesure), ()):
             sources[(code, per, ind, mesure)] = src_total
 
-    def ecart(code, per, ind, mesure, version) -> float | None:
-        vers, src = valeurs.get((code, per, ind, mesure)), sources.get((code, per, ind, mesure))
-        if not vers or src is None or version not in vers:
-            return None
-        return vers[version][0] - vers[src][0]
-
     def statut_revision(code, per, ind, mesure, version) -> str:
-        """correction : le total change au-delà de l'arrondi ; reclassement : total stable,
-        composantes qui bougent en sens inverse ; vide : sous la tolérance."""
+        """Nature de la révision (voir 0) : pour une version révisée, sa nature ; pour la version
+        initiale remplacée, la nature de la version retenue. Sans version initiale : vide."""
+        cle = (code, per, ind, mesure)
         if not version_admise(ind, version):
             return "exclue (capitaux propres, 31/12 provisoire)"
-        if version in changements.get((code, per, ind, mesure), ()):
-            return "changement_methode"
-        d = ecart(code, per, ind, mesure, version)
-        if d is None:
-            return ""
-        if ind in GROUPES:
-            if abs(d) > TOLERANCE_ARRONDI_MDT:
-                return "correction"
-            dc = [coef * x for c, coef in GROUPES[ind].items()
-                  if (x := ecart(code, per, c, mesure, version)) is not None and abs(x) > TOLERANCE_ARRONDI_MDT]
-            return "reclassement" if any(x > 0 for x in dc) and any(x < 0 for x in dc) else ""
-        if abs(d) <= TOLERANCE_ARRONDI_MDT:
-            return ""
-        parent = PARENT.get(ind)
-        if parent and statut_revision(code, per, parent, mesure, version) == "reclassement":
-            return "reclassement"
-        return "correction"
-
+        if version == "initiale":
+            return natures.get((cle, sources.get(cle)), "")
+        return natures.get((cle, version), "")
     # 3) rupture de série : la période retraitée P garde sa valeur initiale (ancienne méthode) ; la
     #    même période un an plus tard est la première publiée avec la nouvelle méthode. La rupture est
     #    marquée sur celle-ci, pour l'indicateur et la mesure concernés.

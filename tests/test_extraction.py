@@ -111,8 +111,7 @@ def test_somme_trimestres_revisee():
     assert len(lignes) == 8, f"{len(lignes)} combinaisons banque × indicateur au lieu de 8"
     for r in lignes:
         # jamais « ecart » : ok ; « en attente de révision » si le cumul retenu est le 31/12 provisoire ;
-        # « rupture de série » si l'année contient un changement de méthode (UIB 2025 : premier semestre
-        # retraité « pour les besoins de comparabilité » en cours d'année, trimestres gardés en initiale)
+        # « rupture de série » si l'année contient un changement de méthode (révision > 2 % annoncée)
         assert r["statut"] in ("ok", "en attente de révision", "rupture de série"), \
             f"{r['banque']} {r['code_indicateur']} : {r}"
         # hors rupture, la somme des trimestres retenus est cohérente avec le cumul T4 du document T4
@@ -169,6 +168,18 @@ def test_changement_methode_bh_2024():
     rupture = [r for r in versions if r["trimestre"] == "2025T4" and r["code_indicateur"] == "PNB"
                and r["mesure"] == "cumul" and r["rupture_serie"] == "oui"]
     assert rupture, "rupture de série attendue sur le PNB cumulé 2025T4"
+
+
+def test_seuil_materialite_uib_2025():
+    """UIB, PNB 2025 : 522,651 initial (T4 2025), 525,528 au 31/12 du T2 2026 (+0,55 %, document
+    annoté « chiffres retraités pour les besoins de comparabilité ») : sous 2 % → retraitement_mineur,
+    version révisée retenue malgré la note."""
+    docs = docs_banque("UIB", ["2025T4", "2026T1", "2026T2"])
+    pnb = {r["version"]: r for r in versions_de(docs)
+           if r["trimestre"] == "2025T4" and r["code_indicateur"] == "PNB" and r["mesure"] == "cumul"}
+    assert pnb["revisee_31-12_T2_N+1"]["statut_revision"] == "retenue"
+    assert proche(pnb["revisee_31-12_T2_N+1"]["valeur_mdt"], 525.528)
+    assert pnb["initiale"]["statut_revision"] == "retraitement_mineur", pnb["initiale"]
 
 
 def test_variations_comparables():
