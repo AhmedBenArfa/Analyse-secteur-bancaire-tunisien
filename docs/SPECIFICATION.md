@@ -430,7 +430,7 @@ d'une banque à l'autre (colonne `definition_charges_operatoires` de `gabarits.c
 | Valeur | Contenu du total publié | Exemples |
 |---|---|---|
 | `sans dotations` | frais de personnel + charges générales d'exploitation | BT, BH, BTE, STB, TJARI jusqu'au T3 2021 |
-| `avec dotations publiees` | frais de personnel + charges générales + dotations aux amortissements, trois lignes publiées | WIB (« Dotations aux amortissements et aux provisions sur immobilisations ») |
+| `avec dotations publiees` | frais de personnel + charges générales + dotations aux amortissements, trois lignes publiées | WIB (« Dotations aux amortissements et aux provisions sur immobilisations »), UIB |
 | `avec reste non detaille` | plus que frais de personnel + charges générales ; la différence (dotations ou autres) n'est pas détaillée | BNA, ATB, AB, BIAT, TJARI à partir du T4 2021 (colonnes N-1 retraitées) |
 | `composantes non publiees` | seul le total est publié | |
 
@@ -723,8 +723,8 @@ Part de marché, Var PNB A/A % (Variations_Comparables) — pour un seul visuel 
 | 1. Vue d'ensemble | Cartes (PNB secteur, coef secteur, dépôts, crédits), titre dynamique, part de marché PNB, HHI dans le temps |
 | 2. Classement | Tableau des banques avec rangs et mise en forme conditionnelle, matrice croissance × coef |
 | 3. Évolution 2020–2026 | Courbes par banque avec sélecteur d'indicateur, bandes de périodes Covid, marqueurs de rupture de série (`Rupture PNB`, info-bulle `detail_rupture`), annotations des
-événements (`Evenements` : don au Fonds 1818 en 2020, accord salarial APTBEF–FGBEF en 2021,
-retraitement BH 2024) en info-bulle et en marqueurs ; variations sur un an depuis `Variations_Comparables` |
+événements (`Evenements` : don au Fonds 1818 en 2020, moratoire Covid de l'UIB en 2020, accord
+salarial APTBEF–FGBEF en 2021, retraitement BH 2024) en info-bulle et en marqueurs ; variations sur un an depuis `Variations_Comparables` |
 | 4. Structure du PNB | Barres empilées marge d'intérêts / commissions / portefeuille par banque |
 | 5. Bilan | Crédits, dépôts, crédits / dépôts, structure des dépôts |
 | 6. Bourse | Cours, performance, volatilité, performance boursière vs croissance du PNB |
@@ -745,13 +745,21 @@ info-bulles personnalisées ; signets « trimestre » / « année ».
   de rupture dans les graphiques. Le seuil de 2 % est un choix d'analyse, pas une norme. Les
   variations sur un an sont toujours calculées dans un même document. Les banques n'expliquent pas
   toujours ce qui a changé (BH, T4 2025) ; deux causes communes sont connues pour 2020 (don au
-  Fonds 1818) et 2021 (accord salarial du secteur).
+  Fonds 1818) et 2021 (accord salarial du secteur), plus une cause propre à l'UIB en 2020
+  (intérêts du moratoire Covid non comptés dans les chiffres publiés, réintégrés en 2021 : PNB
+  des 9 mois 2020 révisé de +42,7 %).
+- Erreurs de la banque dans les colonnes N-1 : deux cas vérifiés sur l'image. UIB 2023T2 :
+  charges d'exploitation du T2 2022 égales au cumul du semestre (produits − charges ≠ PNB dans
+  cette colonne, document « a verifier ») ; WIB 2023T4 : colonne T4 2022 recopiée du T3 2022
+  (cohérente en elle-même, repérée par le contrôle annuel 2022). La règle des révisions retient
+  ces colonnes comme version la plus récente.
 - Un document publié en image (BH 2019T4) n'est connu que par les colonnes N-1 du document de
   l'année suivante.
 - Définitions des postes parfois différentes d'une banque à l'autre. Exemple : les charges
   opératoires publiées par la BT et la BH ne comprennent que les frais de personnel et les charges
   générales (pas de dotations aux amortissements) ; la BNA et l'ATB ne détaillent que ces deux postes mais
-  leur total comprend un reste non détaillé. On garde le total publié, sans le recalculer
+  leur total comprend un reste non détaillé ; WIB et UIB publient en plus les dotations aux
+  amortissements. On garde le total publié, sans le recalculer
   (`gabarits.csv`, colonne `definition_charges_operatoires`) ; les comparaisons entre banques
   utilisent le coefficient d'exploitation harmonisé (frais de personnel + charges générales,
   hors dotations), qui sous-estime le coût total des banques dont les dotations sont importantes.

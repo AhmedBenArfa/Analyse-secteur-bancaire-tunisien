@@ -64,7 +64,7 @@ Fichiers versionnés à la racine (lus par le script ou par Power BI) :
 |---|---|
 | `gabarits.csv` | Mise en page de chaque banque par période : ordre des colonnes, unité, libellés, contenu des charges opératoires |
 | `saisies_manuelles.csv` | Valeurs relevées sur l'image des tableaux publiés en image (BTE 2020–2021), avec fichier, page et vérification |
-| `evenements.csv` | Événements à annoter dans Power BI (don au Fonds 1818 en 2020, accord salarial du secteur en 2021, retraitement BH 2024), avec la source PDF et la page |
+| `evenements.csv` | Événements à annoter dans Power BI (don au Fonds 1818 en 2020, moratoire Covid de l'UIB en 2020, accord salarial du secteur en 2021, retraitement BH 2024), avec la source PDF et la page |
 
 Colonnes de valeurs (`colonne`) :
 

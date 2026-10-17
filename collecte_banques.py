@@ -954,7 +954,11 @@ def mots_page(page) -> list[dict]:
         a, b, cc, d = c["matrix"][:4]
         return abs(b) < 1e-6 and abs(cc) < 1e-6 and a > 0 and d > 0
 
-    chars = [dict(c, upright=True) if not c.get("upright", True) and droit(c) else c for c in page.chars]
+    # caractères hors de la page ignorés (UIB 2020T1, 2020T2 : copie invisible du tableau à droite,
+    # x de 687 à 1 075 pour une page de 595 de large)
+    x0, _, x1, _ = page.bbox
+    chars = [dict(c, upright=True) if not c.get("upright", True) and droit(c) else c for c in page.chars
+             if c["x1"] > x0 and c["x0"] < x1]
     mots = extract_words(chars, x_tolerance=1.2, y_tolerance=2.5, keep_blank_chars=False)
     # tirets typographiques (‐ ‑ – − ) ramenés au tiret simple : « ‐416 » est un nombre négatif
     # (BT 2019T4) et « ‐ » seul une case vide (BNA)
@@ -1106,7 +1110,9 @@ def controles(valeurs: dict[str, dict[str, float | None]], facteur: float, t: Tr
         v = valeurs.get(c, {}).get(col)
         return None if v is None else v * facteur
 
-    for col in ("cumul_N", "trim_N"):
+    # toutes les colonnes : celles de N-1 deviennent des versions révisées (UIB 2023T2 : colonne T2 2022
+    # des charges = cumul du semestre, seule colonne N-1 incohérente des 12 banques au 17/10/2026)
+    for col in COLONNES:
         p, ch, pnb = get("PROD_EXPL", col), get("CHG_EXPL", col), get("PNB", col)
         if None not in (p, ch, pnb) and pnb:
             ecart = abs((p - ch) - pnb) / abs(pnb)

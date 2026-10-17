@@ -352,3 +352,33 @@ BIAT;2022T2;BIAT_2022T2.pdf;1;CREDITS;cumul_N;11728575103.201;dinars;11728.57510
 BIAT;2022T2;BIAT_2022T2.pdf;1;CREDITS;exercice_N1;12138035235.867;dinars;12138.035235867;
 BIAT;2022T2;BIAT_2022T2.pdf;1;DEPOTS;cumul_N;16322928182.755;dinars;16322.928182755;
 BIAT;2022T2;BIAT_2022T2.pdf;1;CAP_PROPRES;cumul_N;1657357812.314;dinars;1657.357812314;
+UIB;2020T2;UIB_2020T2.pdf;1;PNB;trim_N;22229;milliers de dinars;22.229;valeur publiée (intérêts du moratoire Covid non comptés, retraités ensuite)
+UIB;2020T2;UIB_2020T2.pdf;1;PNB;trim_N1;104130;milliers de dinars;104.13;
+UIB;2020T2;UIB_2020T2.pdf;1;PNB;cumul_N;123685;milliers de dinars;123.685;
+UIB;2020T2;UIB_2020T2.pdf;1;PNB;cumul_N1;201961;milliers de dinars;201.961;
+UIB;2020T2;UIB_2020T2.pdf;1;PNB;exercice_N1;419406;milliers de dinars;419.406;
+UIB;2020T2;UIB_2020T2.pdf;1;PROD_EXPL;cumul_N;258161;milliers de dinars;258.161;
+UIB;2020T2;UIB_2020T2.pdf;1;CHG_EXPL;cumul_N;134476;milliers de dinars;134.476;
+UIB;2020T2;UIB_2020T2.pdf;1;CHG_OPER;trim_N;51902;milliers de dinars;51.902;
+UIB;2020T2;UIB_2020T2.pdf;1;CHG_OPER;cumul_N;106903;milliers de dinars;106.903;avec dotations : 72 287 + 28 471 + 6 145
+UIB;2020T2;UIB_2020T2.pdf;1;FRAIS_PERS;cumul_N;72287;milliers de dinars;72.287;
+UIB;2020T2;UIB_2020T2.pdf;1;CHG_GEN;cumul_N;28471;milliers de dinars;28.471;
+UIB;2020T2;UIB_2020T2.pdf;1;DOT_AMORT;cumul_N;6145;milliers de dinars;6.145;
+UIB;2020T2;UIB_2020T2.pdf;1;CREDITS;cumul_N;5573616;milliers de dinars;5573.616;copie invisible du tableau hors de la page, ignorée
+UIB;2020T2;UIB_2020T2.pdf;1;DEPOTS;cumul_N;5026840;milliers de dinars;5026.84;
+UIB;2020T2;UIB_2020T2.pdf;1;CAP_PROPRES;cumul_N;623547;milliers de dinars;623.547;
+UIB;2021T2;UIB_2021T2.pdf;1;PNB;trim_N;113471;milliers de dinars;113.471;en-tête sans « Du » dans la couche texte
+UIB;2021T2;UIB_2021T2.pdf;1;PNB;trim_N1;87556;milliers de dinars;87.556;
+UIB;2021T2;UIB_2021T2.pdf;1;PNB;cumul_N;219268;milliers de dinars;219.268;
+UIB;2021T2;UIB_2021T2.pdf;1;PNB;cumul_N1;196264;milliers de dinars;196.264;S1 2020 retraité (123 685 publié en 2020T2)
+UIB;2021T2;UIB_2021T2.pdf;1;PNB;exercice_N1;402193;milliers de dinars;402.193;
+UIB;2021T2;UIB_2021T2.pdf;1;PROD_EXPL;cumul_N;338623;milliers de dinars;338.623;
+UIB;2021T2;UIB_2021T2.pdf;1;CHG_EXPL;cumul_N;119355;milliers de dinars;119.355;
+UIB;2021T2;UIB_2021T2.pdf;1;CHG_OPER;trim_N;55845;milliers de dinars;55.845;
+UIB;2021T2;UIB_2021T2.pdf;1;CHG_OPER;cumul_N;112040;milliers de dinars;112.04;81 607 + 24 600 + 5 833
+UIB;2021T2;UIB_2021T2.pdf;1;FRAIS_PERS;cumul_N;81607;milliers de dinars;81.607;
+UIB;2021T2;UIB_2021T2.pdf;1;CHG_GEN;cumul_N;24600;milliers de dinars;24.6;
+UIB;2021T2;UIB_2021T2.pdf;1;DOT_AMORT;cumul_N;5833;milliers de dinars;5.833;
+UIB;2021T2;UIB_2021T2.pdf;1;CREDITS;cumul_N;5823014;milliers de dinars;5823.014;
+UIB;2021T2;UIB_2021T2.pdf;1;DEPOTS;cumul_N;5158762;milliers de dinars;5158.762;
+UIB;2021T2;UIB_2021T2.pdf;1;CAP_PROPRES;cumul_N;661106;milliers de dinars;661.106;
