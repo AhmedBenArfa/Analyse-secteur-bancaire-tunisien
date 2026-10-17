@@ -149,8 +149,18 @@ python scripts/etats_financiers.py tout
 ```
 
 Télécharge les états financiers **individuels** annuels (31/12, 2019 →) et semestriels
-(30/06, 2020 →) sur le site de la BVMT, en extrait le résultat net, le total de l'actif et le total
-des capitaux propres, puis compare le résultat net annuel à ilboursa.
+(30/06, 2020 →) sur le site de la BVMT, en extrait le résultat net (**avant modifications
+comptables** : l'effet d'une modification concerne des exercices antérieurs et passe en résultats
+reportés ; le résultat après modifications est gardé pour information), le total de l'actif et le
+total des capitaux propres, puis compare le résultat net annuel à ilboursa.
+
+Contrôles : total actif = total passif et capitaux propres, résultat de l'état de résultat =
+résultat inscrit au bilan (bloquants) ; recoupement capitaux propres − résultat = capitaux propres
+« hors résultat » des indicateurs trimestriels (colonne `recoupement_trimestriel`, non bloquant).
+La comparaison avec ilboursa (`verification_ilboursa.csv`) est **purement informative** : ilboursa
+ne précise pas s'il s'agit de comptes individuels ou consolidés (probablement consolidés) ; elle ne
+change jamais le statut d'un document. Valeurs relevées à la main pour les tests :
+`tests/valeurs_reference_ef.csv`.
 Option `--bulletins` (avec `telecharger`) : cherche aussi dans les Bulletins Officiels du CMF.
 
 Fichiers produits : `etats_financiers_long.csv`, `controle_etats_financiers.csv`,
@@ -158,9 +168,9 @@ Fichiers produits : `etats_financiers_long.csv`, `controle_etats_financiers.csv`
 
 ## Limites — à lire avant d'utiliser les chiffres
 
-- L'extraction n'a été vérifiée à la main que sur 12 documents réels de deux banques
-  (BIAT et UIB, T1 2025 → T2 2026). Les autres banques et les années plus anciennes ont
-  d'autres mises en page : les premiers lancements révéleront des cas à ajouter.
+- L'extraction des indicateurs trimestriels est comparée à 383 valeurs relevées à la main sur
+  l'image de 36 documents (2 par banque, 8 pour BIAT et UIB : `tests/valeurs_reference.csv`).
+  Les autres documents ne sont contrôlés que par les règles de cohérence.
 - Le site de la BVMT renvoie des pages vides aux scripts : seuls les liens directs vers les PDF
   fonctionnent. Les noms de fichiers changent d'une période à l'autre.
 - Les PDF scannés (images) ne sont pas lisibles : statut `echec`, saisie manuelle nécessaire

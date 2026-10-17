@@ -608,6 +608,24 @@ clairement dans le rapport.
 Remarque : les capitaux propres des indicateurs trimestriels sont souvent publiés
 « compte non tenu des résultats de la période ». On utilise donc ceux du bilan pour le ROE.
 
+**Résultat net retenu : avant modifications comptables (règle générale, toutes banques,
+décision du 18/10/2026).** Certaines banques publient sous le résultat net une ligne « Effet des
+modifications comptables (net d'impôt) » puis un « Résultat après modification(s) comptable(s) ».
+Le ROE et le ROA utilisent le résultat net **avant** modifications comptables (`RES_NET`) :
+
+- l'effet d'une modification comptable concerne des **exercices antérieurs** (application
+  rétroactive d'une nouvelle méthode) ; il ne mesure pas la rentabilité de la période ;
+- il **passe en résultats reportés**, dans les capitaux propres : le résultat inscrit au bilan
+  (ligne « Résultat de l'exercice / de la période » des capitaux propres) est le résultat avant
+  modifications, donc cohérent avec `CAP_PROPRES_EF`, dénominateur du ROE ;
+- exemple : BNA 2024, effet de −40,975 MDT ; résultat net 254,557 MDT au 31/12/2024 (213,582 après
+  modification) et 132,749 MDT au 30/06/2024 (91,774 après) ; le bilan porte 254,557 et 132,749,
+  et l'effet figure en résultats reportés (−39,940 au 31/12/2024).
+
+Le résultat après modifications (`RES_NET_APRES_MODIF`) et l'effet (`MODIF_COMPTABLES`) sont
+enregistrés pour information (fichier, page), sans servir aux ratios. Le résultat inscrit dans
+les capitaux propres du bilan (`RES_BILAN`) sert de contrôle : il doit égaler `RES_NET`.
+
 Soit environ 12 banques × 13 dates × 3 valeurs ≈ 470 valeurs, collectées par
 `scripts/etats_financiers.py` :
 
@@ -616,10 +634,25 @@ Soit environ 12 banques × 13 dates × 3 valeurs ≈ 470 valeurs, collectées pa
    `...-semestriels-30-06-AAAA.pdf`), avec en option la recherche dans les Bulletins Officiels du CMF.
    Les comptes consolidés sont écartés.
 2. Extraction des lignes « Total actif », « Total capitaux propres » et « Résultat net de
-   l'exercice / de la période », en ignorant la colonne des notes.
-3. Contrôles : total actif = total capitaux propres et passif ; capitaux propres < total actif ;
-   résultat net < capitaux propres.
-4. Comparaison du résultat net annuel avec le tableau annuel d'ilboursa (écart > 1 % signalé).
+   l'exercice / de la période », en ignorant la colonne des notes (y compris les renvois en
+   chiffres romains en fin de libellé, « Total des capitaux propres V »). Les lignes de résultat
+   ne sont lues que sur la page de l'**état de résultat** (titre en tête de page), jamais dans les
+   notes ni dans le tableau de variation des capitaux propres. Un tiret « - » vaut 0 à sa place.
+3. Contrôles bloquants (statut `a verifier`) : total actif = total capitaux propres et passif ;
+   capitaux propres < total actif ; résultat net < capitaux propres ; résultat de l'état de
+   résultat = résultat du bilan (`RES_BILAN`) ; capitaux propres lus sur la page du total
+   capitaux propres et passifs.
+4. **Recoupement avec les indicateurs trimestriels** (contrôle non bloquant, colonne
+   `recoupement_trimestriel` de `controle_etats_financiers.csv`) : capitaux propres du bilan −
+   résultat net de la période = capitaux propres « hors résultat de la période » retenus dans
+   `indicateurs_versions.csv` à la même date (tolérance 2 kDT). Non bloquant parce qu'un écart
+   peut venir de la série trimestrielle : BIAT au 31/12/2024, 1 868,637 MDT (EF) contre 1 981,591
+   (indicateurs, document BIAT_2025T4, « après affectation du résultat »). Exact pour BNA au
+   30/06 et au 31/12/2024 et pour BIAT au 30/06/2024.
+5. Comparaison du résultat net annuel avec le tableau annuel d'ilboursa : **purement
+   informative**, elle ne change jamais le statut d'un document. ilboursa ne précise pas s'il
+   s'agit de comptes individuels ou consolidés, et ses chiffres sont probablement consolidés
+   (2023 : BNA 212,0 MDT contre 190,0 en individuel ; BIAT 358,6 contre 331,4).
 
 Les valeurs que le script ne trouve pas sont saisies à la main dans
 `donnees/corrections_manuelles.csv`, avec le fichier source et la page.

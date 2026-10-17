@@ -12,7 +12,7 @@ Utilisation (depuis le dossier du projet) :
   python scripts/etats_financiers.py telecharger --banques BIAT,UIB
   python scripts/etats_financiers.py telecharger --bulletins     # + recherche dans les Bulletins Officiels du CMF
   python scripts/etats_financiers.py extraire
-  python scripts/etats_financiers.py verifier                    # compare le résultat net annuel à ilboursa
+  python scripts/etats_financiers.py verifier                    # compare à ilboursa (informatif)
   python scripts/etats_financiers.py urls --banques TJARI        # URL testées
 
 Les fonctions communes (banques, téléchargement, lecture des tableaux) viennent de collecte_banques.py.
@@ -47,21 +47,33 @@ SUFFIXES = {
 }
 
 CODES = [
-    ("RES_NET",        "Résultat net de la période"),
+    ("RES_NET",        "Résultat net de la période (état de résultat, avant modifications comptables)"),
     ("TOTAL_ACTIF",    "Total de l'actif"),
     ("CAP_PROPRES_EF", "Total des capitaux propres (résultat inclus)"),
     ("TOTAL_PASSIF_CP", "Total passif et capitaux propres (contrôle)"),
 ]
+# Lus quand ils existent, pour information et contrôle (jamais obligatoires) :
+CODES_INFO = [
+    ("MODIF_COMPTABLES",    "Effet des modifications comptables (net d'impôt)"),
+    ("RES_NET_APRES_MODIF", "Résultat net après modifications comptables"),
+    ("RES_BILAN",           "Résultat de la période inscrit dans les capitaux propres du bilan (contrôle)"),
+]
 
+_PERIODE = r"( de l'exercice| de la periode| du semestre| de l'exercice net)?"
 REGLES = [
     ("TOTAL_PASSIF_CP", r"^total (des )?capitaux propres et (du )?passifs?$|^total (du )?passifs? et (des )?capitaux propres$"),
     ("CAP_PROPRES_EF",  r"^total (des )?capitaux propres$"),
     ("TOTAL_ACTIF",     r"^total (de l'|des )?actifs?$|^total bilan actif$"),
-    ("RES_NET",         r"^resultat net (de l'exercice|de la periode|du semestre|de l'exercice net)?$|^resultat net$"),
-    # repli : certaines banques écrivent seulement « Résultat de l'exercice »
+    # « Résultat net de la période (avant modification comptable) » (BNA S1 2024) = résultat net
+    ("RES_NET",         rf"^resultat net{_PERIODE}( avant (les )?modifications? comptables?)?$"),
+    ("RES_NET_APRES_MODIF", rf"^resultat( net)?{_PERIODE} apres (les )?modifications? comptables?$"),
+    ("MODIF_COMPTABLES", r"^effets? (net )?des modifications comptables"),
+    # repli : certaines banques écrivent seulement « Résultat de l'exercice » (aussi la ligne du bilan)
     ("RES_EXERCICE",    r"^resultat (de l'exercice|de la periode|du semestre)$"),
 ]
 REGLES_C = [(c, re.compile(r)) for c, r in REGLES]
+# lignes lues seulement sur la page de l'état de résultat
+CODES_RESULTAT = {"RES_NET", "RES_NET_APRES_MODIF", "MODIF_COMPTABLES", "RES_EXERCICE"}
 
 
 @dataclass(frozen=True)
@@ -85,12 +97,16 @@ class Arrete:
         return f"{self.type} {self.date:%d/%m/%Y}"
 
 
+PREMIER_SEMESTRIEL = 2020   # le périmètre commence au T4 2019 : premier 30/06 utile = 2020
+
+
 def arretes(debut: int, fin: int, aujourdhui: dt.date | None = None) -> list[Arrete]:
-    """Annuels 31/12 depuis `debut`, semestriels 30/06 depuis `debut + 1`, s'ils doivent être publiés."""
+    """Exercices `debut` à `fin` : annuels 31/12 et semestriels 30/06 (à partir de 2020),
+    s'ils doivent déjà être publiés."""
     d = aujourdhui or dt.date.today()
     sortie = []
     for a in range(debut, fin + 1):
-        if a > debut and dt.date(a, 6, 30) + dt.timedelta(days=65) <= d:
+        if a >= PREMIER_SEMESTRIEL and dt.date(a, 6, 30) + dt.timedelta(days=65) <= d:
             sortie.append(Arrete(a, "semestriel"))
         if dt.date(a, 12, 31) + dt.timedelta(days=120) <= d:
             sortie.append(Arrete(a, "annuel"))
@@ -280,7 +296,11 @@ RE_NOTE = re.compile(r"^\(?\d{1,2}([.,]\d{1,2}){1,2}\)?$")
 def code_ligne(libelle: str) -> str | None:
     n = cb.normaliser(libelle)
     n = re.sub(r"^((pr|ch|ac|pa|cp)\s?\d+\s*|\d+\s*)+", "", n).strip()
-    if "modification" in n or "avant" in n:
+    # renvoi de note en chiffres romains en fin de libellé (BIAT : « Total des capitaux propres V »,
+    # « Total des produits d'exploitation bancaire VII-1 »)
+    n = re.sub(r"(\s+[ivx]{1,5}(\s\d{1,2})*)+$", "", n).strip()
+    # « Résultat avant impôt »… : jamais le résultat net ; « avant modification comptable » : oui
+    if re.search(r"\bavant\b(?! (les )?modifications? comptables?)", n):
         return None
     for code, rx in REGLES_C:
         if rx.search(n):
@@ -289,11 +309,16 @@ def code_ligne(libelle: str) -> str | None:
 
 
 def valeurs_ligne(jetons: list[cb.Jeton]) -> list[float]:
-    """Valeurs d'une ligne, sans les renvois de notes (4.1, 5-2, 12...)."""
-    textes = [j.texte for j in jetons if j.texte != "-"]
+    """Valeurs d'une ligne, sans les renvois de notes (4.1, 5-2, 12...). Un tiret isolé (« néant »)
+    vaut 0 et garde sa place : sinon les colonnes suivantes se décalent (BNA 2024, « Effet des
+    modifications comptables » : (40 975) - (40 975), la variation devenait la colonne N-1)."""
+    textes = [j.texte for j in jetons]
     gros = [t for t in textes if len(re.sub(r"\D", "", t)) >= 4]
     garde = []
     for t in textes:
+        if t == "-":
+            garde.append(0.0)
+            continue
         if RE_NOTE.match(t):
             continue
         if re.fullmatch(r"\d{1,2}", t) and len(gros) >= 2:
@@ -315,20 +340,44 @@ def facteur_mdt(total_actif: float | None) -> tuple[float, str]:
     return 1.0, "millions de dinars"
 
 
+RE_TITRE_RESULTAT = re.compile(r"^etat (de|des) resultats?\b")
+
+
+def page_etat_resultat(lignes) -> bool:
+    """Page dont le titre (vingt premières lignes) est « État de résultat ». Les notes
+    (« 6- Notes relatives aux postes de l'état de résultat ») et le tableau de variation des
+    capitaux propres, qui ont aussi une ligne « Résultat net de l'exercice », sont exclus."""
+    return any(RE_TITRE_RESULTAT.match(cb.normaliser(l.libelle)) for l in lignes[:20])
+
+
 def extraire_pdf(p: Path, max_pages: int = 30) -> tuple[dict[str, tuple[list[float], str, int]], list[str]]:
+    """Totaux du bilan : première occurrence dans le document. Lignes de résultat : seulement sur
+    la page de l'état de résultat (BNA S1 2024 : la ligne « Résultat net de l'exercice » de la
+    page 26, tableau des capitaux propres, donnait le résultat du S1 2023). Le résultat inscrit
+    dans les capitaux propres du bilan (même page que leur total) sert de contrôle (RES_BILAN)."""
     import pdfplumber
 
     trouves: dict[str, tuple[list[float], str, int]] = {}
+    res_bilan: dict[int, tuple[list[float], str, int]] = {}   # page -> ligne de résultat hors état de résultat
     with pdfplumber.open(p) as pdf:
         for i, page in enumerate(pdf.pages[:max_pages], start=1):
-            for l in cb.lignes_page(page, i):
+            lignes = cb.lignes_page(page, i)
+            est_resultat = page_etat_resultat(lignes)
+            for l in lignes:
                 if not l.nombres:
                     continue
                 c = code_ligne(l.libelle)
-                if c and c not in trouves:
-                    vals = valeurs_ligne(l.nombres)
-                    if vals:
-                        trouves[c] = (vals, l.libelle, i)
+                if not c:
+                    continue
+                vals = valeurs_ligne(l.nombres)
+                if not vals:
+                    continue
+                if c in CODES_RESULTAT and not est_resultat:
+                    if c in ("RES_NET", "RES_EXERCICE") and i not in res_bilan:
+                        res_bilan[i] = (vals, l.libelle, i)
+                    continue
+                if c not in trouves:
+                    trouves[c] = (vals, l.libelle, i)
             if all(c in trouves for c, _ in CODES):
                 break
 
@@ -337,6 +386,18 @@ def extraire_pdf(p: Path, max_pages: int = 30) -> tuple[dict[str, tuple[list[flo
         trouves["RES_NET"] = trouves["RES_EXERCICE"]
         alertes.append("résultat lu sur la ligne « Résultat de l'exercice » : vérifier")
     trouves.pop("RES_EXERCICE", None)
+    page_cp = trouves.get("CAP_PROPRES_EF", (None, None, None))[2]
+    page_tp = trouves.get("TOTAL_PASSIF_CP", (None, None, None))[2]
+    if page_cp and page_tp and page_cp != page_tp:
+        # BIAT S1 2024 avant correction : capitaux propres lus p.10 (note des retraitements),
+        # total des capitaux propres et passifs p.2 (bilan)
+        alertes.append(f"capitaux propres lus p.{page_cp}, hors de la page du bilan (p.{page_tp})")
+    if page_cp in res_bilan:
+        trouves["RES_BILAN"] = res_bilan[page_cp]
+    rb = trouves.get("RES_BILAN", ([None],))[0][0]
+    rn0 = trouves.get("RES_NET", ([None],))[0][0]
+    if rb is not None and rn0 is not None and abs(rb - rn0) > 1:
+        alertes.append(f"résultat de l'état de résultat ≠ résultat du bilan ({rn0:,.0f} vs {rb:,.0f})")
     for c in ("RES_NET", "TOTAL_ACTIF", "CAP_PROPRES_EF"):
         if c not in trouves:
             alertes.append(f"{c} introuvable")
@@ -353,6 +414,41 @@ def extraire_pdf(p: Path, max_pages: int = 30) -> tuple[dict[str, tuple[list[flo
     return trouves, alertes
 
 
+TOLERANCE_RECOUPEMENT_MDT = 0.002   # arrondi des banques qui publient en milliers de dinars
+
+
+def capitaux_propres_trimestriels() -> dict[tuple[str, str], tuple[float, str, str]]:
+    """Capitaux propres « hors résultat de la période » retenus dans les indicateurs trimestriels
+    (indicateurs_versions.csv) : (banque, date) -> (valeur MDT, fichier, définition annoncée)."""
+    src = DOSSIER / "indicateurs_versions.csv"
+    if not src.exists():
+        return {}
+    out = {}
+    with src.open(encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f, delimiter=";"):
+            if (r["code_indicateur"] == "CAP_PROPRES" and r["mesure"] == "cumul"
+                    and r["version"] == r["source_valeur"] and r["valeur_retenue"]):
+                out[(r["banque"], r["date_arrete"])] = (float(r["valeur_retenue"]), r["fichier"],
+                                                        r["note_definition"])
+    return out
+
+
+def recoupement(trouves: dict, fac: float, cp_trim: tuple | None) -> str:
+    """Contrôle non bloquant : capitaux propres du bilan − résultat net de la période = capitaux
+    propres « hors résultat » des indicateurs trimestriels. Un écart peut venir de la série
+    trimestrielle (BIAT 31/12/2024 : « après affectation du résultat »), d'où le statut non bloquant."""
+    if "CAP_PROPRES_EF" not in trouves or "RES_NET" not in trouves:
+        return "incomplet"
+    if cp_trim is None:
+        return "pas de valeur trimestrielle"
+    hors_res = (trouves["CAP_PROPRES_EF"][0][0] - trouves["RES_NET"][0][0]) * fac
+    ecart = hors_res - cp_trim[0]
+    if abs(ecart) <= TOLERANCE_RECOUPEMENT_MDT:
+        return "ok"
+    return (f"ecart {ecart:+.3f} MDT (EF {hors_res:.3f}, trimestriel {cp_trim[0]:.3f}, {cp_trim[1]}"
+            + (f", {cp_trim[2]}" if cp_trim[2] else "") + ")")
+
+
 def cmd_extraire(args):
     m = lire_manifeste()
     if not m:
@@ -360,13 +456,15 @@ def cmd_extraire(args):
     champs = ["banque", "date_arrete", "annee", "type", "code", "colonne", "valeur_source", "unite_source",
               "valeur_mdt", "libelle_source", "source", "fichier", "page"]
     n_ok = 0
+    cp_trimestriels = capitaux_propres_trimestriels()
     with SORTIE.open("w", newline="", encoding="utf-8-sig") as f, \
          CONTROLE.open("w", newline="", encoding="utf-8-sig") as fc:
         w = csv.DictWriter(f, fieldnames=champs, delimiter=";")
         w.writeheader()
         wc = csv.writer(fc, delimiter=";")
         wc.writerow(["banque", "arrete", "type", "statut", "resultat_net_mdt", "total_actif_mdt",
-                     "capitaux_propres_mdt", "alertes", "fichier"])
+                     "capitaux_propres_mdt", "alertes", "fichier", "recoupement_trimestriel",
+                     "modifications_comptables_mdt", "resultat_apres_modifications_mdt"])
         for (code, cle), r in sorted(m.items()):
             if r["statut"] != "ok" or not Path(r["fichier"]).exists():
                 wc.writerow([code, cle, r["type"], "pdf manquant", "", "", "", "", ""])
@@ -386,15 +484,19 @@ def cmd_extraire(args):
                                 "unite_source": unite, "valeur_mdt": round(v * fac, 6), "libelle_source": lib,
                                 "source": r["source"], "fichier": Path(r["fichier"]).name, "page": page})
             get = lambda c: round(trouves[c][0][0] * fac, 3) if c in trouves else ""
+            rec = recoupement(trouves, fac, cp_trimestriels.get((code, r["date_arrete"])))
             wc.writerow([code, cle, r["type"], statut, get("RES_NET"), get("TOTAL_ACTIF"),
-                         get("CAP_PROPRES_EF"), " | ".join(alertes), r["fichier"]])
+                         get("CAP_PROPRES_EF"), " | ".join(alertes), r["fichier"], rec,
+                         get("MODIF_COMPTABLES"), get("RES_NET_APRES_MODIF")])
             print(f"  {statut:<11} {code} {cle}  RN={get('RES_NET')}  TA={get('TOTAL_ACTIF')}  "
-                  f"CP={get('CAP_PROPRES_EF')}  {'; '.join(alertes)}")
+                  f"CP={get('CAP_PROPRES_EF')}  recoupement : {rec}  {'; '.join(alertes)}")
     print(f"\n{n_ok} documents extraits sans alerte.\nDonnées : {SORTIE}\nContrôle : {CONTROLE}")
 
 
 # ---------------------------------------------------------------------------
-# Contrôle avec ilboursa (résultat net annuel)
+# Comparaison avec ilboursa (résultat net annuel), purement informative : ilboursa ne précise pas
+# s'il s'agit de comptes individuels ou consolidés (probablement consolidés : BIAT 2023 358,6 MDT
+# contre 331,4 en individuel) ; elle ne change jamais le statut d'un document.
 # ---------------------------------------------------------------------------
 
 def cellules(ligne_html: str) -> list[str]:
@@ -455,7 +557,7 @@ def cmd_verifier(args):
                     w.writerow([code, annee, "", round(v_mdt, 3), "", "absent chez nous"])
                     continue
                 ecart = abs(n - v_mdt) / abs(v_mdt) if v_mdt else 0
-                statut = "ok" if ecart <= 0.01 else "ECART"
+                statut = "ok" if ecart <= 0.01 else "ecart (informatif)"
                 w.writerow([code, annee, round(n, 3), round(v_mdt, 3), f"{ecart:.1%}", statut])
                 print(f"  {code} {annee} : extrait {n:,.1f} / ilboursa {v_mdt:,.1f} MDT  {statut}")
     print(f"\nComparaison : {sortie}")

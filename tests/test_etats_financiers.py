@@ -70,3 +70,48 @@ def test_bilan_simule(tmp_path):
     for code, valeurs in attendu.items():
         assert trouves.get(code, ([],))[0][:2] == valeurs, (code, trouves.get(code))
     assert not alertes, alertes
+
+
+# ---------------------------------------------------------------------------
+# Vrais documents (téléchargés par « telecharger ») comparés aux valeurs relevées à la main
+# sur l'image des pages (tests/valeurs_reference_ef.csv) ; sauté si les PDF sont absents.
+
+REFERENCE_EF = Path(__file__).resolve().parent / "valeurs_reference_ef.csv"
+
+
+def test_libelles():
+    attendu = {
+        "Résultat net de l'exercice": "RES_NET",
+        "Résultat net de la période (avant modification comptable)": "RES_NET",   # BNA S1 2024
+        "Résultat net de la période (après modification comptable)": "RES_NET_APRES_MODIF",
+        "Résultat après modification comptable": "RES_NET_APRES_MODIF",            # BNA 2024
+        "Effet des modifications comptables (Net d'impôt)": "MODIF_COMPTABLES",
+        "Résultat avant impôt": None,
+        "Total des capitaux propres V": "CAP_PROPRES_EF",                         # BIAT, renvoi de note
+        "Total des produits d'exploitation bancaire VII-1": None,
+        "CP6 - Résultat de l'exercice": "RES_EXERCICE",
+    }
+    for libelle, code in attendu.items():
+        assert ef.code_ligne(libelle) == code, (libelle, ef.code_ligne(libelle))
+
+
+def test_valeurs_reference_ef():
+    import csv
+
+    with REFERENCE_EF.open(encoding="utf-8-sig") as f:
+        refs = list(csv.DictReader(f, delimiter=";"))
+    fichiers = sorted({(r["banque"], r["fichier"]) for r in refs})
+    absents = [f for b, f in fichiers if not (ef.DOSSIER_PDF / b / f).exists()]
+    if absents:
+        pytest.skip(f"PDF non téléchargés : {', '.join(absents)}")
+    ecarts = []
+    for banque, fichier in fichiers:
+        trouves, alertes = ef.extraire_pdf(ef.DOSSIER_PDF / banque / fichier)
+        assert not any("introuvable" in a or "≠" in a or "hors de la page" in a for a in alertes), (fichier, alertes)
+        for r in (r for r in refs if r["fichier"] == fichier):
+            vals, _, page = trouves.get(r["code"], ([], "", None))
+            i = 0 if r["colonne"] == "N" else 1
+            lu = vals[i] if len(vals) > i else None
+            if lu != float(r["valeur_source"]) or str(page) != r["page"]:
+                ecarts.append((fichier, r["code"], r["colonne"], r["valeur_source"], r["page"], lu, page))
+    assert not ecarts, ecarts

@@ -1,0 +1,41 @@
+﻿banque;date_arrete;fichier;page;code;colonne;valeur_source;unite_source;note
+BNA;2024-06-30;BNA_EF_2024-06.pdf;1;TOTAL_ACTIF;N;20829457;milliers de dinars;bilan, colonnes 30/06/2024, 30/06/2023, 31/12/2023
+BNA;2024-06-30;BNA_EF_2024-06.pdf;1;TOTAL_ACTIF;N1;20025834;milliers de dinars;N1 = 30/06/2023
+BNA;2024-06-30;BNA_EF_2024-06.pdf;1;CAP_PROPRES_EF;N;2038863;milliers de dinars;
+BNA;2024-06-30;BNA_EF_2024-06.pdf;1;CAP_PROPRES_EF;N1;1903552;milliers de dinars;N1 = 30/06/2023
+BNA;2024-06-30;BNA_EF_2024-06.pdf;1;TOTAL_PASSIF_CP;N;20829457;milliers de dinars;
+BNA;2024-06-30;BNA_EF_2024-06.pdf;1;RES_BILAN;N;132749;milliers de dinars;CP6 - Résultat de la période
+BNA;2024-06-30;BNA_EF_2024-06.pdf;3;RES_NET;N;132749;milliers de dinars;Résultat net de la période (avant modification comptable)
+BNA;2024-06-30;BNA_EF_2024-06.pdf;3;RES_NET;N1;90226;milliers de dinars;N1 = 30/06/2023
+BNA;2024-06-30;BNA_EF_2024-06.pdf;3;MODIF_COMPTABLES;N;-40975;milliers de dinars;Effet des modifications comptables (Net d'impôt)
+BNA;2024-06-30;BNA_EF_2024-06.pdf;3;MODIF_COMPTABLES;N1;0;milliers de dinars;« - » dans le PDF
+BNA;2024-06-30;BNA_EF_2024-06.pdf;3;RES_NET_APRES_MODIF;N;91774;milliers de dinars;Résultat net de la période (après modification comptable)
+BNA;2024-12-31;BNA_EF_2024-12.pdf;1;TOTAL_ACTIF;N;22459080;milliers de dinars;bilan, colonnes 31/12/2024, 31/12/2023, variation
+BNA;2024-12-31;BNA_EF_2024-12.pdf;1;TOTAL_ACTIF;N1;20468708;milliers de dinars;
+BNA;2024-12-31;BNA_EF_2024-12.pdf;2;CAP_PROPRES_EF;N;2161580;milliers de dinars;
+BNA;2024-12-31;BNA_EF_2024-12.pdf;2;CAP_PROPRES_EF;N1;2004283;milliers de dinars;
+BNA;2024-12-31;BNA_EF_2024-12.pdf;2;TOTAL_PASSIF_CP;N;22459080;milliers de dinars;
+BNA;2024-12-31;BNA_EF_2024-12.pdf;2;RES_BILAN;N;254557;milliers de dinars;CP6 - Résultat de l'exercice
+BNA;2024-12-31;BNA_EF_2024-12.pdf;4;RES_NET;N;254557;milliers de dinars;Résultat net de l'exercice
+BNA;2024-12-31;BNA_EF_2024-12.pdf;4;RES_NET;N1;190013;milliers de dinars;
+BNA;2024-12-31;BNA_EF_2024-12.pdf;4;MODIF_COMPTABLES;N;-40975;milliers de dinars;Effet des modifications comptables (Net d'impôt)
+BNA;2024-12-31;BNA_EF_2024-12.pdf;4;MODIF_COMPTABLES;N1;0;milliers de dinars;« - » dans le PDF (la colonne suivante est la variation)
+BNA;2024-12-31;BNA_EF_2024-12.pdf;4;RES_NET_APRES_MODIF;N;213582;milliers de dinars;Résultat après modification comptable
+BIAT;2024-06-30;BIAT_EF_2024-06.pdf;2;TOTAL_ACTIF;N;22841287;milliers de dinars;bilan, colonnes 30/06/2024, 30/06/2023 (retraité), 31/12/2023
+BIAT;2024-06-30;BIAT_EF_2024-06.pdf;2;TOTAL_ACTIF;N1;21546024;milliers de dinars;N1 = 30/06/2023 retraité (note II-7)
+BIAT;2024-06-30;BIAT_EF_2024-06.pdf;2;CAP_PROPRES_EF;N;2087999;milliers de dinars;« Total des capitaux propres (*) V »
+BIAT;2024-06-30;BIAT_EF_2024-06.pdf;2;CAP_PROPRES_EF;N1;1969815;milliers de dinars;
+BIAT;2024-06-30;BIAT_EF_2024-06.pdf;2;TOTAL_PASSIF_CP;N;22841287;milliers de dinars;
+BIAT;2024-06-30;BIAT_EF_2024-06.pdf;2;RES_BILAN;N;219743;milliers de dinars;Résultat de la période
+BIAT;2024-06-30;BIAT_EF_2024-06.pdf;4;RES_NET;N;219743;milliers de dinars;Résultat net de la période
+BIAT;2024-06-30;BIAT_EF_2024-06.pdf;4;RES_NET;N1;219373;milliers de dinars;N1 = 1er semestre 2023 retraité
+BIAT;2024-06-30;BIAT_EF_2024-06.pdf;4;RES_NET_APRES_MODIF;N;219743;milliers de dinars;Résultat net de la période après modifications comptables
+BIAT;2024-12-31;BIAT_EF_2024-12.pdf;2;TOTAL_ACTIF;N;24996225;milliers de dinars;bilan, colonnes 31/12/2024, 31/12/2023
+BIAT;2024-12-31;BIAT_EF_2024-12.pdf;2;TOTAL_ACTIF;N1;22944526;milliers de dinars;
+BIAT;2024-12-31;BIAT_EF_2024-12.pdf;2;CAP_PROPRES_EF;N;2226391;milliers de dinars;« Total des capitaux propres V »
+BIAT;2024-12-31;BIAT_EF_2024-12.pdf;2;CAP_PROPRES_EF;N1;2082120;milliers de dinars;
+BIAT;2024-12-31;BIAT_EF_2024-12.pdf;2;TOTAL_PASSIF_CP;N;24996225;milliers de dinars;
+BIAT;2024-12-31;BIAT_EF_2024-12.pdf;2;RES_BILAN;N;357754;milliers de dinars;Résultat de l'exercice
+BIAT;2024-12-31;BIAT_EF_2024-12.pdf;4;RES_NET;N;357754;milliers de dinars;Résultat net de l'exercice
+BIAT;2024-12-31;BIAT_EF_2024-12.pdf;4;RES_NET;N1;331444;milliers de dinars;
+BIAT;2024-12-31;BIAT_EF_2024-12.pdf;4;RES_NET_APRES_MODIF;N;357754;milliers de dinars;Résultat net de l'exercice après modifications comptables
