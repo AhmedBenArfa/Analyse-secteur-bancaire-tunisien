@@ -142,3 +142,24 @@ BH;2023T2;BH_2023T2.pdf;1;CHG_GEN;cumul_N;47355;milliers de dinars;47.355;
 BH;2023T2;BH_2023T2.pdf;1;CREDITS;cumul_N;10575743;milliers de dinars;10575.743;nombre renvoyé à la ligne dans sa case (« 10 575 » / « 743 »)
 BH;2023T2;BH_2023T2.pdf;1;DEPOTS;cumul_N;8891745;milliers de dinars;8891.745;
 BH;2023T2;BH_2023T2.pdf;1;CAP_PROPRES;cumul_N;1192958;milliers de dinars;1192.958;
+ATB;2020T2;ATB_2020T2.pdf;1;PNB;trim_N;62222;milliers de dinars;62.222;
+ATB;2020T2;ATB_2020T2.pdf;1;PNB;cumul_N;130592;milliers de dinars;130.592;
+ATB;2020T2;ATB_2020T2.pdf;1;PNB;cumul_N1;114995;milliers de dinars;114.995;
+ATB;2020T2;ATB_2020T2.pdf;1;PNB;exercice_N1;239420;milliers de dinars;239.42;après la colonne « Evolution » (montant, ignorée)
+ATB;2020T2;ATB_2020T2.pdf;1;CHG_OPER;trim_N;47507;milliers de dinars;47.507;
+ATB;2020T2;ATB_2020T2.pdf;1;CHG_OPER;cumul_N;92719;milliers de dinars;92.719;« dont » frais de personnel + charges générales, reste non détaillé
+ATB;2020T2;ATB_2020T2.pdf;1;FRAIS_PERS;cumul_N;54471;milliers de dinars;54.471;
+ATB;2020T2;ATB_2020T2.pdf;1;CHG_GEN;cumul_N;30839;milliers de dinars;30.839;
+ATB;2020T2;ATB_2020T2.pdf;1;CREDITS;cumul_N;5240354;milliers de dinars;5240.354;
+ATB;2020T2;ATB_2020T2.pdf;1;DEPOTS;cumul_N;5624471;milliers de dinars;5624.471;
+ATB;2020T2;ATB_2020T2.pdf;1;CAP_PROPRES;cumul_N;564072;milliers de dinars;564.072;
+ATB;2024T4;ATB_2024T4.pdf;1;PNB;trim_N;115798;milliers de dinars;115.798;
+ATB;2024T4;ATB_2024T4.pdf;1;PNB;cumul_N;391292;milliers de dinars;391.292;
+ATB;2024T4;ATB_2024T4.pdf;1;PNB;cumul_N1;357317;milliers de dinars;357.317;
+ATB;2024T4;ATB_2024T4.pdf;1;CHG_OPER;trim_N;63078;milliers de dinars;63.078;
+ATB;2024T4;ATB_2024T4.pdf;1;CHG_OPER;cumul_N;237912;milliers de dinars;237.912;
+ATB;2024T4;ATB_2024T4.pdf;1;FRAIS_PERS;cumul_N;141261;milliers de dinars;141.261;
+ATB;2024T4;ATB_2024T4.pdf;1;CHG_GEN;cumul_N;78595;milliers de dinars;78.595;
+ATB;2024T4;ATB_2024T4.pdf;1;CREDITS;cumul_N;5414429;milliers de dinars;5414.429;
+ATB;2024T4;ATB_2024T4.pdf;1;DEPOTS;cumul_N;7107596;milliers de dinars;7107.596;
+ATB;2024T4;ATB_2024T4.pdf;1;CAP_PROPRES;cumul_N;567708;milliers de dinars;567.708;

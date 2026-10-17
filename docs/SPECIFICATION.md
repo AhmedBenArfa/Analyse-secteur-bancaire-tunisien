@@ -300,7 +300,7 @@ d'une banque à l'autre (colonne `definition_charges_operatoires` de `gabarits.c
 |---|---|---|
 | `sans dotations` | frais de personnel + charges générales d'exploitation | BT, BH |
 | `avec dotations publiees` | frais de personnel + charges générales + dotations aux amortissements, trois lignes publiées | |
-| `avec reste non detaille` | plus que frais de personnel + charges générales ; la différence (dotations ou autres) n'est pas détaillée | BNA |
+| `avec reste non detaille` | plus que frais de personnel + charges générales ; la différence (dotations ou autres) n'est pas détaillée | BNA, ATB |
 | `composantes non publiees` | seul le total est publié | |
 
 - **Coefficient harmonisé** = (frais de personnel + charges générales d'exploitation) / PNB.
@@ -549,8 +549,8 @@ info-bulles personnalisées ; signets « trimestre » / « année ».
   annuel publié ; les chiffres annuels viennent toujours du cumul (voir 5.2).
 - Définitions des postes parfois différentes d'une banque à l'autre. Exemple : les charges
   opératoires publiées par la BT et la BH ne comprennent que les frais de personnel et les charges
-  générales (pas de dotations aux amortissements) ; la BNA ne détaille que ces deux postes mais
-  son total comprend un reste non détaillé. On garde le total publié, sans le recalculer
+  générales (pas de dotations aux amortissements) ; la BNA et l'ATB ne détaillent que ces deux postes mais
+  leur total comprend un reste non détaillé. On garde le total publié, sans le recalculer
   (`gabarits.csv`, colonne `definition_charges_operatoires`) ; les comparaisons entre banques
   utilisent le coefficient d'exploitation harmonisé (frais de personnel + charges générales,
   hors dotations), qui sous-estime le coût total des banques dont les dotations sont importantes.

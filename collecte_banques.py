@@ -999,10 +999,11 @@ def type_colonne(entete: str, t: Trimestre) -> str | None:
     for m in re.finditer(rf"(?<!\d)(20\d\d)(?!\d)|\d{{2}}/\d{{2}}/(\d{{2}})(?!\d)|(?:{mois})\s*-?\s*(\d{{2}})(?!\d)", n):
         a = m.group(1) or m.group(2) or m.group(3)
         annees.append((m.start(), int(a) if len(a) == 4 else 2000 + int(a)))
+    # colonne de variation, avec ou sans dates (Wifak : « Variation », « % » ;
+    # ATB : « Evolution décembre 19- décembre 18 », en montant)
+    if re.search(r"\bvariations?\b|\bevolution\b|\becart\b", n) or n.strip() in ("%", "en %"):
+        return "_ignorer"
     if not annees:
-        # colonne de variation, sans date (Wifak : « Variation », « % »)
-        if re.search(r"\bvariations?\b|\bevolution\b|\becart\b", n) or n.strip() in ("%", "en %"):
-            return "_ignorer"
         return None
     suffixe = {t.annee: "N", t.annee - 1: "N1"}.get(max(annees)[1])
     if suffixe is None:
