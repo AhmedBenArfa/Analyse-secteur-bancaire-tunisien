@@ -92,8 +92,8 @@ Excel de référence ─────────> referentiel.xlsx
 | Requête | Source | Étapes principales |
 |---|---|---|
 | `Versions` (intermédiaire, non chargée) | `indicateurs_versions.csv` | types (paramètres régionaux en-US) ; application de `Corrections` sur `valeur_mdt` |
-| `Fait_Indicateurs` | référence à `Versions` | filtre `version = source_valeur` (une ligne par banque × trimestre × indicateur × mesure) ; suppression de `valeur_mdt`, `version` ; pivot de `mesure` sur `valeur_retenue` → `Valeur_Trim` et `Valeur_Cumul` ; pivot de `mesure` sur `source_valeur` → `Source_Trim` et `Source_Cumul` ; pivot de `mesure` sur `rupture_serie` → `Rupture_Trim` et `Rupture_Cumul` (« oui » : première période publiée avec la nouvelle méthode, marqueur des graphiques) |
-| `Revisions` | référence à `Versions` | filtre `version <> source_valeur` (versions non retenues : initiales révisées, 31/12 provisoires remplacés par le T4 suivant, 31/12 exclus pour les capitaux propres) ; colonnes `banque`, `date_arrete`, `code_indicateur`, `mesure`, `version`, `valeur_mdt`, `valeur_retenue`, `source_valeur`, `statut_revision` (retraitement_mineur / correction / changement_methode / reclassement / exclue / illisible (image)), `note_definition`, `mention_retraitement`, `Ecart_MDT = valeur_retenue − valeur_mdt` ; pour la page « qualité des données » |
+| `Fait_Indicateurs` | référence à `Versions` | filtre `version = source_valeur` (une ligne par banque × trimestre × indicateur × mesure) ; suppression de `valeur_mdt`, `version` ; pivot de `mesure` sur `valeur_retenue` → `Valeur_Trim` et `Valeur_Cumul` ; pivot de `mesure` sur `source_valeur` → `Source_Trim` et `Source_Cumul` ; pivot de `mesure` sur `rupture_serie` → `Rupture_Trim` et `Rupture_Cumul` (« oui » : période révisée de plus de 2 % sur le cumul, marqueur des graphiques) |
+| `Revisions` | référence à `Versions` | filtre `version <> source_valeur` (versions non retenues : initiales révisées, 31/12 provisoires remplacés par le T4 suivant, 31/12 exclus pour les capitaux propres) ; colonnes `banque`, `date_arrete`, `code_indicateur`, `mesure`, `version`, `valeur_mdt`, `valeur_retenue`, `source_valeur`, `statut_revision` (retraitement_mineur / revision_importante / reclassement / exclue / illisible (image)), `note_definition`, `mention_retraitement`, `Ecart_MDT = valeur_retenue − valeur_mdt` ; pour la page « qualité des données » |
 | `Controle_Annuel` | `controle_annuel.csv` | types ; somme des trimestres vs cumul T4, statut (`ok`, `en attente de révision`, `rupture de série`, `ecart`) |
 | `Variations_Comparables` | `variations_comparables.csv` | types ; une ligne par banque × trimestre × indicateur × mesure (`trim` / `cumul`) : `valeur_N`, `valeur_N1` **du même document**, `variation_pct` ; source de toutes les variations sur un an (7.3) |
 | `Dim_Banque` | `dim_banque.csv` + Excel | fusion avec l'onglet Excel (actionnariat, groupe), nettoyage |
@@ -132,53 +132,74 @@ Excel de référence ─────────> referentiel.xlsx
   3. **T4 seul** (trimestre isolé) : `revisee_T4_N+1` > `initiale` ; la colonne 31/12/N-1 n'est
      **pas** utilisée (elle ne donne pas le trimestre seul). Le T4 seul reste donc en version
      initiale jusqu'à la publication du document T4 de l'année suivante.
-  4. **Seuil de matérialité des révisions** (décidé le 17/10/2026, remplace une première règle
-     fondée sur la seule note de retraitement). Chaque version révisée est comparée à la version
-     initiale de la même période et de la même mesure (trimestre ou cumul), **sur les totaux** :
-     PNB, produits d'exploitation bancaire, charges d'exploitation bancaire, charges opératoires,
-     crédits, dépôts (même règle pour les indicateurs sans composantes : autres produits,
-     portefeuille, emprunts, capitaux propres) :
+  4. **Révisions : la version révisée est toujours retenue** (règle du 17/10/2026, la troisième ;
+     voir plus bas pourquoi les deux premières ont été abandonnées). Les niveaux prennent la
+     version révisée quand elle existe (priorité des règles 1 à 3), **avec ou sans note de
+     retraitement** ; la note est gardée pour information (`mention_retraitement`, première ligne
+     des 12 premières pages qui parle de « comparabilité », de « chiffres retraités » ou de
+     « retraitement »). La révision est **qualifiée**, pas écartée :
 
-     | Écart à l'initiale | Note de retraitement dans le document | Statut | Valeur retenue |
-     |---|---|---|---|
-     | ≤ 2 kDT (arrondi) | — | vide | priorité habituelle |
-     | ≤ 2 % | avec ou sans | `retraitement_mineur` | **révisée** |
-     | > 2 % | oui | `changement_methode` | **initiale**, rupture de série marquée |
-     | > 2 % | non | `correction` | révisée |
+     | Écart révisée − initiale, mesuré sur le **cumul** de la période | Statut (`statut_revision`) | Graphiques |
+     |---|---|---|
+     | ≤ 2 kDT (arrondi) | vide | — |
+     | ≤ 2 % du cumul initial | `retraitement_mineur` | — |
+     | > 2 % du cumul initial | `revision_importante` | `rupture_serie` = « oui », `detail_rupture` |
 
-     Les **composantes** (intérêts, commissions, revenus du portefeuille ; intérêts et commissions
-     encourus ; frais de personnel, charges générales, dotations ; dépôts à vue, d'épargne, à terme ;
-     portefeuille commercial et d'investissement) **prennent le statut de leur total** pour la même
-     version ; total stable (sous l'arrondi) mais composante qui bouge → `reclassement`. Une autre
-     version de la même période qui redonne le même chiffre qu'un `changement_methode` est le même
-     retraitement, même sans note dans son document (BH : 31/12/2024 à 744,228 MDT dans le T1 2025
-     annoté et dans le T2 2025 sans note).
+     - L'écart se mesure **sur le cumul** (solde pour un stock) et le statut vaut **pour le
+       trimestre et le cumul** de la même période et de la même version : un trimestre seul,
+       petit montant, dépasse vite 2 % sans que l'année change (BH, PNB du T4 2023 : −2,8 % sur le
+       trimestre, −0,9 % sur l'année → `retraitement_mineur`). Le cumul n'est pas publié pour une
+       période : on prend le trimestre.
+     - Totaux concernés : PNB, produits d'exploitation bancaire, charges d'exploitation bancaire,
+       charges opératoires, crédits, dépôts (même règle pour les indicateurs sans composantes :
+       autres produits, portefeuille, emprunts, capitaux propres). Les **composantes** prennent le
+       statut de leur total pour la même version ; total stable (sous l'arrondi) mais composante
+       qui bouge → `reclassement`.
+     - **Rupture de série** : marquée sur la période révisée elle-même (trimestre et cumul), pour
+       annoter les graphiques (« PNB 2024 révisé de −8,5 % : 765,9 publié, 701,2 dans le document
+       T4 2025 »). Elle ne change aucune valeur.
+     - Seuil : constante `SEUIL_MATERIALITE = 0.02` dans le script ; c'est un choix d'analyse,
+       pas une norme.
+     - Exemples : BH, PNB 2024 = **701,188** MDT retenu (T4 2025, −8,5 % : `revision_importante`) ;
+       UIB, PNB 2025 = 525,528 MDT (31/12 du T2 2026, +0,55 % : `retraitement_mineur`) ;
+       BT, charges opératoires du T3 2020 = 26,011 MDT (T3 2021) au lieu des 12,076 publiés, chiffre
+       incohérent avec ses composantes (voir plus bas, don au Fonds 1818).
 
-     **Justification.** La note « chiffres retraités pour les besoins de comparabilité » est une
-     formule de routine : BNA, BT, BIAT, UIB, STB, TJARI et BH l'écrivent presque chaque année, y
-     compris pour des écarts de quelques dixièmes de pour cent, et l'ATB retraite sans jamais
-     l'écrire. Le traitement ne doit pas dépendre de la rédaction de la banque. Une révision de 2 %
-     au plus ne change ni le classement des banques ni la lecture d'une tendance : la version
-     révisée (souvent alignée sur les comptes audités) est la meilleure valeur. Au-delà de 2 % sur
-     un total, le niveau change d'ordre de grandeur pour l'analyse (BH, PNB 2024 : −8,5 %) ; si la
-     banque annonce elle-même un retraitement, on garde chaque période dans la méthode de son
-     propre document et on marque la rupture. Le seuil porte sur les totaux, pas sur les
-     composantes, dont les petits montants dépassent 2 % pour des reclassements anodins.
-     La note est lue dans les 12 premières pages (`mention_retraitement` : « comparabilité »,
-     « chiffres retraités », « retraitement »). Constante `SEUIL_MATERIALITE` dans le script.
+     **Pourquoi les règles précédentes ont été abandonnées.** Règle 1 (17/10/2026) : garder la
+     version initiale dès qu'un document annonçait un retraitement. Règle 2 (même jour) : la garder
+     seulement si l'écart dépassait 2 % et que le document l'annonçait. La liste des 60 cas
+     « changement de méthode » de la règle 2 a montré que garder l'initiale créait plus de
+     problèmes qu'elle n'en réglait :
+     - elle gardait des valeurs fausses : BT, charges opératoires du T3 2020, 12,076 MDT publié
+       (le don au Fonds 1818 retiré du seul trimestre), corrigé à 26,011 un an plus tard ;
+     - elle dépendait de la rédaction de la banque : la note « chiffres retraités pour les
+       besoins de comparabilité » est une formule de routine (sept banques l'écrivent presque
+       chaque année) et l'ATB retraite sans jamais l'écrire ;
+     - elle mélangeait trimestre et cumul : le seuil appliqué mesure par mesure gardait l'initiale
+       pour le trimestre et la révisée pour le cumul d'une même période ;
+     - elle n'était plus utile : toutes les croissances viennent de `Variations_Comparables`
+       (colonne N contre colonne N-1 d'un même document), qui ne dépend pas du choix des niveaux.
 
-     Exemple : PNB 2024 de BH = 765,932 MDT (initiale, document T4 2024) ; versions écartées en
-     `changement_methode` : 744,228 (31/12 du T1 et du T2 2025, −2,8 %), 746,601 (T3 2025, −2,5 %),
-     701,188 (T4 2025, −8,5 %, « Les chiffres de 2024 ont été retraités pour des raisons de
-     comparabilité » ; aucun PDF n'explique ce qui a changé : la baisse porte sur les intérêts
-     perçus, 1 100,9 → 1 037,7 MDT, et l'encours net des crédits, 10 731,1 → 10 576,7 MDT).
-     Contre-exemple : PNB 2025 d'UIB, 522,651 → 525,528 MDT (+0,55 %, « chiffres retraités pour les
-     besoins de comparabilité ») → `retraitement_mineur`, révisée retenue.
-     **Rupture de série** (`rupture_serie` = « oui », `detail_rupture`) : marquée sur la même
-     période un an plus tard (première valeur publiée avec la nouvelle méthode), pour l'indicateur
-     et la mesure concernés. BH : PNB cumulé et trimestre du T4 2025. Les graphiques l'affichent
-     (marqueur, info-bulle). **Toutes les variations sur un an** viennent de
-     `Variations_Comparables` (voir plus bas et 7.3), quel que soit le statut des révisions.
+     **Causes communes constatées (charges opératoires 2020 et 2021).**
+     - 2020 : le **don au Fonds national de lutte contre le Covid-19 (« Fonds 1818 »)**,
+       comptabilisé dans les charges générales du premier semestre 2020 puis sorti des charges
+       opératoires dans les chiffres 2020 redonnés en 2021 (et déjà dans le cumul du T4 2020). BT :
+       ligne « Don Fds 1818 / Covid19 » de 11 350 kDT au premier semestre 2020 (PDF du T2 2020),
+       charges générales du semestre révisées de −11,351 MDT ; BH : « cotisation de la banque pour la
+       lutte contre le COVID-19 pour un montant de 11.4 MDT » et une taxe conjoncturelle de 0,8 MD,
+       charges générales révisées de −12,426 MDT ; BNA : contribution de 11,4 MD au Fonds, charges
+       générales révisées de −16,256 MDT (le reste n'est pas expliqué). Le T3 2020 de la BT
+       (12,076 MDT, statut `ecart composantes`) est le trimestre dont on a retiré le don.
+     - 2021 : l'**accord salarial APTBEF–FGBEF** (augmentation des salaires, indemnité de départ
+       à la retraite portée de six à douze mois de salaire, notes BNA du T3 et du T4 2021, BT du
+       T4 2021), comptabilisé en fin d'année et réparti sur le premier semestre 2021 dans les
+       chiffres redonnés en 2022 : frais de personnel révisés de +6,680 MDT (BH), +12,766 MDT
+       (BNA), +3,645 MDT (BT).
+     - Attijari : pas de note sur le Fonds 1818 ; sa révision des charges opératoires 2020
+       (+10,8 MDT pour l'année) vient du changement de contenu du T4 2021 (reste non détaillé
+       ajouté, colonnes N-1 retraitées, voir `gabarits.csv`). Le premier semestre 2021 manque
+       (document 2021T2 non trouvé).
+
   **Document illisible** : un tableau publié en image (BH 2019T4, page 1 : 252 caractères de
   texte, 2 images) a le statut `illisible (image)` dans `controle_extraction.csv` ; sa version
   initiale figure dans `indicateurs_versions.csv` sans valeur, statut `illisible (image)`, et la
@@ -198,28 +219,22 @@ Excel de référence ─────────> referentiel.xlsx
   - `en attente de révision` : le cumul retenu est la version provisoire 31/12 alors que le T4 seul
     est encore en version initiale ; l'écart disparaîtra (ou se confirmera) avec le document T4
     de l'année suivante. Ce n'est pas une erreur ;
-  - `rupture de série` : l'année contient un changement de méthode (période retraitée en
-    `changement_methode` ou rupture marquée, règle 4) ; trimestres et cumul ne sont pas tous dans la même
-    méthode (BH 2025 : T1–T3 initiaux sur l'ancienne méthode, T4 sur la nouvelle, écart de 35,9 MDT
-    sur le PNB). Signalé, pas corrigé ;
+  - `rupture de série` : l'année contient une `revision_importante` (règle 4) et la somme des
+    trimestres retenus ne retrouve pas le cumul. Signalé, pas corrigé ;
   - `ecart` : à examiner.
 
   Vérifié sur 2025 : avec les trimestres retenus, la somme des 4 trimestres égale le cumul T4
   **initial** exactement pour BIAT ; le cumul retenu étant le 31/12 provisoire (document T2 2026),
   les 4 contrôles BIAT 2025 sont `en attente de révision` (ex. charges opératoires : 723,988 MDT en
-  initial, 711,102 MDT au 31/12 provisoire). UIB 2025 : de même `en attente de révision` (ses
-  révisions 2025 sont des `retraitement_mineur`, sous 2 % ; PNB : 522,651 MDT initial, 525,528 MDT
-  au 31/12 provisoire).
+  initial, 711,102 MDT au 31/12 provisoire). UIB 2025 : de même `en attente de révision` (PNB :
+  522,651 MDT initial, 525,528 MDT au 31/12 provisoire, `retraitement_mineur`).
 
   **Nature de chaque révision** (`statut_revision` dans `indicateurs_versions.csv` ; chaque version
   révisée comparée à l'initiale, règle 4 ; la version initiale remplacée prend la nature de la
   version retenue ; tolérance d'arrondi : 2 milliers de dinars) :
-  - `retraitement_mineur` : total révisé de 2 % au plus, avec ou sans note → révisée retenue
-    (ex. PNB UIB 2025 +0,55 %, colonne « chiffres audités ») ;
-  - `correction` : total révisé de plus de 2 % sans note de retraitement → révisée retenue
-    (ex. ATB, PNB 2019 : 252,236 → 239,420, −5,1 %) ;
-  - `changement_methode` : total révisé de plus de 2 % avec note de retraitement → initiale gardée,
-    rupture de série marquée ;
+  - `retraitement_mineur` : cumul révisé de 2 % au plus (ex. PNB UIB 2025 +0,55 %) ;
+  - `revision_importante` : cumul révisé de plus de 2 % (ex. ATB, PNB 2019 : 252,236 → 239,420,
+    −5,1 % ; BH, PNB 2024 −8,5 %) → rupture de série marquée ;
   - `reclassement` : le total est stable (sous la tolérance) mais des composantes bougent
     (ex. BIAT 2025 : −0,401 MDT d'intérêts, +0,401 de commissions) → la composante prend
     **la même version que son total**, l'écart est signalé ;
@@ -275,8 +290,8 @@ Tables de faits :
 
 - `Fait_Indicateurs` : banque, date_arrete, code_indicateur, Valeur_Trim, Valeur_Cumul
   (valeurs retenues, voir 5.2), Source_Trim, Source_Cumul (« initiale », « revisee_T2_N+1 »,
-  « revisee_31-12_T2_N+1 »…), Rupture_Trim, Rupture_Cumul (« oui » au premier point publié avec
-  une nouvelle méthode)
+  « revisee_31-12_T2_N+1 »…), Rupture_Trim, Rupture_Cumul (« oui » sur une période révisée de plus
+  de 2 % sur le cumul)
 - `Variations_Comparables` : banque, date_arrete, code_indicateur, mesure (`trim` / `cumul`),
   valeur_N, valeur_N1 (même document), variation_pct, fichier, page, mention_retraitement ; source
   de toutes les variations sur un an
@@ -423,7 +438,9 @@ Part depots a vue      = DIVIDE ( [Depots a vue], [Depots] )
 **Variations sur un an : toujours `Variations_Comparables`** (colonne N contre colonne N-1 du
 même document, 5.2). On n'utilise jamais `SAMEPERIODLASTYEAR` ou `DATEADD` sur `Fait_Indicateurs`
 pour une variation annuelle : cela rapprocherait deux documents, de méthodes parfois différentes
-(BH 2025 : −2,8 % dans le document, −11,0 % en rapprochant les deux T4). Le secteur se calcule de
+(les niveaux retenus de deux années consécutives viennent de deux documents révisés différents ;
+BH : seul le T4 2025 donne 2025 et 2024 dans la même méthode, −2,8 % ; avec le PNB 2024 publié
+au T4 2024, on obtiendrait −11,0 %). Le secteur se calcule de
 même (somme des N contre somme des N-1, banque par banque dans leurs documents respectifs).
 
 ```dax
@@ -466,7 +483,7 @@ VAR Variations =
 VAR Completes = COUNTROWS ( FILTER ( Variations, NOT ISBLANK ( [@Var] ) ) )
 RETURN IF ( Completes = 5, PRODUCTX ( Variations, 1 + [@Var] ) ^ ( 1 / 5 ) - 1 )
 
--- Marqueur de rupture de série pour les graphiques (point publié avec une nouvelle méthode)
+-- Marqueur de rupture de série pour les graphiques (période révisée de plus de 2 % sur le cumul)
 Rupture PNB =
     IF ( CALCULATE ( COUNTROWS ( Fait_Indicateurs ), Fait_Indicateurs[Rupture_Trim] = "oui",
                      Dim_Indicateur[code_indicateur] = "PNB" ) > 0, [PNB] )
@@ -613,14 +630,19 @@ Part 31-12 provisoires =
                          LEFT ( Fait_Indicateurs[Source_Cumul], 14 ) = "revisee_31-12_" ),
              CALCULATE ( COUNTROWS ( Fait_Indicateurs ), NOT ISBLANK ( Fait_Indicateurs[Source_Cumul] ) ) )
 Nb revisions = CALCULATE ( COUNTROWS ( Revisions ), ABS ( Revisions[Ecart_MDT] ) > 0.002 )
-Nb corrections   = CALCULATE ( COUNTROWS ( Revisions ), Revisions[statut_revision] = "correction" )
+-- nature des révisions : portée par la ligne de la version initiale remplacée (règle 4)
+Nb revisions importantes =
+    CALCULATE ( COUNTROWS ( Revisions ), Revisions[version] = "initiale",
+                Revisions[statut_revision] = "revision_importante" )
+Nb retraitements mineurs =
+    CALCULATE ( COUNTROWS ( Revisions ), Revisions[version] = "initiale",
+                Revisions[statut_revision] = "retraitement_mineur" )
 Nb reclassements = CALCULATE ( COUNTROWS ( Revisions ), Revisions[statut_revision] = "reclassement" )
 Ecart revision MDT = SUM ( Revisions[Ecart_MDT] )
 Nb annees en attente = CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "en attente de révision" )
 Nb ecarts annuels    = CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "ecart" )
 Nb ruptures annuelles = CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "rupture de série" )
--- changements de méthode : versions révisées écartées (niveaux en initiale) et ruptures marquées
-Nb changements methode = CALCULATE ( COUNTROWS ( Revisions ), Revisions[statut_revision] = "changement_methode" )
+-- ruptures de série : périodes dont la valeur retenue est une révision importante
 Nb ruptures serie =
     CALCULATE ( COUNTROWS ( Fait_Indicateurs ),
                 Fait_Indicateurs[Rupture_Trim] = "oui" || Fait_Indicateurs[Rupture_Cumul] = "oui" )
@@ -656,7 +678,7 @@ Part de marché, Var PNB A/A % (Variations_Comparables) — pour un seul visuel 
 | 6. Bourse | Cours, performance, volatilité, performance boursière vs croissance du PNB |
 | 7. Fiche banque (extraction) | Tous les indicateurs d'une banque, accessible par clic droit ; coefficient publié à côté du coefficient harmonisé, avec la définition des charges opératoires de la banque |
 | 8. Rentabilité | ROE et ROA semestriels et annuels, matrice ROE × coefficient d'exploitation |
-| 9. Qualité des données | Contrôle d'extraction (statuts, dont `ecart trimestre/cumul`, `retraitement possible`, `ecart composantes`, `illisible (image)`, avec l'écart en MDT), changements de méthode et ruptures de série (avec la note du document), sources, limites ; phrase expliquant pourquoi la somme des trimestres peut différer du cumul annuel |
+| 9. Qualité des données | Contrôle d'extraction (statuts, dont `ecart trimestre/cumul`, `retraitement possible`, `ecart composantes`, `illisible (image)`, avec l'écart en MDT), révisions importantes et ruptures de série (avec la note du document), sources, limites ; phrase expliquant pourquoi la somme des trimestres peut différer du cumul annuel |
 
 Filtres : segments Année / Trimestre, plage de dates, banque, actionnariat, période ;
 info-bulles personnalisées ; signets « trimestre » / « année ».
@@ -666,12 +688,12 @@ info-bulles personnalisées ; signets « trimestre » / « année ».
 - Données provisoires, non auditées, publiées par les banques elles-mêmes.
 - Retraitements en cours d'année : la somme des trimestres publiés peut différer du cumul
   annuel publié ; les chiffres annuels viennent toujours du cumul (voir 5.2).
-- Révisions : jusqu'à 2 % sur un total, la version révisée est retenue ; au-delà, avec une note
-  de retraitement de la banque, les niveaux restent ceux publiés à l'origine et la série porte un
-  marqueur de rupture (les niveaux de part et d'autre ne sont pas directement comparables) ;
-  au-delà sans note (ATB), la version révisée est retenue comme une correction. Le seuil de 2 %
-  est un choix d'analyse, pas une norme. Les variations sur un an sont toujours calculées dans un
-  même document. Les banques n'expliquent pas toujours ce qui a changé (BH, T4 2025).
+- Révisions : les niveaux sont toujours les derniers chiffres publiés par la banque pour la
+  période (version révisée) ; une révision de plus de 2 % du cumul est signalée par un marqueur
+  de rupture dans les graphiques. Le seuil de 2 % est un choix d'analyse, pas une norme. Les
+  variations sur un an sont toujours calculées dans un même document. Les banques n'expliquent pas
+  toujours ce qui a changé (BH, T4 2025) ; deux causes communes sont connues pour 2020 (don au
+  Fonds 1818) et 2021 (accord salarial du secteur).
 - Un document publié en image (BH 2019T4) n'est connu que par les colonnes N-1 du document de
   l'année suivante.
 - Définitions des postes parfois différentes d'une banque à l'autre. Exemple : les charges

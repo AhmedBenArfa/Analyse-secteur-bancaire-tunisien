@@ -1188,8 +1188,8 @@ PREMIERE_PERIODE = Trimestre(2019, 4)
 # 2 milliers de dinars : arrondi des banques qui publient en milliers. Le 1e-6 absorbe les erreurs
 # de calcul en virgule flottante (0,002 calculé vaut parfois 0,0020000000001).
 TOLERANCE_ARRONDI_MDT = 0.002 + 1e-6
-# Seuil de matérialité d'une révision (part de la valeur initiale) : au-delà, avec une note de
-# retraitement, c'est un changement de méthode ; en deçà, un retraitement mineur (spécification 5.2).
+# Seuil de matérialité d'une révision (part du cumul initial) : au-delà, révision importante
+# (rupture de série marquée pour les graphiques) ; en deçà, retraitement mineur (spécification 5.2).
 SEUIL_MATERIALITE = 0.02
 
 # Totaux et leurs composantes (coefficient : +1 ajouté, -1 retranché)
@@ -1270,96 +1270,76 @@ def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]],
             valeurs.setdefault((code, str(p), l["code_indicateur"], mesure), {})[version] = \
                 (l["valeur_mdt"], fichier, l["page"], l.get("note", ""), l.get("mention_retraitement", ""))
 
-    # 0) nature de chaque version révisée, comparée à la version initiale (seuil de matérialité,
-    #    spécification 5.2 règle 4) :
-    #    - total (PNB, produits, charges d'exploitation, charges opératoires, crédits, dépôts ; même
-    #      règle pour les indicateurs sans composantes) : écart > 2 % ET note de retraitement dans le
-    #      document → changement_methode (niveaux en version initiale) ; écart > 2 % sans note →
-    #      correction ; écart ≤ 2 % (avec ou sans note) → retraitement_mineur (révisée retenue) ;
-    #      sous l'arrondi (2 kDT) → vide. Une autre version qui redonne le même chiffre qu'un
-    #      changement de méthode est le même retraitement, même sans note (BH : 31/12/2024 à 744,228
-    #      dans le T1 2025 annoté et dans le T2 2025 sans note) ;
-    #    - composante : statut de son total pour la même version ; total stable (sous l'arrondi) mais
-    #      composante qui bouge → reclassement.
-    natures: dict[tuple[tuple[str, str, str, str], str], str] = {}
+    # 0) nature de chaque révision (spécification 5.2, règle 4). L'écart à la version initiale est
+    #    mesuré sur le CUMUL de la période (solde pour un stock ; trimestre seulement si le cumul
+    #    manque) et le statut vaut pour le trimestre et le cumul de la même période et de la même
+    #    version. Totaux : > 2 % → revision_importante ; ≤ 2 % → retraitement_mineur ; sous
+    #    l'arrondi → vide. Composantes : statut de leur total (total stable mais composante qui bouge
+    #    → reclassement). La note de retraitement du document est gardée pour information
+    #    (mention_retraitement) : elle ne change ni le statut ni la valeur retenue.
+    def ecart_cumul(code, per, ind, version) -> tuple[float, float] | None:
+        for m in ("cumul", "trim"):
+            vers = valeurs.get((code, per, ind, m), {})
+            if "initiale" in vers and version in vers:
+                return vers[version][0] - vers["initiale"][0], vers["initiale"][0]
+        return None
 
-    def nature_total(cle, vers) -> dict[str, str]:
-        init = vers["initiale"][0]
-        res, annonces = {}, []
-        for v, x in vers.items():
-            if v == "initiale":
+    def nature_propre(code, per, ind, version) -> str | None:
+        e = ecart_cumul(code, per, ind, version)
+        if e is None:
+            return None
+        d, init = e
+        if abs(d) <= TOLERANCE_ARRONDI_MDT:
+            return ""
+        return "revision_importante" if abs(d) > SEUIL_MATERIALITE * abs(init) else "retraitement_mineur"
+
+    revisions: dict[tuple[str, str, str], set[str]] = {}
+    for (code, per, ind, _), vers in valeurs.items():
+        revisions.setdefault((code, per, ind), set()).update(v for v in vers if v != "initiale")
+    natures: dict[tuple[str, str, str, str], str] = {}      # (banque, période, indicateur, version)
+    for (code, per, ind), vs in revisions.items():
+        parent = PARENT.get(ind)
+        for v in vs:
+            n = nature_propre(code, per, ind, v)
+            if n is None:
                 continue
-            d = x[0] - init
-            if abs(d) <= TOLERANCE_ARRONDI_MDT:
-                res[v] = ""
-            elif abs(d) > SEUIL_MATERIALITE * abs(init):
-                res[v] = "changement_methode" if x[4] else "correction"
-                if x[4]:
-                    annonces.append(x[0])
-            else:
-                res[v] = "retraitement_mineur"
-        for v, n in res.items():      # même chiffre qu'un changement annoncé : même retraitement
-            if n == "correction" and any(abs(vers[v][0] - a) <= TOLERANCE_ARRONDI_MDT for a in annonces):
-                res[v] = "changement_methode"
-        return res
+            n_total = nature_propre(code, per, parent, v) if parent else None
+            if n_total is not None:
+                n = n_total if n_total else ("reclassement" if n else "")
+            natures[(code, per, ind, v)] = n
 
-    for cle, vers in valeurs.items():
-        if "initiale" in vers and PARENT.get(cle[2]) is None:
-            for v, n in nature_total(cle, vers).items():
-                natures[(cle, v)] = n
-    for cle, vers in valeurs.items():
-        parent = PARENT.get(cle[2])
-        if "initiale" not in vers or parent is None:
-            continue
-        cle_p = (cle[0], cle[1], parent, cle[3])
-        propre = nature_total(cle, vers)
-        for v, n in propre.items():
-            if (cle_p, v) in natures:
-                n_total = natures[(cle_p, v)]
-                if n_total == "" and n != "":
-                    n_total = "reclassement"   # total stable, la composante bouge
-                natures[(cle, v)] = n_total if n != "" or n_total != "reclassement" else ""
-            else:
-                natures[(cle, v)] = n           # total absent de ce document : règle du total
-    changements: dict[tuple[str, str, str, str], set[str]] = {}
-    for (cle, v), n in natures.items():
-        if n == "changement_methode":
-            changements.setdefault(cle, set()).add(v)
-
-    # 1) version retenue de chaque série : priorité, sauf versions exclues par règle fixe et
-    #    changements de méthode
+    # 1) version retenue : toujours la plus récente révision admise (priorité), avec ou sans note
     sources: dict[tuple[str, str, str, str], str | None] = {}
     for cle, vers in valeurs.items():
-        admises = [v for v in vers if version_admise(cle[2], v) and v not in changements.get(cle, ())]
+        admises = [v for v in vers if version_admise(cle[2], v)]
         sources[cle] = min(admises, key=priorite_version) if admises else None
     # 2) une composante prend la même version que son total
     for (code, per, ind, mesure), vers in valeurs.items():
         total = PARENT.get(ind)
         src_total = sources.get((code, per, total, mesure)) if total else None
-        if src_total and src_total in vers and version_admise(ind, src_total) \
-                and src_total not in changements.get((code, per, ind, mesure), ()):
+        if src_total and src_total in vers and version_admise(ind, src_total):
             sources[(code, per, ind, mesure)] = src_total
 
     def statut_revision(code, per, ind, mesure, version) -> str:
-        """Nature de la révision (voir 0) : pour une version révisée, sa nature ; pour la version
-        initiale remplacée, la nature de la version retenue. Sans version initiale : vide."""
-        cle = (code, per, ind, mesure)
+        """Pour une version révisée, sa nature ; pour la version initiale remplacée, la nature de
+        la version retenue. Sans version initiale : vide."""
         if not version_admise(ind, version):
             return "exclue (capitaux propres, 31/12 provisoire)"
         if version == "initiale":
-            return natures.get((cle, sources.get(cle)), "")
-        return natures.get((cle, version), "")
-    # 3) rupture de série : la période retraitée P garde sa valeur initiale (ancienne méthode) ; la
-    #    même période un an plus tard est la première publiée avec la nouvelle méthode. La rupture est
-    #    marquée sur celle-ci, pour l'indicateur et la mesure concernés.
+            return natures.get((code, per, ind, sources.get((code, per, ind, mesure))), "")
+        return natures.get((code, per, ind, version), "")
+
+    # 3) rupture de série (annotation des graphiques) : période dont la valeur retenue est une
+    #    révision importante (> 2 % sur le cumul), marquée sur la période elle-même, trimestre et cumul
     ruptures: dict[tuple[str, str, str, str], str] = {}
-    for (code, per, ind, mesure), vers_chg in changements.items():
-        p = Trimestre.depuis_texte(per)
-        suivante = (code, str(Trimestre(p.annee + 1, p.num)), ind, mesure)
-        init = valeurs[(code, per, ind, mesure)]["initiale"][0]
-        v = min(vers_chg, key=lambda x: document_de_version(p, x))
-        ruptures[suivante] = (f"{per} retraité : {init:,.3f} publié, {valeurs[(code, per, ind, mesure)][v][0]:,.3f} "
-                              f"dans le document {document_de_version(p, v)[0]}T{document_de_version(p, v)[1]}")
+    for (code, per, ind, mesure), source in sources.items():
+        if not source or source == "initiale" or natures.get((code, per, ind, source)) != "revision_importante":
+            continue
+        d, init = ecart_cumul(code, per, ind, source)
+        doc = document_de_version(Trimestre.depuis_texte(per), source)
+        pct = f"{100 * d / abs(init):+.1f} %" if init else "depuis zéro"
+        ruptures[(code, per, ind, mesure)] = (f"{per} révisé de {pct} sur le cumul ({init:,.3f} publié, "
+                                             f"{init + d:,.3f} dans le document {doc[0]}T{doc[1]})")
 
     sortie = []
     for (code, per, ind, mesure), vers in sorted(valeurs.items()):
@@ -1420,7 +1400,7 @@ def controle_somme_annuelle(versions: list[dict]) -> list[dict]:
     for r in versions:
         retenue[(r["banque"], r["trimestre"], r["code_indicateur"], r["mesure"])] = \
             (r["valeur_retenue"], r["source_valeur"])
-        if r.get("rupture_serie") or r["statut_revision"] == "changement_methode":
+        if r.get("rupture_serie"):
             ruptures.add((r["banque"], r["annee"], r["code_indicateur"]))
     sortie = []
     for (code, tri, ind, mesure), (cumul, source) in sorted(retenue.items()):
@@ -1801,9 +1781,9 @@ def cmd_extraire(args):
         w = csv.DictWriter(f, fieldnames=list(variations[0]) if variations else ["banque"], delimiter=";")
         w.writeheader()
         w.writerows(variations)
-    n_chg = sum(r["statut_revision"] == "changement_methode" for r in versions)
-    n_rupt = len({(r["banque"], r["trimestre"], r["code_indicateur"], r["mesure"]) for r in versions if r["rupture_serie"]})
-    print(f"Changements de méthode : {n_chg} version(s) écartée(s) ; ruptures de série : {n_rupt}")
+    n_imp = len({(r["banque"], r["trimestre"], r["code_indicateur"]) for r in versions
+                 if r["version"] == "initiale" and r["statut_revision"] == "revision_importante"})
+    print(f"Révisions importantes (> 2 % sur le cumul) : {n_imp} banque × période × indicateur")
 
     ecrire_dimensions()
     print(f"\n{n_ok} documents extraits sans alerte.")
