@@ -93,7 +93,7 @@ Excel de référence ─────────> referentiel.xlsx
 |---|---|---|
 | `Versions` (intermédiaire, non chargée) | `indicateurs_versions.csv` | types (paramètres régionaux en-US) ; application de `Corrections` sur `valeur_mdt` |
 | `Fait_Indicateurs` | référence à `Versions` | filtre `version = source_valeur` (une ligne par banque × trimestre × indicateur × mesure) ; suppression de `valeur_mdt`, `version` ; pivot de `mesure` sur `valeur_retenue` → `Valeur_Trim` et `Valeur_Cumul` ; pivot de `mesure` sur `source_valeur` → `Source_Trim` et `Source_Cumul` ; pivot de `mesure` sur `rupture_serie` → `Rupture_Trim` et `Rupture_Cumul` (« oui » : période révisée de plus de 2 % sur le cumul, marqueur des graphiques) |
-| `Revisions` | référence à `Versions` | filtre `version <> source_valeur` (versions non retenues : initiales révisées, 31/12 provisoires remplacés par le T4 suivant, 31/12 exclus pour les capitaux propres) ; colonnes `banque`, `date_arrete`, `code_indicateur`, `mesure`, `version`, `valeur_mdt`, `valeur_retenue`, `source_valeur`, `statut_revision` (retraitement_mineur / revision_importante / reclassement / exclue / illisible (image)), `note_definition`, `mention_retraitement`, `Ecart_MDT = valeur_retenue − valeur_mdt` ; pour la page « qualité des données » |
+| `Revisions` | référence à `Versions` | filtre `version <> source_valeur` (versions non retenues : initiales révisées, 31/12 provisoires remplacés par le T4 suivant, 31/12 exclus pour les capitaux propres) ; colonnes `banque`, `date_arrete`, `code_indicateur`, `mesure`, `version`, `valeur_mdt`, `valeur_retenue`, `source_valeur`, `statut_revision` (retraitement_mineur / revision_importante / reclassement / exclue / illisible (image) / non disponible (image)), `note_definition`, `mention_retraitement`, `Ecart_MDT = valeur_retenue − valeur_mdt` ; pour la page « qualité des données » |
 | `Controle_Annuel` | `controle_annuel.csv` | types ; somme des trimestres vs cumul T4, statut (`ok`, `en attente de révision`, `rupture de série`, `ecart`) |
 | `Variations_Comparables` | `variations_comparables.csv` | types ; une ligne par banque × trimestre × indicateur × mesure (`trim` / `cumul`) : `valeur_N`, `valeur_N1` **du même document**, `variation_pct` ; source de toutes les variations sur un an (7.3) |
 | `Dim_Banque` | `dim_banque.csv` + Excel | fusion avec l'onglet Excel (actionnariat, groupe), nettoyage |
@@ -228,6 +228,21 @@ Excel de référence ─────────> referentiel.xlsx
   produits − charges = PNB, charges opératoires = frais de personnel + charges générales,
   colonne « Variation montant » du PDF = cumul N − cumul N-1, dépôts = somme des quatre
   catégories ; les trimestres 2020T3 sont confirmés par la colonne N-1 du document 2021T3.
+  BTE 2020T2 : 36 valeurs relues indépendamment, `verification` = « vérifié par Ahmed ben arfa ».
+  **Saisie partielle** d'un document lisible : quand quelques valeurs sont illisibles dans le texte
+  du PDF (STB 2026T2 : revenus du portefeuille du trimestre superposés à leur libellé ; l'extraction
+  laissait le T2 2026 vide et lisait 893 522 au lieu de 115 893 522 pour le T2 2025), les valeurs
+  saisies remplacent ou complètent celles extraites (colonne `source` = « saisie manuelle » sur ces
+  lignes), le document garde son statut, et le contrôle strict ajoute : intérêts + commissions +
+  revenus du portefeuille = produits dans chaque colonne.
+
+  **Valeur non disponible** : quand un document est illisible et qu'aucun autre ne reprend une
+  mesure (BTE : T4 seul de 2021 et de 2022, le document T4 de l'année suivante étant aussi une
+  image), `indicateurs_versions.csv` porte une ligne `statut_revision` = « non disponible (image) »,
+  sans valeur ni valeur retenue. Elle apparaît dans `Revisions` (page « qualité des données »),
+  jamais dans `Fait_Indicateurs` : la valeur reste vide dans les graphiques, jamais à zéro (aucune
+  mesure DAX ne doit remplacer un vide par 0, pas de `+ 0` ni de `COALESCE ( …, 0 )` sur les
+  valeurs ; le contrôle annuel saute ces années).
 
   Les périodes de la dernière année publiée (2026) sont en version initiale. Toutes les versions
   restent dans `indicateurs_versions.csv` pour la traçabilité (colonnes `fichier`, `page`), avec
@@ -680,6 +695,8 @@ Nb ruptures serie =
                 Fait_Indicateurs[Rupture_Trim] = "oui" || Fait_Indicateurs[Rupture_Cumul] = "oui" )
 Nb documents illisibles = CALCULATE ( [Nb documents], Controle[statut] = "illisible (image)" )
 Nb documents saisis    = CALCULATE ( [Nb documents], Controle[statut] = "saisie manuelle" )
+Nb valeurs non disponibles =
+    CALCULATE ( COUNTROWS ( Revisions ), Revisions[statut_revision] = "non disponible (image)" )
 ```
 
 Paramètre de champ « Indicateur affiché » : PNB, Coef exploitation harmonise, Crédits / Dépôts,

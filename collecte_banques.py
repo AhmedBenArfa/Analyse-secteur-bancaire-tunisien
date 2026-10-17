@@ -1366,7 +1366,28 @@ def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]],
                            "statut_revision": "retenue" if version == source
                            else statut_revision(code, per, ind, mesure, version),
                            "note_definition": note, "mention_retraitement": mention})
+    # 4) document illisible dont une mesure n'est reprise par aucun autre document (BTE : T4 seul de
+    #    2021 et de 2022, le document T4 de l'année suivante étant lui aussi une image) : ligne explicite
+    #    « non disponible (image) », sans valeur ni valeur retenue (jamais zéro). version ≠ source_valeur :
+    #    elle va dans la table Revisions (page qualité), pas dans Fait_Indicateurs.
+    for (code, per), fichier in sorted((illisibles or {}).items()):
+        p = Trimestre.depuis_texte(per)
+        indicateurs = sorted({ind for (c, pe, ind, _) in valeurs if c == code and pe == per})
+        for ind in indicateurs:
+            for mesure in (("trim", "cumul") if NATURE[ind] == "flux" else ("cumul",)):
+                if (code, per, ind, mesure) in valeurs:
+                    continue
+                sortie.append({"banque": code, "trimestre": per, "date_arrete": p.fin.isoformat(),
+                               "annee": p.annee, "num_trimestre": p.num, "code_indicateur": ind,
+                               "mesure": mesure, "valeur_retenue": None, "source_valeur": "",
+                               "rupture_serie": "", "detail_rupture": "", "version": "initiale",
+                               "valeur_mdt": None, "fichier": fichier, "page": "", "ecart_vs_retenue": None,
+                               "statut_revision": STATUT_NON_DISPONIBLE, "note_definition": "",
+                               "mention_retraitement": ""})
     return sortie
+
+
+STATUT_NON_DISPONIBLE = "non disponible (image)"
 
 
 def variations_comparables(docs: dict[tuple[str, str], tuple[list[dict], str]]) -> list[dict]:
@@ -1401,6 +1422,8 @@ def controle_somme_annuelle(versions: list[dict]) -> list[dict]:
     retenue: dict[tuple[str, str, str, str], tuple[float, str]] = {}
     ruptures: set[tuple[str, int, str]] = set()     # (banque, année, indicateur) avec rupture de série
     for r in versions:
+        if r["valeur_retenue"] is None:      # « non disponible (image) » : pas de valeur, l'année est sautée
+            continue
         retenue[(r["banque"], r["trimestre"], r["code_indicateur"], r["mesure"])] = \
             (r["valeur_retenue"], r["source_valeur"])
         if r.get("rupture_serie"):
@@ -1719,42 +1742,74 @@ def charger_saisies(chemin: Path = FICHIER_SAISIES) -> dict[tuple[str, str], lis
             if abs(mdt - float(r["valeur_mdt"])) > 1e-6:
                 raise ValueError(f"saisies_manuelles.csv ligne {i} : valeur_mdt ≠ valeur_source × unité")
             sortie.setdefault((r["banque"], r["trimestre"]), []).append({
-                "code_indicateur": r["code_indicateur"], "libelle_source": "saisie manuelle (tableau en image)",
+                "code_indicateur": r["code_indicateur"], "libelle_source": "saisie manuelle (lecture de l'image)",
                 "colonne": r["colonne"], "valeur_source": v, "unite_source": r["unite_source"],
                 "valeur_mdt": mdt, "page": int(r["page"]), "note": r.get("note", ""), "gabarit": "",
-                "mention_retraitement": "", "verification": r["verification"]})
+                "mention_retraitement": "", "verification": r["verification"], "origine": ORIGINE_SAISIE})
     return sortie
 
 
-def controle_saisie(valeurs: dict[str, dict[str, float]]) -> list[str]:
-    """Contrôles stricts d'une saisie (unité de la source, 2 unités d'arrondi) : produits − charges
-    d'exploitation = PNB dans chaque colonne. Les autres contrôles sont ceux de l'extraction."""
+def controle_saisie(valeurs: dict[str, dict[str, float]], codes_saisis: set[str] | None = None) -> list[str]:
+    """Contrôles stricts d'un document contenant des valeurs saisies (unité de la source, 2 unités
+    d'arrondi) : produits − charges d'exploitation = PNB dans chaque colonne ; si des composantes des
+    produits sont saisies (codes_saisis), intérêts + commissions + revenus du portefeuille = produits
+    dans chaque colonne (STB 2026T2). Les autres contrôles sont ceux de l'extraction."""
     alertes = []
     for col, pnb in valeurs.get("PNB", {}).items():
         p, ch = valeurs.get("PROD_EXPL", {}).get(col), valeurs.get("CHG_EXPL", {}).get(col)
         if None not in (p, ch) and abs(p - ch - pnb) > 2:
             alertes.append(f"saisie {col} : produits - charges = {p - ch:,.0f} ≠ PNB {pnb:,.0f}")
+    composantes = GROUPES["PROD_EXPL"]
+    if codes_saisis and codes_saisis & set(composantes):
+        for col, total in valeurs.get("PROD_EXPL", {}).items():
+            vals = [valeurs.get(c, {}).get(col) for c in composantes]
+            if None not in vals and abs(sum(vals) - total) > 2:
+                alertes.append(f"saisie {col} : intérêts + commissions + portefeuille = {sum(vals):,.0f} "
+                               f"≠ produits {total:,.0f}")
     return alertes
 
 
 def extraire_document(code: str, tri: str, chemin: Path) -> tuple[list[dict], list[str], str]:
-    """Extraction d'un document ; si son tableau est une image et qu'une saisie manuelle existe,
-    la saisie remplace l'extraction et passe les mêmes contrôles (plus le contrôle strict).
-    Renvoie (lignes, alertes, origine) avec origine vide ou « saisie manuelle »."""
+    """Extraction d'un document, complétée par saisies_manuelles.csv :
+    - tableau en image : la saisie remplace l'extraction, passe les mêmes contrôles plus le contrôle
+      strict ; origine « saisie manuelle » (statut du document) ;
+    - document lisible avec quelques valeurs illisibles (STB 2026T2 : revenus du portefeuille
+      superposés à leur libellé) : les valeurs saisies remplacent ou complètent celles extraites,
+      le document garde son statut, le contrôle strict s'ajoute ; chaque ligne saisie porte
+      origine « saisie manuelle » et sa vérification.
+    Renvoie (lignes, alertes, origine du document)."""
     global _SAISIES
     t = Trimestre.depuis_texte(tri)
     lignes, alertes = extraire_pdf(chemin, t, code)
-    if lignes or not any(a.startswith(PREFIXE_ILLISIBLE) for a in alertes):
-        return lignes, alertes, ""
     if _SAISIES is None:
         _SAISIES = charger_saisies()
     saisie = _SAISIES.get((code, tri))
     if not saisie:
         return lignes, alertes, ""
+    if lignes:
+        unites = {l["unite_source"] for l in lignes} | {s["unite_source"] for s in saisie}
+        if len(unites) > 1:
+            raise ValueError(f"{code} {tri} : unité de la saisie ≠ unité du document ({unites})")
+        modele = lignes[0]
+        par_cle = {(l["code_indicateur"], l["colonne"]): i for i, l in enumerate(lignes)}
+        for s in saisie:
+            nouvelle = dict(s, gabarit=modele["gabarit"], mention_retraitement=modele["mention_retraitement"])
+            i = par_cle.get((s["code_indicateur"], s["colonne"]))
+            if i is None:
+                lignes.append(nouvelle)
+            else:
+                lignes[i] = nouvelle
+        valeurs: dict[str, dict[str, float]] = {}
+        for l in lignes:
+            valeurs.setdefault(l["code_indicateur"], {})[l["colonne"]] = l["valeur_source"]
+        return lignes, alertes + controle_saisie(valeurs, {s["code_indicateur"] for s in saisie}), ""
+    if not any(a.startswith(PREFIXE_ILLISIBLE) for a in alertes):
+        return lignes, alertes, ""
     valeurs: dict[str, dict[str, float]] = {}
     for l in saisie:
         valeurs.setdefault(l["code_indicateur"], {})[l["colonne"]] = l["valeur_source"]
-    alertes = controles(valeurs, FACTEURS_UNITE[saisie[0]["unite_source"]], t) + controle_saisie(valeurs)
+    alertes = controles(valeurs, FACTEURS_UNITE[saisie[0]["unite_source"]], t) + \
+        controle_saisie(valeurs, {s["code_indicateur"] for s in saisie})
     gab = gabarit_pour(code, t)
     if gab:
         alertes += controle_definition_chg_oper(valeurs, gab.definition_chg_oper)
@@ -1812,7 +1867,8 @@ def cmd_extraire(args):
             for l in lignes:
                 l.update({"banque": code, "trimestre": tri, "date_arrete": t.fin.isoformat(),
                           "annee": t.annee, "num_trimestre": t.num,
-                          "source": origines.get((code, tri)) or r["source"], "fichier": Path(r["fichier"]).name,
+                          "source": l.pop("origine", "") or origines.get((code, tri)) or r["source"],
+                          "fichier": Path(r["fichier"]).name,
                           "verification": l.get("verification", "")})
                 w.writerow(l)
             print(f"  {statut:<11} {code} {tri}  ({len(lignes)} valeurs) {'; '.join(alertes)}")

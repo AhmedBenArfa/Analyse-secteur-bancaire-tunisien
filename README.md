@@ -147,7 +147,10 @@ Fichiers produits : `etats_financiers_long.csv`, `controle_etats_financiers.csv`
 - Les PDF scannés (images) ne sont pas lisibles : statut `echec`, saisie manuelle nécessaire
   (cas connus : BH 2019T4 ; BTE, 13 documents de 2020 à 2023). Quand le document suivant ne
   reprend pas les chiffres, ils sont saisis dans `saisies_manuelles.csv` (BTE 2020T1 à 2020T4,
-  2021T1 et 2021T3), relus sur l'image et contrôlés ; statut `saisie manuelle`.
+  2021T1 et 2021T3), relus sur l'image et contrôlés ; statut `saisie manuelle`. Une valeur
+  illisible dans un document lisible peut aussi y être saisie (STB 2026T2, revenus du portefeuille).
+  Une mesure qu'aucun document lisible ne donne (BTE : T4 seul 2021 et 2022) est marquée
+  « non disponible (image) » dans `indicateurs_versions.csv`, sans valeur (jamais zéro).
   Vérification par une personne : `python scripts/verification_saisie.py preparer BTE 2020T2`,
   remplir la colonne « verification », puis `... reporter BTE 2020T2`.
 - Vérifiez à la main toutes les lignes `a verifier` du fichier de contrôle,
