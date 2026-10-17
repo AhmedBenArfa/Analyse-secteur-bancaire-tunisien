@@ -1950,6 +1950,8 @@ def cmd_extraire(args):
             n_ok += statut == "ok"
             alertes = alertes + ecarts + retr
             g = gabarit_pour(code, t)
+            wc.writerow([code, tri, statut, len(lignes), " | ".join(alertes), Path(r["fichier"]).name,
+                         g.nom if g else ""])
             for l in lignes:
                 l.update({"banque": code, "trimestre": tri, "date_arrete": t.fin.isoformat(),
                           "annee": t.annee, "num_trimestre": t.num,
