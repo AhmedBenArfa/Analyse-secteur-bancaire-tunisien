@@ -741,9 +741,7 @@ Part de marché, Var PNB A/A % (Variations_Comparables) — pour un seul visuel 
 |---|---|
 | 1. Vue d'ensemble | Cartes (PNB secteur, coef secteur, dépôts, crédits), titre dynamique, part de marché PNB, HHI dans le temps |
 | 2. Classement | Tableau des banques avec rangs et mise en forme conditionnelle, matrice croissance × coef |
-| 3. Évolution 2020–2026 | Courbes par banque avec sélecteur d'indicateur, bandes de périodes Covid, marqueurs de rupture de série (`Rupture PNB`, info-bulle `detail_rupture`), annotations des
-événements (`Evenements` : don au Fonds 1818 en 2020, moratoire Covid de l'UIB en 2020, accord
-salarial APTBEF–FGBEF en 2021, retraitement BH 2024) en info-bulle et en marqueurs ; variations sur un an depuis `Variations_Comparables` |
+| 3. Évolution 2020–2026 | Courbes par banque avec sélecteur d'indicateur, bandes de périodes Covid, marqueurs de rupture de série (`Rupture PNB`, info-bulle `detail_rupture`), annotations des événements (`Evenements` : don au Fonds 1818 en 2020, moratoire Covid de l'UIB en 2020, accord salarial APTBEF–FGBEF en 2021, retraitement BH 2024) en info-bulle et en marqueurs ; variations sur un an depuis `Variations_Comparables` |
 | 4. Structure du PNB | Barres empilées marge d'intérêts / commissions / portefeuille par banque |
 | 5. Bilan | Crédits, dépôts, crédits / dépôts, structure des dépôts |
 | 6. Bourse | Cours, performance, volatilité, performance boursière vs croissance du PNB |
