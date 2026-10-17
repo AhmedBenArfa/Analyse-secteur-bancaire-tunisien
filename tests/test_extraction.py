@@ -191,6 +191,25 @@ def test_valeur_corrigee_bt_2020t3():
     assert trim["initiale"]["statut_revision"] == "revision_importante"
 
 
+def test_saisies_manuelles():
+    """Chaque document saisi à la main (saisies_manuelles.csv : tableaux en image) remplace
+    l'extraction et passe les contrôles de cohérence sans alerte bloquante. BTE 2020T2 : PNB
+    du semestre 19 668 kDT, relevé sur l'image de la page 1."""
+    saisies = cb.charger_saisies()
+    assert saisies, "saisies_manuelles.csv vide ou absent"
+    for (banque, tri) in saisies:
+        chemin = cb.DOSSIER_PDF / banque / f"{banque}_{tri}.pdf"
+        if not chemin.exists():
+            continue
+        lignes, alertes, origine = cb.extraire_document(banque, tri, chemin)
+        assert origine == cb.ORIGINE_SAISIE, f"{banque} {tri} : saisie non utilisée"
+        assert cb.statut_document(lignes, alertes, [], [], origine) == cb.ORIGINE_SAISIE, f"{banque} {tri} : {alertes}"
+        assert all(l["verification"] for l in lignes)
+    lignes, _, _ = cb.extraire_document("BTE", "2020T2", cb.DOSSIER_PDF / "BTE" / "BTE_2020T2.pdf")
+    v = {(l["code_indicateur"], l["colonne"]): l["valeur_mdt"] for l in lignes}
+    assert proche(v[("PNB", "cumul_N")], 19.668) and proche(v[("CHG_OPER", "trim_N")], 10.701)
+
+
 def test_seuil_materialite_uib_2025():
     """UIB, PNB 2025 : 522,651 initial (T4 2025), 525,528 au 31/12 du T2 2026 (+0,55 %, document
     annoté « chiffres retraités pour les besoins de comparabilité ») : sous 2 % → retraitement_mineur,

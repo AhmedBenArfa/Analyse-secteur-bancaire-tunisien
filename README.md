@@ -52,11 +52,19 @@ Chaque PDF est vérifié : il doit citer la date d'arrêté du trimestre visé.
 | `indicateurs_versions.csv` | Table pour Power BI : une ligne par banque × période × indicateur × mesure (trim / cumul) × version (`initiale` = document du trimestre ; `revisee_T<q>_N+1` = colonne N-1 du document de l'année suivante ; `revisee_31-12_T<q>_N+1` = colonne 31/12/N-1 d'un T1–T3 suivant, provisoire, pour le cumul annuel et les soldes au 31/12 seulement), avec `valeur_retenue`, `source_valeur`, `ecart_vs_retenue`, `statut_revision` (la version révisée est toujours retenue ; écart mesuré sur le cumul : `retraitement_mineur` jusqu'à 2 %, `revision_importante` au-delà ; même statut pour le trimestre et le cumul de la période ; les composantes suivent leur total ; `reclassement` à total stable), `mention_retraitement` (la note du document) et `rupture_serie` / `detail_rupture` (période révisée de plus de 2 % sur le cumul, pour annoter les graphiques) ; règle : `docs/SPECIFICATION.md`, 5.2 |
 | `variations_comparables.csv` | Variations sur un an calculées dans un même document : valeur N, valeur N-1 de la même colonne de comparaison, variation en % (source de toutes les croissances du rapport) |
 | `controle_annuel.csv` | Somme des 4 trimestres retenus vs cumul T4 retenu : `ok`, `en attente de révision`, `rupture de série`, `ecart` |
-| `controle_extraction.csv` | Statut de chaque document : ok, retraitement possible, ecart trimestre/cumul, ecart composantes, a verifier, illisible (image), echec, pdf manquant |
+| `controle_extraction.csv` | Statut de chaque document : ok, retraitement possible, ecart trimestre/cumul, ecart composantes, saisie manuelle, a verifier, illisible (image), echec, pdf manquant |
 | `manifeste_telechargements.csv` | URL et fichier de chaque document |
 | `dim_indicateur.csv` | Codes, libellés, catégorie et nature (flux / stock) |
 | `dim_banque.csv` | Banques — complétez les colonnes `actionnariat` et `groupe` à la main |
 | `pdf/<BANQUE>/` | Les PDF sources |
+
+Fichiers versionnés à la racine (lus par le script ou par Power BI) :
+
+| Fichier | Contenu |
+|---|---|
+| `gabarits.csv` | Mise en page de chaque banque par période : ordre des colonnes, unité, libellés, contenu des charges opératoires |
+| `saisies_manuelles.csv` | Valeurs relevées sur l'image des tableaux publiés en image (BTE 2020–2021), avec fichier, page et vérification |
+| `evenements.csv` | Événements à annoter dans Power BI (don au Fonds 1818 en 2020, accord salarial du secteur en 2021, retraitement BH 2024), avec la source PDF et la page |
 
 Colonnes de valeurs (`colonne`) :
 
@@ -137,8 +145,11 @@ Fichiers produits : `etats_financiers_long.csv`, `controle_etats_financiers.csv`
 - Le site de la BVMT renvoie des pages vides aux scripts : seuls les liens directs vers les PDF
   fonctionnent. Les noms de fichiers changent d'une période à l'autre.
 - Les PDF scannés (images) ne sont pas lisibles : statut `echec`, saisie manuelle nécessaire
-  (cas connus : BH 2019T4 ; BTE, 13 documents de 2020 à 2023, dont 2020 et 2021T1, T3 sans
-  reprise possible par le document suivant).
+  (cas connus : BH 2019T4 ; BTE, 13 documents de 2020 à 2023). Quand le document suivant ne
+  reprend pas les chiffres, ils sont saisis dans `saisies_manuelles.csv` (BTE 2020T1 à 2020T4,
+  2021T1 et 2021T3), relus sur l'image et contrôlés ; statut `saisie manuelle`.
+  Vérification par une personne : `python scripts/verification_saisie.py preparer BTE 2020T2`,
+  remplir la colonne « verification », puis `... reporter BTE 2020T2`.
 - Vérifiez à la main toutes les lignes `a verifier` du fichier de contrôle,
   et quelques lignes `ok` au hasard contre les PDF.
 - Ces indicateurs sont provisoires et non audités.

@@ -101,6 +101,7 @@ Excel de référence ─────────> referentiel.xlsx
 | `Fait_Cours` | Dossier de CSV cours | combinaison des fichiers, types, suppression des doublons, colonne `Rendement` (variation du cours d'un jour à l'autre) |
 | `Controle` | `controle_extraction.csv` | pour la page « qualité des données » |
 | `Corrections` | `corrections_manuelles.csv` | remplacement des valeurs corrigées dans `Fait_Indicateurs` |
+| `Evenements` | `evenements.csv` (versionné, à la racine) | types ; une ligne par événement et par banque concernée : `id_evenement`, `date` (fin du trimestre concerné), `banque`, `indicateur`, `description`, `montant_mdt` (montant cité par le document), `fichier`, `page` ; annotations des graphiques (7.3, pages 3 et 9) |
 | `Definitions_Charges` | `gabarits.csv` | colonnes `banque`, `premier_trimestre`, `dernier_trimestre`, `definition_charges_operatoires` (lignes distinctes) ; info-bulle du coefficient publié et page « qualité des données » |
 
 ### 5.2 Points d'attention
@@ -209,8 +210,24 @@ Excel de référence ─────────> referentiel.xlsx
   1 000 caractères de texte. **BTE** : 13 documents dans ce cas (2020T1 à 2023T4, sauf 2022T2,
   2023T1 et 2023T3) ; repris par le document suivant : 2021T2, 2022T1, 2022T3, 2023T2, 2023T4 en
   entier, 2021T4 et 2022T4 pour le cumul annuel et les soldes seulement ; **non repris : 2020T1 à
-  2020T4, 2021T1 et 2021T3** (le document de l'année suivante est lui aussi une image) : valeurs
-  vides tant qu'aucune saisie manuelle n'est décidée.
+  2020T4, 2021T1 et 2021T3** (le document de l'année suivante est lui aussi une image) : saisie
+  manuelle décidée le 17/10/2026, voir ci-dessous.
+
+  **Saisie manuelle** (`saisies_manuelles.csv`, versionné, à la racine) : seulement pour les
+  documents illisibles que le document suivant ne reprend pas, et seulement pour les indicateurs
+  du rapport (PNB, produits et charges d'exploitation bancaire, frais de personnel, charges
+  générales, charges opératoires, crédits, dépôts), toutes les colonnes du tableau (N, N-1,
+  31/12/N-1). Chaque valeur porte `fichier`, `page` et `verification` : « lecture image +
+  contrôles de cohérence » (relevé sur l'image du tableau rendue à 200–220 dpi), ou « vérifié par
+  Ahmed » quand l'utilisateur l'a contrôlée lui-même (`scripts/verification_saisie.py preparer`
+  puis `reporter`). À l'extraction, la saisie remplace le document illisible (statut `saisie
+  manuelle` dans `controle_extraction.csv`, colonnes `source` = « saisie manuelle » et
+  `verification` dans les données) et passe les contrôles de l'extraction plus un contrôle strict
+  (produits − charges = PNB à 2 kDT près dans chaque colonne) ; une alerte la met en
+  `a verifier`. Contrôles faits pendant la saisie BTE (6 documents, 208 valeurs, aucune erreur) :
+  produits − charges = PNB, charges opératoires = frais de personnel + charges générales,
+  colonne « Variation montant » du PDF = cumul N − cumul N-1, dépôts = somme des quatre
+  catégories ; les trimestres 2020T3 sont confirmés par la colonne N-1 du document 2021T3.
 
   Les périodes de la dernière année publiée (2026) sont en version initiale. Toutes les versions
   restent dans `indicateurs_versions.csv` pour la traçabilité (colonnes `fichier`, `page`), avec
@@ -300,6 +317,8 @@ Tables de faits :
 - `Variations_Comparables` : banque, date_arrete, code_indicateur, mesure (`trim` / `cumul`),
   valeur_N, valeur_N1 (même document), variation_pct, fichier, page, mention_retraitement ; source
   de toutes les variations sur un an
+- `Evenements` (annotations) : id_evenement, date, banque, indicateur, description, montant_mdt,
+  fichier, page
 - `Revisions` (page qualité) : banque, date_arrete, code_indicateur, mesure, version, valeur_mdt,
   valeur_retenue, source_valeur, Ecart_MDT
 - `Fait_Cours` : ticker, date, cloture, volume, rendement
@@ -317,6 +336,8 @@ Relations (1 → plusieurs, filtre simple) :
 - `Dim_Banque[code_banque]` → `Fait_Indicateurs[banque]`, `Variations_Comparables[banque]` et `Revisions[banque]`
 - `Dim_Banque[ticker_bvmt]` → `Fait_Cours[ticker]`
 - `Dim_Indicateur[code_indicateur]` → `Fait_Indicateurs[code_indicateur]` et `Variations_Comparables[code_indicateur]`
+- `Dim_Date[Date]` → `Evenements[date]`, `Dim_Banque[code_banque]` → `Evenements[banque]`,
+  `Dim_Indicateur[code_indicateur]` → `Evenements[indicateur]` (annotations filtrées comme les courbes)
 
 ### Table de dates
 
@@ -488,6 +509,12 @@ VAR Variations =
 VAR Completes = COUNTROWS ( FILTER ( Variations, NOT ISBLANK ( [@Var] ) ) )
 RETURN IF ( Completes = 5, PRODUCTX ( Variations, 1 + [@Var] ) ^ ( 1 / 5 ) - 1 )
 
+-- Annotation d'événement (evenements.csv) : texte affiché au point de la date, filtré par banque et
+-- par indicateur ; plusieurs événements le même trimestre sont séparés par un retour à la ligne
+Evenement texte =
+    CONCATENATEX ( VALUES ( Evenements[description] ), Evenements[description], UNICHAR ( 10 ) )
+Evenement montant MDT = SUM ( Evenements[montant_mdt] )
+Nb evenements = COUNTROWS ( Evenements )
 -- Marqueur de rupture de série pour les graphiques (période révisée de plus de 2 % sur le cumul)
 Rupture PNB =
     IF ( CALCULATE ( COUNTROWS ( Fait_Indicateurs ), Fait_Indicateurs[Rupture_Trim] = "oui",
@@ -652,6 +679,7 @@ Nb ruptures serie =
     CALCULATE ( COUNTROWS ( Fait_Indicateurs ),
                 Fait_Indicateurs[Rupture_Trim] = "oui" || Fait_Indicateurs[Rupture_Cumul] = "oui" )
 Nb documents illisibles = CALCULATE ( [Nb documents], Controle[statut] = "illisible (image)" )
+Nb documents saisis    = CALCULATE ( [Nb documents], Controle[statut] = "saisie manuelle" )
 ```
 
 Paramètre de champ « Indicateur affiché » : PNB, Coef exploitation harmonise, Crédits / Dépôts,
@@ -677,7 +705,9 @@ Part de marché, Var PNB A/A % (Variations_Comparables) — pour un seul visuel 
 |---|---|
 | 1. Vue d'ensemble | Cartes (PNB secteur, coef secteur, dépôts, crédits), titre dynamique, part de marché PNB, HHI dans le temps |
 | 2. Classement | Tableau des banques avec rangs et mise en forme conditionnelle, matrice croissance × coef |
-| 3. Évolution 2020–2026 | Courbes par banque avec sélecteur d'indicateur, bandes de périodes Covid, marqueurs de rupture de série (`Rupture PNB`, info-bulle `detail_rupture`) ; variations sur un an depuis `Variations_Comparables` |
+| 3. Évolution 2020–2026 | Courbes par banque avec sélecteur d'indicateur, bandes de périodes Covid, marqueurs de rupture de série (`Rupture PNB`, info-bulle `detail_rupture`), annotations des
+événements (`Evenements` : don au Fonds 1818 en 2020, accord salarial APTBEF–FGBEF en 2021,
+retraitement BH 2024) en info-bulle et en marqueurs ; variations sur un an depuis `Variations_Comparables` |
 | 4. Structure du PNB | Barres empilées marge d'intérêts / commissions / portefeuille par banque |
 | 5. Bilan | Crédits, dépôts, crédits / dépôts, structure des dépôts |
 | 6. Bourse | Cours, performance, volatilité, performance boursière vs croissance du PNB |

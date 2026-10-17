@@ -1458,7 +1458,8 @@ PREFIXE_COMPOSANTES = "écart composantes : "
 PREFIXE_ILLISIBLE = "illisible (image) : "
 
 
-def statut_document(lignes: list[dict], alertes: list[str], ecarts: list[str], retr: list[str]) -> str:
+def statut_document(lignes: list[dict], alertes: list[str], ecarts: list[str], retr: list[str],
+                    origine: str = "") -> str:
     """Statut d'un document dans controle_extraction.csv. Un écart entre les charges opératoires
     et leurs composantes vient de la banque (vérifié dans les PDF : BT 2020T3, BNA 2023T2) : il est
     signalé sans bloquer, comme l'écart trimestre/cumul. Un tableau en image (BH 2019T4) est
@@ -1469,6 +1470,8 @@ def statut_document(lignes: list[dict], alertes: list[str], ecarts: list[str], r
         return "illisible (image)" if any(a.startswith(PREFIXE_ILLISIBLE) for a in alertes) else "echec"
     if bloquantes:
         return "a verifier"
+    if origine == ORIGINE_SAISIE:
+        return ORIGINE_SAISIE          # valeurs relevées sur l'image, contrôles de cohérence passés
     if len(bloquantes) < len(alertes):
         return "ecart composantes"
     if ecarts:
@@ -1687,6 +1690,74 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
     return lignes, alertes
 
 
+# ---------------------------------------------------------------------------
+# Saisies manuelles (saisies_manuelles.csv) : documents dont le tableau est une image
+# ---------------------------------------------------------------------------
+
+FICHIER_SAISIES = Path(__file__).resolve().parent / "saisies_manuelles.csv"
+ORIGINE_SAISIE = "saisie manuelle"
+_SAISIES: dict[tuple[str, str], list[dict]] | None = None
+
+
+def charger_saisies(chemin: Path = FICHIER_SAISIES) -> dict[tuple[str, str], list[dict]]:
+    """Valeurs relevées à la main sur l'image du tableau, au format des lignes extraites.
+    Colonnes : banque ; trimestre ; fichier ; page ; code_indicateur ; colonne ; valeur_source ;
+    unite_source ; valeur_mdt ; verification ; note. valeur_mdt est recalculée et doit concorder."""
+    if not chemin.exists():
+        return {}
+    sortie: dict[tuple[str, str], list[dict]] = {}
+    with chemin.open(encoding="utf-8-sig") as f:
+        for i, r in enumerate(csv.DictReader(f, delimiter=";"), start=2):
+            if r["code_indicateur"] not in NATURE or r["colonne"] not in COLONNES \
+                    or r["unite_source"] not in FACTEURS_UNITE:
+                raise ValueError(f"saisies_manuelles.csv ligne {i} : indicateur, colonne ou unité inconnus")
+            v = float(r["valeur_source"])
+            mdt = round(v * FACTEURS_UNITE[r["unite_source"]], 9)
+            if abs(mdt - float(r["valeur_mdt"])) > 1e-6:
+                raise ValueError(f"saisies_manuelles.csv ligne {i} : valeur_mdt ≠ valeur_source × unité")
+            sortie.setdefault((r["banque"], r["trimestre"]), []).append({
+                "code_indicateur": r["code_indicateur"], "libelle_source": "saisie manuelle (tableau en image)",
+                "colonne": r["colonne"], "valeur_source": v, "unite_source": r["unite_source"],
+                "valeur_mdt": mdt, "page": int(r["page"]), "note": r.get("note", ""), "gabarit": "",
+                "mention_retraitement": "", "verification": r["verification"]})
+    return sortie
+
+
+def controle_saisie(valeurs: dict[str, dict[str, float]]) -> list[str]:
+    """Contrôles stricts d'une saisie (unité de la source, 2 unités d'arrondi) : produits − charges
+    d'exploitation = PNB dans chaque colonne. Les autres contrôles sont ceux de l'extraction."""
+    alertes = []
+    for col, pnb in valeurs.get("PNB", {}).items():
+        p, ch = valeurs.get("PROD_EXPL", {}).get(col), valeurs.get("CHG_EXPL", {}).get(col)
+        if None not in (p, ch) and abs(p - ch - pnb) > 2:
+            alertes.append(f"saisie {col} : produits - charges = {p - ch:,.0f} ≠ PNB {pnb:,.0f}")
+    return alertes
+
+
+def extraire_document(code: str, tri: str, chemin: Path) -> tuple[list[dict], list[str], str]:
+    """Extraction d'un document ; si son tableau est une image et qu'une saisie manuelle existe,
+    la saisie remplace l'extraction et passe les mêmes contrôles (plus le contrôle strict).
+    Renvoie (lignes, alertes, origine) avec origine vide ou « saisie manuelle »."""
+    global _SAISIES
+    t = Trimestre.depuis_texte(tri)
+    lignes, alertes = extraire_pdf(chemin, t, code)
+    if lignes or not any(a.startswith(PREFIXE_ILLISIBLE) for a in alertes):
+        return lignes, alertes, ""
+    if _SAISIES is None:
+        _SAISIES = charger_saisies()
+    saisie = _SAISIES.get((code, tri))
+    if not saisie:
+        return lignes, alertes, ""
+    valeurs: dict[str, dict[str, float]] = {}
+    for l in saisie:
+        valeurs.setdefault(l["code_indicateur"], {})[l["colonne"]] = l["valeur_source"]
+    alertes = controles(valeurs, FACTEURS_UNITE[saisie[0]["unite_source"]], t) + controle_saisie(valeurs)
+    gab = gabarit_pour(code, t)
+    if gab:
+        alertes += controle_definition_chg_oper(valeurs, gab.definition_chg_oper)
+    return [dict(l) for l in saisie], alertes, ORIGINE_SAISIE
+
+
 def cmd_extraire(args):
     manifeste = lire_manifeste()
     if not manifeste:
@@ -1695,14 +1766,16 @@ def cmd_extraire(args):
     controle = DOSSIER / "controle_extraction.csv"
     champs = ["banque", "trimestre", "date_arrete", "annee", "num_trimestre", "code_indicateur",
               "libelle_source", "colonne", "valeur_source", "unite_source", "valeur_mdt",
-              "source", "fichier", "page", "note", "gabarit", "mention_retraitement"]
+              "source", "fichier", "page", "note", "gabarit", "mention_retraitement", "verification"]
     # 1) extraction de chaque document
     resultats: dict[tuple[str, str], tuple[list[dict], list[str]]] = {}
+    origines: dict[tuple[str, str], str] = {}
     for (code, tri), r in sorted(manifeste.items()):
         if r["statut"] != "ok" or not r["fichier"] or not Path(r["fichier"]).exists():
             continue
         try:
-            resultats[(code, tri)] = extraire_pdf(Path(r["fichier"]), Trimestre.depuis_texte(tri), code)
+            lignes, alertes, origines[(code, tri)] = extraire_document(code, tri, Path(r["fichier"]))
+            resultats[(code, tri)] = (lignes, alertes)
         except Exception as e:  # PDF illisible
             resultats[(code, tri)] = ([], [f"erreur de lecture : {e}"])
 
@@ -1729,14 +1802,15 @@ def cmd_extraire(args):
             lignes, alertes = resultats[(code, tri)]
             retr = retraitements.get((code, tri), [])
             ecarts = ecarts_trim.get((code, tri), [])
-            statut = statut_document(lignes, alertes, ecarts, retr)
+            statut = statut_document(lignes, alertes, ecarts, retr, origines.get((code, tri), ""))
             n_ok += statut == "ok"
             alertes = alertes + ecarts + retr
             g = gabarit_pour(code, t)
             for l in lignes:
                 l.update({"banque": code, "trimestre": tri, "date_arrete": t.fin.isoformat(),
                           "annee": t.annee, "num_trimestre": t.num,
-                          "source": r["source"], "fichier": Path(r["fichier"]).name})
+                          "source": origines.get((code, tri)) or r["source"], "fichier": Path(r["fichier"]).name,
+                          "verification": l.get("verification", "")})
                 w.writerow(l)
             print(f"  {statut:<11} {code} {tri}  ({len(lignes)} valeurs) {'; '.join(alertes)}")
 
