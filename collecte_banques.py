@@ -1197,6 +1197,30 @@ def version_admise(code_indicateur: str, version: str) -> bool:
     return not (code_indicateur == "CAP_PROPRES" and version.startswith("revisee_31-12_"))
 
 
+# Mention d'un retraitement ou d'un souci de comparabilité dans un document (notes, renvois,
+# commentaires) : « (*) Chiffres retraités », « Les chiffres de 2024 ont été retraités pour des
+# raisons de comparabilité ». « Personnel retraité » ou « retraité de l'impact de… » seuls ne
+# suffisent pas.
+RX_MENTION_RETRAITEMENT = re.compile(
+    r"comparabilit|retraitement|chiffres\b[^.\n]{0,60}retrait[ée]|retrait[ée]e?s?\s+pour\s+(des|les)\b", re.I)
+
+
+def mention_retraitement(texte: str) -> str:
+    """Première ligne du document qui annonce un retraitement (vide s'il n'y en a pas)."""
+    for ligne in texte.splitlines():
+        if RX_MENTION_RETRAITEMENT.search(ligne):
+            return re.sub(r"\s+", " ", ligne).strip()[:200]
+    return ""
+
+
+def document_de_version(periode: Trimestre, version: str) -> tuple[int, int]:
+    """(année, trimestre) du document qui publie une version : « revisee_T2_N+1 » d'une période de
+    l'année N vient du T2 de N+1, « revisee_31-12_T3_N+1 » du T3 de N+1."""
+    if version == "initiale":
+        return periode.annee, periode.num
+    return periode.annee + 1, int(version.split("_")[-2][1])
+
+
 def priorite_version(version: str) -> int:
     """Plus petit = prioritaire."""
     if version == "initiale":
@@ -1206,11 +1230,15 @@ def priorite_version(version: str) -> int:
     return 0                                          # revisee_T<q>_N+1
 
 
-def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]]) -> list[dict]:
+def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]],
+                   illisibles: dict[tuple[str, str], str] | None = None) -> list[dict]:
     """docs : (banque, trimestre du document) -> (lignes extraites, nom du fichier).
+    illisibles : (banque, trimestre) -> fichier des documents dont le tableau est une image ; leur
+    version initiale est listée sans valeur, statut « illisible (image) ».
     Renvoie une ligne par banque × période × indicateur × mesure × version, avec la valeur
-    retenue, sa source, et l'écart de chaque version à la valeur retenue."""
-    valeurs: dict[tuple[str, str, str, str], dict[str, tuple[float, str, int, str]]] = {}
+    retenue, sa source, l'écart de chaque version à la valeur retenue, la nature de la révision
+    et les ruptures de série (changement de méthode)."""
+    valeurs: dict[tuple[str, str, str, str], dict[str, tuple[float, str, int, str, str]]] = {}
     for (code, tri), (lignes, fichier) in docs.items():
         t = Trimestre.depuis_texte(tri)
         for l in lignes:
@@ -1227,12 +1255,31 @@ def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]]) -> list[
                 continue
             mesure = "trim" if col.startswith("trim") else "cumul"
             valeurs.setdefault((code, str(p), l["code_indicateur"], mesure), {})[version] = \
-                (l["valeur_mdt"], fichier, l["page"], l.get("note", ""))
+                (l["valeur_mdt"], fichier, l["page"], l.get("note", ""), l.get("mention_retraitement", ""))
 
-    # 1) version retenue de chaque série : priorité, sauf versions exclues par règle fixe
+    # 0) changements de méthode : version révisée publiée par un document qui annonce un retraitement
+    #    (« comparabilité », « chiffres retraités »), écart à l'initiale au-delà de l'arrondi. Une autre
+    #    version révisée de la même période qui redonne le même chiffre (à l'arrondi près) est le même
+    #    retraitement, même si son document n'a pas de note (BH : 31/12/2023 dans le T1 2024 sans
+    #    note, identique au T2 2024 annoté). Les niveaux gardent alors la version initiale.
+    changements: dict[tuple[str, str, str, str], set[str]] = {}
+    for cle, vers in valeurs.items():
+        if "initiale" not in vers:
+            continue
+        initiale = vers["initiale"][0]
+        hors_arrondi = [v for v, x in vers.items()
+                        if v != "initiale" and abs(x[0] - initiale) > TOLERANCE_ARRONDI_MDT]
+        annonces = [vers[v][0] for v in hors_arrondi if vers[v][4]]
+        chg = {v for v in hors_arrondi
+               if any(abs(vers[v][0] - a) <= TOLERANCE_ARRONDI_MDT for a in annonces)}
+        if chg:
+            changements[cle] = chg
+
+    # 1) version retenue de chaque série : priorité, sauf versions exclues par règle fixe et
+    #    changements de méthode
     sources: dict[tuple[str, str, str, str], str | None] = {}
     for cle, vers in valeurs.items():
-        admises = [v for v in vers if version_admise(cle[2], v)]
+        admises = [v for v in vers if version_admise(cle[2], v) and v not in changements.get(cle, ())]
         sources[cle] = min(admises, key=priorite_version) if admises else None
     # 2) reclassement à total constant : une composante prend la même version que son total
     for (code, per, ind, mesure), vers in valeurs.items():
@@ -1252,6 +1299,8 @@ def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]]) -> list[
         composantes qui bougent en sens inverse ; vide : sous la tolérance."""
         if not version_admise(ind, version):
             return "exclue (capitaux propres, 31/12 provisoire)"
+        if version in changements.get((code, per, ind, mesure), ()):
+            return "changement_methode"
         d = ecart(code, per, ind, mesure, version)
         if d is None:
             return ""
@@ -1268,33 +1317,79 @@ def table_versions(docs: dict[tuple[str, str], tuple[list[dict], str]]) -> list[
             return "reclassement"
         return "correction"
 
+    # 3) rupture de série : la période retraitée P garde sa valeur initiale (ancienne méthode) ; la
+    #    même période un an plus tard est la première publiée avec la nouvelle méthode. La rupture est
+    #    marquée sur celle-ci, pour l'indicateur et la mesure concernés.
+    ruptures: dict[tuple[str, str, str, str], str] = {}
+    for (code, per, ind, mesure), vers_chg in changements.items():
+        p = Trimestre.depuis_texte(per)
+        suivante = (code, str(Trimestre(p.annee + 1, p.num)), ind, mesure)
+        init = valeurs[(code, per, ind, mesure)]["initiale"][0]
+        v = min(vers_chg, key=lambda x: document_de_version(p, x))
+        ruptures[suivante] = (f"{per} retraité : {init:,.3f} publié, {valeurs[(code, per, ind, mesure)][v][0]:,.3f} "
+                              f"dans le document {document_de_version(p, v)[0]}T{document_de_version(p, v)[1]}")
+
     sortie = []
     for (code, per, ind, mesure), vers in sorted(valeurs.items()):
         source = sources[(code, per, ind, mesure)]
         retenue = vers[source][0] if source else None
         p = Trimestre.depuis_texte(per)
+        rupture = ruptures.get((code, per, ind, mesure), "")
+        commun = {"banque": code, "trimestre": per, "date_arrete": p.fin.isoformat(),
+                  "annee": p.annee, "num_trimestre": p.num, "code_indicateur": ind, "mesure": mesure,
+                  "valeur_retenue": retenue, "source_valeur": source or "",
+                  "rupture_serie": "oui" if rupture else "", "detail_rupture": rupture}
+        if illisibles and (code, per) in illisibles and "initiale" not in vers:
+            sortie.append({**commun, "version": "initiale", "valeur_mdt": None,
+                           "fichier": illisibles[(code, per)], "page": "", "ecart_vs_retenue": None,
+                           "statut_revision": "illisible (image)", "note_definition": "",
+                           "mention_retraitement": ""})
         for version in sorted(vers, key=priorite_version):
-            v, fichier, page, note = vers[version]
-            sortie.append({"banque": code, "trimestre": per, "date_arrete": p.fin.isoformat(),
-                           "annee": p.annee, "num_trimestre": p.num, "code_indicateur": ind,
-                           "mesure": mesure, "version": version, "valeur_mdt": v,
-                           "fichier": fichier, "page": page,
-                           "valeur_retenue": retenue, "source_valeur": source or "",
+            v, fichier, page, note, mention = vers[version]
+            sortie.append({**commun, "version": version, "valeur_mdt": v, "fichier": fichier, "page": page,
                            "ecart_vs_retenue": None if retenue is None else round(v - retenue, 9),
                            "statut_revision": "retenue" if version == source
                            else statut_revision(code, per, ind, mesure, version),
-                           "note_definition": note})
+                           "note_definition": note, "mention_retraitement": mention})
+    return sortie
+
+
+def variations_comparables(docs: dict[tuple[str, str], tuple[list[dict], str]]) -> list[dict]:
+    """Variation sur un an calculée à l'intérieur d'un même document : colonne N contre colonne N-1
+    (trimestre : trim_N / trim_N1 ; cumul ou solde : cumul_N / cumul_N1). Les deux chiffres sont
+    publiés ensemble, sur la même méthode : la variation reste juste quand la banque retraite N-1."""
+    sortie = []
+    for (code, tri), (lignes, fichier) in sorted(docs.items()):
+        t = Trimestre.depuis_texte(tri)
+        par_col = {(l["code_indicateur"], l["colonne"]): l for l in lignes}
+        for (ind, col), l in sorted(par_col.items()):
+            if col not in ("trim_N", "cumul_N"):
+                continue
+            n1 = par_col.get((ind, col[:-1] + "N1"))
+            if n1 is None:
+                continue
+            vn, vn1 = l["valeur_mdt"], n1["valeur_mdt"]
+            sortie.append({"banque": code, "trimestre": tri, "date_arrete": t.fin.isoformat(),
+                           "annee": t.annee, "num_trimestre": t.num, "code_indicateur": ind,
+                           "mesure": col[:-2], "valeur_N": vn, "valeur_N1": vn1,
+                           "variation_pct": round((vn - vn1) / abs(vn1), 9) if vn1 else None,
+                           "fichier": fichier, "page": l["page"],
+                           "mention_retraitement": l.get("mention_retraitement", "")})
     return sortie
 
 
 def controle_somme_annuelle(versions: list[dict]) -> list[dict]:
     """Avec les valeurs retenues : somme des 4 trimestres = cumul du T4, pour chaque flux.
     statut : ok ; « en attente de révision » quand le cumul retenu est la version provisoire
-    31/12/N-1 (le T4 seul attend le document T4 suivant) ; « ecart » sinon."""
+    31/12/N-1 (le T4 seul attend le document T4 suivant) ; « rupture de série » quand l'année
+    contient un changement de méthode (période retraitée ou rupture marquée) ; « ecart » sinon."""
     retenue: dict[tuple[str, str, str, str], tuple[float, str]] = {}
+    ruptures: set[tuple[str, int, str]] = set()     # (banque, année, indicateur) avec rupture de série
     for r in versions:
         retenue[(r["banque"], r["trimestre"], r["code_indicateur"], r["mesure"])] = \
             (r["valeur_retenue"], r["source_valeur"])
+        if r.get("rupture_serie") or r["statut_revision"] == "changement_methode":
+            ruptures.add((r["banque"], r["annee"], r["code_indicateur"]))
     sortie = []
     for (code, tri, ind, mesure), (cumul, source) in sorted(retenue.items()):
         t = Trimestre.depuis_texte(tri)
@@ -1309,6 +1404,9 @@ def controle_somme_annuelle(versions: list[dict]) -> list[dict]:
             statut = "ok"
         elif source.startswith("revisee_31-12_"):
             statut = "en attente de révision"
+        elif (code, t.annee, ind) in ruptures:
+            # changement de méthode en cours d'année : trimestres et cumul sur deux méthodes (BH 2025)
+            statut = "rupture de série"
         else:
             statut = "ecart"
         sortie.append({"banque": code, "annee": t.annee, "code_indicateur": ind, "somme_trimestres": somme,
@@ -1345,15 +1443,18 @@ def definition_capitaux_propres(texte: str) -> str:
 
 
 PREFIXE_COMPOSANTES = "écart composantes : "
+PREFIXE_ILLISIBLE = "illisible (image) : "
 
 
 def statut_document(lignes: list[dict], alertes: list[str], ecarts: list[str], retr: list[str]) -> str:
     """Statut d'un document dans controle_extraction.csv. Un écart entre les charges opératoires
     et leurs composantes vient de la banque (vérifié dans les PDF : BT 2020T3, BNA 2023T2) : il est
-    signalé sans bloquer, comme l'écart trimestre/cumul."""
+    signalé sans bloquer, comme l'écart trimestre/cumul. Un tableau en image (BH 2019T4) est
+    « illisible (image) » : ses chiffres ne sont repris que par les colonnes N-1 du document
+    de l'année suivante (version révisée)."""
     bloquantes = [a for a in alertes if not a.startswith(PREFIXE_COMPOSANTES)]
     if not lignes:
-        return "echec"
+        return "illisible (image)" if any(a.startswith(PREFIXE_ILLISIBLE) for a in alertes) else "echec"
     if bloquantes:
         return "a verifier"
     if len(bloquantes) < len(alertes):
@@ -1412,6 +1513,7 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
     pages: dict[int, PageAnalysee] = {}
     texte_complet = ""   # 4 premières pages (tableau) : sert à deviner l'unité
     texte_notes = ""     # toutes les pages : notes (définition des capitaux propres…)
+    pages_image: list[int] = []   # pages sans couche texte utile mais avec des images (tableau scanné)
     with pdfplumber.open(chemin) as pdf:
         for i, page in enumerate(pdf.pages[:12], start=1):
             texte = page.extract_text() or ""
@@ -1420,6 +1522,8 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
                 texte_complet += texte + "\n"
                 pages[i] = analyser_page(page, i)
                 toutes += pages[i].lignes
+                if page.images and len(page.chars) < 500:
+                    pages_image.append(i)
 
     # libellés sur deux lignes : on recolle un libellé sans nombre à la ligne suivante ;
     # une ligne de chiffres sans libellé prend celui de la ligne juste en dessous s'il en est tout
@@ -1477,7 +1581,11 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
         if c == "CAP_PROPRES":
             break
 
+    alerte_image = (f"{PREFIXE_ILLISIBLE}PNB non lu, page(s) {pages_image} en image sans couche texte "
+                    f"(moins de 500 caractères)")
     if "PNB" not in trouves:
+        if pages_image:
+            return [], [alerte_image]
         return [], ["PNB introuvable : tableau non reconnu (PDF scanné ou mise en page inhabituelle ?)"]
 
     # nom de chaque colonne : d'après l'en-tête du tableau si on sait le lire, sinon ordre habituel
@@ -1540,6 +1648,7 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
     if gab:
         alertes += controle_definition_chg_oper(valeurs, gab.definition_chg_oper)
     note_cp = definition_capitaux_propres(texte_notes)
+    mention = mention_retraitement(texte_notes)
 
     lignes = []
     for c, cols in valeurs.items():
@@ -1551,10 +1660,14 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
                            "valeur_mdt": round(v * facteur, 9),   # 9 décimales : le millime
                            "page": trouves[c].page,
                            "note": note_cp if c == "CAP_PROPRES" else "",
-                           "gabarit": gab.nom if gab else ""})
+                           "gabarit": gab.nom if gab else "",
+                           "mention_retraitement": mention})
     manquants = [c for c in ("PROD_EXPL", "CHG_EXPL", "CHG_OPER", "CREDITS", "DEPOTS") if c not in trouves]
     if manquants:
         alertes.append("non trouvés : " + ", ".join(manquants))
+    if pages_image and not any(l["code_indicateur"] == "PNB" for l in lignes):
+        # tableau en image (BH 2019T4) : le libellé « PNB » vient du commentaire, sans chiffres
+        return [], [alerte_image]
     return lignes, alertes
 
 
@@ -1566,7 +1679,7 @@ def cmd_extraire(args):
     controle = DOSSIER / "controle_extraction.csv"
     champs = ["banque", "trimestre", "date_arrete", "annee", "num_trimestre", "code_indicateur",
               "libelle_source", "colonne", "valeur_source", "unite_source", "valeur_mdt",
-              "source", "fichier", "page", "note", "gabarit"]
+              "source", "fichier", "page", "note", "gabarit", "mention_retraitement"]
     # 1) extraction de chaque document
     resultats: dict[tuple[str, str], tuple[list[dict], list[str]]] = {}
     for (code, tri), r in sorted(manifeste.items()):
@@ -1612,12 +1725,15 @@ def cmd_extraire(args):
             print(f"  {statut:<11} {code} {tri}  ({len(lignes)} valeurs) {'; '.join(alertes)}")
 
     # 4) versions initiale / révisée de chaque période, et valeur retenue pour l'analyse
-    versions = table_versions({cle: (lignes, Path(manifeste[cle]["fichier"]).name)
-                               for cle, (lignes, _) in resultats.items()})
+    docs_fichiers = {cle: (lignes, Path(manifeste[cle]["fichier"]).name) for cle, (lignes, _) in resultats.items()}
+    illisibles = {cle: Path(manifeste[cle]["fichier"]).name for cle, (lignes, alertes) in resultats.items()
+                  if not lignes and any(a.startswith(PREFIXE_ILLISIBLE) for a in alertes)}
+    versions = table_versions(docs_fichiers, illisibles)
     fichier_versions = DOSSIER / "indicateurs_versions.csv"
     champs_v = ["banque", "trimestre", "date_arrete", "annee", "num_trimestre", "code_indicateur",
                 "mesure", "version", "valeur_mdt", "fichier", "page", "valeur_retenue", "source_valeur",
-                "ecart_vs_retenue", "statut_revision", "note_definition"]
+                "ecart_vs_retenue", "statut_revision", "note_definition", "mention_retraitement",
+                "rupture_serie", "detail_rupture"]
     with fichier_versions.open("w", newline="", encoding="utf-8-sig") as f:
         w = csv.DictWriter(f, fieldnames=champs_v, delimiter=";")
         w.writeheader()
@@ -1642,10 +1758,21 @@ def cmd_extraire(args):
     for a in revisions_31_12:
         print("  " + a)
 
+    # 6) variations sur un an à l'intérieur de chaque document (colonne N contre colonne N-1)
+    variations = variations_comparables(docs_fichiers)
+    fichier_variations = DOSSIER / "variations_comparables.csv"
+    with fichier_variations.open("w", newline="", encoding="utf-8-sig") as f:
+        w = csv.DictWriter(f, fieldnames=list(variations[0]) if variations else ["banque"], delimiter=";")
+        w.writeheader()
+        w.writerows(variations)
+    n_chg = sum(r["statut_revision"] == "changement_methode" for r in versions)
+    n_rupt = len({(r["banque"], r["trimestre"], r["code_indicateur"], r["mesure"]) for r in versions if r["rupture_serie"]})
+    print(f"Changements de méthode : {n_chg} version(s) écartée(s) ; ruptures de série : {n_rupt}")
+
     ecrire_dimensions()
     print(f"\n{n_ok} documents extraits sans alerte.")
     print(f"Données : {sortie}\nVersions : {fichier_versions}\nContrôle : {controle}\n"
-          f"Contrôle annuel : {fichier_sommes}")
+          f"Contrôle annuel : {fichier_sommes}\nVariations comparables : {fichier_variations}")
 
 
 def ecrire_dimensions():

@@ -49,9 +49,10 @@ Chaque PDF est vérifié : il doit citer la date d'arrêté du trimestre visé.
 | Fichier | Contenu |
 |---|---|
 | `indicateurs_banques_long.csv` | Valeurs brutes : une ligne par document × indicateur × colonne lue |
-| `indicateurs_versions.csv` | Table pour Power BI : une ligne par banque × période × indicateur × mesure (trim / cumul) × version (`initiale` = document du trimestre ; `revisee_T<q>_N+1` = colonne N-1 du document de l'année suivante ; `revisee_31-12_T<q>_N+1` = colonne 31/12/N-1 d'un T1–T3 suivant, provisoire, pour le cumul annuel et les soldes au 31/12 seulement), avec `valeur_retenue`, `source_valeur` et `ecart_vs_retenue` (règle : `docs/SPECIFICATION.md`, 5.2) |
-| `controle_annuel.csv` | Somme des 4 trimestres retenus vs cumul T4 retenu : `ok`, `en attente de révision`, `ecart` |
-| `controle_extraction.csv` | Statut de chaque document : ok, retraitement possible, ecart trimestre/cumul, ecart composantes, a verifier, echec, pdf manquant |
+| `indicateurs_versions.csv` | Table pour Power BI : une ligne par banque × période × indicateur × mesure (trim / cumul) × version (`initiale` = document du trimestre ; `revisee_T<q>_N+1` = colonne N-1 du document de l'année suivante ; `revisee_31-12_T<q>_N+1` = colonne 31/12/N-1 d'un T1–T3 suivant, provisoire, pour le cumul annuel et les soldes au 31/12 seulement), avec `valeur_retenue`, `source_valeur`, `ecart_vs_retenue`, `statut_revision` (`correction`, `reclassement`, `changement_methode` quand le document annonce un retraitement « pour des raisons de comparabilité » : la version initiale est alors gardée), `mention_retraitement` (la note du document) et `rupture_serie` / `detail_rupture` (première période publiée avec la nouvelle méthode) ; règle : `docs/SPECIFICATION.md`, 5.2 |
+| `variations_comparables.csv` | Variations sur un an calculées dans un même document : valeur N, valeur N-1 de la même colonne de comparaison, variation en % (source de toutes les croissances du rapport) |
+| `controle_annuel.csv` | Somme des 4 trimestres retenus vs cumul T4 retenu : `ok`, `en attente de révision`, `rupture de série`, `ecart` |
+| `controle_extraction.csv` | Statut de chaque document : ok, retraitement possible, ecart trimestre/cumul, ecart composantes, a verifier, illisible (image), echec, pdf manquant |
 | `manifeste_telechargements.csv` | URL et fichier de chaque document |
 | `dim_indicateur.csv` | Codes, libellés, catégorie et nature (flux / stock) |
 | `dim_banque.csv` | Banques — complétez les colonnes `actionnariat` et `groupe` à la main |

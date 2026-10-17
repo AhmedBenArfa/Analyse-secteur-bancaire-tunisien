@@ -39,7 +39,18 @@ for (code, tri), (lignes, alertes) in sorted(resultats.items()):
         print(f"        - {a}")
 manquants = [tri for (code, tri), r in manifeste.items() if code == banque and r["statut"] != "ok"]
 print(f"\n{banque} : {dict(statuts)} ; manquants : {manquants}")
-versions = cb.table_versions({cle: (lignes, "") for cle, (lignes, _) in resultats.items()})
+illisibles = {cle: Path(manifeste[cle]["fichier"]).name for cle, (lignes, alertes) in resultats.items()
+              if not lignes and any(a.startswith(cb.PREFIXE_ILLISIBLE) for a in alertes)}
+versions = cb.table_versions({cle: (lignes, Path(manifeste[cle]["fichier"]).name)
+                              for cle, (lignes, _) in resultats.items()}, illisibles)
+print("Statuts des versions non retenues :",
+      dict(Counter(r["statut_revision"] for r in versions if r["statut_revision"] not in ("retenue", ""))))
+ruptures = sorted({(r["trimestre"], r["code_indicateur"], r["mesure"], r["detail_rupture"])
+                   for r in versions if r["rupture_serie"]})
+print(f"Ruptures de série : {len(ruptures)}")
+for tri, ind, mesure, detail in ruptures:
+    if ind in cb.CODES_RETRAITEMENT:
+        print(f"  {tri} {ind:<10} {mesure:<5} {detail}")
 ann = cb.controle_somme_annuelle(versions)
 print("Contrôle annuel :", dict(Counter(r["statut"] for r in ann)))
 for r in ann:

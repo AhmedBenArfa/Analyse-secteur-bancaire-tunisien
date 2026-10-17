@@ -110,11 +110,79 @@ def test_somme_trimestres_revisee():
     lignes = sommes_annuelles()
     assert len(lignes) == 8, f"{len(lignes)} combinaisons banque × indicateur au lieu de 8"
     for r in lignes:
-        # jamais « ecart » : ok, ou « en attente de révision » si le cumul retenu est le 31/12 provisoire
-        assert r["statut"] in ("ok", "en attente de révision"), f"{r['banque']} {r['code_indicateur']} : {r}"
-        # la somme des trimestres retenus est cohérente avec le cumul T4 publié dans le document T4
-        assert abs(r["somme_trimestres"] - r["cumul_T4_initial"]) <= TOLERANCE_SOMME_MDT, \
-            f"{r['banque']} {r['code_indicateur']} : somme {r['somme_trimestres']} ≠ cumul T4 initial {r['cumul_T4_initial']}"
+        # jamais « ecart » : ok ; « en attente de révision » si le cumul retenu est le 31/12 provisoire ;
+        # « rupture de série » si l'année contient un changement de méthode (UIB 2025 : premier semestre
+        # retraité « pour les besoins de comparabilité » en cours d'année, trimestres gardés en initiale)
+        assert r["statut"] in ("ok", "en attente de révision", "rupture de série"), \
+            f"{r['banque']} {r['code_indicateur']} : {r}"
+        # hors rupture, la somme des trimestres retenus est cohérente avec le cumul T4 du document T4
+        if r["statut"] != "rupture de série":
+            assert abs(r["somme_trimestres"] - r["cumul_T4_initial"]) <= TOLERANCE_SOMME_MDT, \
+                f"{r['banque']} {r['code_indicateur']} : somme {r['somme_trimestres']} ≠ cumul T4 initial {r['cumul_T4_initial']}"
+
+
+def docs_banque(banque: str, trimestres: list[str]) -> dict:
+    """(banque, trimestre) -> (lignes, fichier) pour les PDF demandés (présents dans donnees/pdf)."""
+    docs = {}
+    for p in sorted((cb.DOSSIER_PDF / banque).glob(f"{banque}_*.pdf")):
+        tri = p.stem.split("_")[1]
+        if tri in trimestres:
+            docs[(banque, tri)] = (p, *cb.extraire_pdf(p, cb.Trimestre.depuis_texte(tri), banque))
+    return docs
+
+
+def versions_de(docs: dict) -> list[dict]:
+    illisibles = {cle: p.name for cle, (p, lignes, alertes) in docs.items()
+                  if not lignes and any(a.startswith(cb.PREFIXE_ILLISIBLE) for a in alertes)}
+    return cb.table_versions({cle: (lignes, p.name) for cle, (p, lignes, _) in docs.items()}, illisibles)
+
+
+def test_document_illisible_bh_2019t4():
+    """BH 2019T4 : tableau en image. Version initiale « illisible (image) », valeurs 2019 reprises
+    des colonnes N-1 du document BH 2020T4 (« (*) Chiffres retraités »)."""
+    docs = docs_banque("BH", ["2019T4", "2020T4"])
+    p, lignes, alertes = docs[("BH", "2019T4")]
+    assert not lignes and cb.statut_document(lignes, alertes, [], []) == "illisible (image)", alertes
+    v = {(r["code_indicateur"], r["mesure"], r["version"]): r for r in versions_de(docs) if r["trimestre"] == "2019T4"}
+    # relevé à la main dans BH_2020T4.pdf, page 1, colonnes « 4 EME TRIMESTRE 2019* » et « AU 31/12/2019* »
+    for (ind, mesure), attendu in {("PNB", "trim"): 156.644335, ("PNB", "cumul"): 492.928661,
+                                   ("CREDITS", "cumul"): 9647.335031}.items():
+        r = v[(ind, mesure, "revisee_T4_N+1")]
+        assert r["source_valeur"] == "revisee_T4_N+1" and proche(r["valeur_retenue"], attendu), r
+        assert v[(ind, mesure, "initiale")]["statut_revision"] == "illisible (image)"
+        assert v[(ind, mesure, "initiale")]["valeur_mdt"] is None
+
+
+def test_changement_methode_bh_2024():
+    """BH a retraité 2024 « pour des raisons de comparabilité » (T1, T3 et T4 2025 ; le T2 2025 redonne
+    le chiffre du T1 sans note) : PNB 2024 gardé en version initiale (765 932 kDT, T4 2024), versions
+    révisées en changement_methode, rupture de série sur le PNB cumulé du T4 2025."""
+    docs = docs_banque("BH", ["2024T4", "2025T1", "2025T2", "2025T3", "2025T4"])
+    versions = versions_de(docs)
+    pnb = {r["version"]: r for r in versions
+           if r["trimestre"] == "2024T4" and r["code_indicateur"] == "PNB" and r["mesure"] == "cumul"}
+    assert pnb["initiale"]["statut_revision"] == "retenue" and proche(pnb["initiale"]["valeur_mdt"], 765.932)
+    for version, attendu in {"revisee_31-12_T1_N+1": 744.228, "revisee_31-12_T2_N+1": 744.228,
+                             "revisee_31-12_T3_N+1": 746.601, "revisee_T4_N+1": 701.188}.items():
+        assert proche(pnb[version]["valeur_mdt"], attendu), pnb[version]
+        assert pnb[version]["statut_revision"] == "changement_methode", pnb[version]
+    rupture = [r for r in versions if r["trimestre"] == "2025T4" and r["code_indicateur"] == "PNB"
+               and r["mesure"] == "cumul" and r["rupture_serie"] == "oui"]
+    assert rupture, "rupture de série attendue sur le PNB cumulé 2025T4"
+
+
+def test_variations_comparables():
+    """Variation sur un an dans un même document : colonne N contre colonne N-1.
+    BH 2025T4 : PNB 681 479 contre 701 188 (2024 retraité), colonne « Var » du PDF : -2,8 %.
+    ATB 2024T4 : PNB 391 292 contre 357 317, colonne « Evolution » du PDF : 33 975."""
+    docs = {**docs_banque("BH", ["2025T4"]), **docs_banque("ATB", ["2024T4"])}
+    var = {(r["banque"], r["code_indicateur"], r["mesure"]): r
+           for r in cb.variations_comparables({cle: (lignes, p.name) for cle, (p, lignes, _) in docs.items()})}
+    bh = var[("BH", "PNB", "cumul")]
+    assert proche(bh["valeur_N"], 681.479) and proche(bh["valeur_N1"], 701.188)
+    assert round(bh["variation_pct"] * 100, 1) == -2.8
+    atb = var[("ATB", "PNB", "cumul")]
+    assert proche(atb["valeur_N"] - atb["valeur_N1"], 33.975)
 
 
 def test_valeurs_reference():
@@ -132,7 +200,8 @@ if __name__ == "__main__":
     print("\n2025, valeurs retenues : somme des 4 trimestres, cumul T4 retenu (source), cumul T4 initial")
     sommes_ok = True
     for r in sommes_annuelles():
-        coherent = abs(r["somme_trimestres"] - r["cumul_T4_initial"]) <= TOLERANCE_SOMME_MDT
+        coherent = (r["statut"] == "rupture de série"
+                    or abs(r["somme_trimestres"] - r["cumul_T4_initial"]) <= TOLERANCE_SOMME_MDT)
         sommes_ok &= coherent and r["statut"] != "ecart"
         print(f"  {r['banque']:<5} {r['code_indicateur']:<10} somme {r['somme_trimestres']:>14,.6f} | "
               f"retenu {r['cumul_T4']:>14,.6f} ({r['source_cumul']}) -> {r['statut']} | "
