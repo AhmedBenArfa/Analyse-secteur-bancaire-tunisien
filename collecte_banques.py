@@ -1133,7 +1133,9 @@ def controles(valeurs: dict[str, dict[str, float | None]], facteur: float, t: Tr
                 alertes.append(f"{c} {col} = {v:,.3f} MDT : hors de l'ordre de grandeur plausible "
                                f"({mini:g} à {haut:g} MDT)")
     pnb, chg = get("PNB", "cumul_N"), get("CHG_OPER", "cumul_N")
-    if pnb and chg and not (0.15 <= chg / pnb <= 1.5):
+    # borne haute à 200 % : WIB 2019 publie 151 % (charges opératoires 31,9 MDT, dotations comprises,
+    # pour un PNB de 21,1 MDT), vérifié dans le PDF
+    if pnb and chg and not (0.15 <= chg / pnb <= 2.0):
         alertes.append(f"coefficient d'exploitation de {chg / pnb:.0%} : invraisemblable")
     cred, dep = get("CREDITS", "cumul_N"), get("DEPOTS", "cumul_N")
     if cred and dep and not (0.3 <= cred / dep <= 3):
@@ -1548,6 +1550,64 @@ def _suite_de_nombres(dessus: Ligne, l: Ligne) -> bool:
             and all(re.fullmatch(r"\d{3}", j.texte) and j.colonne in cols_dessus for j in l.nombres))
 
 
+def _recoller_nombres_coupes(lignes: list[Ligne]) -> list[Ligne]:
+    """Nombre trop large pour sa case, coupé sur deux lignes : début (« 911 », « 1 050 ») sur une
+    ligne, dernier groupe de 3 chiffres (« 800 ») sur la ligne du dessous, les autres colonnes de la
+    rangée étant sur l'une des deux lignes ou sur une ligne intermédiaire (WIB 2023T2, 2024T2,
+    2026T1 : encours des financements et des dépôts). Les morceaux sont recollés et les lignes
+    réunies en une seule rangée."""
+    sortie: list[Ligne] = []
+    i = 0
+    while i < len(lignes):
+        a = lignes[i]
+        debuts = {j.colonne: j for j in a.nombres}
+        trouve = None
+        if (a.nombres and len(a.nombres) <= 2 and None not in debuts
+                and all(re.fullmatch(r"\d{1,3}( \d{3})*", j.texte) for j in a.nombres)):
+            for k in (i + 1, i + 2):
+                if k >= len(lignes) or lignes[k].page != a.page or not 0 < lignes[k].top - a.top <= 16:
+                    break
+                fins = {j.colonne: j for j in lignes[k].nombres
+                        if j.colonne in debuts and re.fullmatch(r"\d{3}", j.texte)}
+                if set(fins) == set(debuts):
+                    milieu = lignes[i + 1:k]
+                    if not any(j.colonne in debuts for m in milieu for j in m.nombres):
+                        trouve = (k, milieu, fins)
+                    break
+        if trouve is None:
+            sortie.append(a)
+            i += 1
+            continue
+        k, milieu, fins = trouve
+        b = lignes[k]
+        nombres = [j for m in milieu for j in m.nombres] + [j for j in b.nombres if j.colonne not in fins]
+        nombres += [Jeton(j.texte + " " + fins[c].texte, j.x0, fins[c].x1, c) for c, j in debuts.items()]
+        nombres.sort(key=lambda j: j.x0)
+        libelle = " ".join(x.libelle for x in [a, *milieu, b] if x.libelle)
+        sortie.append(Ligne(libelle, nombres, a.page, (milieu[0] if milieu else b).top))
+        i = k + 1
+    return sortie
+
+
+def _reunir_rangees_decalees(lignes: list[Ligne]) -> list[Ligne]:
+    """Une rangée du tableau lue en deux lignes à moins de 8 pt l'une de l'autre, avec des chiffres
+    dans des colonnes différentes : un chiffre placé un peu plus bas que les autres, sur la seconde
+    ligne d'un libellé coupé (WIB 2024T3 : « 1- Produits d'exploitation » / chiffres / « bancaires »
+    + colonne 4 ; 2025T1, dotations). Les deux lignes sont réunies."""
+    sortie: list[Ligne] = []
+    for l in lignes:
+        if sortie:
+            a = sortie[-1]
+            cols_a = {j.colonne for j in a.nombres}
+            if (a.nombres and l.nombres and a.page == l.page and 0 < l.top - a.top <= 8
+                    and None not in cols_a and not cols_a & {j.colonne for j in l.nombres}):
+                libelle = " ".join(x for x in (a.libelle, l.libelle) if x)
+                sortie[-1] = Ligne(libelle, sorted(a.nombres + l.nombres, key=lambda j: j.x0), a.page, a.top)
+                continue
+        sortie.append(l)
+    return sortie
+
+
 def extraire_pdf(chemin: Path, t: Trimestre | None = None,
                  banque: str | None = None) -> tuple[list[dict], list[str]]:
     """Renvoie (lignes extraites, alertes) pour un PDF. Si un gabarit existe pour la banque et le
@@ -1573,6 +1633,14 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
                 toutes += pages[i].lignes
                 if page.images and len(page.chars) < 1000:     # BTE 2020–2023 : ~530 caractères (titre et renvois)
                     pages_image.append(i)
+
+    # tiret isolé hors des colonnes du tableau (WIB : « - » à droite de la colonne de variation, sur
+    # la première ligne d'un libellé coupé) : ce n'est pas une case, la ligne reste un libellé seul
+    for l in toutes:
+        nb_colonnes = len(pages[l.page].bords)
+        l.nombres = [j for j in l.nombres
+                     if not (j.texte == "-" and (j.colonne is None or j.colonne >= nb_colonnes))]
+    toutes = _reunir_rangees_decalees(_recoller_nombres_coupes(toutes))
 
     # libellés sur deux lignes : on recolle un libellé sans nombre à la ligne suivante ;
     # une ligne de chiffres sans libellé prend celui de la ligne juste en dessous s'il en est tout
@@ -1601,7 +1669,7 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
                 # fin du libellé juste sous les chiffres (TJARI 2022T2 : « 1) PRODUITS D'EXPLOITATION »,
                 # chiffres, « BANCAIRE »)
                 s = toutes[i + 1]
-                if s.libelle and not s.nombres and s.page == l.page and 0 <= s.top - l.top <= 7:   # AB : 6,1 pt
+                if s.libelle and not s.nombres and s.page == l.page and 0 <= s.top - l.top <= 8:   # AB : 6,1 pt ; WIB 2025T3 : 7,2 pt
                     lib = (lib + " " + s.libelle).strip()
                     consommees.add(i + 1)
             fusion.append(Ligne(lib, l.nombres, l.page, l.top))
@@ -1657,6 +1725,10 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
                     if lu and not (len(lu) == len(gab.colonnes) and
                                    all(a in g.split("+") for a, g in zip(lu, gab.colonnes))):
                         alertes.append(f"page {num_page} : en-tête lu {lu} ≠ gabarit {gab.colonnes}")
+                elif len(ap.bords) == len(gab.colonnes) - 2 and gab.colonnes[:2] == ["trim_N", "trim_N1"]:
+                    # suite du tableau sur une autre page avec les seuls encours (WIB, page 2) :
+                    # les colonnes du gabarit sans les deux colonnes du trimestre
+                    noms = gab.colonnes[2:]
                 else:
                     noms = lu
                     alertes.append(f"page {num_page} : {len(ap.bords)} colonnes détectées, le gabarit "

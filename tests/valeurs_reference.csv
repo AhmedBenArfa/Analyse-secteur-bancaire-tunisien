@@ -282,3 +282,46 @@ AB;2022T2;AB_2022T2.pdf;1;CHG_GEN;cumul_N;22231;milliers de dinars;22.231;
 AB;2022T2;AB_2022T2.pdf;1;CREDITS;cumul_N;6540699;milliers de dinars;6540.699;
 AB;2022T2;AB_2022T2.pdf;1;DEPOTS;cumul_N;6618352;milliers de dinars;6618.352;
 AB;2022T2;AB_2022T2.pdf;1;CAP_PROPRES;cumul_N;1147621;milliers de dinars;1147.621;
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;PNB;trim_N;18325;milliers de dinars;18.325;banque islamique : équivalences de la spécification (section 3)
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;PNB;cumul_N;35482;milliers de dinars;35.482;
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;PNB;cumul_N1;28530;milliers de dinars;28.53;colonne « juin-22 Publié »
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;PNB;exercice_N1;61003;milliers de dinars;61.003;
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;PROD_EXPL;cumul_N;65702;milliers de dinars;65.702;
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;CHG_EXPL;cumul_N;30220;milliers de dinars;30.22;
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;INT_PERCUS;cumul_N;51569;milliers de dinars;51.569;« Marges et revenus assimilés »
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;INT_ENCOURUS;cumul_N;29387;milliers de dinars;29.387;« Charges encourues et charges assimilées »
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;REV_PORTEF;cumul_N;1347;milliers de dinars;1.347;1 261 (portefeuille commercial & opérations financières) + 86 (investissement)
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;CHG_OPER;trim_N;14221;milliers de dinars;14.221;
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;CHG_OPER;cumul_N;26206;milliers de dinars;26.206;avec dotations : 16 732 + 7 005 + 2 469
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;FRAIS_PERS;cumul_N;16732;milliers de dinars;16.732;
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;CHG_GEN;cumul_N;7005;milliers de dinars;7.005;
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;DOT_AMORT;cumul_N;2469;milliers de dinars;2.469;
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;CREDITS;cumul_N;911800;milliers de dinars;911.8;nombre coupé sur deux lignes dans sa case : « 911 » / « 800 »
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;DEPOTS;cumul_N;782739;milliers de dinars;782.739;« 782 » / « 739 »
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;DEP_VUE;cumul_N;245002;milliers de dinars;245.002;« 245 » / « 002 »
+WIB;2023T2;WIB_2023T2_bulletin.pdf;1;DEP_EPARGNE;cumul_N;236446;milliers de dinars;236.446;Tawfir, « 236 » / « 446 »
+WIB;2023T2;WIB_2023T2_bulletin.pdf;2;DEP_TERME;cumul_N;221700;milliers de dinars;221.7;Comptes Istithmars, haut de la page 2
+WIB;2023T2;WIB_2023T2_bulletin.pdf;2;EMPRUNTS;cumul_N;112395;milliers de dinars;112.395;page 2 à 4 colonnes (encours seuls)
+WIB;2023T2;WIB_2023T2_bulletin.pdf;2;CAP_PROPRES;cumul_N;160199;milliers de dinars;160.199;
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;PROD_EXPL;trim_N;41716;milliers de dinars;41.716;libellé sur deux lignes, colonne sept.-23 décalée vers le bas
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;PROD_EXPL;cumul_N;118894;milliers de dinars;118.894;
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;PROD_EXPL;cumul_N1;99668;milliers de dinars;99.668;chiffre décalé sur la seconde ligne du libellé
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;CHG_EXPL;cumul_N;52767;milliers de dinars;52.767;
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;CHG_EXPL;cumul_N1;46460;milliers de dinars;46.46;chiffre décalé
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;INT_ENCOURUS;cumul_N1;45153;milliers de dinars;45.153;chiffre décalé
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;REV_PORTEF;cumul_N;1740;milliers de dinars;1.74;1 567 + 173
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;REV_PORTEF;cumul_N1;1909;milliers de dinars;1.909;1 793 + 116 (décalé)
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;PNB;trim_N;23364;milliers de dinars;23.364;
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;PNB;cumul_N;66127;milliers de dinars;66.127;
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;PNB;cumul_N1;53208;milliers de dinars;53.208;
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;PNB;exercice_N1;74608;milliers de dinars;74.608;
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;CHG_OPER;cumul_N;44190;milliers de dinars;44.19;27 722 + 12 892 + 3 576
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;FRAIS_PERS;cumul_N;27722;milliers de dinars;27.722;
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;CHG_GEN;cumul_N;12892;milliers de dinars;12.892;
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;DOT_AMORT;trim_N;1180;milliers de dinars;1.18;
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;DOT_AMORT;cumul_N;3576;milliers de dinars;3.576;
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;CREDITS;cumul_N;1107653;milliers de dinars;1107.653;« Encours net des financements à la clientèle »
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;DEPOTS;cumul_N;1056838;milliers de dinars;1056.838;
+WIB;2024T3;WIB_2024T3_bulletin.pdf;1;DEP_TERME;cumul_N;350467;milliers de dinars;350.467;Comptes Istithmars
+WIB;2024T3;WIB_2024T3_bulletin.pdf;2;EMPRUNTS;cumul_N;89016;milliers de dinars;89.016;page 2 à 4 colonnes (encours seuls)
+WIB;2024T3;WIB_2024T3_bulletin.pdf;2;CAP_PROPRES;cumul_N;167894;milliers de dinars;167.894;
