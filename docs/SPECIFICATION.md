@@ -431,7 +431,7 @@ d'une banque à l'autre (colonne `definition_charges_operatoires` de `gabarits.c
 |---|---|---|
 | `sans dotations` | frais de personnel + charges générales d'exploitation | BT, BH, BTE, STB, TJARI jusqu'au T3 2021 |
 | `avec dotations publiees` | frais de personnel + charges générales + dotations aux amortissements, trois lignes publiées | |
-| `avec reste non detaille` | plus que frais de personnel + charges générales ; la différence (dotations ou autres) n'est pas détaillée | BNA, ATB, TJARI à partir du T4 2021 (colonnes N-1 retraitées) |
+| `avec reste non detaille` | plus que frais de personnel + charges générales ; la différence (dotations ou autres) n'est pas détaillée | BNA, ATB, AB, TJARI à partir du T4 2021 (colonnes N-1 retraitées) |
 | `composantes non publiees` | seul le total est publié | |
 
 - **Coefficient harmonisé** = (frais de personnel + charges générales d'exploitation) / PNB.

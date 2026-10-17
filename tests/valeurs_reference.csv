@@ -257,3 +257,28 @@ STB;2024T2;STB_2024T2.pdf;1;CHG_GEN;cumul_N;45200859;dinars;45.200859;
 STB;2024T2;STB_2024T2.pdf;1;CREDITS;cumul_N;10211068010;dinars;10211.06801;
 STB;2024T2;STB_2024T2.pdf;1;DEPOTS;cumul_N;10628286383;dinars;10628.286383;
 STB;2024T2;STB_2024T2.pdf;1;CAP_PROPRES;cumul_N;1220060097;dinars;1220.060097;
+AB;2021T1;AB_2021T1.pdf;1;PNB;trim_N;111338;milliers de dinars;111.338;document de la BVMT (le bulletin retenu d'abord était une note d'opération d'emprunt)
+AB;2021T1;AB_2021T1.pdf;1;PNB;cumul_N;111338;milliers de dinars;111.338;
+AB;2021T1;AB_2021T1.pdf;1;PNB;cumul_N1;95584;milliers de dinars;95.584;
+AB;2021T1;AB_2021T1.pdf;1;PNB;exercice_N1;400467;milliers de dinars;400.467;
+AB;2021T1;AB_2021T1.pdf;1;PROD_EXPL;cumul_N;212139;milliers de dinars;212.139;libellé sur deux lignes
+AB;2021T1;AB_2021T1.pdf;1;CHG_OPER;cumul_N;41149;milliers de dinars;41.149;reste non détaillé : 41 149 - 28 665 - 10 088 = 2 396
+AB;2021T1;AB_2021T1.pdf;1;FRAIS_PERS;cumul_N;28665;milliers de dinars;28.665;
+AB;2021T1;AB_2021T1.pdf;1;CHG_GEN;cumul_N;10088;milliers de dinars;10.088;
+AB;2021T1;AB_2021T1.pdf;1;CREDITS;cumul_N;6041303;milliers de dinars;6041.303;« Encours des créances à la clientèle »
+AB;2021T1;AB_2021T1.pdf;1;DEPOTS;cumul_N;6012118;milliers de dinars;6012.118;
+AB;2021T1;AB_2021T1.pdf;1;CAP_PROPRES;cumul_N;1014103;milliers de dinars;1014.103;
+AB;2022T2;AB_2022T2.pdf;1;PROD_EXPL;trim_N;245052;milliers de dinars;245.052;« bancaires » 6,1 pt sous les chiffres
+AB;2022T2;AB_2022T2.pdf;1;PROD_EXPL;cumul_N;473627;milliers de dinars;473.627;
+AB;2022T2;AB_2022T2.pdf;1;CHG_EXPL;cumul_N;226046;milliers de dinars;226.046;
+AB;2022T2;AB_2022T2.pdf;1;PNB;trim_N;128221;milliers de dinars;128.221;
+AB;2022T2;AB_2022T2.pdf;1;PNB;cumul_N;247581;milliers de dinars;247.581;
+AB;2022T2;AB_2022T2.pdf;1;PNB;cumul_N1;222914;milliers de dinars;222.914;
+AB;2022T2;AB_2022T2.pdf;1;PNB;exercice_N1;454229;milliers de dinars;454.229;
+AB;2022T2;AB_2022T2.pdf;1;CHG_OPER;trim_N;49499;milliers de dinars;49.499;
+AB;2022T2;AB_2022T2.pdf;1;CHG_OPER;cumul_N;95124;milliers de dinars;95.124;
+AB;2022T2;AB_2022T2.pdf;1;FRAIS_PERS;cumul_N;68137;milliers de dinars;68.137;
+AB;2022T2;AB_2022T2.pdf;1;CHG_GEN;cumul_N;22231;milliers de dinars;22.231;
+AB;2022T2;AB_2022T2.pdf;1;CREDITS;cumul_N;6540699;milliers de dinars;6540.699;
+AB;2022T2;AB_2022T2.pdf;1;DEPOTS;cumul_N;6618352;milliers de dinars;6618.352;
+AB;2022T2;AB_2022T2.pdf;1;CAP_PROPRES;cumul_N;1147621;milliers de dinars;1147.621;

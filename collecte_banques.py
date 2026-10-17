@@ -486,6 +486,14 @@ def debut_avis(txt: str) -> bool:
     return "INDICATEURS D" in haut and "PUBLIE" in haut
 
 
+def contient_pnb(textes: list[str]) -> bool:
+    """Le bloc contient un tableau d'indicateurs (ligne « Produit net bancaire », espaces ignorés :
+    Wifak écrit « Bancair e »). Écarte les avis qui annoncent seulement la publication des
+    indicateurs (AB, Bulletin du 14/04/2021 : note d'opération d'un emprunt obligataire)."""
+    n = re.sub(r"\s+", "", sans_accents(" ".join(textes)).upper())
+    return bool(re.search(r"PRODUITS?NETS?BANCAIRES?", n))
+
+
 def telecharger_bulletins(client: Client, manifeste: dict, garder: bool, jours: int = 45,
                           perimetre: set[tuple[str, str]] | None = None):
     """Pour chaque trimestre où il manque des banques (du périmètre demandé), parcourt les Bulletins
@@ -538,7 +546,7 @@ def telecharger_bulletins(client: Client, manifeste: dict, garder: bool, jours: 
                             fin_bloc = i + 1
                             while fin_bloc < min(i + 3, len(textes)) and not debut_avis(textes[fin_bloc]):
                                 fin_bloc += 1
-                            if not bon_document(textes[i:fin_bloc], t):
+                            if not bon_document(textes[i:fin_bloc], t) or not contient_pnb(textes[i:fin_bloc]):
                                 continue
                             w = PdfWriter()
                             for k in range(i, fin_bloc):
@@ -636,7 +644,7 @@ REGLES = [
     ("PORTEF",       r"structure du portefeuille"),
     ("PORTEF_COMM",  r"portefeuille ?(titres?)? ?commercial"),
     ("PORTEF_INV",   r"portefeuille ?(titres?)? ?d'?\s?investissement"),
-    ("CREDITS",      r"encours (nets? )?(des|de) credits|credits (a|nets? a) la clientele|encours des engagements"
+    ("CREDITS",      r"encours (nets? )?(des|de) credits|encours des creances (a|sur) la clientele|credits (a|nets? a) la clientele|encours des engagements"
                      r"|encours (net )?des financements|financements (nets? )?a la clientele"),   # Wifak
     ("DEP_VUE",      r"depots? a vue"),
     ("DEP_EPARGNE",  r"depots? d'?\s?epargne|comptes d'?\s?epargne|^tawfir"),          # Wifak : Tawfir
@@ -1593,7 +1601,7 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
                 # fin du libellé juste sous les chiffres (TJARI 2022T2 : « 1) PRODUITS D'EXPLOITATION »,
                 # chiffres, « BANCAIRE »)
                 s = toutes[i + 1]
-                if s.libelle and not s.nombres and s.page == l.page and 0 <= s.top - l.top <= 6:
+                if s.libelle and not s.nombres and s.page == l.page and 0 <= s.top - l.top <= 7:   # AB : 6,1 pt
                     lib = (lib + " " + s.libelle).strip()
                     consommees.add(i + 1)
             fusion.append(Ligne(lib, l.nombres, l.page, l.top))
