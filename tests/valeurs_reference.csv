@@ -187,3 +187,25 @@ TJARI;2024T2;TJARI_2024T2.pdf;1;CHG_GEN;cumul_N;35316;milliers de dinars;35.316;
 TJARI;2024T2;TJARI_2024T2.pdf;1;CREDITS;cumul_N;7331588;milliers de dinars;7331.588;
 TJARI;2024T2;TJARI_2024T2.pdf;1;DEPOTS;cumul_N;10623917;milliers de dinars;10623.917;
 TJARI;2024T2;TJARI_2024T2.pdf;1;CAP_PROPRES;cumul_N;875326;milliers de dinars;875.326;
+UBCI;2019T4;UBCI_2019T4.pdf;1;PNB;trim_N;67319;milliers de dinars;67.319;ordre inversé : « 4ème trimestre 2018 » avant « 4ème trimestre 2019 »
+UBCI;2019T4;UBCI_2019T4.pdf;1;PNB;trim_N1;64524;milliers de dinars;64.524;
+UBCI;2019T4;UBCI_2019T4.pdf;1;PNB;cumul_N;254995;milliers de dinars;254.995;« Au 31/12/2019 », 4e colonne
+UBCI;2019T4;UBCI_2019T4.pdf;1;PNB;cumul_N1;228401;milliers de dinars;228.401;
+UBCI;2019T4;UBCI_2019T4.pdf;1;CHG_OPER;trim_N;42443;milliers de dinars;42.443;
+UBCI;2019T4;UBCI_2019T4.pdf;1;CHG_OPER;cumul_N;157488;milliers de dinars;157.488;reste non détaillé : 157 488 - 103 410 - 44 231 = 9 847
+UBCI;2019T4;UBCI_2019T4.pdf;1;FRAIS_PERS;cumul_N;103410;milliers de dinars;103.41;
+UBCI;2019T4;UBCI_2019T4.pdf;1;CHG_GEN;cumul_N;44231;milliers de dinars;44.231;
+UBCI;2019T4;UBCI_2019T4.pdf;1;CREDITS;cumul_N;2567339;milliers de dinars;2567.339;
+UBCI;2019T4;UBCI_2019T4.pdf;1;DEPOTS;cumul_N;2443571;milliers de dinars;2443.571;
+UBCI;2019T4;UBCI_2019T4.pdf;1;CAP_PROPRES;cumul_N;388440;milliers de dinars;388.44;
+UBCI;2022T2;UBCI_2022T2.pdf;1;PNB;trim_N;74092;milliers de dinars;74.092;chiffres en gras qui s'arrêtent avant les chiffres des lignes de détail
+UBCI;2022T2;UBCI_2022T2.pdf;1;PNB;cumul_N;140684;milliers de dinars;140.684;
+UBCI;2022T2;UBCI_2022T2.pdf;1;PNB;cumul_N1;128684;milliers de dinars;128.684;
+UBCI;2022T2;UBCI_2022T2.pdf;1;PNB;exercice_N1;263009;milliers de dinars;263.009;
+UBCI;2022T2;UBCI_2022T2.pdf;1;CHG_OPER;trim_N;49897;milliers de dinars;49.897;
+UBCI;2022T2;UBCI_2022T2.pdf;1;CHG_OPER;cumul_N;96146;milliers de dinars;96.146;
+UBCI;2022T2;UBCI_2022T2.pdf;1;FRAIS_PERS;cumul_N;57516;milliers de dinars;57.516;
+UBCI;2022T2;UBCI_2022T2.pdf;1;CHG_GEN;cumul_N;34551;milliers de dinars;34.551;
+UBCI;2022T2;UBCI_2022T2.pdf;1;CREDITS;cumul_N;2758871;milliers de dinars;2758.871;
+UBCI;2022T2;UBCI_2022T2.pdf;1;DEPOTS;cumul_N;3107441;milliers de dinars;3107.441;
+UBCI;2022T2;UBCI_2022T2.pdf;1;CAP_PROPRES;cumul_N;432198;milliers de dinars;432.198;

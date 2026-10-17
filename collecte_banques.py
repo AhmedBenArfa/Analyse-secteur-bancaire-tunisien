@@ -875,10 +875,12 @@ def bords_colonnes(rangees: list[list[dict]]) -> list[float]:
     # n'existent que sur les 3 lignes de charges opératoires, les autres étant des encours
     seuil = max(2, 0.2 * n_rangees)
     bords = [max(x for x, _ in g) for g in groupes if len({r for _, r in g}) >= seuil]
-    # deux bords à moins de 8 pt : le premier est la fin d'un groupe de milliers, pas une colonne
+    # deux bords à moins de 14 pt : le premier est la fin d'un groupe de milliers ou de chiffres en
+    # gras qui s'arrêtent avant les autres (UBCI 2022T2 : totaux à 319, lignes de détail à 331),
+    # pas une colonne ; les vraies colonnes sont à plus de 30 pt l'une de l'autre
     propres: list[float] = []
     for b in bords:
-        if propres and b - propres[-1] < 8:
+        if propres and b - propres[-1] < 14:
             propres[-1] = b
         else:
             propres.append(b)
