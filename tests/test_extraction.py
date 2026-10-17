@@ -210,7 +210,7 @@ def test_saisies_manuelles():
     lignes, _, _ = cb.extraire_document("BTE", "2020T2", cb.DOSSIER_PDF / "BTE" / "BTE_2020T2.pdf")
     v = {(l["code_indicateur"], l["colonne"]): l for l in lignes}
     assert proche(v[("PNB", "cumul_N")]["valeur_mdt"], 19.668) and proche(v[("CHG_OPER", "trim_N")]["valeur_mdt"], 10.701)
-    assert v[("PNB", "cumul_N")]["verification"] == "vérifié par Ahmed ben arfa"
+    assert v[("PNB", "cumul_N")]["verification"] == "vérifié par Ahmed Ben Arfa"
     # saisie partielle d'un document lisible : STB 2026T2, revenus du portefeuille superposés au libellé
     lignes, alertes, origine = cb.extraire_document("STB", "2026T2", cb.DOSSIER_PDF / "STB" / "STB_2026T2.pdf")
     v = {(l["code_indicateur"], l["colonne"]): l["valeur_mdt"] for l in lignes}

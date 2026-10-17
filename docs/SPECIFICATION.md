@@ -228,7 +228,7 @@ Excel de référence ─────────> referentiel.xlsx
   produits − charges = PNB, charges opératoires = frais de personnel + charges générales,
   colonne « Variation montant » du PDF = cumul N − cumul N-1, dépôts = somme des quatre
   catégories ; les trimestres 2020T3 sont confirmés par la colonne N-1 du document 2021T3.
-  BTE 2020T2 : 36 valeurs relues indépendamment, `verification` = « vérifié par Ahmed ben arfa ».
+  BTE 2020T2 : 36 valeurs relues indépendamment, `verification` = « vérifié par Ahmed Ben Arfa ».
   **Saisie partielle** d'un document lisible : quand quelques valeurs sont illisibles dans le texte
   du PDF (STB 2026T2 : revenus du portefeuille du trimestre superposés à leur libellé ; l'extraction
   laissait le T2 2026 vide et lisait 893 522 au lieu de 115 893 522 pour le T2 2025), les valeurs
