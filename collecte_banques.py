@@ -642,7 +642,7 @@ REGLES = [
     ("DEP_EPARGNE",  r"depots? d'?\s?epargne|comptes d'?\s?epargne|^tawfir"),          # Wifak : Tawfir
     ("DEP_TERME",    r"depots? a terme|istithmar"),                                    # Wifak : comptes Istithmars
     ("DEP_AUTRES",   r"autres depots"),
-    ("DEPOTS",       r"encours (des |de )?depots|depots (de la )?clientele"),
+    ("DEPOTS",       r"encours (des |de )?depots?\b|depots (de la )?clientele"),   # TJARI 2026T2 : « DEPOT »
     ("EMPRUNTS",     r"emprunts? et ressources speciales|dettes de financements?( et ressources speciales)?"),
     ("CAP_PROPRES",  r"capitaux propres"),
     ("INT_PERCUS",   r"^interets?( et revenus assimiles)?( percus)?$|^interets? et revenus"
@@ -663,7 +663,7 @@ COLONNES = ["trim_N", "trim_N1", "cumul_N", "cumul_N1", "exercice_N1"]
 
 RE_FRAGMENT = re.compile(r"^\(?-?\d[\d.,]*\)?$")   # nombre ou morceau de nombre : "1", "56", "686,141"
 RE_TIRET = re.compile(r"^[-–—‐]+$")
-RE_POURCENT = re.compile(r"%$")
+RE_POURCENT = re.compile(r"%\)?$")             # « 5,2% », « (11,26%) » (TJARI 2021T1)
 RE_RENVOI = re.compile(r"^(\(\d\)|\(\*+\)|\*+)$")    # renvoi de note : (1), (*)
 
 # Colonnes par défaut quand l'en-tête du tableau n'est pas lisible (selon le nombre de colonnes)
@@ -730,7 +730,7 @@ class Gabarit:
 def charger_gabarits(chemin: Path = FICHIER_GABARITS) -> list[Gabarit]:
     """Format (séparateur « ; ») : banque ; premier_trimestre ; dernier_trimestre ; trimestres (« 1,2,3 »
     ou « 4 ») ; colonnes (« trim_N|trim_N1|cumul_N|cumul_N1|exercice_N1 », _ignorer pour une colonne
-    de variation) ; unite ; libelles (« CODE=regex », séparés par « || », regex sur le libellé
+    de variation, « trim_N+cumul_N » pour une colonne qui vaut les deux au T1) ; unite ; libelles (« CODE=regex », séparés par « || », regex sur le libellé
     normalisé : minuscules, sans accents) ; definition_charges_operatoires (clé de
     DEFINITIONS_CHG_OPER) ; documents_verifies ; remarque."""
     if not chemin.exists():
@@ -741,7 +741,8 @@ def charger_gabarits(chemin: Path = FICHIER_GABARITS) -> list[Gabarit]:
             if not (r.get("banque") or "").strip() or r["banque"].startswith("#"):
                 continue
             colonnes = [c.strip() for c in r["colonnes"].split("|")]
-            inconnues = [c for c in colonnes if c not in COLONNES + ["_ignorer"]]
+            # « trim_N+cumul_N » : une seule colonne qui vaut pour les deux (T1 de TJARI)
+            inconnues = [c for c in colonnes for x in c.split("+") if x not in COLONNES + ["_ignorer"]]
             if inconnues or r["unite"] not in FACTEURS_UNITE:
                 raise ValueError(f"gabarits.csv ligne {i} : colonnes {inconnues} ou unité « {r['unite']} » inconnues")
             libelles = []
@@ -965,11 +966,15 @@ def analyser_page(page, num_page: int) -> PageAnalysee:
     rangees = []   # (mots du libellé, morceaux de chiffres, haut de la rangée)
     for g in groupes:
         g.sort(key=lambda m: m["x0"])
+        hauteurs = sorted(m["bottom"] - m["top"] for m in g)
+        h_mediane = hauteurs[len(hauteurs) // 2]
         utiles = []
         for i, m in enumerate(g):
             t = m["text"]
             if RE_POURCENT.search(t) or RE_RENVOI.match(t):
                 continue                   # colonne de variation, renvoi de note
+            if t.isdigit() and m["bottom"] - m["top"] < 0.75 * h_mediane:
+                continue                   # renvoi de note en exposant (TJARI 2020T1 : « encourus¹ »)
             if i + 1 < len(g) and g[i + 1]["text"] == "%":
                 continue                   # « 5,2 % » : le nombre d'une variation
             utiles.append(m)
@@ -1001,7 +1006,10 @@ def type_colonne(entete: str, t: Trimestre) -> str | None:
         annees.append((m.start(), int(a) if len(a) == 4 else 2000 + int(a)))
     # colonne de variation, avec ou sans dates (Wifak : « Variation », « % » ;
     # ATB : « Evolution décembre 19- décembre 18 », en montant)
-    if re.search(r"\bvariations?\b|\bevolution\b|\becart\b", n) or n.strip() in ("%", "en %"):
+    # (le titre « Var … » déborde parfois sur la colonne voisine « Au 31/12/2021 » : une date
+    # complète l'emporte, TJARI 2022T2)
+    if ((re.search(r"\bvariations?\b|\bevolution\b|\becart\b|\bvar\b", n)
+         and not re.search(r"\d{2}/\d{2}/\d{2,4}", n)) or n.strip() in ("%", "en %")):
         return "_ignorer"
     if not annees:
         return None
@@ -1548,10 +1556,12 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
             lib = l.libelle
             if attente and (not lib or code_libelle(lib, regles) is None):
                 lib = (attente + " " + lib).strip()
-            elif not lib and i + 1 < len(toutes):
+            if (not lib or code_libelle(lib, regles) is None) and i + 1 < len(toutes):
+                # fin du libellé juste sous les chiffres (TJARI 2022T2 : « 1) PRODUITS D'EXPLOITATION »,
+                # chiffres, « BANCAIRE »)
                 s = toutes[i + 1]
                 if s.libelle and not s.nombres and s.page == l.page and 0 <= s.top - l.top <= 6:
-                    lib = s.libelle
+                    lib = (lib + " " + s.libelle).strip()
                     consommees.add(i + 1)
             fusion.append(Ligne(lib, l.nombres, l.page, l.top))
         attente = ""
@@ -1603,7 +1613,8 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
                 # le gabarit décide ; l'en-tête lu n'est qu'un contrôle
                 if len(ap.bords) == len(gab.colonnes):
                     noms = gab.colonnes
-                    if lu and lu != gab.colonnes:
+                    if lu and not (len(lu) == len(gab.colonnes) and
+                                   all(a in g.split("+") for a, g in zip(lu, gab.colonnes))):
                         alertes.append(f"page {num_page} : en-tête lu {lu} ≠ gabarit {gab.colonnes}")
                 else:
                     noms = lu
@@ -1624,8 +1635,9 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
         for j in l.nombres:
             if j.colonne is None or j.colonne >= len(noms) or noms[j.colonne] == "_ignorer":
                 continue
-            if noms[j.colonne] not in res:
-                res[noms[j.colonne]] = None if j.texte == "-" else valeur(j.texte)
+            for nom in noms[j.colonne].split("+"):      # « trim_N+cumul_N » : les deux
+                if nom not in res:
+                    res[nom] = None if j.texte == "-" else valeur(j.texte)
         return res
 
     def additionner(a: dict[str, float | None], b: dict[str, float | None]) -> dict[str, float | None]:

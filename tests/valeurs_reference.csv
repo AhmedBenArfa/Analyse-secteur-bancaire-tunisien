@@ -163,3 +163,27 @@ ATB;2024T4;ATB_2024T4.pdf;1;CHG_GEN;cumul_N;78595;milliers de dinars;78.595;
 ATB;2024T4;ATB_2024T4.pdf;1;CREDITS;cumul_N;5414429;milliers de dinars;5414.429;
 ATB;2024T4;ATB_2024T4.pdf;1;DEPOTS;cumul_N;7107596;milliers de dinars;7107.596;
 ATB;2024T4;ATB_2024T4.pdf;1;CAP_PROPRES;cumul_N;567708;milliers de dinars;567.708;
+TJARI;2020T1;TJARI_2020T1.pdf;1;PNB;trim_N;126175;milliers de dinars;126.175;T1 : une seule colonne « Au 31/03/2020 » (trimestre = cumul)
+TJARI;2020T1;TJARI_2020T1.pdf;1;PNB;cumul_N;126175;milliers de dinars;126.175;
+TJARI;2020T1;TJARI_2020T1.pdf;1;PNB;cumul_N1;109317;milliers de dinars;109.317;
+TJARI;2020T1;TJARI_2020T1.pdf;1;PNB;exercice_N1;484211;milliers de dinars;484.211;
+TJARI;2020T1;TJARI_2020T1.pdf;1;INT_ENCOURUS;cumul_N;86797;milliers de dinars;86.797;renvoi de note « ¹ » en exposant après le libellé
+TJARI;2020T1;TJARI_2020T1.pdf;1;REV_PORTEF;cumul_N;32062;milliers de dinars;32.062;gains sur portefeuille commercial 17 293 + revenus du portefeuille d'investissement 14 769
+TJARI;2020T1;TJARI_2020T1.pdf;1;CHG_OPER;cumul_N;57105;milliers de dinars;57.105;= frais de personnel + charges générales
+TJARI;2020T1;TJARI_2020T1.pdf;1;FRAIS_PERS;cumul_N;37886;milliers de dinars;37.886;
+TJARI;2020T1;TJARI_2020T1.pdf;1;CHG_GEN;cumul_N;19219;milliers de dinars;19.219;
+TJARI;2020T1;TJARI_2020T1.pdf;1;CREDITS;cumul_N;5815618;milliers de dinars;5815.618;
+TJARI;2020T1;TJARI_2020T1.pdf;1;DEPOTS;cumul_N;7369438;milliers de dinars;7369.438;
+TJARI;2020T1;TJARI_2020T1.pdf;1;CAP_PROPRES;cumul_N;546115;milliers de dinars;546.115;renvoi de note « ³ » en exposant après le libellé
+TJARI;2024T2;TJARI_2024T2.pdf;1;PNB;trim_N;171555;milliers de dinars;171.555;
+TJARI;2024T2;TJARI_2024T2.pdf;1;PNB;cumul_N;349523;milliers de dinars;349.523;
+TJARI;2024T2;TJARI_2024T2.pdf;1;PNB;cumul_N1;323744;milliers de dinars;323.744;
+TJARI;2024T2;TJARI_2024T2.pdf;1;PNB;exercice_N1;644662;milliers de dinars;644.662;colonne 31/12/2023 avant « Var » (en montant)
+TJARI;2024T2;TJARI_2024T2.pdf;1;REV_PORTEF;cumul_N;101682;milliers de dinars;101.682;gains sur portefeuille commercial 31 706 + revenus du portefeuille d'investissement 69 976
+TJARI;2024T2;TJARI_2024T2.pdf;1;CHG_OPER;trim_N;80531;milliers de dinars;80.531;
+TJARI;2024T2;TJARI_2024T2.pdf;1;CHG_OPER;cumul_N;165855;milliers de dinars;165.855;reste non détaillé : 165 855 - 121 149 - 35 316 = 9 390
+TJARI;2024T2;TJARI_2024T2.pdf;1;FRAIS_PERS;cumul_N;121149;milliers de dinars;121.149;
+TJARI;2024T2;TJARI_2024T2.pdf;1;CHG_GEN;cumul_N;35316;milliers de dinars;35.316;
+TJARI;2024T2;TJARI_2024T2.pdf;1;CREDITS;cumul_N;7331588;milliers de dinars;7331.588;
+TJARI;2024T2;TJARI_2024T2.pdf;1;DEPOTS;cumul_N;10623917;milliers de dinars;10623.917;
+TJARI;2024T2;TJARI_2024T2.pdf;1;CAP_PROPRES;cumul_N;875326;milliers de dinars;875.326;
