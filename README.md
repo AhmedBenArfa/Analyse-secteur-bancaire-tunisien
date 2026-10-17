@@ -29,6 +29,14 @@ Le script peut être relancé : les PDF déjà trouvés ne sont pas retéléchar
 Durée : de quelques minutes à environ une heure si beaucoup de documents
 doivent être cherchés dans les Bulletins Officiels (une pause est faite entre les requêtes).
 
+## Documents PDF
+
+```
+python scripts/generer_pdf.py
+```
+
+Régénère les deux PDF du dossier `docs/` : la spécification (rendu de `docs/SPECIFICATION.md`) et le rapport d'avancement (chiffres recalculés à partir des CSV de `donnees/`, des fichiers versionnés et des tests, relancés par le script : environ une minute). À relancer après chaque extraction ou modification de la spécification. Conversion par Microsoft Edge en mode headless (chemin modifiable par la variable d'environnement `EDGE`) ; les PDF sources doivent être dans `donnees/pdf/` pour la comparaison aux valeurs de référence.
+
 ## Où le script cherche
 
 1. Pages société du site de la BVMT
@@ -75,6 +83,7 @@ Autres fichiers utiles :
 | `scripts/bilan_extraction.py` | Bilan par banque (statuts, saisies, valeurs non disponibles, valeurs de référence, révisions importantes) |
 | `scripts/verifier_manifeste.py` | Contrôle du manifeste après un téléchargement (PDF présents, URL, orphelins) |
 | `scripts/diagnostic_pdf.py`, `scripts/essai_banque.py` | Diagnostic d'un PDF et extraction d'une banque seule, en lecture seule |
+| `scripts/generer_pdf.py` | Régénère `docs/Specification_projet.pdf` (à partir de `docs/SPECIFICATION.md`) et `docs/Rapport_avancement.pdf` (chiffres recalculés à partir des fichiers du projet, tests relancés) ; voir « Documents PDF » plus haut |
 
 Colonnes de valeurs (`colonne`) :
 
