@@ -375,7 +375,7 @@ def page_etat_resultat(lignes) -> bool:
     return any(RE_TITRE_RESULTAT.match(cb.normaliser(l.libelle)) for l in lignes)
 
 
-def extraire_pdf(p: Path, max_pages: int = 30) -> tuple[dict[str, tuple[list[float], str, int]], list[str]]:
+def extraire_pdf(p: Path, max_pages: int = 60) -> tuple[dict[str, tuple[list[float], str, int]], list[str]]:
     """Totaux du bilan : première occurrence dans le document. Lignes de résultat : seulement dans
     l'état de résultat, de son titre jusqu'au titre de l'état suivant ou des notes, y compris sur
     la page suivante tant que le résultat net n'est pas lu (BNA 2022 : titre p.3, résultat net
@@ -387,8 +387,12 @@ def extraire_pdf(p: Path, max_pages: int = 30) -> tuple[dict[str, tuple[list[flo
     trouves: dict[str, tuple[list[float], str, int]] = {}
     res_bilan: dict[int, tuple[list[float], str, int]] = {}   # page -> ligne de résultat hors état de résultat
     dans_resultat = False
+    pages_image: list[int] = []   # pages sans texte avec une image (états scannés : BH 2019 p.28-31)
+    # 60 pages : le rapport des commissaires précède parfois les états (BH 2021 : bilan p.29)
     with pdfplumber.open(p) as pdf:
         for i, page in enumerate(pdf.pages[:max_pages], start=1):
+            if page.images and len((page.extract_text() or "").strip()) < 50:
+                pages_image.append(i)
             lignes = cb.lignes_page(page, i)
             dans_resultat = dans_resultat and "RES_NET" not in trouves
             for l in lignes:
@@ -439,6 +443,8 @@ def extraire_pdf(p: Path, max_pages: int = 30) -> tuple[dict[str, tuple[list[flo
     for c in ("RES_NET", "TOTAL_ACTIF", "CAP_PROPRES_EF"):
         if c not in trouves:
             alertes.append(f"{c} introuvable")
+    if pages_image and any("introuvable" in a for a in alertes):
+        alertes.append("pages en image (états scannés ?) : p." + ",".join(map(str, pages_image[:12])))
     ta = trouves.get("TOTAL_ACTIF", ([None],))[0][0]
     tp = trouves.get("TOTAL_PASSIF_CP", ([None],))[0][0]
     cp = trouves.get("CAP_PROPRES_EF", ([None],))[0][0]

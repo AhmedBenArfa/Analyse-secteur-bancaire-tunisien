@@ -60,3 +60,11 @@ ATB;2022-12-31;ATB_EF_2022-12.pdf;1;RES_BILAN;N;11397;milliers de dinars;CP6 Ré
 ATB;2022-12-31;ATB_EF_2022-12.pdf;3;RES_NET;N;11397;milliers de dinars;RESULTAT NET DE LA PERIODE
 ATB;2022-12-31;ATB_EF_2022-12.pdf;3;RES_NET;N1;-68502;milliers de dinars;perte 2021, (68 502) dans le PDF
 ATB;2022-12-31;ATB_EF_2022-12.pdf;3;RES_NET_APRES_MODIF;N;11397;milliers de dinars;RESULTAT APRES MODIFICATIONS COMPTABLES
+BH;2021-12-31;BH_EF_2021-12.pdf;29;TOTAL_ACTIF;N;12405184;milliers de dinars;bilan p.29, après le rapport des commissaires aux comptes
+BH;2021-12-31;BH_EF_2021-12.pdf;29;TOTAL_ACTIF;N1;12243399;milliers de dinars;
+BH;2021-12-31;BH_EF_2021-12.pdf;29;CAP_PROPRES_EF;N;1161408;milliers de dinars;
+BH;2021-12-31;BH_EF_2021-12.pdf;29;CAP_PROPRES_EF;N1;1054552;milliers de dinars;
+BH;2021-12-31;BH_EF_2021-12.pdf;29;TOTAL_PASSIF_CP;N;12405184;milliers de dinars;
+BH;2021-12-31;BH_EF_2021-12.pdf;29;RES_BILAN;N;134734;milliers de dinars;CP6 Résultat de l'exercice
+BH;2021-12-31;BH_EF_2021-12.pdf;31;RES_NET;N;134734;milliers de dinars;état de résultat p.31
+BH;2021-12-31;BH_EF_2021-12.pdf;31;RES_NET;N1;72943;milliers de dinars;
