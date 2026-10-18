@@ -76,3 +76,11 @@ BT;2024-12-31;BT_EF_2024-12.pdf;2;TOTAL_PASSIF_CP;N;8638841;milliers de dinars;
 BT;2024-12-31;BT_EF_2024-12.pdf;2;RES_BILAN;N;188415;milliers de dinars;« CP5 - Bénéfice de l'exercice »
 BT;2024-12-31;BT_EF_2024-12.pdf;4;RES_NET;N;188415;milliers de dinars;Résultat net de la période
 BT;2024-12-31;BT_EF_2024-12.pdf;4;RES_NET;N1;170327;milliers de dinars;
+BTE;2022-06-30;BTE_EF_2022-06.pdf;2;TOTAL_ACTIF;N;1352240;milliers de dinars;bilan p.2, colonnes 30/06/2022, 30/06/2021, 31/12/2021
+BTE;2022-06-30;BTE_EF_2022-06.pdf;2;TOTAL_ACTIF;N1;1207057;milliers de dinars;N1 = 30/06/2021
+BTE;2022-06-30;BTE_EF_2022-06.pdf;2;CAP_PROPRES_EF;N;75317;milliers de dinars;« TOTAL CAPITAUX » / chiffres / « PROPRES » (libellé sur deux lignes)
+BTE;2022-06-30;BTE_EF_2022-06.pdf;2;CAP_PROPRES_EF;N1;114890;milliers de dinars;
+BTE;2022-06-30;BTE_EF_2022-06.pdf;2;TOTAL_PASSIF_CP;N;1352240;milliers de dinars;« TOTAL PASSIF & CAPITAUX PROPRES »
+BTE;2022-06-30;BTE_EF_2022-06.pdf;2;RES_BILAN;N;-12843;milliers de dinars;CP 6 Résultat de la période
+BTE;2022-06-30;BTE_EF_2022-06.pdf;4;RES_NET;N;-12843;milliers de dinars;« RESULTAT NET DE LA » / chiffres / « PERIODE »
+BTE;2022-06-30;BTE_EF_2022-06.pdf;4;RES_NET;N1;-4980;milliers de dinars;N1 = 1er semestre 2021

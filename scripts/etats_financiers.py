@@ -63,7 +63,7 @@ CODES_INFO = [
 
 _PERIODE = r"( de l'exercice| de la periode| du semestre| de l'exercice net)?"
 REGLES = [
-    ("TOTAL_PASSIF_CP", r"^total (des )?capitaux propres et (du )?passifs?$|^total (du )?passifs? et (des )?capitaux propres$"),
+    ("TOTAL_PASSIF_CP", r"^total (des )?capitaux propres et (du )?passifs?$|^total (du )?passifs?( et)? (des )?capitaux propres$"),   # BTE : « & »
     ("CAP_PROPRES_EF",  r"^(sous )?total (des )?capitaux propres$"),   # BT : « Sous-Total capitaux propres »
     ("TOTAL_ACTIF",     r"^total (de l'|des )?actifs?$|^total bilan actif$"),
     # « Résultat net de la période (avant modification comptable) » (BNA S1 2024) = résultat net
@@ -395,7 +395,7 @@ def extraire_pdf(p: Path, max_pages: int = 60) -> tuple[dict[str, tuple[list[flo
                 pages_image.append(i)
             lignes = cb.lignes_page(page, i)
             dans_resultat = dans_resultat and "RES_NET" not in trouves
-            for l in lignes:
+            for k, l in enumerate(lignes):
                 n = cb.normaliser(l.libelle)
                 if RE_TITRE_RESULTAT.match(n):
                     dans_resultat = True
@@ -403,7 +403,14 @@ def extraire_pdf(p: Path, max_pages: int = 60) -> tuple[dict[str, tuple[list[flo
                     dans_resultat = False
                 if not l.nombres:
                     continue
-                c = code_ligne(l.libelle)
+                libelle = l.libelle
+                if not libelle.strip():
+                    # chiffres seuls, libellé sur la ligne du dessus et sa fin dessous (BTE S1 2022 :
+                    # « TOTAL CAPITAUX » / chiffres / « PROPRES »)
+                    avant = lignes[k - 1].libelle if k and not lignes[k - 1].nombres else ""
+                    apres = lignes[k + 1].libelle if k + 1 < len(lignes) and not lignes[k + 1].nombres else ""
+                    libelle = f"{avant} {apres}".strip()
+                c = code_ligne(libelle)
                 if not c:
                     continue
                 vals = valeurs_ligne(l.nombres)
@@ -411,10 +418,10 @@ def extraire_pdf(p: Path, max_pages: int = 60) -> tuple[dict[str, tuple[list[flo
                     continue
                 if c in CODES_RESULTAT and not dans_resultat:
                     if c in ("RES_NET", "RES_EXERCICE") and i not in res_bilan:
-                        res_bilan[i] = (vals, l.libelle, i)
+                        res_bilan[i] = (vals, libelle, i)
                     continue
                 if c not in trouves:
-                    trouves[c] = (vals, l.libelle, i)
+                    trouves[c] = (vals, libelle, i)
             if all(c in trouves for c, _ in CODES):
                 break
 
