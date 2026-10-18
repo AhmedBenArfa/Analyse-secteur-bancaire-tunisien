@@ -341,29 +341,39 @@ def facteur_mdt(total_actif: float | None) -> tuple[float, str]:
 
 
 RE_TITRE_RESULTAT = re.compile(r"^etat (de|des) resultats?\b")
+# titre d'un autre état ou des notes : fin de l'état de résultat (« Notes » seul, en-tête de
+# colonne, n'en est pas un)
+RE_AUTRE_ETAT = re.compile(r"^(etats? (de|des) (flux|engagements)|tableau (de|des) (flux|variation)|bilan$"
+                           r"|(\d+\s*)?notes (aux|relatives|explicatives|sur)\b)")
 
 
 def page_etat_resultat(lignes) -> bool:
-    """Page dont le titre (vingt premières lignes) est « État de résultat ». Les notes
-    (« 6- Notes relatives aux postes de l'état de résultat ») et le tableau de variation des
-    capitaux propres, qui ont aussi une ligne « Résultat net de l'exercice », sont exclus."""
-    return any(RE_TITRE_RESULTAT.match(cb.normaliser(l.libelle)) for l in lignes[:20])
+    """Page qui contient le titre « État de résultat » (outil de diagnostic)."""
+    return any(RE_TITRE_RESULTAT.match(cb.normaliser(l.libelle)) for l in lignes)
 
 
 def extraire_pdf(p: Path, max_pages: int = 30) -> tuple[dict[str, tuple[list[float], str, int]], list[str]]:
-    """Totaux du bilan : première occurrence dans le document. Lignes de résultat : seulement sur
-    la page de l'état de résultat (BNA S1 2024 : la ligne « Résultat net de l'exercice » de la
-    page 26, tableau des capitaux propres, donnait le résultat du S1 2023). Le résultat inscrit
+    """Totaux du bilan : première occurrence dans le document. Lignes de résultat : seulement dans
+    l'état de résultat, de son titre jusqu'au titre de l'état suivant ou des notes, y compris sur
+    la page suivante tant que le résultat net n'est pas lu (BNA 2022 : titre p.3, résultat net
+    p.4). Jamais dans les notes ni le tableau des capitaux propres (BNA S1 2024 : la ligne
+    « Résultat net de l'exercice » p.26 donnait le résultat du S1 2023). Le résultat inscrit
     dans les capitaux propres du bilan (même page que leur total) sert de contrôle (RES_BILAN)."""
     import pdfplumber
 
     trouves: dict[str, tuple[list[float], str, int]] = {}
     res_bilan: dict[int, tuple[list[float], str, int]] = {}   # page -> ligne de résultat hors état de résultat
+    dans_resultat = False
     with pdfplumber.open(p) as pdf:
         for i, page in enumerate(pdf.pages[:max_pages], start=1):
             lignes = cb.lignes_page(page, i)
-            est_resultat = page_etat_resultat(lignes)
+            dans_resultat = dans_resultat and "RES_NET" not in trouves
             for l in lignes:
+                n = cb.normaliser(l.libelle)
+                if RE_TITRE_RESULTAT.match(n):
+                    dans_resultat = True
+                elif RE_AUTRE_ETAT.match(n):
+                    dans_resultat = False
                 if not l.nombres:
                     continue
                 c = code_ligne(l.libelle)
@@ -372,7 +382,7 @@ def extraire_pdf(p: Path, max_pages: int = 30) -> tuple[dict[str, tuple[list[flo
                 vals = valeurs_ligne(l.nombres)
                 if not vals:
                     continue
-                if c in CODES_RESULTAT and not est_resultat:
+                if c in CODES_RESULTAT and not dans_resultat:
                     if c in ("RES_NET", "RES_EXERCICE") and i not in res_bilan:
                         res_bilan[i] = (vals, l.libelle, i)
                     continue
