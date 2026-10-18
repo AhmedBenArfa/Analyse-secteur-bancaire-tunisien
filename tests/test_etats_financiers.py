@@ -90,6 +90,7 @@ def test_libelles():
         "Total des capitaux propres V": "CAP_PROPRES_EF",                         # BIAT, renvoi de note
         "Sous-Total capitaux propres": "CAP_PROPRES_EF",                          # BT
         "CP5 - Bénéfice de l'exercice": "RES_EXERCICE",                           # BT, bilan
+        "Résultat net du période": "RES_NET",                                     # TJARI 2024, faute
         "Total des produits d'exploitation bancaire VII-1": None,
         "CP6 - Résultat de l'exercice": "RES_EXERCICE",
         "Résultat de l'exer cice": "RES_EXERCICE",                                 # AB 2023, lettres espacées

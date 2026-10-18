@@ -61,7 +61,8 @@ CODES_INFO = [
     ("RES_BILAN",           "Résultat de la période inscrit dans les capitaux propres du bilan (contrôle)"),
 ]
 
-_PERIODE = r"( de l'exercice| de la periode| du semestre| de l'exercice net)?"
+# « du période » : faute de frappe d'Attijari (2024, 2025)
+_PERIODE = r"( de l'exercice| de la periode| du periode| du semestre| de l'exercice net)?"
 REGLES = [
     ("TOTAL_PASSIF_CP", r"^total (des )?capitaux propres et (du )?passifs?$|^total (du )?passifs?( et)? (des )?capitaux propres$"),   # BTE : « & »
     ("CAP_PROPRES_EF",  r"^(sous )?total (des )?capitaux propres$"),   # BT : « Sous-Total capitaux propres »

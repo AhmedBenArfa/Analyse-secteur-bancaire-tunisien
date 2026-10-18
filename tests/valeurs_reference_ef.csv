@@ -95,3 +95,11 @@ STB;2024-12-31;STB_EF_2024-12.pdf;4;RES_NET;N1;50601;milliers de dinars;
 STB;2024-12-31;STB_EF_2024-12.pdf;4;MODIF_COMPTABLES;N;-18835;milliers de dinars;Effet des modifications comptables (Net d'impôt)
 STB;2024-12-31;STB_EF_2024-12.pdf;4;MODIF_COMPTABLES;N1;-27292;milliers de dinars;
 STB;2024-12-31;STB_EF_2024-12.pdf;4;RES_NET_APRES_MODIF;N;63665;milliers de dinars;Résultat après modification comptable
+TJARI;2025-12-31;TJARI_EF_2025-12.pdf;2;TOTAL_ACTIF;N;13762592;milliers de dinars;bilan p.2, colonnes 31.12.2025, 31.12.2024 (retraité), variation
+TJARI;2025-12-31;TJARI_EF_2025-12.pdf;2;TOTAL_ACTIF;N1;12228840;milliers de dinars;31/12/2024 retraité (note 3.12)
+TJARI;2025-12-31;TJARI_EF_2025-12.pdf;2;CAP_PROPRES_EF;N;1130003;milliers de dinars;« Total des capitaux propres (3.0) »
+TJARI;2025-12-31;TJARI_EF_2025-12.pdf;2;CAP_PROPRES_EF;N1;1107782;milliers de dinars;
+TJARI;2025-12-31;TJARI_EF_2025-12.pdf;2;TOTAL_PASSIF_CP;N;13762592;milliers de dinars;
+TJARI;2025-12-31;TJARI_EF_2025-12.pdf;2;RES_BILAN;N;232101;milliers de dinars;CP6 - Résultat de l'exercice
+TJARI;2025-12-31;TJARI_EF_2025-12.pdf;4;RES_NET;N;232101;milliers de dinars;« Résultat net du période » (sic)
+TJARI;2025-12-31;TJARI_EF_2025-12.pdf;4;RES_NET;N1;232388;milliers de dinars;
