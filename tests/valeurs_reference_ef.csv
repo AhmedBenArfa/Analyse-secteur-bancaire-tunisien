@@ -84,3 +84,14 @@ BTE;2022-06-30;BTE_EF_2022-06.pdf;2;TOTAL_PASSIF_CP;N;1352240;milliers de dinars
 BTE;2022-06-30;BTE_EF_2022-06.pdf;2;RES_BILAN;N;-12843;milliers de dinars;CP 6 Résultat de la période
 BTE;2022-06-30;BTE_EF_2022-06.pdf;4;RES_NET;N;-12843;milliers de dinars;« RESULTAT NET DE LA » / chiffres / « PERIODE »
 BTE;2022-06-30;BTE_EF_2022-06.pdf;4;RES_NET;N1;-4980;milliers de dinars;N1 = 1er semestre 2021
+STB;2024-12-31;STB_EF_2024-12.pdf;2;TOTAL_ACTIF;N;14934035;milliers de dinars;bilan p.2, colonnes 2024, 2023 (retraité), variation, %
+STB;2024-12-31;STB_EF_2024-12.pdf;2;TOTAL_ACTIF;N1;14577781;milliers de dinars;31/12/2023 retraité
+STB;2024-12-31;STB_EF_2024-12.pdf;2;CAP_PROPRES_EF;N;1283202;milliers de dinars;
+STB;2024-12-31;STB_EF_2024-12.pdf;2;CAP_PROPRES_EF;N1;1201773;milliers de dinars;
+STB;2024-12-31;STB_EF_2024-12.pdf;2;TOTAL_PASSIF_CP;N;14934035;milliers de dinars;
+STB;2024-12-31;STB_EF_2024-12.pdf;2;RES_BILAN;N;82500;milliers de dinars;CP7 - Résultat de l'exercice
+STB;2024-12-31;STB_EF_2024-12.pdf;4;RES_NET;N;82500;milliers de dinars;Résultat net de l'exercice (avant modifications)
+STB;2024-12-31;STB_EF_2024-12.pdf;4;RES_NET;N1;50601;milliers de dinars;
+STB;2024-12-31;STB_EF_2024-12.pdf;4;MODIF_COMPTABLES;N;-18835;milliers de dinars;Effet des modifications comptables (Net d'impôt)
+STB;2024-12-31;STB_EF_2024-12.pdf;4;MODIF_COMPTABLES;N1;-27292;milliers de dinars;
+STB;2024-12-31;STB_EF_2024-12.pdf;4;RES_NET_APRES_MODIF;N;63665;milliers de dinars;Résultat après modification comptable
