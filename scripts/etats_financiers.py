@@ -40,6 +40,8 @@ MANIFESTE = DOSSIER / "manifeste_etats_financiers.csv"
 SORTIE = DOSSIER / "etats_financiers_long.csv"
 CONTROLE = DOSSIER / "controle_etats_financiers.csv"
 
+STATUT_IMAGE = "illisible (image)"   # PDF scanné, sans texte
+
 SUFFIXES = {
     "annuel": ["annuels-individuels", "annuels", "individuels-annuels", "definitifs-individuels", "definitifs"],
     "semestriel": ["semestriels-individuels", "semestriels", "intermediaires-individuels", "intermediaires",
@@ -169,13 +171,13 @@ def telecharger_sites(client: cb.Client, codes: list[str], liste: list[Arrete], 
         suffixes_ok: list[str] = []
         for ar in sorted(liste, key=lambda a: a.date, reverse=True):
             cle = (code, ar.cle)
-            if m.get(cle, {}).get("statut") == "ok" and Path(m[cle]["fichier"]).exists():
+            if m.get(cle, {}).get("statut") in ("ok", STATUT_IMAGE) and Path(m[cle]["fichier"]).exists():
                 continue
             combos = combos_connus + [c for c in cb.combinaisons(code) if c not in combos_connus]
             cands = urls_candidates(ar, combos)
             cands.sort(key=lambda c: (0 if any(s in c[0] for s in suffixes_ok) else 1,
                                       0 if c[1] in combos_connus else 1))
-            trouve = None
+            trouve = scan = None
             for url, combo in cands:
                 contenu = client.pdf(url)
                 if not contenu:
@@ -183,6 +185,12 @@ def telecharger_sites(client: cb.Client, codes: list[str], liste: list[Arrete], 
                 try:
                     textes = cb.texte_pdf(contenu, max_pages=3)
                 except Exception:
+                    continue
+                if not any(t.strip() for t in textes):
+                    # PDF scanné (aucun texte) : la date ne peut pas être vérifiée ; gardé à part
+                    # (BIAT S1 2021, ATB S1 2020), on continue à chercher une version lisible
+                    print(f"    PDF scanné (pas de texte) : {url}")
+                    scan = scan or (url, contenu)
                     continue
                 if est_consolide(textes):
                     print(f"    ignoré (comptes consolidés) : {url}")
@@ -204,6 +212,13 @@ def telecharger_sites(client: cb.Client, codes: list[str], liste: list[Arrete], 
                 p.write_bytes(contenu)
                 m[cle] = ligne_manifeste(code, ar, "ok", "site", url, str(p))
                 print(f"  OK  {code} {ar}  <- {url}")
+            elif scan:
+                url, contenu = scan
+                p = chemin(code, ar)
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_bytes(contenu)
+                m[cle] = ligne_manifeste(code, ar, STATUT_IMAGE, "site", url, str(p))
+                print(f"  IMG {code} {ar}  <- {url} (scanné : chiffres à reprendre du document suivant)")
             else:
                 m[cle] = ligne_manifeste(code, ar, "manquant")
                 print(f"  --  {code} {ar}  non trouvé sur le site de la BVMT")
@@ -489,6 +504,9 @@ def cmd_extraire(args):
                      "capitaux_propres_mdt", "alertes", "fichier", "recoupement_trimestriel",
                      "modifications_comptables_mdt", "resultat_apres_modifications_mdt"])
         for (code, cle), r in sorted(m.items()):
+            if r["statut"] == STATUT_IMAGE:
+                wc.writerow([code, cle, r["type"], STATUT_IMAGE, "", "", "", "", r["fichier"]])
+                continue
             if r["statut"] != "ok" or not Path(r["fichier"]).exists():
                 wc.writerow([code, cle, r["type"], "pdf manquant", "", "", "", "", ""])
                 continue

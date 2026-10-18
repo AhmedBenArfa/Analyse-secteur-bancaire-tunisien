@@ -51,3 +51,12 @@ AB;2021-06-30;AB_EF_2021-06.pdf;4;RES_NET;N;69235;milliers de dinars;« Résulta
 AB;2021-06-30;AB_EF_2021-06.pdf;4;RES_NET;N1;38940;milliers de dinars;N1 = 1er semestre 2020
 AB;2021-06-30;AB_EF_2021-06.pdf;4;MODIF_COMPTABLES;N;0;milliers de dinars;« - » dans le PDF
 AB;2021-06-30;AB_EF_2021-06.pdf;4;RES_NET_APRES_MODIF;N;69235;milliers de dinars;« Résultat Net des modifications comptables »
+ATB;2022-12-31;ATB_EF_2022-12.pdf;1;TOTAL_ACTIF;N;7807412;milliers de dinars;bilan p.1, colonnes 31.12.2022, 31.12.2021
+ATB;2022-12-31;ATB_EF_2022-12.pdf;1;TOTAL_ACTIF;N1;7660712;milliers de dinars;
+ATB;2022-12-31;ATB_EF_2022-12.pdf;1;CAP_PROPRES_EF;N;566847;milliers de dinars;« TOTAL CAPITAUX PROPRES » note 13
+ATB;2022-12-31;ATB_EF_2022-12.pdf;1;CAP_PROPRES_EF;N1;555450;milliers de dinars;
+ATB;2022-12-31;ATB_EF_2022-12.pdf;1;TOTAL_PASSIF_CP;N;7807412;milliers de dinars;
+ATB;2022-12-31;ATB_EF_2022-12.pdf;1;RES_BILAN;N;11397;milliers de dinars;CP6 Résultat de l'exercice
+ATB;2022-12-31;ATB_EF_2022-12.pdf;3;RES_NET;N;11397;milliers de dinars;RESULTAT NET DE LA PERIODE
+ATB;2022-12-31;ATB_EF_2022-12.pdf;3;RES_NET;N1;-68502;milliers de dinars;perte 2021, (68 502) dans le PDF
+ATB;2022-12-31;ATB_EF_2022-12.pdf;3;RES_NET_APRES_MODIF;N;11397;milliers de dinars;RESULTAT APRES MODIFICATIONS COMPTABLES
