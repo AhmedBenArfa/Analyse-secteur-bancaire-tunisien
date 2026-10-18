@@ -112,3 +112,11 @@ UBCI;2020-12-31;UBCI_EF_2020-12.pdf;1;RES_BILAN;N;42125;milliers de dinars;CP 6 
 UBCI;2020-12-31;UBCI_EF_2020-12.pdf;3;RES_NET;N;42125;milliers de dinars;RESULTAT NET DE L'EXERCICE
 UBCI;2020-12-31;UBCI_EF_2020-12.pdf;3;RES_NET;N1;57498;milliers de dinars;
 UBCI;2020-12-31;UBCI_EF_2020-12.pdf;3;RES_NET_APRES_MODIF;N;42125;milliers de dinars;libellé sur deux lignes
+UIB;2020-06-30;UIB_EF_2020-06.pdf;8;TOTAL_ACTIF;N;6341731;milliers de dinars;bilan p.8, colonnes 30/06/2020, 30/06/2019 retraité, 30/06/2019 publié, 31/12/2019
+UIB;2020-06-30;UIB_EF_2020-06.pdf;8;TOTAL_ACTIF;N1;6421622;milliers de dinars;N1 = 30/06/2019 retraité
+UIB;2020-06-30;UIB_EF_2020-06.pdf;8;CAP_PROPRES_EF;N;582365;milliers de dinars;
+UIB;2020-06-30;UIB_EF_2020-06.pdf;8;CAP_PROPRES_EF;N1;563275;milliers de dinars;
+UIB;2020-06-30;UIB_EF_2020-06.pdf;8;TOTAL_PASSIF_CP;N;6341731;milliers de dinars;
+UIB;2020-06-30;UIB_EF_2020-06.pdf;8;RES_BILAN;N;-41182;milliers de dinars;CP6 Résultat de l'exercice, (41 182)
+UIB;2020-06-30;UIB_EF_2020-06.pdf;10;RES_NET;N;-41182;milliers de dinars;perte du 1er semestre 2020
+UIB;2020-06-30;UIB_EF_2020-06.pdf;10;RES_NET;N1;56897;milliers de dinars;N1 = 1er semestre 2019
