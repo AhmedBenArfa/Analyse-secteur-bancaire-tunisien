@@ -64,7 +64,7 @@ CODES_INFO = [
 _PERIODE = r"( de l'exercice| de la periode| du semestre| de l'exercice net)?"
 REGLES = [
     ("TOTAL_PASSIF_CP", r"^total (des )?capitaux propres et (du )?passifs?$|^total (du )?passifs? et (des )?capitaux propres$"),
-    ("CAP_PROPRES_EF",  r"^total (des )?capitaux propres$"),
+    ("CAP_PROPRES_EF",  r"^(sous )?total (des )?capitaux propres$"),   # BT : « Sous-Total capitaux propres »
     ("TOTAL_ACTIF",     r"^total (de l'|des )?actifs?$|^total bilan actif$"),
     # « Résultat net de la période (avant modification comptable) » (BNA S1 2024) = résultat net
     ("RES_NET",         rf"^resultat net{_PERIODE}( avant (les )?modifications? comptables?)?$"),
@@ -72,7 +72,7 @@ REGLES = [
                             r"|^resultat net des modifications comptables$"),   # AB : « net des » = après
     ("MODIF_COMPTABLES", r"^effets? (net )?des modifications comptables"),
     # repli : certaines banques écrivent seulement « Résultat de l'exercice » (aussi la ligne du bilan)
-    ("RES_EXERCICE",    r"^resultat (de l'exercice|de la periode|du semestre)$"),
+    ("RES_EXERCICE",    r"^(resultat|benefice) (de l'exercice|de la periode|du semestre)$"),   # BT : « Bénéfice de l'exercice »
 ]
 REGLES_C = [(c, re.compile(r)) for c, r in REGLES]
 # mêmes règles sans espaces, pour les libellés aux lettres espacées (AB 2023 :
