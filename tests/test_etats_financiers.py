@@ -90,6 +90,9 @@ def test_libelles():
         "Total des capitaux propres V": "CAP_PROPRES_EF",                         # BIAT, renvoi de note
         "Total des produits d'exploitation bancaire VII-1": None,
         "CP6 - Résultat de l'exercice": "RES_EXERCICE",
+        "Résultat de l'exer cice": "RES_EXERCICE",                                 # AB 2023, lettres espacées
+        "Résultat Net des modifica tions co mptable s": "RES_NET_APRES_MODIF",
+        "Effets des modificat ions comp tables": "MODIF_COMPTABLES",
     }
     for libelle, code in attendu.items():
         assert ef.code_ligne(libelle) == code, (libelle, ef.code_ligne(libelle))

@@ -41,3 +41,13 @@ BIAT;2024-12-31;BIAT_EF_2024-12.pdf;4;RES_NET;N1;331444;milliers de dinars;
 BIAT;2024-12-31;BIAT_EF_2024-12.pdf;4;RES_NET_APRES_MODIF;N;357754;milliers de dinars;Résultat net de l'exercice après modifications comptables
 BNA;2022-12-31;BNA_EF_2022-12.pdf;4;RES_NET;N;159251;milliers de dinars;état de résultat sur deux pages (titre p.3, résultat net p.4)
 BNA;2022-12-31;BNA_EF_2022-12.pdf;4;RES_NET;N1;163145;milliers de dinars;
+AB;2021-06-30;AB_EF_2021-06.pdf;2;TOTAL_ACTIF;N;9660428;milliers de dinars;bilan, colonnes 30/06/2021, 30/06/2020, 31/12/2020
+AB;2021-06-30;AB_EF_2021-06.pdf;2;TOTAL_ACTIF;N1;8805266;milliers de dinars;N1 = 30/06/2020
+AB;2021-06-30;AB_EF_2021-06.pdf;2;CAP_PROPRES_EF;N;1126090;milliers de dinars;« Total capitaux propres (3) »
+AB;2021-06-30;AB_EF_2021-06.pdf;2;CAP_PROPRES_EF;N1;1053454;milliers de dinars;
+AB;2021-06-30;AB_EF_2021-06.pdf;2;TOTAL_PASSIF_CP;N;9660428;milliers de dinars;
+AB;2021-06-30;AB_EF_2021-06.pdf;2;RES_BILAN;N;69235;milliers de dinars;CP6 Résultat de l'exercice
+AB;2021-06-30;AB_EF_2021-06.pdf;4;RES_NET;N;69235;milliers de dinars;« Résultat de l'exercice » (sans « net »), dernière ligne avant les modifications
+AB;2021-06-30;AB_EF_2021-06.pdf;4;RES_NET;N1;38940;milliers de dinars;N1 = 1er semestre 2020
+AB;2021-06-30;AB_EF_2021-06.pdf;4;MODIF_COMPTABLES;N;0;milliers de dinars;« - » dans le PDF
+AB;2021-06-30;AB_EF_2021-06.pdf;4;RES_NET_APRES_MODIF;N;69235;milliers de dinars;« Résultat Net des modifications comptables »

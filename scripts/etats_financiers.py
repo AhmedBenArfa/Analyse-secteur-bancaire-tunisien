@@ -66,12 +66,16 @@ REGLES = [
     ("TOTAL_ACTIF",     r"^total (de l'|des )?actifs?$|^total bilan actif$"),
     # « Résultat net de la période (avant modification comptable) » (BNA S1 2024) = résultat net
     ("RES_NET",         rf"^resultat net{_PERIODE}( avant (les )?modifications? comptables?)?$"),
-    ("RES_NET_APRES_MODIF", rf"^resultat( net)?{_PERIODE} apres (les )?modifications? comptables?$"),
+    ("RES_NET_APRES_MODIF", rf"^resultat( net)?{_PERIODE} apres (les )?modifications? comptables?$"
+                            r"|^resultat net des modifications comptables$"),   # AB : « net des » = après
     ("MODIF_COMPTABLES", r"^effets? (net )?des modifications comptables"),
     # repli : certaines banques écrivent seulement « Résultat de l'exercice » (aussi la ligne du bilan)
     ("RES_EXERCICE",    r"^resultat (de l'exercice|de la periode|du semestre)$"),
 ]
 REGLES_C = [(c, re.compile(r)) for c, r in REGLES]
+# mêmes règles sans espaces, pour les libellés aux lettres espacées (AB 2023 :
+# « Résultat de l'exer cice », « Effets des modificat ions comp tables »)
+REGLES_COMPACTES = [(c, re.compile(r.replace(" ", ""))) for c, r in REGLES]
 # lignes lues seulement sur la page de l'état de résultat
 CODES_RESULTAT = {"RES_NET", "RES_NET_APRES_MODIF", "MODIF_COMPTABLES", "RES_EXERCICE"}
 
@@ -305,6 +309,10 @@ def code_ligne(libelle: str) -> str | None:
     for code, rx in REGLES_C:
         if rx.search(n):
             return code
+    compact = n.replace(" ", "")
+    for code, rx in REGLES_COMPACTES:
+        if rx.search(compact):
+            return code
     return None
 
 
@@ -392,9 +400,11 @@ def extraire_pdf(p: Path, max_pages: int = 30) -> tuple[dict[str, tuple[list[flo
                 break
 
     alertes = []
-    if "RES_NET" not in trouves and "RES_EXERCICE" in trouves:
+    repli = "RES_NET" not in trouves and "RES_EXERCICE" in trouves
+    if repli:
+        # AB : la dernière ligne de l'état de résultat est « Résultat de l'exercice » (sans « net ») ;
+        # acceptée sans alerte si elle égale le résultat inscrit au bilan (contrôle plus bas)
         trouves["RES_NET"] = trouves["RES_EXERCICE"]
-        alertes.append("résultat lu sur la ligne « Résultat de l'exercice » : vérifier")
     trouves.pop("RES_EXERCICE", None)
     page_cp = trouves.get("CAP_PROPRES_EF", (None, None, None))[2]
     page_tp = trouves.get("TOTAL_PASSIF_CP", (None, None, None))[2]
@@ -408,6 +418,9 @@ def extraire_pdf(p: Path, max_pages: int = 30) -> tuple[dict[str, tuple[list[flo
     rn0 = trouves.get("RES_NET", ([None],))[0][0]
     if rb is not None and rn0 is not None and abs(rb - rn0) > 1:
         alertes.append(f"résultat de l'état de résultat ≠ résultat du bilan ({rn0:,.0f} vs {rb:,.0f})")
+    if repli and rb is None:
+        alertes.append("résultat lu sur la ligne « Résultat de l'exercice », sans résultat au bilan pour "
+                       "le confirmer : vérifier")
     for c in ("RES_NET", "TOTAL_ACTIF", "CAP_PROPRES_EF"):
         if c not in trouves:
             alertes.append(f"{c} introuvable")
