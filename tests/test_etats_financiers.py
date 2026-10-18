@@ -101,6 +101,12 @@ def test_libelles():
         assert ef.code_ligne(libelle) == code, (libelle, ef.code_ligne(libelle))
 
 
+def test_nombres_colles():
+    assert ef.couper_nombres_colles("2 157 228 2 608 251") == ["2 157 228", "2 608 251"]   # WIB S1 2025
+    assert ef.couper_nombres_colles("1 94 871") == ["1 94 871"]                            # AB 2023
+    assert ef.couper_nombres_colles("1 868 528 404") == ["1 868 528 404"]
+
+
 def test_valeurs_reference_ef():
     import csv
 

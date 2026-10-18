@@ -332,11 +332,30 @@ def code_ligne(libelle: str) -> str | None:
     return None
 
 
+def couper_nombres_colles(texte: str) -> list[str]:
+    """« 2 157 228 2 608 251 » -> [« 2 157 228 », « 2 608 251 »] : deux nombres collés en un jeton
+    (WIB S1 2025, colonne du 30/06/2025 décalée). Un vrai nombre n'a, après son premier groupe, que
+    des groupes de 3 chiffres : un groupe plus court commence le nombre suivant."""
+    if not re.fullmatch(r"\d{1,3}( \d{1,3})+", texte):
+        return [texte]
+    nombres: list[list[str]] = []
+    for g in texte.split(" "):
+        if not nombres or len(g) < 3:
+            nombres.append([g])
+        else:
+            nombres[-1].append(g)
+    # chaque morceau doit être un nombre d'au moins deux groupes : « 1 94 871 » (AB 2023, chiffres
+    # espacés) reste un seul nombre
+    if any(len(n) < 2 for n in nombres):
+        return [texte]
+    return [" ".join(n) for n in nombres]
+
+
 def valeurs_ligne(jetons: list[cb.Jeton]) -> list[float]:
     """Valeurs d'une ligne, sans les renvois de notes (4.1, 5-2, 12...). Un tiret isolé (« néant »)
     vaut 0 et garde sa place : sinon les colonnes suivantes se décalent (BNA 2024, « Effet des
     modifications comptables » : (40 975) - (40 975), la variation devenait la colonne N-1)."""
-    textes = [j.texte for j in jetons]
+    textes = [x for j in jetons for x in couper_nombres_colles(j.texte)]
     gros = [t for t in textes if len(re.sub(r"\D", "", t)) >= 4]
     garde = []
     for t in textes:
@@ -362,6 +381,25 @@ def facteur_mdt(total_actif: float | None) -> tuple[float, str]:
     if v >= 1e5:
         return 1e-3, "milliers de dinars"
     return 1.0, "millions de dinars"
+
+
+def reunir_colonne_decalee(lignes: list) -> list:
+    """Ligne de chiffres sans libellé à 4 pt au plus au-dessus d'une ligne avec libellé et chiffres
+    placés plus à droite : une colonne imprimée un peu plus haut que les autres (WIB S1 2025,
+    colonne du 30/06/2025). Les deux lignes sont réunies, les chiffres du dessus en premier."""
+    sortie = []
+    k = 0
+    while k < len(lignes):
+        l = lignes[k]
+        s = lignes[k + 1] if k + 1 < len(lignes) else None
+        if (s is not None and not l.libelle.strip() and l.nombres and s.libelle.strip() and s.nombres
+                and 0 < s.top - l.top <= 4 and max(j.x1 for j in l.nombres) < min(j.x0 for j in s.nombres)):
+            sortie.append(cb.Ligne(s.libelle, l.nombres + s.nombres, s.page, s.top))
+            k += 2
+            continue
+        sortie.append(l)
+        k += 1
+    return sortie
 
 
 RE_TITRE_RESULTAT = re.compile(r"^etat (de|des) resultats?\b")
@@ -394,7 +432,7 @@ def extraire_pdf(p: Path, max_pages: int = 60) -> tuple[dict[str, tuple[list[flo
         for i, page in enumerate(pdf.pages[:max_pages], start=1):
             if page.images and len((page.extract_text() or "").strip()) < 50:
                 pages_image.append(i)
-            lignes = cb.lignes_page(page, i)
+            lignes = reunir_colonne_decalee(cb.lignes_page(page, i))
             dans_resultat = dans_resultat and "RES_NET" not in trouves
             for k, l in enumerate(lignes):
                 n = cb.normaliser(l.libelle)
