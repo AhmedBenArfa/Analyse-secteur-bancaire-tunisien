@@ -103,6 +103,7 @@ Excel de référence ─────────> referentiel.xlsx
 | `Corrections` | `corrections_manuelles.csv` | remplacement des valeurs corrigées dans `Fait_Indicateurs` |
 | `Evenements` | `evenements.csv` (versionné, à la racine) | types ; une ligne par événement et par banque concernée : `id_evenement`, `date` (fin du trimestre concerné), `banque`, `indicateur`, `description`, `montant_mdt` (montant cité par le document), `fichier`, `page` ; annotations des graphiques (7.3, pages 3 et 9) |
 | `Definitions_Charges` | `gabarits.csv` | colonnes `banque`, `premier_trimestre`, `dernier_trimestre`, `definition_charges_operatoires` (lignes distinctes) ; info-bulle du coefficient publié et page « qualité des données » |
+| `Definitions_Capitaux_Propres` | `gabarits.csv` | colonnes `banque`, `definition_capitaux_propres` (une ligne par banque, lignes distinctes) ; colonne conditionnelle avec le libellé en clair ; affichée dans la fiche banque à côté des capitaux propres trimestriels (5.2) |
 
 ### 5.2 Points d'attention
 
@@ -295,6 +296,31 @@ Excel de référence ─────────> referentiel.xlsx
   résultat », « résultat de la période non inclus »). Le ROE et le ROA n'utilisent pas cet
   indicateur mais les capitaux propres des états financiers (7.7).
 
+  **Usage dans Power BI (décision du 19/10/2026).** La référence pour **toutes les comparaisons
+  entre banques** (classements, parts, totaux du secteur, ROE, ratios rapportés aux capitaux
+  propres) est le total des capitaux propres du **bilan** (`CAP_PROPRES_EF`, états financiers,
+  30/06 et 31/12, résultat inclus). Les capitaux propres trimestriels (`CAP_PROPRES`) ne servent
+  qu'à la **fiche banque** (page 7), affichés avec la définition de la banque. Cette définition
+  est dans la colonne `definition_capitaux_propres` de `gabarits.csv` (valeurs permises :
+  `DEFINITIONS_CAP_PROPRES` dans `collecte_banques.py`, contrôlées au chargement). Elle a été
+  établie par recoupement avec les états financiers à toutes les dates (7.7, point 4) :
+
+  | Définition | Banques | Recoupement |
+  |---|---|---|
+  | `hors resultat de la periode` | BNA, BH, BT, STB, TJARI, UBCI, UIB, WIB | trimestriel = capitaux propres du bilan − résultat net de la période |
+  | `resultat inclus` | ATB, BTE | trimestriel = capitaux propres du bilan |
+  | `hors resultat, apres affectation au 31/12` | AB, BIAT | 30/06 : hors résultat ; 31/12 : après affectation du résultat de l'exercice (réserves augmentées, dividendes déduits), non comparable au bilan (écart de −43 à −117 MDT de 2020 à 2024) |
+
+  Dates qui ne suivent pas la définition de leur banque (au 19/10/2026, laissées telles que
+  publiées, signalées par le recoupement) : AB et BIAT au 31/12/2019 (résultat inclus) ;
+  WIB 30/06/2020 (résultat inclus) ; TJARI 30/06/2021 (valeur reprise de la colonne N-1 du
+  T2 2022 : sans le résultat 2020 non encore affecté, écart de 131,712 MDT = résultat 2020) ;
+  STB 30/06/2022 et 31/12/2023 (écart = modifications comptables, +11,506 et +18,835) ; écarts non
+  expliqués : ATB 31/12/2025 (−35,5) et 30/06/2026 (−4,3), BNA 31/12/2025 (+17,2), BTE 31/12/2019
+  (−3,0), 30/06/2022 (−0,7) et 31/12/2025 (+3,2), BIAT 30/06/2025 (−1,3) ; écarts de moins de
+  1 MDT aux dates les plus récentes (indicateurs provisoires publiés avant l'audit ou la revue
+  limitée).
+
   **Colonnes N-1 non retenues (décision du 17/10/2026).** Une colonne de comparaison
   (`trim_N1`, `cumul_N1`, `exercice_N1`) fausse dans le document de la banque ne devient jamais
   la valeur retenue, pour aucun indicateur ; ses valeurs restent dans `indicateurs_versions.csv`
@@ -434,7 +460,9 @@ Depots       = CALCULATE ( [Depots brut], LASTNONBLANK ( Dim_Date[Date], [Depots
 Même modèle pour les dépôts à vue, d'épargne, à terme et les emprunts. Capitaux propres :
 
 ```dax
--- jamais la colonne 31/12 provisoire (5.2) : définition homogène, résultat de la période exclu
+-- jamais la colonne 31/12 provisoire (5.2). FICHE BANQUE SEULEMENT : la définition varie selon la
+-- banque (gabarits.csv, definition_capitaux_propres, affichée à côté) ; les comparaisons entre
+-- banques utilisent les capitaux propres du bilan (Fait_Etats_Financiers, CAP_PROPRES_EF, 7.7)
 Capitaux propres hors resultat brut = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "CAP_PROPRES" )
 Capitaux propres hors resultat de la periode =
     CALCULATE ( [Capitaux propres hors resultat brut],
@@ -605,8 +633,10 @@ clairement dans le rapport.
 | `TOTAL_ACTIF` | Total de l'actif | Bilan |
 | `CAP_PROPRES_EF` | Capitaux propres **y compris le résultat de la période** | Bilan |
 
-Remarque : les capitaux propres des indicateurs trimestriels sont souvent publiés
-« compte non tenu des résultats de la période ». On utilise donc ceux du bilan pour le ROE.
+Remarque : les capitaux propres des indicateurs trimestriels n'ont pas la même définition d'une
+banque à l'autre (hors résultat, résultat inclus, après affectation au 31/12 : 5.2). On utilise
+donc ceux du bilan pour le ROE et pour **toutes les comparaisons entre banques** ; les capitaux
+propres trimestriels restent dans la fiche banque, avec leur définition (décision du 19/10/2026).
 
 **Résultat net retenu : avant modifications comptables (règle générale, toutes banques,
 décision du 18/10/2026).** Certaines banques publient sous le résultat net une ligne « Effet des
@@ -684,12 +714,15 @@ Soit environ 12 banques × 13 dates × 3 valeurs ≈ 470 valeurs, collectées pa
    résultat = résultat du bilan (`RES_BILAN`) ; capitaux propres lus sur la page du total
    capitaux propres et passifs.
 4. **Recoupement avec les indicateurs trimestriels** (contrôle non bloquant, colonne
-   `recoupement_trimestriel` de `controle_etats_financiers.csv`) : capitaux propres du bilan −
-   résultat net de la période = capitaux propres « hors résultat de la période » retenus dans
-   `indicateurs_versions.csv` à la même date (tolérance 2 kDT). Non bloquant parce qu'un écart
-   peut venir de la série trimestrielle : BIAT au 31/12/2024, 1 868,637 MDT (EF) contre 1 981,591
-   (indicateurs, document BIAT_2025T4, « après affectation du résultat »). Exact pour BNA au
-   30/06 et au 31/12/2024 et pour BIAT au 30/06/2024.
+   `recoupement_trimestriel` de `controle_etats_financiers.csv`, tolérance 2 kDT) : capitaux
+   propres trimestriels retenus dans `indicateurs_versions.csv` à la même date, comparés selon la
+   définition de la banque (`definition_capitaux_propres` de `gabarits.csv`, 5.2) : capitaux
+   propres du bilan − résultat net de la période (`hors resultat de la periode`), capitaux
+   propres du bilan (`resultat inclus`), statut `non comparable (31/12 après affectation du
+   résultat)` pour AB et BIAT au 31/12. Non bloquant parce qu'un écart vient de la série
+   trimestrielle, pas des états financiers. Au 19/10/2026 : 131 « ok », 14 « non comparable »,
+   17 écarts (liste et causes en 5.2), 4 dates sans valeur trimestrielle (BTE : tableaux en
+   image).
 5. Comparaison du résultat net annuel avec le tableau annuel d'ilboursa : **purement
    informative**, elle ne change jamais le statut d'un document. ilboursa ne précise pas s'il
    s'agit de comptes individuels ou consolidés, et ses chiffres sont probablement consolidés
@@ -856,7 +889,7 @@ Part de marché, Var PNB A/A % (Variations_Comparables) — pour un seul visuel 
 | 4. Structure du PNB | Barres empilées marge d'intérêts / commissions / portefeuille par banque |
 | 5. Bilan | Crédits, dépôts, crédits / dépôts, structure des dépôts |
 | 6. Bourse | Cours, performance, volatilité, performance boursière vs croissance du PNB |
-| 7. Fiche banque (extraction) | Tous les indicateurs d'une banque, accessible par clic droit ; coefficient publié à côté du coefficient harmonisé, avec la définition des charges opératoires de la banque |
+| 7. Fiche banque (extraction) | Tous les indicateurs d'une banque, accessible par clic droit ; coefficient publié à côté du coefficient harmonisé, avec la définition des charges opératoires de la banque ; capitaux propres trimestriels avec leur définition (`definition_capitaux_propres`), seul endroit où ils apparaissent (ailleurs : capitaux propres du bilan) |
 | 8. Rentabilité | ROE et ROA semestriels et annuels, matrice ROE × coefficient d'exploitation |
 | 9. Qualité des données | Contrôle d'extraction (statuts, dont `ecart trimestre/cumul`, `retraitement possible`, `ecart composantes`, `illisible (image)`, avec l'écart en MDT), révisions importantes et ruptures de série (avec la note du document), sources, limites ; phrase expliquant pourquoi la somme des trimestres peut différer du cumul annuel |
 

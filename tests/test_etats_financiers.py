@@ -177,3 +177,14 @@ def test_versions():
     assert len(retenues) == 504 and all(r["valeur_retenue"] for r in retenues.values())
     # Attijari S1 2026 : N-1 du total des actifs mal formé dans le PDF, donc pas de version révisée
     assert retenues[("TJARI", "2025-06-30", "TOTAL_ACTIF")]["source_valeur"] == "initiale"
+
+
+def test_recoupement_selon_definition():
+    """Capitaux propres trimestriels comparés selon definition_capitaux_propres (gabarits.csv)."""
+    trouves = {"CAP_PROPRES_EF": ([100_000.0], "", 1), "RES_NET": ([10_000.0], "", 2)}   # milliers de dinars
+    rec = lambda cp_trim, banque, date: ef.recoupement(trouves, 1e-3, (cp_trim, "doc.pdf", ""), banque, date)
+    assert rec(90.0, "BNA", "2024-06-30") == "ok"             # hors résultat de la période
+    assert rec(100.0, "ATB", "2024-12-31") == "ok"            # résultat inclus
+    assert rec(90.0, "BIAT", "2024-06-30") == "ok"            # hors résultat au 30/06
+    assert rec(95.0, "BIAT", "2024-12-31").startswith("non comparable")   # après affectation au 31/12
+    assert rec(95.0, "BT", "2024-12-31").startswith("ecart -5.000")     # bilan hors résultat − trimestriel

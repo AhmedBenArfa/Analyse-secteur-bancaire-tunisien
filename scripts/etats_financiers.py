@@ -742,20 +742,27 @@ def capitaux_propres_trimestriels() -> dict[tuple[str, str], tuple[float, str, s
     return out
 
 
-def recoupement(trouves: dict, fac: float, cp_trim: tuple | None) -> str:
-    """Contrôle non bloquant : capitaux propres du bilan − résultat net de la période = capitaux
-    propres « hors résultat » des indicateurs trimestriels. Un écart peut venir de la série
-    trimestrielle (BIAT 31/12/2024 : « après affectation du résultat »), d'où le statut non bloquant."""
+def recoupement(trouves: dict, fac: float, cp_trim: tuple | None, banque: str = "", date: str = "") -> str:
+    """Contrôle non bloquant : capitaux propres des indicateurs trimestriels comparés à ceux du bilan,
+    selon la définition de la banque (colonne definition_capitaux_propres de gabarits.csv) :
+    « hors résultat de la période » = capitaux propres du bilan − résultat net de la période ;
+    « résultat inclus » (ATB, BTE) = capitaux propres du bilan ; au 31/12 « après affectation du
+    résultat » (AB, BIAT) : non comparable (réserves augmentées et dividendes déduits)."""
     if trouves.get("CAP_PROPRES_EF", [[None]])[0][0] is None or trouves.get("RES_NET", [[None]])[0][0] is None:
         return "incomplet"
     if cp_trim is None:
         return "pas de valeur trimestrielle"
-    hors_res = (trouves["CAP_PROPRES_EF"][0][0] - trouves["RES_NET"][0][0]) * fac
-    ecart = hors_res - cp_trim[0]
+    g = cb.gabarit_pour(banque, cb.Trimestre(int(date[:4]), int(date[5:7]) // 3)) if banque and date else None
+    definition = g.definition_cap_propres if g else "hors resultat de la periode"
+    if definition == "hors resultat, apres affectation au 31/12" and date[5:7] == "12":
+        return "non comparable (31/12 après affectation du résultat)"
+    cp = trouves["CAP_PROPRES_EF"][0][0] * fac
+    attendu = cp if definition == "resultat inclus" else cp - trouves["RES_NET"][0][0] * fac
+    ecart = attendu - cp_trim[0]
     if abs(ecart) <= TOLERANCE_RECOUPEMENT_MDT:
         return "ok"
-    return (f"ecart {ecart:+.3f} MDT (EF {hors_res:.3f}, trimestriel {cp_trim[0]:.3f}, {cp_trim[1]}"
-            + (f", {cp_trim[2]}" if cp_trim[2] else "") + ")")
+    return (f"ecart {ecart:+.3f} MDT (EF {attendu:.3f} {'résultat inclus' if definition == 'resultat inclus' else 'hors résultat'}, "
+            f"trimestriel {cp_trim[0]:.3f}, {cp_trim[1]}" + (f", {cp_trim[2]}" if cp_trim[2] else "") + ")")
 
 
 VERSIONS = DOSSIER / "etats_financiers_versions.csv"
@@ -855,7 +862,8 @@ def cmd_extraire(args):
                                 "unite_source": unite, "valeur_mdt": round(v * fac, 6), "libelle_source": lib,
                                 "source": r["source"], "fichier": Path(r["fichier"]).name, "page": page})
             get = lambda c: round(trouves[c][0][0] * fac, 3) if trouves.get(c, [[None]])[0][0] is not None else ""
-            rec = recoupement(trouves, fac, cp_trimestriels.get((code, r["date_arrete"])))
+            rec = recoupement(trouves, fac, cp_trimestriels.get((code, r["date_arrete"])),
+                              code, r["date_arrete"])
             wc.writerow([code, cle, r["type"], statut, get("RES_NET"), get("TOTAL_ACTIF"),
                          get("CAP_PROPRES_EF"), " | ".join(alertes), r["fichier"], rec,
                          get("MODIF_COMPTABLES"), get("RES_NET_APRES_MODIF")])

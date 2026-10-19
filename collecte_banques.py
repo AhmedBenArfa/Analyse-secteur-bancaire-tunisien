@@ -716,6 +716,17 @@ DEFINITIONS_CHG_OPER = {
                                "(dotations ou autres charges) n'est pas détaillée dans le PDF",
     "composantes non publiees": "seul le total est publié ; coefficient harmonisé non calculable",
 }
+# Contenu des capitaux propres des indicateurs trimestriels (colonne definition_capitaux_propres de
+# gabarits.csv), établi par recoupement avec les états financiers (spécification 5.2). Ces capitaux
+# propres ne servent qu'à la fiche banque ; les comparaisons entre banques utilisent ceux du bilan.
+DEFINITIONS_CAP_PROPRES = {
+    "hors resultat de la periode": "capitaux propres sans le résultat de la période en cours "
+                                   "(= capitaux propres du bilan − résultat net de la période)",
+    "resultat inclus": "capitaux propres y compris le résultat de la période (= capitaux propres du bilan)",
+    "hors resultat, apres affectation au 31/12": "hors résultat de la période en cours d'année ; au 31/12, "
+                                                 "après affectation du résultat de l'exercice (réserves "
+                                                 "augmentées, dividendes déduits)",
+}
 
 
 @dataclass
@@ -729,6 +740,7 @@ class Gabarit:
     libelles: list[tuple[str, re.Pattern]]    # règles de libellés propres à la banque
     ligne: int                                # numéro de ligne dans gabarits.csv (traçabilité)
     definition_chg_oper: str = ""             # clé de DEFINITIONS_CHG_OPER
+    definition_cap_propres: str = ""          # clé de DEFINITIONS_CAP_PROPRES
 
     @property
     def nom(self) -> str:
@@ -740,7 +752,8 @@ def charger_gabarits(chemin: Path = FICHIER_GABARITS) -> list[Gabarit]:
     ou « 4 ») ; colonnes (« trim_N|trim_N1|cumul_N|cumul_N1|exercice_N1 », _ignorer pour une colonne
     de variation, « trim_N+cumul_N » pour une colonne qui vaut les deux au T1) ; unite ; libelles (« CODE=regex », séparés par « || », regex sur le libellé
     normalisé : minuscules, sans accents) ; definition_charges_operatoires (clé de
-    DEFINITIONS_CHG_OPER) ; documents_verifies ; remarque."""
+    DEFINITIONS_CHG_OPER) ; definition_capitaux_propres (clé de DEFINITIONS_CAP_PROPRES) ;
+    documents_verifies ; remarque."""
     if not chemin.exists():
         return []
     sortie = []
@@ -763,10 +776,14 @@ def charger_gabarits(chemin: Path = FICHIER_GABARITS) -> list[Gabarit]:
             if definition not in DEFINITIONS_CHG_OPER:
                 raise ValueError(f"gabarits.csv ligne {i} : definition_charges_operatoires « {definition} » "
                                  f"inconnue ({', '.join(DEFINITIONS_CHG_OPER)})")
+            definition_cp = (r.get("definition_capitaux_propres") or "").strip()
+            if definition_cp not in DEFINITIONS_CAP_PROPRES:
+                raise ValueError(f"gabarits.csv ligne {i} : definition_capitaux_propres « {definition_cp} » "
+                                 f"inconnue ({', '.join(DEFINITIONS_CAP_PROPRES)})")
             sortie.append(Gabarit(r["banque"].strip(), Trimestre.depuis_texte(r["premier_trimestre"]),
                                   Trimestre.depuis_texte(r["dernier_trimestre"]),
                                   {int(q) for q in r["trimestres"].split(",")}, colonnes, r["unite"],
-                                  libelles, i, definition))
+                                  libelles, i, definition, definition_cp))
     return sortie
 
 
