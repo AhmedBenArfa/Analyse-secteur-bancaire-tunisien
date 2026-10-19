@@ -777,29 +777,46 @@ def calculer_versions(m: dict) -> list[dict]:
     document suivant de même type (annuel N+1 pour un 31/12, semestriel N+1 pour un 30/06 : sa
     colonne N-1 est bien le 30/06/N, vérifié sur les 12 banques). Valeur retenue : toujours la
     révisée quand elle existe. Une date sans document lisible (BH 31/12/2019, STB 30/06/2023 :
-    états en image partout) n'a que la révisée ; sans l'une ni l'autre, la valeur reste vide."""
+    états en image partout) n'a que la révisée ; sans l'une ni l'autre, la valeur reste vide.
+    Exception, résultat net : la règle « avant modifications comptables » prime. Une révisée égale
+    au résultat après modifications comptables du document initial (effet non nul) n'est pas
+    retenue (BNA S1 2025 : 137,318 dans le document S1 2026, effet de −17,751 reclassé dans le
+    résultat de la période ; l'initiale 155,069 reste la valeur retenue)."""
     with SORTIE.open(encoding="utf-8-sig") as f:
         v = {(r["banque"], r["date_arrete"], r["code"], r["colonne"]): r
-             for r in csv.DictReader(f, delimiter=";") if r["code"] in CODES_RATIOS}
+             for r in csv.DictReader(f, delimiter=";")
+             if r["code"] in CODES_RATIOS + ["MODIF_COMPTABLES", "RES_NET_APRES_MODIF"]}
     sortie = []
     for (code, cle), doc in sorted(m.items()):
         d = doc["date_arrete"]
         suivante = f"{int(d[:4]) + 1}{d[4:]}"
         for c in CODES_RATIOS:
             ini, rev = v.get((code, d, c, "N")), v.get((code, suivante, c, "N1"))
-            retenue = rev or ini
+            retenue, remarque = rev or ini, ""
             if ini and rev:
                 ecart = float(rev["valeur_mdt"]) - float(ini["valeur_mdt"])
                 base = abs(float(ini["valeur_mdt"]))
                 statut = ("" if abs(ecart) <= TOLERANCE_ARRONDI_MDT else
                           "revision_importante" if abs(ecart) > SEUIL_MATERIALITE * base else "retraitement_mineur")
+                modif, apres = v.get((code, d, "MODIF_COMPTABLES", "N")), v.get((code, d, "RES_NET_APRES_MODIF", "N"))
+                if (c == "RES_NET" and statut and modif and apres
+                        and abs(float(modif["valeur_mdt"])) > TOLERANCE_ARRONDI_MDT
+                        and abs(float(rev["valeur_mdt"]) - float(apres["valeur_mdt"])) <= TOLERANCE_ARRONDI_MDT):
+                    retenue, statut = ini, "revisee non retenue (modification comptable incluse)"
+                    remarque = (f"révisée {float(rev['valeur_mdt']):.3f} ({rev['fichier']}) = résultat après "
+                                f"modifications comptables de {ini['fichier']} (effet {float(modif['valeur_mdt']):.3f} "
+                                f"reporté dans le résultat de la période) : la règle « avant modifications "
+                                f"comptables » prime (spécification 7.7)")
             else:
                 ecart = None
                 statut = "repris du document suivant" if rev else ("" if ini else "non disponible")
+            if retenue and retenue.get("remarque"):
+                remarque = retenue["remarque"]
             commun = {"banque": code, "date_arrete": d, "type": doc["type"], "code": c,
                       "valeur_retenue": retenue["valeur_mdt"] if retenue else "",
-                      "source_valeur": ("revisee" if rev else "initiale") if retenue else "",
-                      "statut_revision": statut, "ecart_mdt": "" if ecart is None else round(ecart, 6)}
+                      "source_valeur": ("revisee" if retenue is rev else "initiale") if retenue else "",
+                      "statut_revision": statut, "ecart_mdt": "" if ecart is None else round(ecart, 6),
+                      "remarque": remarque}
             for version, r in (("initiale", ini), ("revisee", rev)):
                 if r:
                     sortie.append({**commun, "version": version, "valeur_mdt": r["valeur_mdt"],
@@ -812,7 +829,7 @@ def calculer_versions(m: dict) -> list[dict]:
 def ecrire_versions(m: dict) -> list[dict]:
     sortie = calculer_versions(m)
     champs = ["banque", "date_arrete", "type", "code", "version", "valeur_mdt", "fichier", "page",
-              "valeur_retenue", "source_valeur", "statut_revision", "ecart_mdt"]
+              "valeur_retenue", "source_valeur", "statut_revision", "ecart_mdt", "remarque"]
     with VERSIONS.open("w", newline="", encoding="utf-8-sig") as f:
         w = csv.DictWriter(f, fieldnames=champs, delimiter=";")
         w.writeheader()

@@ -163,8 +163,10 @@ def test_versions():
         ("STB", "2023-06-30", "TOTAL_ACTIF"): ("15098.4", "repris du document suivant", "STB_EF_2024-06.pdf"),
         # révisée retenue : moratoire Covid réintégré par l'UIB dans le document S1 2021
         ("UIB", "2020-06-30", "RES_NET"): ("17.912", "revision_importante", "UIB_EF_2021-06_cmf.pdf"),
-        # BNA S1 2025 retraité dans le document S1 2026
-        ("BNA", "2025-06-30", "RES_NET"): ("137.318", "revision_importante", "BNA_EF_2026-06_cmf.pdf"),
+        # BNA S1 2025 : la révisée (137,318, document S1 2026) inclut l'effet de la modification
+        # comptable reclassé dans le résultat ; « avant modifications comptables » prime : initiale
+        ("BNA", "2025-06-30", "RES_NET"): ("155.069", "revisee non retenue (modification comptable incluse)",
+                                           "BNA_EF_2025-06.pdf"),
         # identique d'un document à l'autre : statut vide
         ("BH", "2020-12-31", "RES_NET"): ("72.943", "", "BH_EF_2021-12.pdf"),
         # date la plus récente : version initiale seule

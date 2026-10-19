@@ -397,7 +397,12 @@ Relations (1 → plusieurs, filtre simple) :
 - `Dim_Banque[ticker_bvmt]` → `Fait_Cours[ticker]`
 - `Dim_Indicateur[code_indicateur]` → `Fait_Indicateurs[code_indicateur]` et `Variations_Comparables[code_indicateur]`
 - `Dim_Date[Date]` → `Evenements[date]`, `Dim_Banque[code_banque]` → `Evenements[banque]`,
-  `Dim_Indicateur[code_indicateur]` → `Evenements[indicateur]` (annotations filtrées comme les courbes)
+  `Dim_Indicateur[code_indicateur]` → `Evenements[indicateur]` (annotations filtrées comme les courbes).
+  Un événement peut porter sur un code des états financiers (`RES_NET`, `TOTAL_ACTIF`,
+  `CAP_PROPRES_EF` : ex. `MORATOIRE_COVID_UIB` au 30/06/2020, résultat net retraité de
+  −41,182 à 17,912 MDT) : ces 3 codes sont ajoutés à `Dim_Indicateur` dans Power Query (ajout de
+  lignes, nature `flux` pour le résultat, `stock` pour les deux autres) pour que la relation
+  garde l'annotation sur la page « Rentabilité »
 
 ### Table de dates
 
@@ -746,14 +751,25 @@ Soit environ 12 banques × 13 dates × 3 valeurs ≈ 470 valeurs, collectées pa
    - nature de la révision (`statut_revision`, écart révisée − initiale, tolérance d'arrondi
      2 kDT) : `retraitement_mineur` (2 % au plus de la valeur initiale), `revision_importante`
      (plus de 2 %), vide (sous la tolérance). Au 19/10/2026 : 23 retraitements mineurs (surtout
-     STB et le total de l'actif : ATB, TJARI, UIB) et 9 révisions importantes : UIB 30/06/2020
+     STB et le total de l'actif : ATB, TJARI, UIB) et 8 révisions importantes retenues : UIB 30/06/2020
      (résultat −41,182 → 17,912 et capitaux propres +59,094 : intérêts du moratoire Covid
-     réintégrés, voir `evenements.csv`), WIB 31/12/2020 (résultat −5,376 → −7,816 ; capitaux
+     réintégrés, événement `MORATOIRE_COVID_UIB` de `evenements.csv`, ligne `RES_NET` au 30/06/2020), WIB 31/12/2020 (résultat −5,376 → −7,816 ; capitaux
      propres −3,540), WIB 31/12/2024 (résultat +0,209), BTE 31/12/2023 et 30/06/2025 (capitaux
-     propres −4,202 et −1,360 : modifications comptables), STB 31/12/2021 (résultat −2,787),
-     **BNA 30/06/2025** (résultat 155,069 → 137,318 : dans le document S1 2026, la colonne
-     « 30/06/2025* retraité » porte l'effet de la modification comptable de −17,751 dans le
-     résultat de la période, sur la ligne « avant modification comptable ») ;
+     propres −4,202 et −1,360 : modifications comptables), STB 31/12/2021 (résultat −2,787) ;
+   - **priorité, résultat net (décision du 20/10/2026) : la règle « avant modifications
+     comptables » prime sur la règle des versions.** Une version révisée du résultat net égale au
+     résultat **après** modifications comptables du document initial (effet non nul, tolérance
+     2 kDT) n'est pas retenue : la valeur retenue reste l'initiale, la révisée est gardée pour
+     information (statut `revisee non retenue (modification comptable incluse)`, raison dans la
+     colonne `remarque`). Seul cas au 20/10/2026 : **BNA 30/06/2025**, 155,069 MDT retenu ;
+     137,318 dans le document S1 2026 (note 3.8, p.10 : retraitement « pro-forma » qui reclasse
+     l'effet de −17,751 MDT de la déchéance fiscale des fonds gérés en dotations aux provisions,
+     −9,329, et en autres éléments ordinaires, −8,422 ; « résultat net final inchangé à
+     137,318 »). Vérifié : la colonne 30/06/2026 de ce document n'a pas d'effet de modification
+     comptable (ligne « - », la note 3.8 ne retraite que la colonne comparative). À savoir :
+     l'**annuel 2025** de la BNA n'a pas non plus de ligne de modification comptable, et le
+     paiement de 17,751 MDT (note p.62) est **dans** son résultat 274,544 ; le S1 2025 retenu
+     (155,069, sans cet effet) et l'annuel 2025 ne sont donc pas sur la même base ;
    - les dates les plus récentes (31/12/2025, 30/06/2026) n'ont encore que la version initiale.
 
    Conséquence pour le ROE et le ROA : les capitaux propres et le total de l'actif d'ouverture
@@ -766,7 +782,7 @@ Les valeurs que le script ne trouve pas sont saisies à la main dans
 Sorties : `donnees/etats_financiers_long.csv` (toutes les valeurs lues, colonnes N et N1) et
 `donnees/etats_financiers_versions.csv` (une ligne par version : `banque`, `date_arrete`,
 `type`, `code`, `version`, `valeur_mdt`, `fichier`, `page`, `valeur_retenue`, `source_valeur`,
-`statut_revision`, `ecart_mdt`).
+`statut_revision`, `ecart_mdt`, `remarque`).
 
 Table de faits `Fait_Etats_Financiers` : depuis `etats_financiers_versions.csv`, lignes
 `version = source_valeur` (valeur retenue) : banque, date_arrete, type (semestriel / annuel),
