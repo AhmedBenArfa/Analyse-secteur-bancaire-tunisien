@@ -160,7 +160,8 @@ WIB;2021-06-30;WIB_EF_2021-06_cmf.pdf;3;TOTAL_ACTIF;N;926203934;dinars;liste du 
 WIB;2021-06-30;WIB_EF_2021-06_cmf.pdf;3;TOTAL_ACTIF;N1;776549004;dinars;
 WIB;2021-06-30;WIB_EF_2021-06_cmf.pdf;3;CAP_PROPRES_EF;N;152890148;dinars;« TOTAL CAPITAUX PROPRES 3 » : renvoi de note collé au nombre
 WIB;2021-06-30;WIB_EF_2021-06_cmf.pdf;3;CAP_PROPRES_EF;N1;155850550;dinars;
-TJARI;2026-06-30;TJARI_EF_2026-06_cmf.pdf;2;TOTAL_ACTIF;N;14014194;milliers de dinars;liste du CMF ; N1 imprimé « 12 983 60 » (chiffre manquant), non lu
+TJARI;2026-06-30;TJARI_EF_2026-06_cmf.pdf;2;TOTAL_ACTIF;N;14014194;milliers de dinars;liste du CMF ; N1 imprimé « 12 983 60 » (chiffre manquant), déduit, ligne suivante
+TJARI;2026-06-30;TJARI_EF_2026-06_cmf.pdf;2;TOTAL_ACTIF;N1;12983608;milliers de dinars;déduit (contrôle) : total des capitaux propres et passifs 12 983 608 = somme AC1 à AC7 (relevé sur l'image)
 TJARI;2026-06-30;TJARI_EF_2026-06_cmf.pdf;2;CAP_PROPRES_EF;N;1043118;milliers de dinars;
 TJARI;2026-06-30;TJARI_EF_2026-06_cmf.pdf;2;CAP_PROPRES_EF;N1;1014027;milliers de dinars;
 BT;2025-12-31;BT_EF_2025-12_cmf.pdf;2;TOTAL_ACTIF;N;8884449;milliers de dinars;liste du CMF ; « Total des AcƟfs » (ligature)

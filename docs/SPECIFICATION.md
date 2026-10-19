@@ -710,9 +710,16 @@ Soit environ 12 banques × 13 dates × 3 valeurs ≈ 470 valeurs, collectées pa
    colonne de montants de la page (BTE S1 2026 : résultat après modifications = 48 kDT). Un
    renvoi de note collé à un nombre (case deux fois plus large que les autres) est retiré
    (WIB S1 2021 : « TOTAL CAPITAUX PROPRES 3 » + 152 890 148). Un nombre **mal formé dans le
-   PDF** n'est jamais complété : sa case reste vide (Attijari S1 2026, total des actifs au
-   30/06/2025 imprimé « 12 983 60 » ; remarque non bloquante « information : … » dans le
-   contrôle). Libellés : ligature « Ɵ » (= « ti », BT 2025 « Total des AcƟfs ») et apostrophe
+   PDF** n'est complété que s'il **se déduit exactement d'un total du même document, même
+   colonne** (décision du 20/10/2026) : total de l'actif = total des capitaux propres et passifs
+   (et inversement), à condition que les chiffres imprimés soient le début du nombre déduit.
+   Statut de la valeur `déduit (contrôle)` (colonne `statut_valeur`), explication dans
+   `remarque`, information non bloquante dans le contrôle. Sinon la case reste vide. Seul cas :
+   Attijari S1 2026, total des actifs au 30/06/2025 imprimé « 12 983 60 », déduit = 12 983 608
+   (total des capitaux propres et passifs de la colonne ; la somme AC1 à AC7, relevée sur
+   l'image, donne aussi 12 983 608). Contre 12 965,741 MDT publié dans le S1 2025 : révision
+   de +17,867 (« Chiffres retraités au 30/06/2025 pour les besoins de la comparabilité », note 3.12 « Changement de présentation »),
+   `retraitement_mineur`, valeur retenue 12 983,608. Libellés : ligature « Ɵ » (= « ti », BT 2025 « Total des AcƟfs ») et apostrophe
    « ʹ » (BH S1 2020) reconnues.
 3. Contrôles bloquants (statut `a verifier`) : total actif = total capitaux propres et passif ;
    capitaux propres < total actif ; résultat net < capitaux propres ; résultat de l'état de
@@ -779,10 +786,11 @@ Soit environ 12 banques × 13 dates × 3 valeurs ≈ 470 valeurs, collectées pa
 Les valeurs que le script ne trouve pas sont saisies à la main dans
 `donnees/corrections_manuelles.csv`, avec le fichier source et la page.
 
-Sorties : `donnees/etats_financiers_long.csv` (toutes les valeurs lues, colonnes N et N1) et
+Sorties : `donnees/etats_financiers_long.csv` (toutes les valeurs lues, colonnes N et N1 ;
+`statut_valeur` = `déduit (contrôle)` le cas échéant, avec `remarque`) et
 `donnees/etats_financiers_versions.csv` (une ligne par version : `banque`, `date_arrete`,
-`type`, `code`, `version`, `valeur_mdt`, `fichier`, `page`, `valeur_retenue`, `source_valeur`,
-`statut_revision`, `ecart_mdt`, `remarque`).
+`type`, `code`, `version`, `valeur_mdt`, `fichier`, `page`, `statut_valeur`, `valeur_retenue`,
+`source_valeur`, `statut_revision`, `ecart_mdt`, `remarque`).
 
 Table de faits `Fait_Etats_Financiers` : depuis `etats_financiers_versions.csv`, lignes
 `version = source_valeur` (valeur retenue) : banque, date_arrete, type (semestriel / annuel),

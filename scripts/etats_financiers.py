@@ -550,7 +550,8 @@ def sans_note_collee(jetons: list[cb.Jeton]) -> list[cb.Jeton]:
     return sortie
 
 
-def valeurs_ligne(jetons: list[cb.Jeton], bords: list[float] | None = None) -> list[float]:
+def valeurs_ligne(jetons: list[cb.Jeton], bords: list[float] | None = None,
+                  mal_formes: list[tuple[int, str]] | None = None) -> list[float]:
     """Valeurs d'une ligne, sans les renvois de notes (4.1, 5-2, 12...). Un tiret isolé (« néant »)
     vaut 0 et garde sa place : sinon les colonnes suivantes se décalent (BNA 2024, « Effet des
     modifications comptables » : (40 975) - (40 975), la variation devenait la colonne N-1).
@@ -571,7 +572,10 @@ def valeurs_ligne(jetons: list[cb.Jeton], bords: list[float] | None = None) -> l
             continue
         if re.fullmatch(r"\(?-?\d{1,3}( \d{3})+ \d{1,2}\)?", t):
             # chiffre manquant dans le PDF (Attijari S1 2026, total des actifs au 30/06/2025 imprimé
-            # « 12 983 60 ») : case vide, à sa place, jamais complétée
+            # « 12 983 60 ») : case vide, à sa place ; le texte est rendu dans `mal_formes` pour
+            # une éventuelle déduction exacte (extraire_pdf), jamais complété autrement
+            if mal_formes is not None:
+                mal_formes.append((len(garde), t))
             garde.append(None)
             continue
         v = cb.valeur(t)
@@ -622,7 +626,8 @@ def page_etat_resultat(lignes) -> bool:
     return any(RE_TITRE_RESULTAT.match(cb.normaliser(l.libelle)) for l in lignes)
 
 
-def extraire_pdf(p: Path, max_pages: int = 60) -> tuple[dict[str, tuple[list[float], str, int]], list[str]]:
+def extraire_pdf(p: Path, max_pages: int = 60, deduits: dict | None = None
+                 ) -> tuple[dict[str, tuple[list[float], str, int]], list[str]]:
     """Totaux du bilan : première occurrence dans le document. Lignes de résultat : seulement dans
     l'état de résultat, de son titre jusqu'au titre de l'état suivant ou des notes, y compris sur
     la page suivante tant que le résultat net n'est pas lu (BNA 2022 : titre p.3, résultat net
@@ -632,6 +637,7 @@ def extraire_pdf(p: Path, max_pages: int = 60) -> tuple[dict[str, tuple[list[flo
     import pdfplumber
 
     trouves: dict[str, tuple[list[float], str, int]] = {}
+    mal_formes: dict[str, list[tuple[int, str]]] = {}   # code -> (position, texte imprimé)
     res_bilan: dict[int, tuple[list[float], str, int]] = {}   # page -> ligne de résultat hors état de résultat
     dans_resultat = False
     pages_image: list[int] = []   # pages sans texte avec une image (états scannés : BH 2019 p.28-31)
@@ -665,7 +671,8 @@ def extraire_pdf(p: Path, max_pages: int = 60) -> tuple[dict[str, tuple[list[flo
                 c = code_ligne(libelle)
                 if not c:
                     continue
-                vals = valeurs_ligne(l.nombres, bords)
+                bruts: list[tuple[int, str]] = []
+                vals = valeurs_ligne(l.nombres, bords, bruts)
                 if not vals:
                     continue
                 if c in CODES_RESULTAT and not dans_resultat:
@@ -674,10 +681,31 @@ def extraire_pdf(p: Path, max_pages: int = 60) -> tuple[dict[str, tuple[list[flo
                     continue
                 if c not in trouves:
                     trouves[c] = (vals, libelle, i)
+                    mal_formes[c] = bruts
             if all(c in trouves for c, _ in CODES):
                 break
 
     alertes = []
+    # Nombre mal formé dans le PDF : déduit seulement s'il se déduit exactement d'un total du même
+    # document, même colonne (total de l'actif = total des capitaux propres et passifs), et si les
+    # chiffres imprimés sont le début du nombre déduit. Attijari S1 2026, 30/06/2025 : « 12 983 60 »
+    # = 12 983 608 (total des capitaux propres et passifs ; somme AC1 à AC7 vérifiée sur l'image)
+    noms = {"TOTAL_ACTIF": "total de l'actif", "TOTAL_PASSIF_CP": "total des capitaux propres et passifs"}
+    for c, autre in (("TOTAL_ACTIF", "TOTAL_PASSIF_CP"), ("TOTAL_PASSIF_CP", "TOTAL_ACTIF")):
+        for k, texte in mal_formes.get(c, []):
+            vals_autre = trouves.get(autre, ([],))[0]
+            if k >= 2 or k >= len(vals_autre) or vals_autre[k] is None or trouves[c][0][k] is not None:
+                continue
+            chiffres, ref = re.sub(r"\D", "", texte), f"{abs(vals_autre[k]):.0f}"
+            if ref.startswith(chiffres) and len(ref) > len(chiffres):
+                trouves[c][0][k] = vals_autre[k]
+                col = "N" if k == 0 else "N-1"
+                montant = f"{vals_autre[k]:,.0f}".replace(",", " ")
+                remarque = (f"imprimé « {texte} » dans le PDF (p.{trouves[c][2]}, colonne {col}) ; "
+                            f"déduit du {noms[autre]} de la même colonne ({montant})")
+                if deduits is not None:
+                    deduits[(c, k)] = remarque
+                alertes.append(f"information : {c} {remarque}")
     for c, (vals, lib, page) in trouves.items():
         if None in vals[:2]:
             col = "N" if vals[0] is None else "N-1"
@@ -820,16 +848,17 @@ def calculer_versions(m: dict) -> list[dict]:
             for version, r in (("initiale", ini), ("revisee", rev)):
                 if r:
                     sortie.append({**commun, "version": version, "valeur_mdt": r["valeur_mdt"],
-                                   "fichier": r["fichier"], "page": r["page"]})
+                                   "fichier": r["fichier"], "page": r["page"],
+                                   "statut_valeur": r.get("statut_valeur", "")})
             if not retenue:
-                sortie.append({**commun, "version": "", "valeur_mdt": "", "fichier": "", "page": ""})
+                sortie.append({**commun, "version": "", "valeur_mdt": "", "fichier": "", "page": "", "statut_valeur": ""})
     return sortie
 
 
 def ecrire_versions(m: dict) -> list[dict]:
     sortie = calculer_versions(m)
     champs = ["banque", "date_arrete", "type", "code", "version", "valeur_mdt", "fichier", "page",
-              "valeur_retenue", "source_valeur", "statut_revision", "ecart_mdt", "remarque"]
+              "statut_valeur", "valeur_retenue", "source_valeur", "statut_revision", "ecart_mdt", "remarque"]
     with VERSIONS.open("w", newline="", encoding="utf-8-sig") as f:
         w = csv.DictWriter(f, fieldnames=champs, delimiter=";")
         w.writeheader()
@@ -842,7 +871,7 @@ def cmd_extraire(args):
     if not m:
         sys.exit("Aucun manifeste : lancez d'abord « telecharger ».")
     champs = ["banque", "date_arrete", "annee", "type", "code", "colonne", "valeur_source", "unite_source",
-              "valeur_mdt", "libelle_source", "source", "fichier", "page"]
+              "valeur_mdt", "libelle_source", "source", "fichier", "page", "statut_valeur", "remarque"]
     n_ok = 0
     cp_trimestriels = capitaux_propres_trimestriels()
     with SORTIE.open("w", newline="", encoding="utf-8-sig") as f, \
@@ -862,7 +891,8 @@ def cmd_extraire(args):
                              "", "", "", "", ""])
                 continue
             try:
-                trouves, alertes = extraire_pdf(Path(r["fichier"]))
+                deduits: dict = {}
+                trouves, alertes = extraire_pdf(Path(r["fichier"]), deduits=deduits)
             except Exception as e:
                 trouves, alertes = {}, [f"erreur de lecture : {e}"]
             ta = trouves.get("TOTAL_ACTIF", ([None],))[0][0]
@@ -871,13 +901,15 @@ def cmd_extraire(args):
             statut = "ok" if trouves and not bloquantes else ("a verifier" if trouves else "echec")
             n_ok += statut == "ok"
             for c, (vals, lib, page) in trouves.items():
-                for col, v in zip(["N", "N1"], vals[:2]):
+                for k, (col, v) in enumerate(zip(["N", "N1"], vals[:2])):
                     if v is None:
                         continue
                     w.writerow({"banque": code, "date_arrete": r["date_arrete"], "annee": r["date_arrete"][:4],
                                 "type": r["type"], "code": c, "colonne": col, "valeur_source": v,
                                 "unite_source": unite, "valeur_mdt": round(v * fac, 6), "libelle_source": lib,
-                                "source": r["source"], "fichier": Path(r["fichier"]).name, "page": page})
+                                "source": r["source"], "fichier": Path(r["fichier"]).name, "page": page,
+                                "statut_valeur": "déduit (contrôle)" if (c, k) in deduits else "",
+                                "remarque": deduits.get((c, k), "")})
             get = lambda c: round(trouves[c][0][0] * fac, 3) if trouves.get(c, [[None]])[0][0] is not None else ""
             rec = recoupement(trouves, fac, cp_trimestriels.get((code, r["date_arrete"])),
                               code, r["date_arrete"])

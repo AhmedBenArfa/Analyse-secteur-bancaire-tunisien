@@ -122,8 +122,10 @@ def test_petits_nombres_et_nombres_mal_formes():
     assert ef.valeurs_ligne([J("3 152 890 148", 220.3, 363.0), J("155 850 550", 374.0, 424.0),
                              J("153 122 901", 442.3, 492.3)]) == [152890148, 155850550, 153122901]
     # chiffre manquant dans le PDF : case vide à sa place (Attijari S1 2026, « 12 983 60 »)
+    mal_formes = []
     assert ef.valeurs_ligne([J("14 014 194", 344, 374), J("12 983 60", 387, 414),
-                             J("13 762 592", 437, 467)]) == [14014194, None, 13762592]
+                             J("13 762 592", 437, 467)], mal_formes=mal_formes) == [14014194, None, 13762592]
+    assert mal_formes == [(1, "12 983 60")]   # texte gardé pour une déduction exacte (extraire_pdf)
 
 
 def test_valeurs_reference_ef():
@@ -177,8 +179,11 @@ def test_versions():
         assert (r["valeur_retenue"], r["statut_revision"], r["fichier"]) == (valeur, statut, fichier), (cle, r)
     # 12 banques × 14 dates × 3 valeurs, toutes renseignées
     assert len(retenues) == 504 and all(r["valeur_retenue"] for r in retenues.values())
-    # Attijari S1 2026 : N-1 du total des actifs mal formé dans le PDF, donc pas de version révisée
-    assert retenues[("TJARI", "2025-06-30", "TOTAL_ACTIF")]["source_valeur"] == "initiale"
+    # Attijari S1 2026 : N-1 du total des actifs imprimé « 12 983 60 », déduit (contrôle) du total
+    # des capitaux propres et passifs de la même colonne
+    r = retenues[("TJARI", "2025-06-30", "TOTAL_ACTIF")]
+    assert (r["valeur_retenue"], r["source_valeur"], r["statut_valeur"]) == ("12983.608", "revisee", "déduit (contrôle)")
+    assert "12 983 60" in r["remarque"]
 
 
 def test_recoupement_selon_definition():
