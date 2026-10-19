@@ -611,6 +611,57 @@ Rang PNB             = RANKX ( ALL ( Dim_Banque ), [PNB],, DESC, DENSE )
 
 ### 7.5 Bourse
 
+**Sources (étape 4, état au 20/10/2026 : proposition, collecte complète en attente de validation).**
+
+- **2019 à 2025 : archives annuelles de la BVMT** (« Historique des données »,
+  `https://www.bvmt.com.tn/sites/default/files/historiques/cotations/histo_cotation_AAAA.zip`),
+  source officielle, une ligne par titre et par séance : ouverture, clôture, plus bas, plus haut,
+  quantité négociée, nombre de transactions, **capitaux réellement échangés**. Deux formats :
+  texte à colonnes fixes (2019 à 2021 ; code court en 2019-2020 = caractères 6 à 11 de l'ISIN,
+  décimales à virgule en 2019), CSV « ; » à partir de 2022. L'archive 2023 contient aussi 2022 :
+  séances identiques à l'archive 2022 (vérifié sur la BIAT, 257 séances). 2026 n'est pas encore
+  archivé. Le robots.txt de la BVMT demande **10 secondes entre deux requêtes**.
+- **2026 : à décider** : bulletin officiel quotidien de la cote (PDF, officiel, cours de
+  référence, ouverture, dernier cours, plus haut, plus bas, clôture, dernier dividende ; **pas de
+  quantités**), ou ilboursa (API de la page « Historiques », 3 mois par requête ; clôture et
+  volume égaux à la BVMT sur 63 et 63 des 64 séances du T4 2025 de la BIAT, mais plus haut et plus
+  bas différents sur 19 séances, une séance manquante, et cours ajustés sans méthode publiée :
+  BIAT 2019 divisé par 2).
+- BTE : le titre coté est l'action à dividende prioritaire (ADP), seule action BTE cotée.
+
+**Règles de lecture** (`scripts/cours_boursiers.py`, sortie `donnees/cours_banques.csv` :
+ticker, banque, isin, date, ouverture, haut, bas, cloture, volume, nb_transactions, capitaux,
+statut, source, fichier) :
+- séance sans transaction (quantité 0) : l'archive met 0 aux cours de la séance et la clôture au
+  cours de référence ; ouverture, haut et bas restent vides, statut `sans transaction` ;
+- ouverture : l'archive 2021 répète la même valeur sur environ 65 % des séances, pour les 12
+  banques (BIAT 94,300 de janvier à août) ; de 2022 à 2025 l'ouverture sort parfois de
+  [plus bas, plus haut] et vaut alors presque toujours la clôture de la veille (cours de
+  référence). Une ouverture répétée sur plus de 30 % des séances d'une année (`ouverture figée
+  dans l'archive`) ou hors de [plus bas, plus haut] reste **vide**, jamais remplacée ;
+- contrôle `donnees/controle_cours.csv` : variation de clôture de plus de 6,15 % d'une séance à
+  l'autre = opération sur titres probable.
+
+**Ajustements (opérations sur titres).** Sans ajustement les rendements sont faux : BIAT,
+clôture 118,000 le 02/01/2019 et 111,000 le 31/12/2025, soit −5,9 % en brut et **+125,8 %**
+ajusté des opérations sur le capital (hors dividendes). Opérations de la BIAT, toutes sourcées
+dans le bulletin officiel (« Décisions et avis de la Bourse ») :
+
+| Date d'effet | Opération | Facteur | Cours de référence publié (théorique) | Source |
+|---|---|---|---|---|
+| 29/06/2020 | attribution gratuite 1 pour 20 | 20/21 | 98,090 (98,095) | bull20200629.pdf p.7 |
+| 04/05/2021 | division du nominal 10 → 5 DT | 1/2 | 60,870 (60,870) | bull20210503.pdf p.7 |
+| 09/05/2022 | dividende 5,200 DT | (P − D) / P | 64,500 (64,500) | bull20220509.pdf p.1 (colonne « dernier dividende ») |
+| 29/11/2024 | attribution gratuite 1 pour 7 | 7/8 | 91,880 (91,875) | bull20241129.pdf p.13 |
+
+Proposition : une table versionnée `operations_titres.csv` (banque, date d'effet, type, parité ou
+montant, fichier, page), remplie depuis les bulletins (avis de la Bourse ; liste des droits
+d'attribution « DA a/b JJMMAA » des lignes secondaires ; colonne « dernier dividende ») ; le
+**facteur et le cours ajusté se calculent dans Power Query** (produit cumulé des facteurs
+postérieurs à la séance) ; contrôle : facteur théorique × clôture de la veille = cours de
+référence publié, à l'arrondi du pas de cotation. Deux séries : cours ajusté des opérations sur
+le capital (performance du prix) et, en plus, des dividendes (rendement total).
+
 ```dax
 Cours brut      = SUM ( Fait_Cours[cloture] )
 Dernier cours   = CALCULATE ( [Cours brut], LASTNONBLANK ( Dim_Date[Date], [Cours brut] ) )
