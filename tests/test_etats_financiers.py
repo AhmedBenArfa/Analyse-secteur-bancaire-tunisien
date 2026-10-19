@@ -146,3 +146,34 @@ def test_valeurs_reference_ef():
             if lu != float(r["valeur_source"]) or str(page) != r["page"]:
                 ecarts.append((fichier, r["code"], r["colonne"], r["valeur_source"], r["page"], lu, page))
     assert not ecarts, ecarts
+
+
+def test_versions():
+    """Règle des versions (spécification 7.7, point 6) sur les données extraites : la valeur
+    retenue est la colonne N-1 du document suivant quand elle existe ; une date sans document
+    lisible la reprend (BH 31/12/2019, STB 30/06/2023)."""
+    m = ef.lire_manifeste()
+    if not m or not ef.SORTIE.exists():
+        pytest.skip("lancez d'abord « telecharger » et « extraire »")
+    retenues = {(r["banque"], r["date_arrete"], r["code"]): r
+                for r in ef.calculer_versions(m) if r["version"] == r["source_valeur"]}
+    attendu = {
+        ("BH", "2019-12-31", "RES_NET"): ("141.642", "repris du document suivant", "BH_EF_2020-12.pdf"),
+        ("BH", "2019-12-31", "CAP_PROPRES_EF"): ("981.089", "repris du document suivant", "BH_EF_2020-12.pdf"),
+        ("STB", "2023-06-30", "TOTAL_ACTIF"): ("15098.4", "repris du document suivant", "STB_EF_2024-06.pdf"),
+        # révisée retenue : moratoire Covid réintégré par l'UIB dans le document S1 2021
+        ("UIB", "2020-06-30", "RES_NET"): ("17.912", "revision_importante", "UIB_EF_2021-06_cmf.pdf"),
+        # BNA S1 2025 retraité dans le document S1 2026
+        ("BNA", "2025-06-30", "RES_NET"): ("137.318", "revision_importante", "BNA_EF_2026-06_cmf.pdf"),
+        # identique d'un document à l'autre : statut vide
+        ("BH", "2020-12-31", "RES_NET"): ("72.943", "", "BH_EF_2021-12.pdf"),
+        # date la plus récente : version initiale seule
+        ("TJARI", "2026-06-30", "TOTAL_ACTIF"): ("14014.194", "", "TJARI_EF_2026-06_cmf.pdf"),
+    }
+    for cle, (valeur, statut, fichier) in attendu.items():
+        r = retenues[cle]
+        assert (r["valeur_retenue"], r["statut_revision"], r["fichier"]) == (valeur, statut, fichier), (cle, r)
+    # 12 banques × 14 dates × 3 valeurs, toutes renseignées
+    assert len(retenues) == 504 and all(r["valeur_retenue"] for r in retenues.values())
+    # Attijari S1 2026 : N-1 du total des actifs mal formé dans le PDF, donc pas de version révisée
+    assert retenues[("TJARI", "2025-06-30", "TOTAL_ACTIF")]["source_valeur"] == "initiale"

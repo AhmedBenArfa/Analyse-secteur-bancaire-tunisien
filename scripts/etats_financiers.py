@@ -758,6 +758,61 @@ def recoupement(trouves: dict, fac: float, cp_trim: tuple | None) -> str:
             + (f", {cp_trim[2]}" if cp_trim[2] else "") + ")")
 
 
+VERSIONS = DOSSIER / "etats_financiers_versions.csv"
+CODES_RATIOS = ["RES_NET", "TOTAL_ACTIF", "CAP_PROPRES_EF"]
+TOLERANCE_ARRONDI_MDT = cb.TOLERANCE_ARRONDI_MDT
+SEUIL_MATERIALITE = cb.SEUIL_MATERIALITE
+
+
+def calculer_versions(m: dict) -> list[dict]:
+    """Versions de chaque valeur (spécification 7.7, même règle que les indicateurs trimestriels,
+    5.2 règle 4) : `initiale` = colonne N du document de la date ; `revisee` = colonne N-1 du
+    document suivant de même type (annuel N+1 pour un 31/12, semestriel N+1 pour un 30/06 : sa
+    colonne N-1 est bien le 30/06/N, vérifié sur les 12 banques). Valeur retenue : toujours la
+    révisée quand elle existe. Une date sans document lisible (BH 31/12/2019, STB 30/06/2023 :
+    états en image partout) n'a que la révisée ; sans l'une ni l'autre, la valeur reste vide."""
+    with SORTIE.open(encoding="utf-8-sig") as f:
+        v = {(r["banque"], r["date_arrete"], r["code"], r["colonne"]): r
+             for r in csv.DictReader(f, delimiter=";") if r["code"] in CODES_RATIOS}
+    sortie = []
+    for (code, cle), doc in sorted(m.items()):
+        d = doc["date_arrete"]
+        suivante = f"{int(d[:4]) + 1}{d[4:]}"
+        for c in CODES_RATIOS:
+            ini, rev = v.get((code, d, c, "N")), v.get((code, suivante, c, "N1"))
+            retenue = rev or ini
+            if ini and rev:
+                ecart = float(rev["valeur_mdt"]) - float(ini["valeur_mdt"])
+                base = abs(float(ini["valeur_mdt"]))
+                statut = ("" if abs(ecart) <= TOLERANCE_ARRONDI_MDT else
+                          "revision_importante" if abs(ecart) > SEUIL_MATERIALITE * base else "retraitement_mineur")
+            else:
+                ecart = None
+                statut = "repris du document suivant" if rev else ("" if ini else "non disponible")
+            commun = {"banque": code, "date_arrete": d, "type": doc["type"], "code": c,
+                      "valeur_retenue": retenue["valeur_mdt"] if retenue else "",
+                      "source_valeur": ("revisee" if rev else "initiale") if retenue else "",
+                      "statut_revision": statut, "ecart_mdt": "" if ecart is None else round(ecart, 6)}
+            for version, r in (("initiale", ini), ("revisee", rev)):
+                if r:
+                    sortie.append({**commun, "version": version, "valeur_mdt": r["valeur_mdt"],
+                                   "fichier": r["fichier"], "page": r["page"]})
+            if not retenue:
+                sortie.append({**commun, "version": "", "valeur_mdt": "", "fichier": "", "page": ""})
+    return sortie
+
+
+def ecrire_versions(m: dict) -> list[dict]:
+    sortie = calculer_versions(m)
+    champs = ["banque", "date_arrete", "type", "code", "version", "valeur_mdt", "fichier", "page",
+              "valeur_retenue", "source_valeur", "statut_revision", "ecart_mdt"]
+    with VERSIONS.open("w", newline="", encoding="utf-8-sig") as f:
+        w = csv.DictWriter(f, fieldnames=champs, delimiter=";")
+        w.writeheader()
+        w.writerows(sortie)
+    return sortie
+
+
 def cmd_extraire(args):
     m = lire_manifeste()
     if not m:
@@ -807,6 +862,17 @@ def cmd_extraire(args):
             print(f"  {statut:<11} {code} {cle}  RN={get('RES_NET')}  TA={get('TOTAL_ACTIF')}  "
                   f"CP={get('CAP_PROPRES_EF')}  recoupement : {rec}  {'; '.join(alertes)}")
     print(f"\n{n_ok} documents extraits sans alerte.\nDonnées : {SORTIE}\nContrôle : {CONTROLE}")
+    versions = ecrire_versions(m)
+    statuts: dict[str, int] = {}
+    for r in versions:
+        if r["version"] == r["source_valeur"] and r["statut_revision"]:
+            statuts[r["statut_revision"]] = statuts.get(r["statut_revision"], 0) + 1
+    print(f"Versions : {VERSIONS}  ({', '.join(f'{k} {n}' for k, n in sorted(statuts.items()))})")
+    for r in versions:
+        if r["version"] == r["source_valeur"] and r["statut_revision"] in ("repris du document suivant",
+                                                                           "non disponible"):
+            print(f"  {r['banque']} {r['date_arrete']} {r['code']} : {r['statut_revision']} "
+                  f"{r['valeur_retenue']} {r['fichier']}")
 
 
 # ---------------------------------------------------------------------------

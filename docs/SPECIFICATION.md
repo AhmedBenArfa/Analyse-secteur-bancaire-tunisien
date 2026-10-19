@@ -694,15 +694,52 @@ Soit environ 12 banques × 13 dates × 3 valeurs ≈ 470 valeurs, collectées pa
    informative**, elle ne change jamais le statut d'un document. ilboursa ne précise pas s'il
    s'agit de comptes individuels ou consolidés, et ses chiffres sont probablement consolidés
    (2023 : BNA 212,0 MDT contre 190,0 en individuel ; BIAT 358,6 contre 331,4).
+6. **Règle des versions et reprise depuis le document suivant (décision du 19/10/2026, même
+   règle que les indicateurs trimestriels, 5.2 règle 4).** Pour chaque banque, date et valeur
+   (`RES_NET`, `TOTAL_ACTIF`, `CAP_PROPRES_EF`) :
+   - version `initiale` = colonne N du document de la date ;
+   - version `revisee` = colonne N-1 du **document suivant de même type** : annuel N+1 pour un
+     31/12, semestriel N+1 pour un 30/06. Vérifié sur les 12 banques : la colonne N-1 lue dans un
+     semestriel est toujours le 30/06/N-1, jamais le 31/12/N-1 (210 cas comparables, aucun
+     égal au 31/12) ; quand le document a deux colonnes N-1 (« retraité » et « publié », BH
+     2020 ; WIB S1 2021), c'est la première, la retraitée ;
+   - **valeur retenue : toujours la version révisée quand elle existe**, sinon l'initiale. Une
+     date sans document lisible n'a que la révisée (statut `repris du document suivant`) : BH
+     31/12/2019 (dans BH 2020 : résultat 141,642, total de l'actif 12 207,576, capitaux propres
+     981,089 MDT) et STB 30/06/2023 (dans STB S1 2024 : 40,522 ; 15 098,400 ; 1 192,161 ; ce
+     sont des chiffres « retraités pour les besoins de la comparabilité », la version publiée à
+     l'origine n'étant lisible nulle part). Sans l'une ni l'autre, la valeur reste vide
+     (`non disponible`) ; aucun cas au 19/10/2026 ;
+   - nature de la révision (`statut_revision`, écart révisée − initiale, tolérance d'arrondi
+     2 kDT) : `retraitement_mineur` (2 % au plus de la valeur initiale), `revision_importante`
+     (plus de 2 %), vide (sous la tolérance). Au 19/10/2026 : 23 retraitements mineurs (surtout
+     STB et le total de l'actif : ATB, TJARI, UIB) et 9 révisions importantes : UIB 30/06/2020
+     (résultat −41,182 → 17,912 et capitaux propres +59,094 : intérêts du moratoire Covid
+     réintégrés, voir `evenements.csv`), WIB 31/12/2020 (résultat −5,376 → −7,816 ; capitaux
+     propres −3,540), WIB 31/12/2024 (résultat +0,209), BTE 31/12/2023 et 30/06/2025 (capitaux
+     propres −4,202 et −1,360 : modifications comptables), STB 31/12/2021 (résultat −2,787),
+     **BNA 30/06/2025** (résultat 155,069 → 137,318 : dans le document S1 2026, la colonne
+     « 30/06/2025* retraité » porte l'effet de la modification comptable de −17,751 dans le
+     résultat de la période, sur la ligne « avant modification comptable ») ;
+   - les dates les plus récentes (31/12/2025, 30/06/2026) n'ont encore que la version initiale.
+
+   Conséquence pour le ROE et le ROA : les capitaux propres et le total de l'actif d'ouverture
+   (31/12/N-1) retenus sont ceux que publie le document de l'exercice N dans sa colonne N-1,
+   donc dans la même méthode que la valeur de fin de période.
 
 Les valeurs que le script ne trouve pas sont saisies à la main dans
 `donnees/corrections_manuelles.csv`, avec le fichier source et la page.
 
-Sortie : `donnees/etats_financiers_long.csv`.
+Sorties : `donnees/etats_financiers_long.csv` (toutes les valeurs lues, colonnes N et N1) et
+`donnees/etats_financiers_versions.csv` (une ligne par version : `banque`, `date_arrete`,
+`type`, `code`, `version`, `valeur_mdt`, `fichier`, `page`, `valeur_retenue`, `source_valeur`,
+`statut_revision`, `ecart_mdt`).
 
-Table de faits `Fait_Etats_Financiers` : banque, date_arrete, type (semestriel / annuel),
-code, valeur_mdt, fichier, page (dans Power Query, garder `colonne = "N"` ; la colonne `N1`
-sert seulement aux contrôles). Relations : `Dim_Banque` et `Dim_Date` comme les autres faits.
+Table de faits `Fait_Etats_Financiers` : depuis `etats_financiers_versions.csv`, lignes
+`version = source_valeur` (valeur retenue) : banque, date_arrete, type (semestriel / annuel),
+code, valeur_mdt, fichier, page, statut_revision. Les autres lignes (versions initiales
+remplacées) vont dans une table de qualité, comme `Revisions` pour les indicateurs.
+Relations : `Dim_Banque` et `Dim_Date` comme les autres faits.
 
 **Définitions retenues :**
 
