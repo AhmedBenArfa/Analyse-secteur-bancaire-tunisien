@@ -629,15 +629,56 @@ les capitaux propres du bilan (`RES_BILAN`) sert de contrôle : il doit égaler 
 Soit environ 12 banques × 13 dates × 3 valeurs ≈ 470 valeurs, collectées par
 `scripts/etats_financiers.py` :
 
-1. Téléchargement des états financiers individuels sur le site de la BVMT
-   (`.../etats-financiers/<préfixe>-etats-financiers-annuels-individuels-31-12-AAAA.pdf`,
-   `...-semestriels-30-06-AAAA.pdf`), avec en option la recherche dans les Bulletins Officiels du CMF.
-   Les comptes consolidés sont écartés.
+1. Téléchargement des états financiers individuels, dans cet ordre (les comptes consolidés sont
+   toujours écartés) :
+   1. site de la BVMT
+      (`.../etats-financiers/<préfixe>-etats-financiers-annuels-individuels-31-12-AAAA.pdf`,
+      `...-semestriels-30-06-AAAA.pdf`) ;
+   2. **liste des états financiers du CMF** (page « Consultation des états financiers des
+      sociétés faisant APE », filtrée par société : nom des comptes individuels, pas les
+      « GROUPE … ») : chaque entrée donne la date de dépôt, l'exercice, la période et le lien.
+      Les noms de fichiers n'y suivent aucun format (`bna_bank_efd311225.pdf`, `efi_2026_bna.pdf`,
+      `amenbank_efi_01092029.pdf`) : c'est pourquoi les annuels 2025 et les semestriels 2026
+      n'étaient pas trouvés sur la BVMT (seul Attijari publie 2025 sous le format habituel). La
+      liste est gardée dans `donnees/liste_etats_financiers_cmf.csv` (relue avec
+      `--rafraichir-liste-cmf`). Sont cherchés ici les documents manquants, scannés, et en échec à
+      l'extraction (états en image au milieu d'un rapport lisible) ; un PDF déjà enregistré n'est
+      jamais remplacé (la version du CMF a le suffixe `_cmf`). Les « états financiers
+      provisoires » ne sont pas retenus ;
+   3. **Bulletins Officiels du CMF**, seulement pour ce qui reste (`--bulletins`). La fenêtre de
+      recherche part de la date de dépôt donnée par la liste du CMF (jusqu'à 30 jours après) ;
+      sans elle : 15/07 → 30/09 pour un 30/06, 15/02 → 31/05 de l'année suivante pour un 31/12.
+      Le bloc retenu doit contenir une ligne de tableau « Total de l'actif » et ne pas parler de
+      comptes consolidés sur ses deux premières pages : le sommaire du bulletin (STB S1 2023,
+      bulletin du 02/10/2023) et la fin du rapport sur les comptes consolidés du groupe BH (BH 2019,
+      bulletin du 15/06/2020, « 34,91 % du total actif ») étaient pris à tort ; ces deux extraits
+      sont rangés dans `donnees/rejetes/`.
+
+   Statuts du manifeste : `ok` ; `illisible (image)` (PDF scanné) ; **`non publié`** (date
+   absente de la liste du CMF : pas encore déposée) ; `manquant` (listée au CMF ou attendue, mais
+   aucune version trouvée). Les dates ne sont demandées qu'après les délais habituels de
+   publication (31/12 + 120 jours, 30/06 + 65 jours).
+
+   Bilan au 19/10/2026 : 168 arrêtés (12 banques × 14 dates), 132 documents pris sur la BVMT et
+   35 dans la liste du CMF (dont les 11 annuels 2025 et les 12 semestriels 2026 manquants, et des
+   versions lisibles de 4 semestriels scannés à la BVMT) ; aucun « non publié ». Sans version
+   lisible nulle part (BVMT, CMF, Bulletin) : **BH 31/12/2019** (états en image dans les trois
+   sources) et **STB 30/06/2023** (PDF scanné à la BVMT et au CMF, annexe en image dans le
+   bulletin du 02/10/2023) : leurs valeurs viennent de la colonne N-1 du document suivant
+   (règle des versions, plus bas).
 2. Extraction des lignes « Total actif », « Total capitaux propres » et « Résultat net de
    l'exercice / de la période », en ignorant la colonne des notes (y compris les renvois en
    chiffres romains en fin de libellé, « Total des capitaux propres V »). Les lignes de résultat
    ne sont lues que sur la page de l'**état de résultat** (titre en tête de page), jamais dans les
    notes ni dans le tableau de variation des capitaux propres. Un tiret « - » vaut 0 à sa place.
+   Un nombre d'un ou deux chiffres est un renvoi de note, sauf s'il finit sur le bord droit d'une
+   colonne de montants de la page (BTE S1 2026 : résultat après modifications = 48 kDT). Un
+   renvoi de note collé à un nombre (case deux fois plus large que les autres) est retiré
+   (WIB S1 2021 : « TOTAL CAPITAUX PROPRES 3 » + 152 890 148). Un nombre **mal formé dans le
+   PDF** n'est jamais complété : sa case reste vide (Attijari S1 2026, total des actifs au
+   30/06/2025 imprimé « 12 983 60 » ; remarque non bloquante « information : … » dans le
+   contrôle). Libellés : ligature « Ɵ » (= « ti », BT 2025 « Total des AcƟfs ») et apostrophe
+   « ʹ » (BH S1 2020) reconnues.
 3. Contrôles bloquants (statut `a verifier`) : total actif = total capitaux propres et passif ;
    capitaux propres < total actif ; résultat net < capitaux propres ; résultat de l'état de
    résultat = résultat du bilan (`RES_BILAN`) ; capitaux propres lus sur la page du total

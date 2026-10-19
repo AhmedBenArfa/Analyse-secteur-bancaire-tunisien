@@ -128,3 +128,42 @@ WIB;2025-06-30;WIB_EF_2025-06.pdf;2;TOTAL_PASSIF_CP;N;1868528404;dinars;
 WIB;2025-06-30;WIB_EF_2025-06.pdf;2;RES_BILAN;N;2157228;dinars;CP06 Résultat de l'exercice
 WIB;2025-06-30;WIB_EF_2025-06.pdf;4;RES_NET;N;2157228;dinars;RESULTAT NET DE L'EXERCICE ; « 2 157 228 2 608 251 » collés dans le texte
 WIB;2025-06-30;WIB_EF_2025-06.pdf;4;RES_NET;N1;2608251;dinars;N1 = 1er semestre 2024
+BH;2020-06-30;BH_EF_2020-06_cmf.pdf;4;RES_NET;N;44034;milliers de dinars;liste du CMF ; « Résultat net de lʹexercice » (apostrophe U+02B9)
+BH;2020-06-30;BH_EF_2020-06_cmf.pdf;4;RES_NET;N1;61564;milliers de dinars;N1 = juin 2019 retraité (colonnes : juin 2020, juin 2019 retraité, juin 2019 publié, décembre 2019)
+BH;2020-12-31;BH_EF_2020-12.pdf;28;TOTAL_ACTIF;N;12243399;milliers de dinars;
+BH;2020-12-31;BH_EF_2020-12.pdf;28;TOTAL_ACTIF;N1;12207576;milliers de dinars;N1 = 31/12/2019 retraité, reprise de BH 2019 (états en image)
+BH;2020-12-31;BH_EF_2020-12.pdf;28;CAP_PROPRES_EF;N;1054552;milliers de dinars;
+BH;2020-12-31;BH_EF_2020-12.pdf;28;CAP_PROPRES_EF;N1;981089;milliers de dinars;reprise de BH 2019
+BH;2020-12-31;BH_EF_2020-12.pdf;30;RES_NET;N;72943;milliers de dinars;
+BH;2020-12-31;BH_EF_2020-12.pdf;30;RES_NET;N1;141642;milliers de dinars;reprise de BH 2019
+STB;2024-06-30;STB_EF_2024-06.pdf;2;TOTAL_ACTIF;N;14337162;milliers de dinars;
+STB;2024-06-30;STB_EF_2024-06.pdf;2;TOTAL_ACTIF;N1;15098400;milliers de dinars;N1 = 30/06/2023 retraité, reprise de STB S1 2023 (image partout)
+STB;2024-06-30;STB_EF_2024-06.pdf;2;CAP_PROPRES_EF;N;1215668;milliers de dinars;
+STB;2024-06-30;STB_EF_2024-06.pdf;2;CAP_PROPRES_EF;N1;1192161;milliers de dinars;reprise de STB S1 2023
+STB;2024-06-30;STB_EF_2024-06.pdf;4;RES_NET;N;14443;milliers de dinars;
+STB;2024-06-30;STB_EF_2024-06.pdf;4;RES_NET;N1;40522;milliers de dinars;reprise de STB S1 2023
+BNA;2025-12-31;BNA_EF_2025-12_cmf.pdf;2;CAP_PROPRES_EF;N;2372903;milliers de dinars;liste du CMF
+BNA;2025-12-31;BNA_EF_2025-12_cmf.pdf;2;CAP_PROPRES_EF;N1;2161580;milliers de dinars;
+BNA;2025-12-31;BNA_EF_2025-12_cmf.pdf;4;RES_NET;N;274544;milliers de dinars;
+BNA;2025-12-31;BNA_EF_2025-12_cmf.pdf;4;RES_NET;N1;254557;milliers de dinars;avant modifications comptables (213 582 après)
+BTE;2025-12-31;BTE_EF_2025-12_cmf.pdf;1;TOTAL_ACTIF;N;1665695;milliers de dinars;liste du CMF
+BTE;2025-12-31;BTE_EF_2025-12_cmf.pdf;1;TOTAL_ACTIF;N1;1540056;milliers de dinars;
+BTE;2025-12-31;BTE_EF_2025-12_cmf.pdf;1;CAP_PROPRES_EF;N;29054;milliers de dinars;renvoi de note « 12 » sur la ligne
+BTE;2025-12-31;BTE_EF_2025-12_cmf.pdf;1;CAP_PROPRES_EF;N1;38903;milliers de dinars;
+BTE;2025-12-31;BTE_EF_2025-12_cmf.pdf;3;RES_NET;N;-9900;milliers de dinars;
+BTE;2025-12-31;BTE_EF_2025-12_cmf.pdf;3;RES_NET;N1;-27904;milliers de dinars;
+BTE;2026-06-30;BTE_EF_2026-06_cmf.pdf;4;RES_NET;N;1408;milliers de dinars;liste du CMF
+BTE;2026-06-30;BTE_EF_2026-06_cmf.pdf;4;RES_NET;N1;-5453;milliers de dinars;
+BTE;2026-06-30;BTE_EF_2026-06_cmf.pdf;4;RES_NET_APRES_MODIF;N;48;milliers de dinars;petit nombre sur le bord de la colonne (pas une note)
+BTE;2026-06-30;BTE_EF_2026-06_cmf.pdf;4;RES_NET_APRES_MODIF;N1;-6813;milliers de dinars;
+WIB;2021-06-30;WIB_EF_2021-06_cmf.pdf;3;TOTAL_ACTIF;N;926203934;dinars;liste du CMF ; colonnes 30/06/2021, 30/06/2020, 31/12/2020, 31/12/2020 retraité
+WIB;2021-06-30;WIB_EF_2021-06_cmf.pdf;3;TOTAL_ACTIF;N1;776549004;dinars;
+WIB;2021-06-30;WIB_EF_2021-06_cmf.pdf;3;CAP_PROPRES_EF;N;152890148;dinars;« TOTAL CAPITAUX PROPRES 3 » : renvoi de note collé au nombre
+WIB;2021-06-30;WIB_EF_2021-06_cmf.pdf;3;CAP_PROPRES_EF;N1;155850550;dinars;
+TJARI;2026-06-30;TJARI_EF_2026-06_cmf.pdf;2;TOTAL_ACTIF;N;14014194;milliers de dinars;liste du CMF ; N1 imprimé « 12 983 60 » (chiffre manquant), non lu
+TJARI;2026-06-30;TJARI_EF_2026-06_cmf.pdf;2;CAP_PROPRES_EF;N;1043118;milliers de dinars;
+TJARI;2026-06-30;TJARI_EF_2026-06_cmf.pdf;2;CAP_PROPRES_EF;N1;1014027;milliers de dinars;
+BT;2025-12-31;BT_EF_2025-12_cmf.pdf;2;TOTAL_ACTIF;N;8884449;milliers de dinars;liste du CMF ; « Total des AcƟfs » (ligature)
+BT;2025-12-31;BT_EF_2025-12_cmf.pdf;2;TOTAL_ACTIF;N1;8638841;milliers de dinars;
+BT;2025-12-31;BT_EF_2025-12_cmf.pdf;2;CAP_PROPRES_EF;N;1507191;milliers de dinars;
+BT;2025-12-31;BT_EF_2025-12_cmf.pdf;2;CAP_PROPRES_EF;N1;1411425;milliers de dinars;

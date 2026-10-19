@@ -96,6 +96,9 @@ def test_libelles():
         "Résultat de l'exer cice": "RES_EXERCICE",                                 # AB 2023, lettres espacées
         "Résultat Net des modifica tions co mptable s": "RES_NET_APRES_MODIF",
         "Effets des modificat ions comp tables": "MODIF_COMPTABLES",
+        "Total des Ac(cid:415)fs": "TOTAL_ACTIF",                                  # BT 2025, ligature « Ɵ »
+        "Total des AcƟfs": "TOTAL_ACTIF",
+        "Résultat net de lʹexercice": "RES_NET",                                   # BH S1 2020, apostrophe U+02B9
     }
     for libelle, code in attendu.items():
         assert ef.code_ligne(libelle) == code, (libelle, ef.code_ligne(libelle))
@@ -105,6 +108,22 @@ def test_nombres_colles():
     assert ef.couper_nombres_colles("2 157 228 2 608 251") == ["2 157 228", "2 608 251"]   # WIB S1 2025
     assert ef.couper_nombres_colles("1 94 871") == ["1 94 871"]                            # AB 2023
     assert ef.couper_nombres_colles("1 868 528 404") == ["1 868 528 404"]
+
+
+def test_petits_nombres_et_nombres_mal_formes():
+    J = ef.cb.Jeton
+    # renvoi de note « 12 » dans la colonne des notes, montants à 488 et 552 : ignoré (BTE 2025)
+    assert ef.valeurs_ligne([J("12", 400, 409), J("29 054", 460, 488), J("38 903", 525, 552)],
+                            bords=[488.0, 552.0]) == [29054, 38903]
+    # « 48 » sur le bord droit de la colonne N : une valeur (BTE S1 2026, résultat après modifications)
+    assert ef.valeurs_ligne([J("48", 620, 632), J("(6 813)", 690, 718), J("(11 260)", 780, 812)],
+                            bords=[632.0, 718.0, 812.0]) == [48, -6813, -11260]
+    # renvoi de note collé au nombre, case deux fois trop large (WIB S1 2021)
+    assert ef.valeurs_ligne([J("3 152 890 148", 220.3, 363.0), J("155 850 550", 374.0, 424.0),
+                             J("153 122 901", 442.3, 492.3)]) == [152890148, 155850550, 153122901]
+    # chiffre manquant dans le PDF : case vide à sa place (Attijari S1 2026, « 12 983 60 »)
+    assert ef.valeurs_ligne([J("14 014 194", 344, 374), J("12 983 60", 387, 414),
+                             J("13 762 592", 437, 467)]) == [14014194, None, 13762592]
 
 
 def test_valeurs_reference_ef():

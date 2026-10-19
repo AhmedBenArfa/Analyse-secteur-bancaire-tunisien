@@ -27,6 +27,7 @@ import html
 import io
 import re
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -41,6 +42,7 @@ SORTIE = DOSSIER / "etats_financiers_long.csv"
 CONTROLE = DOSSIER / "controle_etats_financiers.csv"
 
 STATUT_IMAGE = "illisible (image)"   # PDF scanné, sans texte
+STATUT_NON_PUBLIE = "non publié"     # absent de la liste des états financiers du CMF
 
 SUFFIXES = {
     "annuel": ["annuels-individuels", "annuels", "individuels-annuels", "definitifs-individuels", "definitifs"],
@@ -226,21 +228,185 @@ def telecharger_sites(client: cb.Client, codes: list[str], liste: list[Arrete], 
             ecrire_manifeste(m)
 
 
+# ---------------------------------------------------------------------------
+# Liste des états financiers publiée par le CMF (avant les Bulletins Officiels)
+# ---------------------------------------------------------------------------
+
+# Page « Consultation des états financiers des sociétés faisant APE », filtrée par société.
+# Chaque entrée donne la date de dépôt, l'exercice, la période et le lien du PDF ; les noms
+# n'ont pas de format fixe (bna_bank_efd311225.pdf, efi_2026_bna.pdf…), d'où cette liste.
+VUE_LISTE_CMF = "consultation-des-tats-financier-des-soci-t-s-faisant-ape"
+LISTE_CMF = DOSSIER / "liste_etats_financiers_cmf.csv"
+# noms des comptes individuels dans le filtre du CMF (les « GROUPE … » sont les comptes consolidés)
+NOMS_CMF = {
+    "AB":    ["AMEN BANK"],
+    "ATB":   ["ARAB TUNISIAN BANK - ATB -"],
+    "TJARI": ["ATTIJARI BANK"],
+    "BH":    ["BANQUE DE L'HABITAT - BH -", "BH BANK "],
+    "BIAT":  ["BANQUE INTERNATIONALE ARABE DE TUNISIE - BIAT -"],
+    "BNA":   ["BANQUE NATIONALE AGRICOLE - BNA -"],
+    "BT":    ["BANQUE DE TUNISIE - BT -"],
+    "BTE":   ["BANQUE DE TUNISIE ET DES EMIRATS - BTE -"],
+    "STB":   ["Sté. TUNISIENNE DE BANQUE - STB -"],
+    "UBCI":  ["UNION BANCAIRE POUR LE COMMERCE ET L'INDUSTRIE - UBCI -"],
+    "UIB":   ["UNION INTERNATIONALE DE BANQUES - UIB -"],
+    "WIB":   ["Wifack International Bank", "EL WIFACK LEASING"],
+}
+CHAMPS_LISTE_CMF = ["banque", "societe_cmf", "date_depot", "exercice", "periode", "type", "url"]
+
+
+def type_periode_cmf(periode: str) -> str | None:
+    """« Etats financiers au 31/12 » -> annuel ; « … intermédiaires au 30/06 » -> semestriel ;
+    les états financiers provisoires ne sont pas retenus."""
+    n = cb.normaliser(periode)
+    if "provisoire" in n:
+        return None
+    if "30 06" in n:
+        return "semestriel"
+    if "31 12" in n:
+        return "annuel"
+    return None
+
+
+def lire_liste_cmf(client: cb.Client, codes: list[str], rafraichir: bool) -> list[dict]:
+    """Entrées de la liste du CMF pour les banques `codes`. Gardée dans donnees/ ; relue sur le
+    site seulement avec `rafraichir` ou pour une banque absente du fichier."""
+    lignes = []
+    if LISTE_CMF.exists():
+        with LISTE_CMF.open(encoding="utf-8-sig") as f:
+            lignes = list(csv.DictReader(f, delimiter=";"))
+    deja = {r["banque"] for r in lignes}
+    a_lire = [c for c in codes if rafraichir or c not in deja]
+    if not a_lire:
+        return [r for r in lignes if r["banque"] in codes]
+    lignes = [r for r in lignes if r["banque"] not in a_lire]
+    for code in a_lire:
+        for societe in NOMS_CMF[code]:
+            for page in range(20):
+                time.sleep(cb.PAUSE)
+                client.nb += 1
+                try:
+                    rep = client.s.get("https://www.cmf.tn/", timeout=cb.TIMEOUT,
+                                       params={"q": VUE_LISTE_CMF, "field_societesape_value": societe,
+                                               "page": page})
+                except Exception:
+                    break
+                if rep.status_code != 200:
+                    break
+                blocs = rep.content.decode("utf-8", "replace").split('class="views-row ')[1:]
+                for bloc in blocs:
+                    def champ(nom):
+                        x = re.search(rf'field-name-{nom}.*?field-item even">(.*?)</div>', bloc, re.S)
+                        return html.unescape(re.sub(r"<[^>]+>", "", x[1])).strip() if x else ""
+                    date = re.search(r'content="(\d{4}-\d\d-\d\d)', bloc)
+                    url = re.search(r"""href=["']?([^"'\s>]+\.pdf)""", bloc, re.I)
+                    periode = champ("field-p-riode")
+                    lignes.append({"banque": code, "societe_cmf": champ("field-societesape"),
+                                   "date_depot": date[1] if date else "", "exercice": champ("field-exercice"),
+                                   "periode": periode, "type": type_periode_cmf(periode) or "",
+                                   "url": url[1] if url else ""})
+                if not blocs:
+                    break
+        print(f"  liste du CMF : {code} lue ({sum(r['banque'] == code for r in lignes)} entrées)")
+    with LISTE_CMF.open("w", newline="", encoding="utf-8-sig") as f:
+        w = csv.DictWriter(f, fieldnames=CHAMPS_LISTE_CMF, delimiter=";")
+        w.writeheader()
+        w.writerows(sorted(lignes, key=lambda r: (r["banque"], r["date_depot"])))
+    return [r for r in lignes if r["banque"] in codes]
+
+
+def telecharger_liste_cmf(client: cb.Client, codes: list[str], m: dict, rafraichir: bool):
+    """Documents manquants ou scannés : cherchés dans la liste des états financiers du CMF.
+    Un PDF déjà enregistré (scanné) n'est jamais remplacé : la version du CMF a le suffixe « _cmf »."""
+    # aussi les documents en échec à l'extraction : états scannés au milieu d'un rapport lisible
+    # (BH 2019 : p.28-31 en image ; le CMF a une autre version)
+    echecs = set()
+    if CONTROLE.exists():
+        with CONTROLE.open(encoding="utf-8-sig") as f:
+            echecs = {(r["banque"], r["arrete"]) for r in csv.DictReader(f, delimiter=";") if r["statut"] == "echec"}
+    a_chercher = sorted(k for k, r in m.items() if k[0] in codes and (
+        r["statut"] in ("manquant", STATUT_NON_PUBLIE, STATUT_IMAGE) or (k in echecs and r["source"] != "liste_cmf")))
+    if not a_chercher:
+        return
+    print(f"\nListe des états financiers du CMF : {len(a_chercher)} documents manquants ou scannés")
+    liste = lire_liste_cmf(client, codes, rafraichir)
+    for code, cle in a_chercher:
+        ar = Arrete(int(cle[:4]), m[(code, cle)]["type"])
+        cands = [r for r in liste if r["banque"] == code and r["type"] == ar.type
+                 and r["exercice"] == str(ar.annee) and r["url"]]
+        if not cands:
+            # pas encore déposé au CMF : « non publié » (un document listé mais introuvable reste « manquant »)
+            if m[(code, cle)]["statut"] == "manquant":
+                m[(code, cle)] = ligne_manifeste(code, ar, STATUT_NON_PUBLIE)
+                ecrire_manifeste(m)
+            print(f"  --  {code} {ar}  absent de la liste du CMF (non publié)")
+            continue
+        trouve = None
+        for r in sorted(cands, key=lambda r: r["date_depot"], reverse=True):
+            contenu = client.pdf(r["url"])
+            if not contenu:
+                print(f"    lien du CMF sans PDF : {r['url']}")
+                continue
+            try:
+                textes = cb.texte_pdf(contenu, max_pages=3)
+            except Exception:
+                continue
+            if not any(t.strip() for t in textes):
+                print(f"    PDF scanné (pas de texte) : {r['url']}")
+                if m[(code, cle)]["statut"] in ("manquant", STATUT_NON_PUBLIE) and not trouve:
+                    trouve = (r, contenu, STATUT_IMAGE)
+                continue
+            if est_consolide(textes):
+                print(f"    ignoré (comptes consolidés) : {r['url']}")
+                continue
+            if not cb.mentionne_trimestre(textes, ar.trimestre):
+                print(f"    ignoré (autre date) : {r['url']}")
+                continue
+            trouve = (r, contenu, "ok")
+            break
+        if not trouve:
+            print(f"  --  {code} {ar}  listé au CMF mais aucune version lisible")
+            continue
+        r, contenu, statut = trouve
+        p = chemin(code, ar, "_cmf")
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(contenu)
+        m[(code, cle)] = ligne_manifeste(code, ar, statut, "liste_cmf", r["url"], str(p))
+        ecrire_manifeste(m)
+        print(f"  {'OK ' if statut == 'ok' else 'IMG'} {code} {ar}  <- {r['url']} (déposé le {r['date_depot']})")
+
+
 def telecharger_bulletins(client: cb.Client, m: dict):
     """Recherche des états financiers manquants dans les Bulletins Officiels du CMF.
     Fenêtres : 15/07 -> 30/09 pour le 30/06 ; 15/02 -> 31/05 de l'année suivante pour le 31/12."""
     from pypdf import PdfReader, PdfWriter
 
     manquants: dict[str, set[str]] = {}
+    echecs = set()   # états scannés au milieu d'un document lisible (BH 2019)
+    if CONTROLE.exists():
+        with CONTROLE.open(encoding="utf-8-sig") as f:
+            echecs = {(r["banque"], r["arrete"]) for r in csv.DictReader(f, delimiter=";") if r["statut"] == "echec"}
     for (code, cle), r in m.items():
-        if r["statut"] != "ok":
+        if r["statut"] != "ok" or ((code, cle) in echecs and r["source"] != "bulletin_officiel"):
             manquants.setdefault(cle, set()).add(code)
+    # date de dépôt au CMF quand la liste la donne (STB S1 2023 : déposé le 02/10/2023, après la fenêtre)
+    depots: dict[tuple[str, str], dt.date] = {}
+    if LISTE_CMF.exists():
+        with LISTE_CMF.open(encoding="utf-8-sig") as f:
+            for r in csv.DictReader(f, delimiter=";"):
+                if r["type"] and r["date_depot"]:
+                    cle = f"{r['exercice']}-{'12' if r['type'] == 'annuel' else '06'}"
+                    depots[(r["banque"], cle)] = dt.date.fromisoformat(r["date_depot"])
     for cle in sorted(manquants):
         a, mois = int(cle[:4]), cle[5:]
         ar = Arrete(a, "annuel" if mois == "12" else "semestriel")
         restants = set(manquants[cle])
-        debut, fin = ((dt.date(a, 7, 15), dt.date(a, 9, 30)) if ar.type == "semestriel"
-                      else (dt.date(a + 1, 2, 15), dt.date(a + 1, 5, 31)))
+        dates = [depots.get((c, cle)) for c in restants]
+        if all(dates):
+            debut, fin = min(dates), max(dates) + dt.timedelta(days=30)
+        else:
+            debut, fin = ((dt.date(a, 7, 15), dt.date(a, 9, 30)) if ar.type == "semestriel"
+                          else (dt.date(a + 1, 2, 15), dt.date(a + 1, 5, 31)))
         print(f"\nBulletins officiels pour {ar} : {', '.join(sorted(restants))}")
         jour = debut
         while restants and jour <= fin:
@@ -267,6 +433,17 @@ def telecharger_bulletins(client: cb.Client, m: dict):
                             bloc = textes[i:i + 8]
                             if not cb.mentionne_trimestre(bloc[:2], ar.trimestre):
                                 continue
+                            # le sommaire du bulletin annonce aussi les états financiers (STB S1 2023,
+                            # bulletin du 02/10/2023, états en image en annexe) : le bloc doit contenir le
+                            # bilan, avec une ligne de tableau « Total de l'actif » (pas « 34,91 % du total
+                            # actif » dans un rapport : BH 2019, bulletin du 15/06/2020), et pas les
+                            # comptes consolidés (mentionnés p.2 de ce même rapport)
+                            lignes_bloc = [cb.normaliser(x) for t in bloc[:4] for x in t.splitlines()]
+                            if not any(re.match(r"total (de l'|des )?actifs?\b", x) and len(x) < 60
+                                       for x in lignes_bloc):
+                                continue
+                            if "consolid" in cb.sans_accents(" ".join(bloc[:2])).lower():
+                                continue
                             w = PdfWriter()
                             for k in range(i, min(i + 8, len(textes))):
                                 w.add_page(lecteur.pages[k])
@@ -291,7 +468,10 @@ def cmd_telecharger(args):
     m = lire_manifeste()
     client = cb.Client()
     print(f"{len(codes)} banques × {len(liste)} arrêtés ({liste[0]} -> {liste[-1]})")
-    telecharger_sites(client, codes, liste, m)
+    if not args.sans_sites:
+        telecharger_sites(client, codes, liste, m)
+    if not args.sans_liste_cmf:
+        telecharger_liste_cmf(client, codes, m, args.rafraichir_liste_cmf)
     if args.bulletins:
         telecharger_bulletins(client, m)
     ok = sum(1 for r in m.values() if r["statut"] == "ok")
@@ -314,7 +494,9 @@ RE_NOTE = re.compile(r"^\(?\d{1,2}([.,]\d{1,2}){1,2}\)?$")
 
 
 def code_ligne(libelle: str) -> str | None:
-    n = cb.normaliser(libelle)
+    # ligature « Ɵ » (U+019F, lue « (cid:415) ») pour « ti » dans certaines polices (BT 2025 :
+    # « Total des AcƟfs ») ; apostrophe « ʹ » (BH S1 2020 : « Résultat net de lʹexercice »)
+    n = cb.normaliser(libelle.replace("(cid:415)", "ti").replace("Ɵ", "ti").replace("ʹ", "'"))
     n = re.sub(r"^((pr|ch|ac|pa|cp)\s?\d+\s*|\d+\s*)+", "", n).strip()
     # renvoi de note en chiffres romains en fin de libellé (BIAT : « Total des capitaux propres V »,
     # « Total des produits d'exploitation bancaire VII-1 »)
@@ -351,20 +533,46 @@ def couper_nombres_colles(texte: str) -> list[str]:
     return [" ".join(n) for n in nombres]
 
 
-def valeurs_ligne(jetons: list[cb.Jeton]) -> list[float]:
+def sans_note_collee(jetons: list[cb.Jeton]) -> list[cb.Jeton]:
+    """« TOTAL CAPITAUX PROPRES 3 » suivi de « 152 890 148 » 85 pt plus loin (WIB S1 2021) : le
+    renvoi de note et le nombre arrivent dans une même case, deux fois plus large que les autres
+    nombres de la ligne pour autant de caractères. Le premier groupe (1 ou 2 chiffres) est retiré."""
+    largeurs = sorted((j.x1 - j.x0) / len(j.texte) for j in jetons if len(j.texte) >= 5)
+    if len(largeurs) < 2:
+        return jetons
+    mediane = largeurs[len(largeurs) // 2]
+    sortie = []
+    for j in jetons:
+        m = re.fullmatch(r"(\d{1,2}) (\d{1,3}( \d{3})+)", j.texte)
+        if m and (j.x1 - j.x0) / len(j.texte) > 2 * mediane:
+            j = cb.Jeton(m[2], j.x0, j.x1)
+        sortie.append(j)
+    return sortie
+
+
+def valeurs_ligne(jetons: list[cb.Jeton], bords: list[float] | None = None) -> list[float]:
     """Valeurs d'une ligne, sans les renvois de notes (4.1, 5-2, 12...). Un tiret isolé (« néant »)
     vaut 0 et garde sa place : sinon les colonnes suivantes se décalent (BNA 2024, « Effet des
-    modifications comptables » : (40 975) - (40 975), la variation devenait la colonne N-1)."""
-    textes = [x for j in jetons for x in couper_nombres_colles(j.texte)]
-    gros = [t for t in textes if len(re.sub(r"\D", "", t)) >= 4]
+    modifications comptables » : (40 975) - (40 975), la variation devenait la colonne N-1).
+    Un nombre d'un ou deux chiffres est un renvoi de note, sauf s'il finit sur le bord droit d'une
+    colonne de montants de la page (`bords`) : BTE S1 2026, résultat après modifications = 48."""
+    jetons = sans_note_collee(jetons)
+    textes = [(x, j.x1) for j in jetons for x in couper_nombres_colles(j.texte)]
+    gros = [t for t, _ in textes if len(re.sub(r"\D", "", t)) >= 4]
     garde = []
-    for t in textes:
+    for t, x1 in textes:
         if t == "-":
             garde.append(0.0)
             continue
         if RE_NOTE.match(t):
             continue
-        if re.fullmatch(r"\d{1,2}", t) and len(gros) >= 2:
+        if (re.fullmatch(r"\d{1,2}", t) and len(gros) >= 2
+                and not any(abs(x1 - b) <= 3 for b in bords or [])):
+            continue
+        if re.fullmatch(r"\(?-?\d{1,3}( \d{3})+ \d{1,2}\)?", t):
+            # chiffre manquant dans le PDF (Attijari S1 2026, total des actifs au 30/06/2025 imprimé
+            # « 12 983 60 ») : case vide, à sa place, jamais complétée
+            garde.append(None)
             continue
         v = cb.valeur(t)
         if v is not None:
@@ -433,6 +641,11 @@ def extraire_pdf(p: Path, max_pages: int = 60) -> tuple[dict[str, tuple[list[flo
             if page.images and len((page.extract_text() or "").strip()) < 50:
                 pages_image.append(i)
             lignes = reunir_colonne_decalee(cb.lignes_page(page, i))
+            # bords droits des montants (4 chiffres ou plus) des lignes du tableau qui en ont au moins
+            # deux, pour les petits nombres ; pas l'année d'un titre (« Arrêté au 30 Juin 2024 »,
+            # UIB S1 2024 : elle tombe sur la colonne des notes)
+            montants = [[j for j in l.nombres if len(re.sub(r"\D", "", j.texte)) >= 4] for l in lignes]
+            bords = sorted({round(j.x1, 1) for m_ in montants if len(m_) >= 2 for j in m_})
             dans_resultat = dans_resultat and "RES_NET" not in trouves
             for k, l in enumerate(lignes):
                 n = cb.normaliser(l.libelle)
@@ -452,7 +665,7 @@ def extraire_pdf(p: Path, max_pages: int = 60) -> tuple[dict[str, tuple[list[flo
                 c = code_ligne(libelle)
                 if not c:
                     continue
-                vals = valeurs_ligne(l.nombres)
+                vals = valeurs_ligne(l.nombres, bords)
                 if not vals:
                     continue
                 if c in CODES_RESULTAT and not dans_resultat:
@@ -465,6 +678,12 @@ def extraire_pdf(p: Path, max_pages: int = 60) -> tuple[dict[str, tuple[list[flo
                 break
 
     alertes = []
+    for c, (vals, lib, page) in trouves.items():
+        if None in vals[:2]:
+            col = "N" if vals[0] is None else "N-1"
+            # colonne N-1 : remarque non bloquante (préfixe « information »), la valeur N reste bonne
+            alertes.append(("" if col == "N" else "information : ")
+                           + f"nombre mal formé dans le PDF ({c}, colonne {col}, p.{page}) : non lu")
     repli = "RES_NET" not in trouves and "RES_EXERCICE" in trouves
     if repli:
         # AB : la dernière ligne de l'état de résultat est « Résultat de l'exercice » (sans « net ») ;
@@ -527,7 +746,7 @@ def recoupement(trouves: dict, fac: float, cp_trim: tuple | None) -> str:
     """Contrôle non bloquant : capitaux propres du bilan − résultat net de la période = capitaux
     propres « hors résultat » des indicateurs trimestriels. Un écart peut venir de la série
     trimestrielle (BIAT 31/12/2024 : « après affectation du résultat »), d'où le statut non bloquant."""
-    if "CAP_PROPRES_EF" not in trouves or "RES_NET" not in trouves:
+    if trouves.get("CAP_PROPRES_EF", [[None]])[0][0] is None or trouves.get("RES_NET", [[None]])[0][0] is None:
         return "incomplet"
     if cp_trim is None:
         return "pas de valeur trimestrielle"
@@ -560,7 +779,8 @@ def cmd_extraire(args):
                 wc.writerow([code, cle, r["type"], STATUT_IMAGE, "", "", "", "", r["fichier"]])
                 continue
             if r["statut"] != "ok" or not Path(r["fichier"]).exists():
-                wc.writerow([code, cle, r["type"], "pdf manquant", "", "", "", "", ""])
+                wc.writerow([code, cle, r["type"], r["statut"] if r["statut"] == STATUT_NON_PUBLIE else "pdf manquant",
+                             "", "", "", "", ""])
                 continue
             try:
                 trouves, alertes = extraire_pdf(Path(r["fichier"]))
@@ -568,15 +788,18 @@ def cmd_extraire(args):
                 trouves, alertes = {}, [f"erreur de lecture : {e}"]
             ta = trouves.get("TOTAL_ACTIF", ([None],))[0][0]
             fac, unite = facteur_mdt(ta)
-            statut = "ok" if trouves and not alertes else ("a verifier" if trouves else "echec")
+            bloquantes = [a for a in alertes if not a.startswith("information")]
+            statut = "ok" if trouves and not bloquantes else ("a verifier" if trouves else "echec")
             n_ok += statut == "ok"
             for c, (vals, lib, page) in trouves.items():
                 for col, v in zip(["N", "N1"], vals[:2]):
+                    if v is None:
+                        continue
                     w.writerow({"banque": code, "date_arrete": r["date_arrete"], "annee": r["date_arrete"][:4],
                                 "type": r["type"], "code": c, "colonne": col, "valeur_source": v,
                                 "unite_source": unite, "valeur_mdt": round(v * fac, 6), "libelle_source": lib,
                                 "source": r["source"], "fichier": Path(r["fichier"]).name, "page": page})
-            get = lambda c: round(trouves[c][0][0] * fac, 3) if c in trouves else ""
+            get = lambda c: round(trouves[c][0][0] * fac, 3) if trouves.get(c, [[None]])[0][0] is not None else ""
             rec = recoupement(trouves, fac, cp_trimestriels.get((code, r["date_arrete"])))
             wc.writerow([code, cle, r["type"], statut, get("RES_NET"), get("TOTAL_ACTIF"),
                          get("CAP_PROPRES_EF"), " | ".join(alertes), r["fichier"], rec,
@@ -667,9 +890,18 @@ def main():
         p.add_argument("--fin", type=int, default=dt.date.today().year)
         p.add_argument("--banques", help="codes séparés par des virgules (défaut : toutes)")
 
+    def recherche(p):
+        p.add_argument("--sans-sites", action="store_true",
+                       help="ne pas essayer les URL de la BVMT (seulement liste du CMF et bulletins)")
+        p.add_argument("--sans-liste-cmf", action="store_true",
+                       help="ne pas chercher dans la liste des états financiers du CMF")
+        p.add_argument("--rafraichir-liste-cmf", action="store_true",
+                       help="relire la liste du CMF sur le site (sinon : donnees/liste_etats_financiers_cmf.csv)")
+        p.add_argument("--bulletins", action="store_true", help="chercher aussi dans les Bulletins Officiels (lent)")
+
     p = sous.add_parser("telecharger")
     periode(p)
-    p.add_argument("--bulletins", action="store_true", help="chercher aussi dans les Bulletins Officiels (lent)")
+    recherche(p)
     p.set_defaults(f=cmd_telecharger)
 
     p = sous.add_parser("extraire")
@@ -681,7 +913,7 @@ def main():
 
     p = sous.add_parser("tout")
     periode(p)
-    p.add_argument("--bulletins", action="store_true")
+    recherche(p)
     p.set_defaults(f=lambda a: (cmd_telecharger(a), cmd_extraire(a), cmd_verifier(a)))
 
     p = sous.add_parser("urls")
