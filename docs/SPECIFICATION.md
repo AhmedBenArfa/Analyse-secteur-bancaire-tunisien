@@ -43,6 +43,14 @@ par les ajouts listés en section 8.
 Les trois types de connexion (CSV, Excel, URL) sont utilisés volontairement : c'est un point
 à montrer dans le portfolio.
 
+**Politesse envers les serveurs (décision du 20/10/2026).** Les trois scripts passent par le même
+client (`Client` et `Politesse` dans `collecte_banques.py`) : le `robots.txt` de chaque site est
+lu une fois avec notre User-Agent (groupe `User-agent: *`, jokers `*` et `$`, la règle la plus
+longue l'emporte) ; délai entre deux requêtes au même site = max(`Crawl-delay`, `PAUSE` = 0,4 s),
+URL interdites jamais demandées. Au 20/10/2026 : **bvmt.com.tn et cmf.tn : 10 s** ; ilboursa.com :
+pas de délai demandé (0,4 s), seuls `/forums/post`, `/forums/abus`, `/users/login` et `/docs/*`
+interdits. Avant cette date, les collectes utilisaient 0,4 s avec tous les sites.
+
 Limites des données :
 
 - Indicateurs **provisoires et non audités** ; certaines sociétés publient en retard.
@@ -827,7 +835,10 @@ Soit environ 12 banques × 13 dates × 3 valeurs ≈ 470 valeurs, collectées pa
      comptable (ligne « - », la note 3.8 ne retraite que la colonne comparative). À savoir :
      l'**annuel 2025** de la BNA n'a pas non plus de ligne de modification comptable, et le
      paiement de 17,751 MDT (note p.62) est **dans** son résultat 274,544 ; le S1 2025 retenu
-     (155,069, sans cet effet) et l'annuel 2025 ne sont donc pas sur la même base ;
+     (155,069, sans cet effet) et l'annuel 2025 ne sont donc pas sur la même base. **Décision du
+     20/10/2026 : l'annuel 2025 reste tel que publié (274,544)**, l'écart de base est signalé
+     sur la page « Qualité des données » (événement `BNA_DECHEANCE_FISCALE_2025` de
+     `evenements.csv`, rappelé dans la colonne `remarque` des versions) ;
    - les dates les plus récentes (31/12/2025, 30/06/2026) n'ont encore que la version initiale.
 
    Conséquence pour le ROE et le ROA : les capitaux propres et le total de l'actif d'ouverture
@@ -966,7 +977,7 @@ Part de marché, Var PNB A/A % (Variations_Comparables) — pour un seul visuel 
 | 6. Bourse | Cours, performance, volatilité, performance boursière vs croissance du PNB |
 | 7. Fiche banque (extraction) | Tous les indicateurs d'une banque, accessible par clic droit ; coefficient publié à côté du coefficient harmonisé, avec la définition des charges opératoires de la banque ; capitaux propres trimestriels avec leur définition (`definition_capitaux_propres`), seul endroit où ils apparaissent (ailleurs : capitaux propres du bilan) |
 | 8. Rentabilité | ROE et ROA semestriels et annuels, matrice ROE × coefficient d'exploitation |
-| 9. Qualité des données | Contrôle d'extraction (statuts, dont `ecart trimestre/cumul`, `retraitement possible`, `ecart composantes`, `illisible (image)`, avec l'écart en MDT), révisions importantes et ruptures de série (avec la note du document), sources, limites ; phrase expliquant pourquoi la somme des trimestres peut différer du cumul annuel |
+| 9. Qualité des données | Contrôle d'extraction (statuts, dont `ecart trimestre/cumul`, `retraitement possible`, `ecart composantes`, `illisible (image)`, avec l'écart en MDT), révisions importantes et ruptures de série (avec la note du document), remarques des états financiers (colonne `remarque` de `etats_financiers_versions.csv` : révisée non retenue, valeur déduite, renvoi aux événements ; ex. BNA : S1 2025 et annuel 2025 pas sur la même base, 17,751 MDT), sources, limites ; phrase expliquant pourquoi la somme des trimestres peut différer du cumul annuel |
 
 Filtres : segments Année / Trimestre, plage de dates, banque, actionnariat, période ;
 info-bulles personnalisées ; signets « trimestre » / « année ».

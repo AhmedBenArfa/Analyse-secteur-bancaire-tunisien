@@ -33,6 +33,7 @@ import time
 import unicodedata
 from dataclasses import dataclass, field
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import requests
 
@@ -202,23 +203,106 @@ def bon_document(textes: list[str], t: Trimestre) -> bool:
 # Téléchargement
 # ---------------------------------------------------------------------------
 
+class Politesse:
+    """Règles du robots.txt de chaque site, lu une fois avec notre client (groupe « User-agent: * ») :
+    délai entre deux requêtes au même site = max(Crawl-delay, PAUSE) (BVMT et CMF : 10 s) et
+    chemins interdits (Allow / Disallow, jokers « * » et « $ », la règle la plus longue l'emporte,
+    Allow à longueur égale). Sans robots.txt : PAUSE, rien d'interdit."""
+
+    def __init__(self, session: requests.Session):
+        self.s = session
+        self.sites: dict[str, tuple[float, list[tuple[bool, re.Pattern, int]]]] = {}
+        self.derniere: dict[str, float] = {}
+
+    @staticmethod
+    def lire(texte: str) -> tuple[float | None, list[tuple[bool, re.Pattern, int]]]:
+        delai, regles, groupe, dans_entete = None, [], False, False
+        for ligne in texte.lstrip("﻿").splitlines():
+            ligne = ligne.split("#", 1)[0].strip()
+            if ":" not in ligne:
+                continue
+            cle, val = (x.strip() for x in ligne.split(":", 1))
+            cle = cle.lower()
+            if cle == "user-agent":
+                groupe = (groupe and dans_entete) or val == "*"
+                dans_entete = True
+                continue
+            dans_entete = False
+            if not groupe:
+                continue
+            if cle == "crawl-delay":
+                try:
+                    delai = float(val)
+                except ValueError:
+                    pass
+            elif cle in ("allow", "disallow") and val:
+                motif = re.escape(val).replace(r"\*", ".*")
+                motif = motif[:-2] + "$" if motif.endswith(r"\$") else motif
+                regles.append((cle == "allow", re.compile(motif), len(val)))
+        return delai, regles
+
+    def site(self, url: str) -> str:
+        u = urlsplit(url)
+        hote = u.netloc.lower()
+        if hote not in self.sites:
+            delai, regles = None, []
+            try:
+                r = self.s.get(f"{u.scheme}://{u.netloc}/robots.txt", timeout=TIMEOUT)
+                if r.status_code == 200 and "html" not in r.headers.get("content-type", ""):
+                    delai, regles = self.lire(r.content.decode("utf-8", "replace"))
+            except requests.RequestException:
+                pass
+            self.sites[hote] = (max(PAUSE, delai or 0), regles)
+            self.derniere[hote] = time.monotonic()
+        return hote
+
+    def autorise(self, url: str) -> bool:
+        u = urlsplit(url)
+        chemin = (u.path or "/") + (f"?{u.query}" if u.query else "")
+        meilleure = (True, -1)
+        for allow, motif, n in self.sites[self.site(url)][1]:
+            if motif.match(chemin) and (n > meilleure[1] or (n == meilleure[1] and allow)):
+                meilleure = (allow, n)
+        return meilleure[0]
+
+    def attendre(self, url: str):
+        hote = self.site(url)
+        reste = self.sites[hote][0] - (time.monotonic() - self.derniere.get(hote, 0))
+        if reste > 0:
+            time.sleep(reste)
+        self.derniere[hote] = time.monotonic()
+
+    def delai(self, url: str) -> float:
+        return self.sites[self.site(url)][0]
+
+
 class Client:
     def __init__(self):
         self.s = requests.Session()
         self.s.headers.update(ENTETES)
+        self.politesse = Politesse(self.s)
         self.nb = 0
+
+    def requete(self, methode: str, url: str, **kw) -> requests.Response | None:
+        """GET ou POST après le délai demandé par le site ; None si le robots.txt interdit l'URL."""
+        if not self.politesse.autorise(url):
+            print(f"    interdit par le robots.txt : {url}")
+            return None
+        self.politesse.attendre(url)
+        self.nb += 1
+        return self.s.request(methode, url, timeout=kw.pop("timeout", TIMEOUT), **kw)
+
+    def get(self, url: str, **kw) -> requests.Response | None:
+        return self.requete("GET", url, **kw)
 
     def pdf(self, url: str) -> bytes | None:
         """Renvoie le contenu si l'URL est un vrai PDF, sinon None."""
-        time.sleep(PAUSE)
-        self.nb += 1
         for essai in range(2):
             try:
-                r = self.s.get(url, timeout=TIMEOUT)
+                r = self.get(url)
             except requests.RequestException:
-                time.sleep(2)
                 continue
-            if r.status_code == 200 and r.content[:5] == b"%PDF-":
+            if r is not None and r.status_code == 200 and r.content[:5] == b"%PDF-":
                 return r.content
             return None
         return None
@@ -379,13 +463,11 @@ def lire_liste_cmf(client: "Client", max_pages: int, rafraichir: bool) -> list[s
             return [r["url"] for r in csv.DictReader(f)]
     urls: list[str] = []
     for page in range(1, max_pages + 1):
-        time.sleep(PAUSE)
-        client.nb += 1
         try:
-            r = client.s.get(URL_LISTE_CMF.format(page=page), timeout=TIMEOUT)
+            r = client.get(URL_LISTE_CMF.format(page=page))
         except requests.RequestException:
             break
-        if r.status_code != 200:
+        if r is None or r.status_code != 200:
             break
         # le CMF écrit ses liens avec ou sans guillemets : <a href=https://…/ind_2eme_trim_2026_biat.pdf>
         liens = re.findall(r"""href=["']?([^"'\s>]+?\.pdf)""", r.text, re.I)

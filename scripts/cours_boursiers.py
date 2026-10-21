@@ -11,7 +11,8 @@ Sources :
 Python ne fait que la lecture : les ajustements (divisions du nominal, attributions gratuites,
 dividendes) se calculent dans Power Query à partir de la table des opérations sur titres.
 
-Le robots.txt de la BVMT demande 10 secondes entre deux requêtes (Crawl-delay: 10).
+Requêtes par le client commun (collecte_banques.Client) : délai et chemins du robots.txt de chaque
+site (BVMT : 10 secondes entre deux requêtes).
 
 Utilisation (depuis le dossier du projet) :
   python scripts/cours_boursiers.py telecharger
@@ -25,12 +26,10 @@ import csv
 import datetime as dt
 import re
 import sys
-import time
 import zipfile
 from collections import Counter
 from pathlib import Path
 
-import requests
 
 RACINE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RACINE))
@@ -39,7 +38,6 @@ import collecte_banques as cb  # noqa: E402
 DOSSIER_COURS = cb.DOSSIER / "cours"
 DOSSIER_ARCHIVES = DOSSIER_COURS / "bvmt"
 MANIFESTE = DOSSIER_COURS / "manifeste_cours.csv"
-PAUSE_BVMT = 10          # secondes : Crawl-delay du robots.txt de la BVMT
 PREMIERE_ANNEE = 2019
 URL_ARCHIVE = "https://www.bvmt.com.tn/sites/default/files/historiques/cotations/histo_cotation_{annee}.zip"
 
@@ -61,7 +59,7 @@ def ecrire_manifeste(m: dict[str, dict]):
             w.writerow({c: m[k].get(c, "") for c in champs})
 
 
-def telecharger_archives(s: requests.Session, m: dict, derniere_annee: int):
+def telecharger_archives(client: cb.Client, m: dict, derniere_annee: int):
     """Une archive par année ; une archive déjà téléchargée n'est pas redemandée."""
     for annee in range(PREMIERE_ANNEE, derniere_annee + 1):
         cle = f"bvmt_{annee}"
@@ -69,14 +67,14 @@ def telecharger_archives(s: requests.Session, m: dict, derniere_annee: int):
         if m.get(cle, {}).get("statut") == "ok" and p.exists():
             continue
         url = URL_ARCHIVE.format(annee=annee)
-        time.sleep(PAUSE_BVMT)
-        r = s.get(url, timeout=180)
-        ok = r.status_code == 200 and r.content[:2] == b"PK"
+        r = client.get(url, timeout=180)
+        ok = r is not None and r.status_code == 200 and r.content[:2] == b"PK"
         if ok:
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_bytes(r.content)
         m[cle] = {"source": cle, "url": url, "fichier": str(p) if ok else "", "statut": "ok" if ok else "absent",
-                  "octets": len(r.content) if ok else "", "derniere_modification": r.headers.get("last-modified", ""),
+                  "octets": len(r.content) if ok else "",
+                  "derniere_modification": r.headers.get("last-modified", "") if r is not None else "",
                   "telecharge_le": dt.date.today().isoformat()}
         ecrire_manifeste(m)
         print(f"  {'OK' if ok else '--'}  {annee}  {url}")
@@ -84,9 +82,8 @@ def telecharger_archives(s: requests.Session, m: dict, derniere_annee: int):
 
 def cmd_telecharger(args):
     m = lire_manifeste()
-    s = requests.Session()
-    s.headers.update(cb.ENTETES)
-    telecharger_archives(s, m, dt.date.today().year - 1)
+    client = cb.Client()
+    telecharger_archives(client, m, dt.date.today().year - 1)
 
 
 # ---------------------------------------------------------------------------

@@ -27,7 +27,6 @@ import html
 import io
 import re
 import sys
-import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -283,15 +282,13 @@ def lire_liste_cmf(client: cb.Client, codes: list[str], rafraichir: bool) -> lis
     for code in a_lire:
         for societe in NOMS_CMF[code]:
             for page in range(20):
-                time.sleep(cb.PAUSE)
-                client.nb += 1
                 try:
-                    rep = client.s.get("https://www.cmf.tn/", timeout=cb.TIMEOUT,
-                                       params={"q": VUE_LISTE_CMF, "field_societesape_value": societe,
-                                               "page": page})
+                    rep = client.get("https://www.cmf.tn/",
+                                     params={"q": VUE_LISTE_CMF, "field_societesape_value": societe,
+                                             "page": page})
                 except Exception:
                     break
-                if rep.status_code != 200:
+                if rep is None or rep.status_code != 200:
                     break
                 blocs = rep.content.decode("utf-8", "replace").split('class="views-row ')[1:]
                 for bloc in blocs:
@@ -814,6 +811,15 @@ def calculer_versions(m: dict) -> list[dict]:
         v = {(r["banque"], r["date_arrete"], r["code"], r["colonne"]): r
              for r in csv.DictReader(f, delimiter=";")
              if r["code"] in CODES_RATIOS + ["MODIF_COMPTABLES", "RES_NET_APRES_MODIF"]}
+    # événements portant sur un code des états financiers (evenements.csv, versionné) : rappelés dans
+    # la colonne remarque, pour la page « qualité des données » (BNA 31/12/2025, UIB 30/06/2020)
+    evenements: dict[tuple[str, str, str], list[str]] = {}
+    fichier_ev = RACINE / "evenements.csv"
+    if fichier_ev.exists():
+        with fichier_ev.open(encoding="utf-8-sig") as f:
+            for e in csv.DictReader(f, delimiter=";"):
+                if e["indicateur"] in CODES_RATIOS:
+                    evenements.setdefault((e["banque"], e["date"], e["indicateur"]), []).append(e["id_evenement"])
     sortie = []
     for (code, cle), doc in sorted(m.items()):
         d = doc["date_arrete"]
@@ -840,6 +846,9 @@ def calculer_versions(m: dict) -> list[dict]:
                 statut = "repris du document suivant" if rev else ("" if ini else "non disponible")
             if retenue and retenue.get("remarque"):
                 remarque = retenue["remarque"]
+            if (code, d, c) in evenements:
+                renvoi = "voir evenements.csv : " + ", ".join(evenements[(code, d, c)])
+                remarque = f"{remarque} ; {renvoi}" if remarque else renvoi
             commun = {"banque": code, "date_arrete": d, "type": doc["type"], "code": c,
                       "valeur_retenue": retenue["valeur_mdt"] if retenue else "",
                       "source_valeur": ("revisee" if retenue is rev else "initiale") if retenue else "",
@@ -945,8 +954,8 @@ def cellules(ligne_html: str) -> list[str]:
 
 def resultats_ilboursa(ticker: str, session) -> dict[int, float]:
     """Résultat net annuel (milliers de dinars) depuis la page société d'ilboursa. {} si non reconnu."""
-    r = session.get(f"https://www.ilboursa.com/marches/societe/{ticker}", timeout=cb.TIMEOUT)
-    if r.status_code != 200:
+    r = session.get(f"https://www.ilboursa.com/marches/societe/{ticker}")
+    if r is None or r.status_code != 200:
         return {}
     texte = cb.sans_accents(html.unescape(r.text)).lower()
     if "milliers de dinars" not in texte:
@@ -969,22 +978,18 @@ def resultats_ilboursa(ticker: str, session) -> dict[int, float]:
 def cmd_verifier(args):
     if not SORTIE.exists():
         sys.exit("Lancez d'abord « extraire ».")
-    import requests
-    import time
 
     nos = {}
     with SORTIE.open(encoding="utf-8-sig") as f:
         for r in csv.DictReader(f, delimiter=";"):
             if r["code"] == "RES_NET" and r["colonne"] == "N" and r["type"] == "annuel":
                 nos[(r["banque"], int(r["annee"]))] = float(r["valeur_mdt"])
-    s = requests.Session()
-    s.headers.update(cb.ENTETES)
+    s = cb.Client()   # délai et chemins du robots.txt d'ilboursa
     sortie = DOSSIER / "verification_ilboursa.csv"
     with sortie.open("w", newline="", encoding="utf-8-sig") as f:
         w = csv.writer(f, delimiter=";")
         w.writerow(["banque", "annee", "resultat_net_extrait_mdt", "resultat_net_ilboursa_mdt", "ecart_pct", "statut"])
         for code in cb.choisir_banques(args.banques):
-            time.sleep(cb.PAUSE)
             ref = resultats_ilboursa(cb.BANQUES[code]["ticker"], s)
             if not ref:
                 print(f"  {code} : page ilboursa non lue ou format non reconnu")
