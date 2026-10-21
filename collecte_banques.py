@@ -47,6 +47,9 @@ DOSSIER_BO = DOSSIER / "bulletins_cache"
 MANIFESTE = DOSSIER / "manifeste_telechargements.csv"
 
 PAUSE = 0.4          # secondes entre deux requêtes (politesse envers les serveurs)
+# délai minimal pour un site qui n'en demande pas mais appartient à un organisme qui en demande un :
+# tunis-stockexchange.com (bulletins de la Bourse depuis le 14/04/2026) = BVMT (10 s)
+DELAI_MINIMUM = {"tunis-stockexchange.com": 10, "www.tunis-stockexchange.com": 10}
 TIMEOUT = 30
 ENTETES = {"User-Agent": "Mozilla/5.0 (projet etudiant Power BI - collecte indicateurs bancaires)"}
 
@@ -252,7 +255,7 @@ class Politesse:
                     delai, regles = self.lire(r.content.decode("utf-8", "replace"))
             except requests.RequestException:
                 pass
-            self.sites[hote] = (max(PAUSE, delai or 0), regles)
+            self.sites[hote] = (max(PAUSE, delai or 0, DELAI_MINIMUM.get(hote, 0)), regles)
             self.derniere[hote] = time.monotonic()
         return hote
 

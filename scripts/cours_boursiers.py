@@ -42,6 +42,16 @@ MANIFESTE = DOSSIER_COURS / "manifeste_cours.csv"
 PREMIERE_ANNEE = 2019
 URL_ARCHIVE = "https://www.bvmt.com.tn/sites/default/files/historiques/cotations/histo_cotation_{annee}.zip"
 URL_BULLETIN = "https://www.bvmt.com.tn/sites/default/files/bulletin/pdf/bull{jour:%Y%m%d}.pdf"
+# Depuis le 14/04/2026 : autre domaine de la Bourse, dossier du mois de mise en ligne (le bulletin
+# du 30/06/2026 est dans « 2026-07 »), « Bull » avec une majuscule
+URL_BULLETIN_2026 = "https://tunis-stockexchange.com/sites/default/files/{mois}/Bull{jour:%Y%m%d}.pdf"
+
+
+def urls_bulletin(jour: dt.date) -> list[str]:
+    mois_suivant = (jour.replace(day=28) + dt.timedelta(days=4)).strftime("%Y-%m")
+    nouvelles = [URL_BULLETIN_2026.format(mois=m, jour=jour) for m in (f"{jour:%Y-%m}", mois_suivant)]
+    ancienne = [URL_BULLETIN.format(jour=jour)]
+    return ancienne + nouvelles if jour < dt.date(2026, 4, 14) else nouvelles + ancienne
 DOSSIER_BULLETINS = DOSSIER_COURS / "bulletins"
 
 
@@ -83,17 +93,27 @@ def telecharger_archives(client: cb.Client, m: dict, derniere_annee: int):
         print(f"  {'OK' if ok else '--'}  {annee}  {url}")
 
 
-def telecharger_bulletin(client: cb.Client, m: dict, jour: dt.date, refaire_absent: bool = False) -> Path | None:
-    """Bulletin officiel quotidien de la cote (PDF) d'une séance ; None si absent (jour sans séance)."""
+def telecharger_bulletin(client: cb.Client, m: dict, jour: dt.date, refaire_absent: bool = False,
+                        url_publiee: str | None = None) -> Path | None:
+    """Bulletin officiel quotidien de la cote (PDF) d'une séance ; None si absent (jour sans séance).
+    `url_publiee` : adresse lue dans la liste des bulletins (prioritaire ; une version remise en
+    ligne remplace la précédente)."""
     cle = f"bulletin_{jour:%Y%m%d}"
     p = DOSSIER_BULLETINS / f"bull{jour:%Y%m%d}.pdf"
     statut = m.get(cle, {}).get("statut")
-    if statut == "ok" and p.exists():
+    if statut == "ok" and p.exists() and (url_publiee is None or m[cle]["url"] == url_publiee):
         return p
-    if statut == "absent" and not refaire_absent:
+    # « absent » noté avant que le nouveau domaine soit connu : redemandé
+    deja_essaye = "tunis-stockexchange" in m.get(cle, {}).get("url", "")
+    if statut == "absent" and deja_essaye and not refaire_absent and url_publiee is None:
         return None
-    url = URL_BULLETIN.format(jour=jour)
-    contenu = client.pdf(url)
+    contenu, url = None, ""
+    for url in ([url_publiee] if url_publiee else []) + urls_bulletin(jour):
+        contenu = client.pdf(url)
+        if contenu:
+            break
+    if not contenu:
+        url = " | ".join(urls_bulletin(jour))
     if contenu:
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_bytes(contenu)
@@ -103,13 +123,68 @@ def telecharger_bulletin(client: cb.Client, m: dict, jour: dt.date, refaire_abse
     return p if contenu else None
 
 
+URL_LISTE_BULLETINS = "https://tunis-stockexchange.com/editions-statistique?page={page}"
+
+
+def liste_bulletins_bourse(client: cb.Client, depuis: dt.date) -> dict[dt.date, str]:
+    """Adresses exactes des bulletins publiés sur tunis-stockexchange.com (page « Éditions
+    statistiques », 24 bulletins par page avec d'autres publications, du plus récent au plus ancien),
+    jusqu'à `depuis`.
+    Noms irréguliers : suffixe « -1 » ou « _1 » / « _0 » (fichier remis en ligne : la version au
+    suffixe le plus grand est retenue, sans suffixe < _0 < _1), ou nom sans date (« 2026-06/BO.pdf » :
+    téléchargé, retenu si c'est un bulletin de la cote et d'après la date écrite en page 1)."""
+    import fitz
+
+    sortie: dict[dt.date, tuple[int, str]] = {}
+    sans_date: list[str] = []
+    for page in range(0, 60):
+        r = client.get(URL_LISTE_BULLETINS.format(page=page))
+        if r is None or r.status_code != 200:
+            break
+        pdfs = re.findall(r"""href=["']([^"']+\.pdf)["']""", r.text, re.I)
+        dates_page = []
+        for lien in pdfs:
+            m = re.search(r"/Bull(\d{8})(?:[-_](\d+))?\.pdf$", lien, re.I)
+            if m:
+                d = dt.datetime.strptime(m[1], "%Y%m%d").date()
+                dates_page.append(d)
+                n = int(m[2]) if m[2] else -1
+                if d not in sortie or n > sortie[d][0]:
+                    sortie[d] = (n, requests_url(lien))
+            elif re.search(r"/\d{4}-\d\d/(BO|bull[^/\d]*|bulletin[^/\d]*)\.pdf$", lien, re.I):
+                # seulement un nom de bulletin sans date, dans un dossier de mois (la page liste aussi
+                # les semaines boursières et les lettres mensuelles)
+                sans_date.append(requests_url(lien))
+        if not dates_page or min(dates_page) < depuis:
+            break
+    for url in dict.fromkeys(sans_date):
+        contenu = client.pdf(url)
+        if not contenu:
+            continue
+        with fitz.open(stream=contenu, filetype="pdf") as doc:
+            t = cb.sans_accents(" ".join(doc[0].get_text().split())).lower()
+        m = re.search(r"(lundi|mardi|mercredi|jeudi|vendredi) (\d{1,2}) (\w+) (\d{4})", t)
+        if "cote de la bourse" in t and m and m[3] in cb.MOIS_FR:
+            d = dt.date(int(m[4]), cb.MOIS_FR.index(m[3]) + 1, int(m[2]))
+            if d not in sortie:
+                sortie[d] = (-2, url)
+                print(f"  bulletin sans date dans son nom : {url} -> {d}")
+    return {d: u for d, (_, u) in sortie.items()}
+
+
+def requests_url(lien: str) -> str:
+    return lien if lien.startswith("http") else "https://tunis-stockexchange.com" + lien
+
+
 def telecharger_bulletins(client: cb.Client, m: dict, debut: dt.date, fin: dt.date):
     """Bulletins des jours ouvrés de debut à fin (année pas encore archivée). Un jour sans bulletin
     (férié) est noté « absent » ; il n'est redemandé que s'il date de moins de 7 jours."""
+    publies = liste_bulletins_bourse(client, max(debut, dt.date(2026, 4, 14))) if fin >= dt.date(2026, 4, 14) else {}
     jour, n_ok, n_abs = debut, 0, 0
     while jour <= fin:
         if jour.weekday() < 5:
-            p = telecharger_bulletin(client, m, jour, refaire_absent=(dt.date.today() - jour).days < 7)
+            p = telecharger_bulletin(client, m, jour, refaire_absent=(dt.date.today() - jour).days < 7,
+                                     url_publiee=publies.get(jour))
             n_ok += p is not None
             n_abs += p is None
         jour += dt.timedelta(days=1)
@@ -549,10 +624,12 @@ def lignes_bulletins(m: dict, codes: list[str], depuis: dt.date, remarques: list
                            "source": "bvmt_bulletin" + ("+ilboursa_volume" if il is not None else ""),
                            "fichier": f"{Path(r['fichier']).name} p.{v.get('page')}"
                                       + (f" ; {il['fichier']}" if il is not None else "")})
-    # Après le dernier bulletin disponible (aucun bulletin à l'adresse habituelle depuis le
-    # 14/04/2026), séances d'ilboursa : clôture et volume seulement (égaux à la BVMT sur 63 des 64
-    # séances comparées) ; ouverture, haut et bas d'ilboursa non repris (définition différente).
-    # Avant ce jour, une séance d'ilboursa sans bulletin n'est pas retenue.
+    # Après le dernier bulletin disponible (bulletin pas encore en ligne), séances d'ilboursa :
+    # clôture et volume seulement (égaux à la BVMT sur 63 des 64 séances comparées) ; ouverture,
+    # haut et bas d'ilboursa non repris (définition différente). La clôture d'ilboursa est le
+    # dernier cours échangé : un jour de réservation, elle diffère de la clôture officielle (4 cas
+    # de janvier à avril 2026, signalés « clôture ilboursa ≠ bulletin »), ce qu'on ne peut pas
+    # savoir sans bulletin. Avant ce jour, une séance d'ilboursa sans bulletin n'est pas retenue.
     dernier_bulletin = max(jours, default=depuis)
     for (b, jour), il in sorted(vol.items()):
         if b not in codes or jour < depuis or jour in jours:
@@ -562,7 +639,8 @@ def lignes_bulletins(m: dict, codes: list[str], depuis: dt.date, remarques: list
             continue
         sortie.append({"banque": b, "date": jour, "ouverture": None, "haut": None, "bas": None,
                        "cloture": float(il["Close"]), "volume": int(il["Volume"]), "nb_transactions": "",
-                       "capitaux": None, "statut": ["pas de bulletin BVMT : clôture et volume d'ilboursa"]
+                       "capitaux": None, "statut": ["pas de bulletin BVMT : clôture et volume d'ilboursa "
+                                                    "(dernier cours échangé ; réservation non vérifiable)"]
                        + (["sans transaction"] if not il["Volume"] else []),
                        "source": "ilboursa", "fichier": il["fichier"]})
     return sortie
@@ -642,7 +720,9 @@ def date_du_droit(nom: str) -> tuple[str, int, int, dt.date] | None:
     m = RE_DROIT.search(cb.sans_accents(nom).upper())
     if not m:
         return None
-    a = int(m[6]) + (2000 if len(m[6]) == 2 else 0)
+    a = int(m[6])
+    if len(m[6]) == 2:   # « 170599 » = 1999 : siècle choisi pour ne pas dépasser l'année en cours
+        a += 2000 if 2000 + a <= dt.date.today().year else 1900
     try:
         return m[1], int(m[2]), int(m[3]), dt.date(a, int(m[5]), int(m[4]))
     except ValueError:

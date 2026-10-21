@@ -19,6 +19,7 @@ def test_date_du_droit():
     assert cbo.date_du_droit("BNA DS 4/5 150419") == ("S", 4, 5, dt.date(2019, 4, 15))
     assert cbo.date_du_droit("TJARIDA4/21 300425") == ("A", 4, 21, dt.date(2025, 4, 30))   # collé au nom
     assert cbo.date_du_droit("BIAT DA32 4/60") is None                                       # sans date
+    assert cbo.date_du_droit("Bt Da 3/10 170599")[3] == dt.date(1999, 5, 17)                 # siècle
 
 
 def test_periodes_trois_mois():
@@ -46,6 +47,10 @@ REFERENCES = [
     ("bull20241129.pdf", "BIAT", {"reference": 91.88, "cloture": 94.12}),
     ("bull20251231.pdf", "AB", {"reference": 49.46, "ouverture": 49.48, "dernier": 50.0, "cloture": 50.0}),
     ("bull20260204.pdf", "BTE", {"haut": 3.89, "bas": 3.89, "cloture": 3.72, "reservation": "B"}),
+    # tunis-stockexchange.com : « Bull20260923.pdf » ; « 2026-06/BO.pdf » (04/06/2026)
+    ("bull20260923.pdf", "BNA", {"reference": 19.75, "ouverture": 19.85, "dernier": 18.72, "haut": 19.85,
+                                 "bas": 18.57, "cloture": 18.72, "dividende": 1.15, "date_dividende": "2026-06-15"}),
+    ("bull20260923.pdf", "BH", {"cloture": 13.58, "reservation": "B"}),
 ]
 
 

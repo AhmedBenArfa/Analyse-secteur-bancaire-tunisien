@@ -107,7 +107,7 @@ Excel de référence ─────────> referentiel.xlsx
 | `Dim_Banque` | `dim_banque.csv` + Excel | fusion avec l'onglet Excel (actionnariat, groupe), nettoyage |
 | `Dim_Indicateur` | `dim_indicateur.csv` | types, ordre de tri |
 | `Operations_Titres` (intermédiaire) | `operations_titres.csv` (versionné : lien *raw* GitHub, source URL) | types ; facteur = `cours_reference_publie / cloture_veille` (une valeur par banque et date d'effet) ; colonne conditionnelle `capital` (vrai sauf dividende seul) ; facteurs cumulés par banque (produit des facteurs des dates postérieures), un pour le prix (opérations sur le capital) et un pour le rendement total (toutes) |
-| `Fait_Cours` | `cours_banques.csv` | types (paramètres régionaux en-US), fusion avec `Operations_Titres` (facteur cumulé de la séance), colonnes `cloture_ajustee_prix` et `cloture_ajustee_rendement` = clôture × facteur cumulé, `Rendement` (variation de la clôture ajustée d'une séance à l'autre) ; `statut` gardé pour la page qualité |
+| `Fait_Cours` | `cours_banques.csv` | types (paramètres régionaux en-US), fusion avec `Operations_Titres` (facteur cumulé de la séance), colonnes `cloture_ajustee_prix` et `cloture_ajustee_rendement` = clôture × facteur cumulé, `Rendement` (variation de la clôture ajustée d'une séance à l'autre ; dernière clôture connue quand elle est vide) ; colonne conditionnelle `sans_transaction` (statut contenant « sans transaction », mesure de liquidité 7.5) ; `statut` gardé pour la page qualité |
 | `Controle` | `controle_extraction.csv` | pour la page « qualité des données » |
 | `Corrections` | `corrections_manuelles.csv` | remplacement des valeurs corrigées dans `Fait_Indicateurs` |
 | `Evenements` | `evenements.csv` (versionné, à la racine) | types ; une ligne par événement et par banque concernée : `id_evenement`, `date` (fin du trimestre concerné), `banque`, `indicateur`, `description`, `montant_mdt` (montant cité par le document), `fichier`, `page` ; annotations des graphiques (7.3, pages 3 et 9) |
@@ -635,19 +635,29 @@ Rang PNB             = RANKX ( ALL ( Dim_Banque ), [PNB],, DESC, DENSE )
   ne donne pas les quantités ; API de la page « Historiques », 3 mois par requête ; égal à la BVMT
   sur 63 des 64 séances du T4 2025 de la BIAT). La clôture d'ilboursa est comparée à celle du
   bulletin (statut si elles diffèrent) ; une séance d'ilboursa sans bulletin n'est pas retenue.
+  En 2026 : 26 écarts, dont 14 jours de réservation (ilboursa donne le dernier cours échangé) et
+  12 autres, surtout le 23/09/2026 pour 7 banques (BNA : bulletin 18,720 vérifié sur l'image,
+  ilboursa 19,630) ; le bulletin fait foi. Une séance du bulletin sans volume chez ilboursa garde
+  un volume vide (Wifak 23/09/2026).
   Les cours, nombres de transactions et capitaux d'ilboursa ne sont pas utilisés (plus hauts et
   plus bas différents de la BVMT, « Volume MDT » estimé, cours anciens ajustés sans méthode
   publiée). Contrôle sur le bulletin du 31/12/2025 : clôture, plus haut et plus bas identiques à
   l'archive 2025 pour les 12 banques.
-- **Aucun bulletin après le 13/04/2026** à l'adresse habituelle (réponse vide de la BVMT,
-  variantes d'adresse essayées ; sa page « Éditions statistiques » s'arrête au 10/04/2026) : du
-  14/04/2026 au 20/10/2026, **clôture et volume d'ilboursa seulement**, ouverture, plus haut et
-  plus bas laissés vides (définition différente chez ilboursa), statut `pas de bulletin BVMT :
-  clôture et volume d'ilboursa`, source `ilboursa`. Limite connue : les jours de réservation, la
-  clôture d'ilboursa est le dernier cours échangé, pas la clôture officielle (4 cas sur janvier à
-  avril 2026, plus 3 écarts de 0,01 à 0,09 DT le 28/01/2026) ; aucun ajustement rétroactif
-  d'ilboursa constaté sur les séances de 2026 comparées aux bulletins. À remplacer par l'archive
-  BVMT 2026 quand elle sera publiée (janvier 2027).
+- **Depuis le 14/04/2026, les bulletins sont publiés sur un autre domaine de la Bourse** :
+  `https://tunis-stockexchange.com/sites/default/files/<mois de mise en ligne>/BullAAAAMMJJ.pdf`
+  (« B » majuscule ; le bulletin du 30/06 est dans le dossier « 2026-07 »). Noms irréguliers :
+  suffixe « -1 », « _0 » ou « _1 » (fichier remis en ligne : la version la plus récente est
+  retenue), et un bulletin sans date dans son nom (04/06/2026 : `2026-06/BO.pdf`, date lue en
+  page 1). Les adresses exactes sont lues dans la page « Éditions statistiques » de ce domaine
+  (paginée, avec aussi les semaines boursières et les lettres mensuelles). Ce domaine ne demande
+  pas de délai dans son robots.txt ; même organisme que bvmt.com.tn, il est interrogé avec 10 s
+  (`DELAI_MINIMUM` dans `collecte_banques.py`).
+- Un jour de séance dont le bulletin n'est pas encore en ligne (le plus récent) : clôture et
+  volume d'ilboursa seulement, ouverture, plus haut et plus bas vides, statut `pas de bulletin
+  BVMT : clôture et volume d'ilboursa (dernier cours échangé ; réservation non vérifiable)` : la
+  clôture d'ilboursa est le dernier cours échangé et diffère de la clôture officielle un jour de
+  réservation (4 cas de janvier à avril 2026 ; 3 autres écarts de 0,01 à 0,09 DT le 28/01/2026,
+  signalés `clôture ilboursa ≠ bulletin`).
 - BTE : le titre coté est l'action à dividende prioritaire (ADP), seule action BTE cotée.
 
 **Règles de lecture** (`scripts/cours_boursiers.py`, sortie `donnees/cours_banques.csv` :
@@ -680,7 +690,7 @@ statut, source, fichier) :
   échangé à 3,890, clôture 3,720 B) ; gardée telle que publiée, statuts `réservation …` et
   `clôture hors [plus bas, plus haut]` ;
 - contrôle `donnees/controle_cours.csv` : variation de clôture de plus de 6,15 % d'une séance à
-  l'autre (40 au 21/10/2026). 22 sont des opérations de la table ci-dessous ; les 18 autres n'en
+  l'autre (33 au 21/10/2026). 22 sont des opérations de la table ci-dessous ; les 11 autres n'en
   sont pas : hausses, krach du 17/03/2020 (ATB, BNA, STB), titres peu liquides au fixing (BTE,
   UBCI, Wifak), lendemains de séance avec réservation, où la Bourse abaisse le cours de référence
   sans opération (UBCI 30/07/2020 : référence 25,260 après une clôture réservée de 26,040 ;
@@ -719,17 +729,13 @@ de référence publié ce jour-là par la Bourse et la clôture de la séance pr
 - Règles : une date de dividende hors séance prend la première séance suivante (UIB : samedi
   01/06/2019 → 03/06/2019) ; le dividende revient aux actions anciennes, il est retiré avant la
   parité dans le contrôle théorique (BT 10/05/2022 : (6,190 − 0,280) × 5/6 = 4,925, publié 4,930).
-- **Résultat au 21/10/2026 : 55 opérations, toutes avec un cours de référence publié, contrôle
-  théorique à 0,005 près** : 48 dividendes (aucun en 2020, année de l'interdiction des dividendes
-  par la BCT ; ATB seulement en 2019 ; STB, BTE et Wifak aucun), 7 attributions gratuites (BNA
-  15/04/2019 avec souscription en numéraire, BIAT 29/06/2020 et 29/11/2024, BT 10/05/2022 avec le
-  dividende, AB 12/10/2023 et 28/10/2024, Attijari 30/04/2025), 1 division du nominal (BIAT
+- **Résultat au 21/10/2026 : 63 opérations, toutes avec un cours de référence publié, contrôle
+  théorique à 0,005 près** : 56 dividendes (aucun en 2020, année de l'interdiction des dividendes
+  par la BCT ; 2026 : AB, BIAT, BNA, BT, STB (premier depuis 2010), Attijari, UBCI, UIB ; ATB
+  seulement en 2019 ; BTE et Wifak aucun), 7 attributions gratuites (BNA 15/04/2019 avec
+  souscription en numéraire, BIAT 29/06/2020 et 29/11/2024, BT 10/05/2022 avec le dividende, AB
+  12/10/2023 et 28/10/2024, Attijari 30/04/2025 ; aucune en 2026), 1 division du nominal (BIAT
   04/05/2021).
-- **Limite : opérations 2026 après le 13/04/2026 non repérées** (pas de bulletin ; calendrier des
-  dividendes d'ilboursa vide). Les dividendes de 2026, versés surtout en mai et juin, manquent
-  donc au rendement total 2026 ; une attribution gratuite de 2026 fausserait aussi la série de
-  prix. Piste : avis des sociétés dans les Bulletins Officiels du CMF (10 s par bulletin), ou
-  l'archive BVMT 2026 et les bulletins quand ils seront publiés.
 
 ```dax
 Cours brut      = SUM ( Fait_Cours[cloture] )
@@ -737,7 +743,28 @@ Dernier cours   = CALCULATE ( [Cours brut], LASTNONBLANK ( Dim_Date[Date], [Cour
 Premier cours   = CALCULATE ( [Cours brut], FIRSTNONBLANK ( Dim_Date[Date], [Cours brut] ) )
 Performance periode = DIVIDE ( [Dernier cours], [Premier cours] ) - 1
 Volatilite annualisee = STDEV.S ( Fait_Cours[rendement] ) * SQRT ( 252 )
+
+-- Liquidité (décision du 21/10/2026) : affichée à côté de la volatilité, par banque.
+-- Fait_Cours[sans_transaction] : colonne conditionnelle de Power Query, vrai si le statut contient
+-- « sans transaction » (aucun titre échangé ; la clôture est alors le cours de référence)
+Seances = COUNTROWS ( Fait_Cours )
+Seances sans transaction = CALCULATE ( [Seances], Fait_Cours[sans_transaction] = TRUE () )
+Taux seances sans transaction = DIVIDE ( [Seances sans transaction], [Seances] )
+Seuil titre peu liquide = 0.20
+Avertissement liquidite =
+IF ( [Taux seances sans transaction] > [Seuil titre peu liquide],
+     "Titre peu liquide : " & FORMAT ( [Taux seances sans transaction], "0 %" )
+         & " des séances sans transaction ; volatilité et performance à lire avec prudence" )
 ```
+
+Taux de séances sans transaction du 02/01/2019 au 20/10/2026 (`cours_banques.csv`, 1 955 séances
+par banque, 21/10/2026) : **UBCI 52,7 %, Wifak 42,6 %, BTE 37,6 %** (groupe de cotation au fixing
+ou titre peu échangé) ; puis BH 8,6 %, UIB 4,7 %, ATB 4,2 %, AB 3,5 %, STB 1,5 %, BNA 0,8 %,
+Attijari 0,5 %, BT 0,4 %, BIAT 0,1 %. Le seuil de 20 % sépare nettement les trois titres peu liquides des neuf autres.
+Pour eux, la volatilité calculée est trompeuse (beaucoup de rendements nuls, puis des sauts au
+fixing, parfois au-delà de 6 % : BTE, UBCI, Wifak dans `controle_cours.csv`) : l'avertissement
+s'affiche dans le tableau de la page Bourse, à côté de la volatilité, et en info-bulle des
+graphiques de performance.
 
 ### 7.7 Rentabilité : ROE et ROA
 
@@ -1035,7 +1062,7 @@ Part de marché, Var PNB A/A % (Variations_Comparables) — pour un seul visuel 
 | 3. Évolution 2020–2026 | Courbes par banque avec sélecteur d'indicateur, bandes de périodes Covid, marqueurs de rupture de série (`Rupture PNB`, info-bulle `detail_rupture`), annotations des événements (`Evenements` : don au Fonds 1818 en 2020, moratoire Covid de l'UIB en 2020, accord salarial APTBEF–FGBEF en 2021, retraitement BH 2024) en info-bulle et en marqueurs ; variations sur un an depuis `Variations_Comparables` |
 | 4. Structure du PNB | Barres empilées marge d'intérêts / commissions / portefeuille par banque |
 | 5. Bilan | Crédits, dépôts, crédits / dépôts, structure des dépôts |
-| 6. Bourse | Cours, performance, volatilité, performance boursière vs croissance du PNB |
+| 6. Bourse | Cours (ajustés des opérations sur titres), performance, volatilité **avec à côté le taux de séances sans transaction et l'avertissement « titre peu liquide »** (UBCI, Wifak, BTE : plus de 20 %), performance boursière vs croissance du PNB |
 | 7. Fiche banque (extraction) | Tous les indicateurs d'une banque, accessible par clic droit ; coefficient publié à côté du coefficient harmonisé, avec la définition des charges opératoires de la banque ; capitaux propres trimestriels avec leur définition (`definition_capitaux_propres`), seul endroit où ils apparaissent (ailleurs : capitaux propres du bilan) |
 | 8. Rentabilité | ROE et ROA semestriels et annuels, matrice ROE × coefficient d'exploitation |
 | 9. Qualité des données | Contrôle d'extraction (statuts, dont `ecart trimestre/cumul`, `retraitement possible`, `ecart composantes`, `illisible (image)`, avec l'écart en MDT), révisions importantes et ruptures de série (avec la note du document), remarques des états financiers (colonne `remarque` de `etats_financiers_versions.csv` : révisée non retenue, valeur déduite, renvoi aux événements ; ex. BNA : S1 2025 et annuel 2025 pas sur la même base, 17,751 MDT), sources, limites ; phrase expliquant pourquoi la somme des trimestres peut différer du cumul annuel |
