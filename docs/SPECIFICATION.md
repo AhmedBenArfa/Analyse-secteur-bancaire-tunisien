@@ -106,7 +106,8 @@ Excel de référence ─────────> referentiel.xlsx
 | `Variations_Comparables` | `variations_comparables.csv` | types ; une ligne par banque × trimestre × indicateur × mesure (`trim` / `cumul`) : `valeur_N`, `valeur_N1` **du même document**, `variation_pct` ; source de toutes les variations sur un an (7.3) |
 | `Dim_Banque` | `dim_banque.csv` + Excel | fusion avec l'onglet Excel (actionnariat, groupe), nettoyage |
 | `Dim_Indicateur` | `dim_indicateur.csv` | types, ordre de tri |
-| `Fait_Cours` | Dossier de CSV cours | combinaison des fichiers, types, suppression des doublons, colonne `Rendement` (variation du cours d'un jour à l'autre) |
+| `Operations_Titres` (intermédiaire) | `operations_titres.csv` (versionné : lien *raw* GitHub, source URL) | types ; facteur = `cours_reference_publie / cloture_veille` (une valeur par banque et date d'effet) ; colonne conditionnelle `capital` (vrai sauf dividende seul) ; facteurs cumulés par banque (produit des facteurs des dates postérieures), un pour le prix (opérations sur le capital) et un pour le rendement total (toutes) |
+| `Fait_Cours` | `cours_banques.csv` | types (paramètres régionaux en-US), fusion avec `Operations_Titres` (facteur cumulé de la séance), colonnes `cloture_ajustee_prix` et `cloture_ajustee_rendement` = clôture × facteur cumulé, `Rendement` (variation de la clôture ajustée d'une séance à l'autre) ; `statut` gardé pour la page qualité |
 | `Controle` | `controle_extraction.csv` | pour la page « qualité des données » |
 | `Corrections` | `corrections_manuelles.csv` | remplacement des valeurs corrigées dans `Fait_Indicateurs` |
 | `Evenements` | `evenements.csv` (versionné, à la racine) | types ; une ligne par événement et par banque concernée : `id_evenement`, `date` (fin du trimestre concerné), `banque`, `indicateur`, `description`, `montant_mdt` (montant cité par le document), `fichier`, `page` ; annotations des graphiques (7.3, pages 3 et 9) |
@@ -619,7 +620,7 @@ Rang PNB             = RANKX ( ALL ( Dim_Banque ), [PNB],, DESC, DENSE )
 
 ### 7.5 Bourse
 
-**Sources (étape 4, état au 20/10/2026 : proposition, collecte complète en attente de validation).**
+**Sources (étape 4, décisions du 20/10/2026).**
 
 - **2019 à 2025 : archives annuelles de la BVMT** (« Historique des données »,
   `https://www.bvmt.com.tn/sites/default/files/historiques/cotations/histo_cotation_AAAA.zip`),
@@ -627,28 +628,63 @@ Rang PNB             = RANKX ( ALL ( Dim_Banque ), [PNB],, DESC, DENSE )
   quantité négociée, nombre de transactions, **capitaux réellement échangés**. Deux formats :
   texte à colonnes fixes (2019 à 2021 ; code court en 2019-2020 = caractères 6 à 11 de l'ISIN,
   décimales à virgule en 2019), CSV « ; » à partir de 2022. L'archive 2023 contient aussi 2022 :
-  séances identiques à l'archive 2022 (vérifié sur la BIAT, 257 séances). 2026 n'est pas encore
-  archivé. Le robots.txt de la BVMT demande **10 secondes entre deux requêtes**.
-- **2026 : à décider** : bulletin officiel quotidien de la cote (PDF, officiel, cours de
-  référence, ouverture, dernier cours, plus haut, plus bas, clôture, dernier dividende ; **pas de
-  quantités**), ou ilboursa (API de la page « Historiques », 3 mois par requête ; clôture et
-  volume égaux à la BVMT sur 63 et 63 des 64 séances du T4 2025 de la BIAT, mais plus haut et plus
-  bas différents sur 19 séances, une séance manquante, et cours ajustés sans méthode publiée :
-  BIAT 2019 divisé par 2).
+  séances identiques à l'archive 2022.
+- **Année en cours (2026, pas encore archivée) : bulletin officiel quotidien de la cote**
+  (`bulletin/pdf/bullAAAAMMJJ.pdf`, un par séance) pour les cours (référence, ouverture, dernier
+  cours, plus haut, plus bas, clôture, réservation), **volume en titres d'ilboursa** (le bulletin
+  ne donne pas les quantités ; API de la page « Historiques », 3 mois par requête ; égal à la BVMT
+  sur 63 des 64 séances du T4 2025 de la BIAT). La clôture d'ilboursa est comparée à celle du
+  bulletin (statut si elles diffèrent) ; une séance d'ilboursa sans bulletin n'est pas retenue.
+  Les cours, nombres de transactions et capitaux d'ilboursa ne sont pas utilisés (plus hauts et
+  plus bas différents de la BVMT, « Volume MDT » estimé, cours anciens ajustés sans méthode
+  publiée). Contrôle sur le bulletin du 31/12/2025 : clôture, plus haut et plus bas identiques à
+  l'archive 2025 pour les 12 banques.
+- **Aucun bulletin après le 13/04/2026** à l'adresse habituelle (réponse vide de la BVMT,
+  variantes d'adresse essayées ; sa page « Éditions statistiques » s'arrête au 10/04/2026) : du
+  14/04/2026 au 20/10/2026, **clôture et volume d'ilboursa seulement**, ouverture, plus haut et
+  plus bas laissés vides (définition différente chez ilboursa), statut `pas de bulletin BVMT :
+  clôture et volume d'ilboursa`, source `ilboursa`. Limite connue : les jours de réservation, la
+  clôture d'ilboursa est le dernier cours échangé, pas la clôture officielle (4 cas sur janvier à
+  avril 2026, plus 3 écarts de 0,01 à 0,09 DT le 28/01/2026) ; aucun ajustement rétroactif
+  d'ilboursa constaté sur les séances de 2026 comparées aux bulletins. À remplacer par l'archive
+  BVMT 2026 quand elle sera publiée (janvier 2027).
 - BTE : le titre coté est l'action à dividende prioritaire (ADP), seule action BTE cotée.
 
 **Règles de lecture** (`scripts/cours_boursiers.py`, sortie `donnees/cours_banques.csv` :
 ticker, banque, isin, date, ouverture, haut, bas, cloture, volume, nb_transactions, capitaux,
 statut, source, fichier) :
-- séance sans transaction (quantité 0) : l'archive met 0 aux cours de la séance et la clôture au
-  cours de référence ; ouverture, haut et bas restent vides, statut `sans transaction` ;
-- ouverture : l'archive 2021 répète la même valeur sur environ 65 % des séances, pour les 12
-  banques (BIAT 94,300 de janvier à août) ; de 2022 à 2025 l'ouverture sort parfois de
-  [plus bas, plus haut] et vaut alors presque toujours la clôture de la veille (cours de
-  référence). Une ouverture répétée sur plus de 30 % des séances d'une année (`ouverture figée
-  dans l'archive`) ou hors de [plus bas, plus haut] reste **vide**, jamais remplacée ;
+- séance sans transaction : l'archive met 0 aux cours de la séance et la clôture au cours de
+  référence ; ouverture, haut et bas restent vides, statut `sans transaction` ;
+- **un cours à 0 n'est jamais un prix** : en 2020, une séance sans transaction a tous ses cours à 0,
+  clôture comprise ; le 17/12/2025, tous les titres sont à 0 (journée sans cotation, absente aussi
+  chez ilboursa) ; l'UBCI a deux transactions sans cours coté (17/07/2019 : 10 000 titres pour
+  242 000 DT ; 10/12/2019 : 15 000 titres). Ces cases restent vides (481 clôtures au 21/10/2026),
+  statuts `clôture absente de l'archive (0)` et `quantité sans cours dans l'archive` ; quantité
+  et capitaux publiés gardés. Pour les rendements, Power Query reprend la dernière clôture
+  connue ;
+- **ouverture**, selon l'année (mesuré sur les 12 banques) :
+  - 2019, 2020, septembre à décembre 2021, 2026 (bulletins) : vraie ouverture ;
+  - janvier à août 2021 : valeur figée (la même sur environ 65 % des séances, presque toujours hors
+    de [plus bas, plus haut]) → vide, statut `ouverture figée dans l'archive` (règle : valeur
+    répétée sur plus de 30 % des séances de l'année et hors bornes pour plus de la moitié d'entre
+    elles ; une valeur souvent répétée mais dans les bornes est une vraie ouverture : Wifak 2024) ;
+  - **2022 à 2025 : la colonne « OUVERTURE » de l'archive est le cours de référence** (égale à la
+    clôture de la veille sur 99,2 à 99,7 % des séances, les autres étant des jours d'opération ;
+    bulletin du 31/12/2025 : AB ouverture 49,480, référence et archive 49,460) → vide, statut
+    `ouverture de l'archive = cours de référence` (règle : plus de 95 % des séances de l'année) ;
+    les vraies ouvertures sont dans les bulletins quotidiens (environ 1 000 PDF, près de 3 heures
+    à 10 s par requête : non téléchargés, à décider) ;
+  - autre ouverture hors de [plus bas, plus haut] : vide, statut ;
+- **réservation** (« B » à la baisse, « H » à la hausse, colonne du bulletin et `IND_RES` de
+  l'archive 2020) : la clôture publiée peut sortir des cours échangés (BTE le 04/02/2026 :
+  échangé à 3,890, clôture 3,720 B) ; gardée telle que publiée, statuts `réservation …` et
+  `clôture hors [plus bas, plus haut]` ;
 - contrôle `donnees/controle_cours.csv` : variation de clôture de plus de 6,15 % d'une séance à
-  l'autre = opération sur titres probable.
+  l'autre (40 au 21/10/2026). 22 sont des opérations de la table ci-dessous ; les 18 autres n'en
+  sont pas : hausses, krach du 17/03/2020 (ATB, BNA, STB), titres peu liquides au fixing (BTE,
+  UBCI, Wifak), lendemains de séance avec réservation, où la Bourse abaisse le cours de référence
+  sans opération (UBCI 30/07/2020 : référence 25,260 après une clôture réservée de 26,040 ;
+  STB 01/10/2020 : 3,650 après 3,710).
 
 **Ajustements (opérations sur titres).** Sans ajustement les rendements sont faux : BIAT,
 clôture 118,000 le 02/01/2019 et 111,000 le 31/12/2025, soit −5,9 % en brut et **+125,8 %**
@@ -662,13 +698,38 @@ dans le bulletin officiel (« Décisions et avis de la Bourse ») :
 | 09/05/2022 | dividende 5,200 DT | (P − D) / P | 64,500 (64,500) | bull20220509.pdf p.1 (colonne « dernier dividende ») |
 | 29/11/2024 | attribution gratuite 1 pour 7 | 7/8 | 91,880 (91,875) | bull20241129.pdf p.13 |
 
-Proposition : une table versionnée `operations_titres.csv` (banque, date d'effet, type, parité ou
-montant, fichier, page), remplie depuis les bulletins (avis de la Bourse ; liste des droits
-d'attribution « DA a/b JJMMAA » des lignes secondaires ; colonne « dernier dividende ») ; le
-**facteur et le cours ajusté se calculent dans Power Query** (produit cumulé des facteurs
-postérieurs à la séance) ; contrôle : facteur théorique × clôture de la veille = cours de
-référence publié, à l'arrondi du pas de cotation. Deux séries : cours ajusté des opérations sur
-le capital (performance du prix) et, en plus, des dividendes (rendement total).
+**Table des opérations sur titres** (`operations_titres.csv`, versionnée, produite par
+`python scripts/cours_boursiers.py operations`) : une ligne par banque et par date d'effet (types
+réunis si plusieurs le même jour : BNA 15/04/2019, attribution et souscription), avec le cours
+de référence publié ce jour-là par la Bourse et la clôture de la séance précédente.
+- Repérage : droits d'attribution (« DA a/b JJMMAA ») et de souscription (« DS ») des lignes
+  secondaires (archives, groupe 32, et bulletin le plus récent) ; « dernier dividende » (montant,
+  date) des bulletins de la dernière séance de chaque année ; division du nominal (nominal plus
+  petit d'une fin d'année à la suivante, date = plus forte baisse entre les deux).
+- Confirmation dans le bulletin du jour : cours de référence de la banque (page), avis de la
+  Bourse (page et extrait) ; cours de référence théorique calculé avec la parité ou le dividende,
+  comme contrôle (pas pour la souscription en numéraire, qui dépend du prix d'émission).
+- **Facteur d'ajustement = cours de référence publié / clôture de la veille**, calculé dans
+  Power Query : c'est l'ajustement fait par la Bourse elle-même, valable pour tous les types
+  d'opération, même réunis. Cours ajusté d'une séance = cours × produit des facteurs des
+  opérations postérieures. Deux séries : ajustée des opérations sur le capital (attributions,
+  divisions, souscriptions : performance du prix) et ajustée de toutes les opérations, dividendes
+  compris (rendement total). Une opération sans cours de référence publié reste sans facteur et
+  est signalée.
+- Règles : une date de dividende hors séance prend la première séance suivante (UIB : samedi
+  01/06/2019 → 03/06/2019) ; le dividende revient aux actions anciennes, il est retiré avant la
+  parité dans le contrôle théorique (BT 10/05/2022 : (6,190 − 0,280) × 5/6 = 4,925, publié 4,930).
+- **Résultat au 21/10/2026 : 55 opérations, toutes avec un cours de référence publié, contrôle
+  théorique à 0,005 près** : 48 dividendes (aucun en 2020, année de l'interdiction des dividendes
+  par la BCT ; ATB seulement en 2019 ; STB, BTE et Wifak aucun), 7 attributions gratuites (BNA
+  15/04/2019 avec souscription en numéraire, BIAT 29/06/2020 et 29/11/2024, BT 10/05/2022 avec le
+  dividende, AB 12/10/2023 et 28/10/2024, Attijari 30/04/2025), 1 division du nominal (BIAT
+  04/05/2021).
+- **Limite : opérations 2026 après le 13/04/2026 non repérées** (pas de bulletin ; calendrier des
+  dividendes d'ilboursa vide). Les dividendes de 2026, versés surtout en mai et juin, manquent
+  donc au rendement total 2026 ; une attribution gratuite de 2026 fausserait aussi la série de
+  prix. Piste : avis des sociétés dans les Bulletins Officiels du CMF (10 s par bulletin), ou
+  l'archive BVMT 2026 et les bulletins quand ils seront publiés.
 
 ```dax
 Cours brut      = SUM ( Fait_Cours[cloture] )
