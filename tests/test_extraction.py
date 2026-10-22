@@ -233,6 +233,40 @@ def test_bte_t4_seuls_saisis():
         assert all(proche(v[k], x) for k, x in attendu.items()), (tri, v)
 
 
+def test_ecarts_annuels_expliques():
+    """Étape 4c : chaque « ecart » du contrôle annuel a sa cause dans docs/ecarts_annuels.csv (même
+    écart, catégorie connue, document source téléchargé) ; une erreur d'extraction ne doit pas y
+    rester : elle se corrige dans le script, avec un test."""
+    controle = cb.DOSSIER / "controle_annuel.csv"
+    if not controle.exists():
+        return
+    with controle.open(encoding="utf-8-sig") as f:
+        ecarts = {(r["banque"], r["annee"], r["code_indicateur"]): float(r["ecart"])
+                  for r in csv.DictReader(f, delimiter=";") if r["statut"] == "ecart"}
+    with (RACINE / "docs" / "ecarts_annuels.csv").open(encoding="utf-8-sig") as f:
+        causes = {(r["banque"], r["annee"], r["code_indicateur"]): r for r in csv.DictReader(f, delimiter=";")}
+    categories = {"retraitement de la banque", "reclassement", "arrondi", "erreur dans le document de la banque"}
+    assert set(ecarts) == set(causes), set(ecarts) ^ set(causes)
+    for cle, ecart in ecarts.items():
+        c = causes[cle]
+        assert c["categorie"] in categories, (cle, c["categorie"])
+        assert abs(float(c["ecart_mdt"]) - ecart) < 0.0015, (cle, c["ecart_mdt"], ecart)
+        assert c["cause"] and c["page"]
+        assert (cb.DOSSIER_PDF / cle[0] / c["fichier"]).exists(), (cle, c["fichier"])
+
+
+def test_wib_2022t3_site_de_la_banque():
+    """Wifak 2022T3, trouvé le 22/10/2026 sur wifakbank.com (rubrique Indicateurs d'activité) : PNB
+    du T3 2022 = 14 455, la valeur que la colonne T4 2022 de WIB_2023T4 recopiait (exclusion écrite)."""
+    chemin = cb.DOSSIER_PDF / "WIB" / "WIB_2022T3.pdf"
+    if not chemin.exists():
+        return
+    lignes, alertes, _ = cb.extraire_document("WIB", "2022T3", chemin)
+    v = {(l["code_indicateur"], l["colonne"]): l["valeur_mdt"] for l in lignes}
+    assert proche(v[("PNB", "trim_N")], 14.455) and proche(v[("PNB", "cumul_N")], 42.985)
+    assert proche(v[("CHG_OPER", "cumul_N")], 30.505) and proche(v[("CREDITS", "cumul_N")], 742.188)
+
+
 def test_candidats_liste_cmf_non_publie():
     """« non publié » : aucun nom de la liste du CMF ne porte la banque, l'année et le rang du
     trimestre (score 0). Un PDF de la banque pour un autre trimestre de la même année n'y suffit pas."""

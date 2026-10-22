@@ -103,6 +103,7 @@ Excel de référence ─────────> referentiel.xlsx
 | `Fait_Indicateurs` | référence à `Versions` | filtre `version = source_valeur` (une ligne par banque × trimestre × indicateur × mesure) ; suppression de `valeur_mdt`, `version` ; pivot de `mesure` sur `valeur_retenue` → `Valeur_Trim` et `Valeur_Cumul` ; pivot de `mesure` sur `source_valeur` → `Source_Trim` et `Source_Cumul` ; pivot de `mesure` sur `rupture_serie` → `Rupture_Trim` et `Rupture_Cumul` (« oui » : période révisée de plus de 2 % sur le cumul, marqueur des graphiques) |
 | `Revisions` | référence à `Versions` | filtre `version <> source_valeur` (versions non retenues : initiales révisées, 31/12 provisoires remplacés par le T4 suivant, 31/12 exclus pour les capitaux propres) ; colonnes `banque`, `date_arrete`, `code_indicateur`, `mesure`, `version`, `valeur_mdt`, `valeur_retenue`, `source_valeur`, `statut_revision` (retraitement_mineur / revision_importante / reclassement / exclue / illisible (image) / non disponible (image)), `note_definition`, `mention_retraitement`, `Ecart_MDT = valeur_retenue − valeur_mdt` ; pour la page « qualité des données » |
 | `Controle_Annuel` | `controle_annuel.csv` | types ; somme des trimestres vs cumul T4, statut (`ok`, `en attente de révision`, `rupture de série`, `ecart`) |
+| `Ecarts_Annuels` | `docs/ecarts_annuels.csv` (versionné) | cause de chaque `ecart` du contrôle annuel : `categorie` (retraitement de la banque / reclassement / arrondi / erreur d'extraction / erreur dans le document de la banque), `cause`, `fichier`, `page`, `correction` ; fusion avec `Controle_Annuel` sur `banque`, `annee`, `code_indicateur` ; page « qualité des données » |
 | `Variations_Comparables` | `variations_comparables.csv` | types ; une ligne par banque × trimestre × indicateur × mesure (`trim` / `cumul`) : `valeur_N`, `valeur_N1` **du même document**, `variation_pct` ; source de toutes les variations sur un an (7.3) |
 | `Dim_Banque` | `dim_banque.csv` + Excel | fusion avec l'onglet Excel (actionnariat, groupe), nettoyage |
 | `Dim_Indicateur` | `dim_indicateur.csv` | types, ordre de tri |
@@ -221,7 +222,11 @@ Excel de référence ─────────> referentiel.xlsx
   `manquant` (introuvable) sinon : document listé mais qui n'est pas le bon, ou trimestre ancien
   absent des trois sources. La liste seule ne suffit pas : le 22/10/2026, le T3 2026 de AB, ATB,
   BIAT, BTE et UBCI était déjà en ligne au CMF sous son nom habituel mais pas encore dans la
-  liste. Dans `controle_extraction.csv` : `non publié` ou `pdf manquant`.
+  liste. Dans `controle_extraction.csv` : `non publié` ou `pdf manquant`. Derniers recours, à la
+  main (22/10/2026) : le nouveau site de la Bourse (`tunis-stockexchange.com/publications-societes`,
+  filtres société et « Indicateurs d'activité trimestriels » : Attijari 2021T2) et le site de la
+  banque (`wifakbank.com/indicateurs-activite`, 40 PDF de 2016 à 2025 : Wifak 2022T3). Les 336
+  documents attendus sont trouvés ; enregistrés dans le manifeste avec leur adresse (source `site`).
 
   **Document illisible** : un tableau publié en image (BH 2019T4, page 1 : 252 caractères de
   texte, 2 images) a le statut `illisible (image)` dans `controle_extraction.csv` ; sa version
@@ -289,7 +294,25 @@ Excel de référence ─────────> referentiel.xlsx
     de l'année suivante. Ce n'est pas une erreur ;
   - `rupture de série` : l'année contient une `revision_importante` (règle 4) et la somme des
     trimestres retenus ne retrouve pas le cumul. Signalé, pas corrigé ;
-  - `ecart` : à examiner.
+  - `ecart` : examiné (étape 4c) ; la cause de chacun est dans `docs/ecarts_annuels.csv`.
+
+  **Causes des écarts annuels** (étape 4c, 22/10/2026 ; 29 écarts, de 0,003 à 3,441 MDT). Méthode :
+  pour chaque écart, l'origine de chaque trimestre retenu et du cumul retenu, puis, document par
+  document de l'année suivante (et de l'année elle-même), « cumul − trimestre − cumul précédent » :
+  le document où ce reste n'est pas nul est la source de l'écart ; chaque nombre en cause a été
+  retrouvé dans le texte de la page ou sur son image. Résultat :
+
+  | Catégorie | Écarts | Cas |
+  |---|---|---|
+  | retraitement de la banque | 17 | la banque révise un trimestre passé dans le cumul seulement (ou dans le trimestre seulement) : ATB 2021, BH 2023, BT 2023, BTE 2020 (3), BTE 2021 (3), BTE 2024, STB 2022, UBCI 2021 (2), UBCI 2024, UIB 2020, Wifak 2023 (2) |
+  | erreur dans le document de la banque | 8 | colonnes déjà exclues : Wifak 2022 (4, colonne T4 2022 recopiée du T3), UIB 2022 (3, colonne T2 2022 incohérente) ; BTE 2021 charges opératoires (+2,765 MDT) : colonne T2 2021 de BTE_2022T2 (frais de personnel 11 196 contre 8 235 = S1 − T1), gardée car seule source du T2 2021 |
+  | reclassement | 3 | UIB 2024 : 0,677 MDT entre commissions encourues et charges générales (note (1) de UIB_2025T3), appliqué au trimestre et pas au cumul |
+  | arrondi | 1 | Attijari 2021, PNB : 3 kDT (chiffres en milliers) |
+  | erreur d'extraction | 0 | — |
+
+  Aucune valeur n'est corrigée : ce sont des chiffres publiés par les banques. Un test vérifie que
+  chaque `ecart` du contrôle annuel a sa cause dans `docs/ecarts_annuels.csv` et qu'aucune erreur
+  d'extraction n'y reste sans correction.
 
   Vérifié sur 2025 : avec les trimestres retenus, la somme des 4 trimestres égale le cumul T4
   **initial** exactement pour BIAT ; le cumul retenu étant le 31/12 provisoire (document T2 2026),
@@ -1051,6 +1074,9 @@ Ecart revision MDT = SUM ( Revisions[Ecart_MDT] )
 Nb annees en attente = CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "en attente de révision" )
 Nb ecarts annuels    = CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "ecart" )
 Nb ruptures annuelles = CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "rupture de série" )
+-- causes des écarts annuels (table Ecarts_Annuels, une ligne par écart)
+Nb ecarts expliques  = COUNTROWS ( Ecarts_Annuels )
+Ecart annuel MDT     = SUM ( Ecarts_Annuels[ecart_mdt] )
 -- ruptures de série : périodes dont la valeur retenue est une révision importante
 Nb ruptures serie =
     CALCULATE ( COUNTROWS ( Fait_Indicateurs ),
@@ -1090,7 +1116,7 @@ Part de marché, Var PNB A/A % (Variations_Comparables) — pour un seul visuel 
 | 6. Bourse | Cours (ajustés des opérations sur titres), performance, volatilité **avec à côté le taux de séances sans transaction et l'avertissement « titre peu liquide »** (UBCI, Wifak, BTE : plus de 20 %), performance boursière vs croissance du PNB |
 | 7. Fiche banque (extraction) | Tous les indicateurs d'une banque, accessible par clic droit ; coefficient publié à côté du coefficient harmonisé, avec la définition des charges opératoires de la banque ; capitaux propres trimestriels avec leur définition (`definition_capitaux_propres`), seul endroit où ils apparaissent (ailleurs : capitaux propres du bilan) |
 | 8. Rentabilité | ROE et ROA semestriels et annuels, matrice ROE × coefficient d'exploitation |
-| 9. Qualité des données | Contrôle d'extraction (statuts, dont `ecart trimestre/cumul`, `retraitement possible`, `ecart composantes`, `illisible (image)`, avec l'écart en MDT), révisions importantes et ruptures de série (avec la note du document), remarques des états financiers (colonne `remarque` de `etats_financiers_versions.csv` : révisée non retenue, valeur déduite, renvoi aux événements ; ex. BNA : S1 2025 et annuel 2025 pas sur la même base, 17,751 MDT), sources, limites ; phrase expliquant pourquoi la somme des trimestres peut différer du cumul annuel |
+| 9. Qualité des données | Contrôle d'extraction (statuts, dont `ecart trimestre/cumul`, `retraitement possible`, `ecart composantes`, `illisible (image)`, avec l'écart en MDT), révisions importantes et ruptures de série (avec la note du document), remarques des états financiers (colonne `remarque` de `etats_financiers_versions.csv` : révisée non retenue, valeur déduite, renvoi aux événements ; ex. BNA : S1 2025 et annuel 2025 pas sur la même base, 17,751 MDT), sources, limites ; phrase expliquant pourquoi la somme des trimestres peut différer du cumul annuel, avec le tableau des écarts annuels et leur cause (`Ecarts_Annuels` : catégorie, cause, fichier, page) |
 
 Filtres : segments Année / Trimestre, plage de dates, banque, actionnariat, période ;
 info-bulles personnalisées ; signets « trimestre » / « année ».

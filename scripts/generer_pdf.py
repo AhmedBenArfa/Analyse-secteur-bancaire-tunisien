@@ -262,7 +262,12 @@ def rapport():
     t3 = manq[manq.trimestre == trims[-1]]
     autres = manq[manq.trimestre != trims[-1]]
     der = f"T{trims[-1][-1]} {trims[-1][:4]}"
-    A(f"<p><b>{len(manq)} documents manquants</b> :</p><ul>")
+    if not len(manq):
+        A(f"<p><b>Aucun document manquant</b> : les {len(man)} documents attendus sont trouvés. Derniers "
+          "retrouvés le 22/10/2026 : Attijari 2021T2 sur tunis-stockexchange.com (nouveau site de la Bourse) "
+          "et Wifak 2022T3 sur le site de la banque (rubrique « Indicateurs d'activité »), absents des sites "
+          "de la BVMT et du CMF, de la liste du CMF et des Bulletins Officiels.</p>")
+    A(f"<p><b>{len(manq)} documents manquants</b> :</p><ul>" if len(manq) else "<ul>")
     for statut, sens in (("non publié", "non publiés : absents de la liste du CMF (aucun PDF de la banque "
                                         "pour ce trimestre), publication attendue au plus tard 20 jours "
                                         "après la fin du trimestre"),
@@ -553,14 +558,20 @@ def rapport():
       "est encore initial (pas une erreur). « Rupture de série » : année avec une révision "
       "importante. Les écarts restants :</p>")
     ec = ca[ca.statut == "ecart"].copy()
-    A(table(["Banque", "Année", "Indicateur", "Somme des trimestres", "Cumul T4", "Écart (MDT)"],
+    causes = pd.read_csv(R / "docs" / "ecarts_annuels.csv", sep=";", encoding="utf-8-sig")
+    ec = ec.merge(causes[["banque", "annee", "code_indicateur", "categorie", "fichier", "page"]],
+                  on=["banque", "annee", "code_indicateur"], how="left")
+    A(table(["Banque", "Année", "Indicateur", "Somme des trimestres", "Cumul T4", "Écart (MDT)", "Cause", "Source"],
             [[r.banque, r.annee, f"<code>{r.code_indicateur}</code>", fr(r.somme_trimestres, 3), fr(r.cumul_T4, 3),
-              f"{r.ecart:+.3f}".replace(".", ",")] for r in ec.itertuples()], "num"))
-    A(f"<p>Ces {len(ec)} écarts (de {fr(ec.ecart.abs().min(),3)} à {fr(ec.ecart.abs().max(),3)} MDT) "
-      "sont signalés, pas corrigés. Deux cas sont expliqués : UIB 2022 (vraie révision du T2 2022 perdue avec la colonne exclue) et WIB 2022 (colonne "
-      "recopiée exclue, écart ramené de −3,3 MDT à moins de 0,3 MDT). Les autres restent à examiner ; cause "
-      "probable, non vérifiée cas par cas : versions de trimestres voisins non cohérentes entre "
-      "elles (un trimestre révisé sans que le suivant le soit).</p>")
+              f"{r.ecart:+.3f}".replace(".", ","), e(r.categorie if isinstance(r.categorie, str) else "à examiner"),
+              e(f"{r.fichier} p.{r.page}" if isinstance(r.fichier, str) else "")] for r in ec.itertuples()], "num"))
+    cat = causes.categorie.value_counts()
+    A(f"<p>Ces {len(ec)} écarts (de {fr(ec.ecart.abs().min(),3)} à {fr(ec.ecart.abs().max(),3)} MDT) ont été "
+      "examinés un par un (étape 4c, 22/10/2026) : "
+      + ", ".join(f"{e(k)} {n}" for k, n in cat.items())
+      + ". Aucune erreur d'extraction : les chiffres en cause figurent tels quels dans les PDF. Ce sont des "
+      "chiffres des banques, gardés tels quels ; la cause détaillée de chacun est dans "
+      "<code>docs/ecarts_annuels.csv</code>.</p>")
 
     A("<h3>Cas à vérifier et incohérences de la banque</h3>")
     av = ctl[ctl.statut.isin(["a verifier", "ecart composantes"])]
