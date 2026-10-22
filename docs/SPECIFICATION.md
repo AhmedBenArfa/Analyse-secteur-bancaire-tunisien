@@ -86,6 +86,7 @@ PDF (BVMT, CMF, bulletins officiels)
                               donnees/indicateurs_versions.csv    (une ligne par période et version, valeur retenue)
                               donnees/dim_indicateur.csv, dim_banque.csv
                               donnees/controle_extraction.csv
+scripts/publier_donnees.py ─> donnees_publiees/  (CSV finaux versionnés, lus par Power Query)
 scripts/cours_boursiers.py ─> donnees/cours_banques.csv
 Fiche émetteur, états financiers, rapports annuels ─> donnees_reference/banques.xlsx (actionnariat, sourcé)
                      │
@@ -101,7 +102,7 @@ Fiche émetteur, états financiers, rapports annuels ─> donnees_reference/banq
 | Requête | Source | Étapes principales |
 |---|---|---|
 | `Versions` (intermédiaire, non chargée) | `indicateurs_versions.csv` | types (paramètres régionaux en-US) ; application de `Corrections` sur `valeur_mdt` |
-| `Fait_Indicateurs` | référence à `Versions` | filtre `version = source_valeur` (une ligne par banque × trimestre × indicateur × mesure) ; suppression de `valeur_mdt`, `version` ; pivot de `mesure` sur `valeur_retenue` → `Valeur_Trim` et `Valeur_Cumul` ; pivot de `mesure` sur `source_valeur` → `Source_Trim` et `Source_Cumul` ; pivot de `mesure` sur `rupture_serie` → `Rupture_Trim` et `Rupture_Cumul` (« oui » : période révisée de plus de 2 % sur le cumul, marqueur des graphiques) |
+| `Fait_Indicateurs` | référence à `Versions` | filtre `version = source_valeur` (une ligne par banque × trimestre × indicateur × mesure) ; suppression de `valeur_mdt`, `version` ; pivot de `mesure` sur `valeur_retenue` → `Valeur_Trim` et `Valeur_Cumul` ; pivot de `mesure` sur `source_valeur` → `Source_Trim` et `Source_Cumul` ; pivot de `mesure` sur `rupture_serie` → `Rupture_Trim` et `Rupture_Cumul` (« oui » : période révisée de plus de 2 % sur le cumul, marqueur des graphiques) ; de même `Fichier_*`, `Page_*` (source de chaque valeur) et `Detail_Rupture_*` (info-bulle). Réalisation : dépivotage des attributs, nom de colonne attribut + mesure, un seul pivot sans agrégation |
 | `Revisions` | référence à `Versions` | filtre `version <> source_valeur` (versions non retenues : initiales révisées, 31/12 provisoires remplacés par le T4 suivant, 31/12 exclus pour les capitaux propres) ; colonnes `banque`, `date_arrete`, `code_indicateur`, `mesure`, `version`, `valeur_mdt`, `valeur_retenue`, `source_valeur`, `statut_revision` (retraitement_mineur / revision_importante / reclassement / exclue / illisible (image) / non disponible (image)), `note_definition`, `mention_retraitement`, `Ecart_MDT = valeur_retenue − valeur_mdt` ; pour la page « qualité des données » |
 | `Controle_Annuel` | `controle_annuel.csv` | types ; somme des trimestres vs cumul T4, statut (`ok`, `en attente de révision`, `rupture de série`, `ecart`) |
 | `Ecarts_Annuels` | `docs/ecarts_annuels.csv` (versionné) | cause de chaque `ecart` du contrôle annuel : `categorie` (retraitement de la banque / reclassement / arrondi / erreur d'extraction / erreur dans le document de la banque), `cause`, `fichier`, `page`, `correction` ; fusion avec `Controle_Annuel` sur `banque`, `annee`, `code_indicateur` ; page « qualité des données » |
