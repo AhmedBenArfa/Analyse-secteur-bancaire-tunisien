@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Auteur : Ahmed Ben Arfa
 """
 Cours quotidiens des 12 banques cotées (date, ouverture, plus haut, plus bas, clôture, volume),
 de 2019 à aujourd'hui.

@@ -1,3 +1,4 @@
+<!-- Auteur : Ahmed Ben Arfa -->
 # Spécification — Analyse du secteur bancaire tunisien (2019–2026)
 
 ## 1. Objectif

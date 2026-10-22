@@ -1,3 +1,4 @@
+# Auteur : Ahmed Ben Arfa
 """Utilisation : python scripts/bilan_extraction.py
 Bilan de l'extraction des 12 banques, en lecture seule des CSV produits par « extraire » :
 statuts des documents, saisies manuelles, valeurs non disponibles, valeurs de référence et

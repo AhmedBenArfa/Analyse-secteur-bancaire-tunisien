@@ -1,3 +1,4 @@
+# Auteur : Ahmed Ben Arfa
 """Utilisation : python scripts/essai_banque.py BT
 Extraction d'une banque, en lecture seule (rien n'est écrit dans donnees/) :
 statut par document comme dans controle_extraction.csv, contrôles entre documents,

@@ -1,3 +1,4 @@
+// Auteur : Ahmed Ben Arfa
 // Requête intermédiaire (non chargée) : toutes les versions de chaque valeur des indicateurs trimestriels
 // (initiale, révisée par le document suivant, 31/12 provisoire), une ligne par banque × trimestre ×
 // indicateur × mesure (trim / cumul) × version. Fait_Indicateurs et Revisions en partent.

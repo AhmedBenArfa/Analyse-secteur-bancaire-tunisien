@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Auteur : Ahmed Ben Arfa
 """
 Collecte des données nécessaires au ROE et au ROA des banques cotées :
 résultat net, total de l'actif et total des capitaux propres, tirés des

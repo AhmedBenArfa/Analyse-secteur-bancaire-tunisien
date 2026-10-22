@@ -1,3 +1,4 @@
+# Auteur : Ahmed Ben Arfa
 """Utilisation : python scripts/diagnostic_pdf.py donnees/pdf/BT/BT_2024T2.pdf [autres PDF...]
 Diagnostic de mise en page d'un PDF d'indicateurs (lecture seule) :
 colonnes détectées, texte de l'en-tête par colonne, unité annoncée, lignes reconnues ou non."""

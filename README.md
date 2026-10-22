@@ -1,189 +1,176 @@
-# Collecte des indicateurs trimestriels des banques cotées (BVMT)
+<!-- Auteur : Ahmed Ben Arfa -->
+# Analyse du secteur bancaire tunisien (2019–2026)
 
-Télécharge les indicateurs d'activité trimestriels des 12 banques cotées
-(AB, ATB, Attijari, BH, BIAT, BNA, BT, BTE, STB, UBCI, UIB, Wifak),
-de T4 2019 jusqu'au dernier trimestre publié, puis les transforme en CSV pour Power BI.
+> **In English.** A Power BI portfolio project comparing the 12 banks listed on the Tunis Stock
+> Exchange, quarter by quarter from Q4 2019 to Q3 2026. Data come from the banks' public quarterly
+> activity reports (PDF, published through the CMF and the BVMT), their financial statements and
+> daily stock prices. A Python pipeline extracts every figure with its source file and page; revised
+> figures, consistency checks and manual entries are tracked. The data layer is complete; the Power
+> BI report (Power Query, star schema, DAX) is in progress. Figures are provisional and unaudited.
+> Documentation is in French.
 
-## Installation
+Ce projet construit un rapport Power BI qui compare l'activité, l'efficacité et la structure des
+12 banques cotées à la Bourse de Tunis, trimestre par trimestre, et met en regard leur performance
+opérationnelle et leur performance boursière. Chaque chiffre vient d'une publication publique et
+garde le fichier et la page d'où il vient ; aucune valeur n'est estimée.
 
-```
-python -m pip install -r requirements.txt
-```
+Questions d'analyse :
 
-## Lancement
+1. Quelles banques ont le PNB le plus élevé, et lesquelles gagnent des parts de marché ?
+2. Quelles banques sont les plus efficaces (coefficient d'exploitation) et comment cela évolue-t-il ?
+3. D'où vient le PNB de chaque banque (marge d'intérêts, commissions, portefeuille-titres) ?
+4. Comment ont évolué crédits et dépôts, et le ratio crédits / dépôts ?
+5. Le secteur se concentre-t-il (indice HHI) ?
+6. Quel a été l'effet du Covid (2020–2021) et comment le secteur s'est-il redressé ?
+7. La Bourse récompense-t-elle les banques les plus performantes ?
 
-```
-python collecte_banques.py tout
-```
+L'idée vient d'un rapport Power BI publié sur LinkedIn sur les ratios des banques cotées au
+30/06/2026, construit à partir des mêmes publications trimestrielles. Ce projet y ajoute
+l'historique sur 28 trimestres, les contrôles, la traçabilité de chaque valeur, la rentabilité
+(ROE, ROA) et le volet boursier.
 
-Autres commandes utiles :
+## Périmètre et sources
 
-```
-python collecte_banques.py telecharger --banques UIB,BIAT --debut 2024T1 --fin 2026T3
-python collecte_banques.py telecharger --sans-bulletins     # plus rapide, sites seulement
-python collecte_banques.py extraire                          # relance seulement l'extraction
-python collecte_banques.py urls --banques BH --debut 2025T2 --fin 2025T2   # URL testées
-```
-
-Le script peut être relancé : les PDF déjà trouvés ne sont pas retéléchargés.
-Durée : de quelques minutes à environ une heure si beaucoup de documents
-doivent être cherchés dans les Bulletins Officiels (une pause est faite entre les requêtes).
-
-## Documents PDF
-
-```
-python scripts/generer_pdf.py
-```
-
-Régénère les deux PDF du dossier `docs/` : la spécification (rendu de `docs/SPECIFICATION.md`) et le rapport d'avancement (chiffres recalculés à partir des CSV de `donnees/`, des fichiers versionnés et des tests, relancés par le script : environ une minute). À relancer après chaque extraction ou modification de la spécification. Conversion par Microsoft Edge en mode headless (chemin modifiable par la variable d'environnement `EDGE`) ; les PDF sources doivent être dans `donnees/pdf/` pour la comparaison aux valeurs de référence.
-
-## Où le script cherche
-
-1. Pages société du site de la BVMT
-   (`/societes/<banque>/indicateurs-dactivite-trimestriels/<banque>-indicateurs-dactivite-trimestriels-JJ-MM-AAAA.pdf`).
-2. Dossier des indicateurs du site du CMF (`indic_2trim26_uib.pdf`, `ind_2eme_trim_2026_biat.pdf`…).
-3. Pour les documents encore manquants : la liste des indicateurs publiée par le CMF
-   (`https://www.cmf.tn/?page=1&q=indicateurs-d-activit-`). Les liens sont gardés dans
-   `donnees/liste_indicateurs_cmf.csv` ; option `--rafraichir-liste-cmf` pour relire la liste
-   (par exemple après le 20 du mois qui suit un trimestre), `--sans-liste-cmf` pour sauter l'étape.
-   Chaque PDF candidat est vérifié (date d'arrêté et nom de la banque dans le document).
-4. En dernier recours, les Bulletins Officiels quotidiens du CMF publiés dans les 45 jours
-   après la fin du trimestre : seules les pages de la banque sont gardées.
-
-Chaque PDF est vérifié : il doit citer la date d'arrêté du trimestre visé.
-
-## Fichiers produits (dossier `donnees/`)
-
-| Fichier | Contenu |
+| Élément | Choix |
 |---|---|
-| `indicateurs_banques_long.csv` | Valeurs brutes : une ligne par document × indicateur × colonne lue |
-| `indicateurs_versions.csv` | Table pour Power BI : une ligne par banque × période × indicateur × mesure (trim / cumul) × version (`initiale` = document du trimestre ; `revisee_T<q>_N+1` = colonne N-1 du document de l'année suivante ; `revisee_31-12_T<q>_N+1` = colonne 31/12/N-1 d'un T1–T3 suivant, provisoire, pour le cumul annuel et les soldes au 31/12 seulement), avec `valeur_retenue`, `source_valeur`, `ecart_vs_retenue`, `statut_revision` (la version révisée est toujours retenue ; écart mesuré sur le cumul : `retraitement_mineur` jusqu'à 2 %, `revision_importante` au-delà ; même statut pour le trimestre et le cumul de la période ; les composantes suivent leur total ; `reclassement` à total stable), `mention_retraitement` (la note du document) et `rupture_serie` / `detail_rupture` (période révisée de plus de 2 % sur le cumul, pour annoter les graphiques) ; règle : `docs/SPECIFICATION.md`, 5.2 |
-| `variations_comparables.csv` | Variations sur un an calculées dans un même document : valeur N, valeur N-1 de la même colonne de comparaison, variation en % (source de toutes les croissances du rapport) |
-| `controle_annuel.csv` | Somme des 4 trimestres retenus vs cumul T4 retenu : `ok`, `en attente de révision`, `rupture de série`, `ecart` |
-| `controle_extraction.csv` | Statut de chaque document : ok, retraitement possible, ecart trimestre/cumul, ecart composantes, saisie manuelle, a verifier, illisible (image), echec, pdf manquant |
-| `manifeste_telechargements.csv` | URL et fichier de chaque document |
-| `dim_indicateur.csv` | Codes, libellés, catégorie et nature (flux / stock) |
-| `dim_banque.csv` | Banques — complétez les colonnes `actionnariat` et `groupe` à la main |
-| `pdf/<BANQUE>/` | Les PDF sources |
+| Banques | AB (Amen Bank), ATB, Attijari Bank, BH Bank, BIAT, BNA, BT, BTE, STB, UBCI, UIB, Wifak International Bank |
+| Période | T4 2019 → T3 2026 (le T4 2019 sert de base aux évolutions sur un an de 2020) |
+| Unité | Millions de dinars (MDT) |
 
-Fichiers versionnés à la racine (lus par le script ou par Power BI) :
+| Source | Contenu | Utilisation |
+|---|---|---|
+| Indicateurs d'activité trimestriels (sites de la BVMT et du CMF, liste du CMF, Bulletins Officiels du CMF, deux documents sur les sites de la Bourse de Tunis et de Wifak) | PNB, produits et charges d'exploitation, frais de personnel, charges générales, crédits, dépôts, capitaux propres | Indicateurs trimestriels |
+| États financiers individuels annuels et semestriels (BVMT, liste du CMF, Bulletins Officiels) | Résultat net, total de l'actif, capitaux propres | ROE, ROA |
+| Archives de cotation de la BVMT (2019–2025), bulletins quotidiens de la Bourse de Tunis (2026), ilboursa (volumes 2026) | Cours quotidiens, opérations sur titres | Volet boursier |
+| Fiches émetteurs de la Bourse de Tunis, états financiers, rapports annuels des banques | Actionnaire de référence, contrôle | Segmentation par actionnariat |
 
-| Fichier | Contenu |
+## Chaîne de traitement
+
+```mermaid
+flowchart LR
+    A["PDF publics<br/>(CMF, BVMT, banques)"] --> B["Python<br/>extraction + contrôles"]
+    B --> C["CSV<br/>une valeur = un fichier + une page"]
+    C --> D["Power Query<br/>ETL visible"]
+    E["Excel<br/>actionnariat sourcé"] --> D
+    F["CSV publiés sur GitHub<br/>(URL raw)"] --> D
+    D --> G["Modèle en étoile"]
+    G --> H["Mesures DAX"]
+    H --> I["Rapport Power BI"]
+```
+
+Python ne fait que lire les documents : tout ce qui peut se faire dans Power Query (fusions,
+dépivotages, colonnes conditionnelles, ajustements des cours) s'y fait, pour que la préparation des
+données reste visible dans le rapport. Trois types de sources sont utilisés : un dossier de CSV,
+un fichier Excel et une URL.
+
+## Chiffres clés (au 23/10/2026)
+
+| Élément | Valeur |
 |---|---|
-| `gabarits.csv` | Mise en page de chaque banque par période : ordre des colonnes, unité, libellés, contenu des charges opératoires |
-| `saisies_manuelles.csv` | Valeurs relevées sur l'image des tableaux publiés en image (BTE 2020–2023), avec fichier, page et vérification |
-| `donnees_reference/banques.xlsx` | Actionnariat des 12 banques (actionnaire de référence, part du capital, classement selon le contrôle : public / groupe étranger / mixte / privé sans contrôle étranger, groupe), une ligne par période quand l'actionnaire de référence a changé (UBCI 2021, Wifak 2022, BTE 2024), avec la source et la page ; règle dans la spécification 5.3 |
-| `evenements.csv` | Événements à annoter dans Power BI (don au Fonds 1818 en 2020, moratoire Covid de l'UIB en 2020, accord salarial du secteur en 2021, retraitement BH 2024), avec la source PDF et la page |
-| `exclusions_colonnes.csv` | Colonnes de comparaison (N-1) fausses dans le document de la banque, jamais retenues, avec la raison, le fichier et la page (WIB 2023T4) ; les colonnes N-1 où produits − charges ≠ PNB sont exclues automatiquement (UIB 2023T2) |
+| Documents d'indicateurs trimestriels trouvés | **336 / 336** (12 banques × 28 trimestres) |
+| Valeurs retenues des indicateurs trimestriels | 11 460 (24 indicateurs, aucune vide) |
+| Valeurs relevées à la main sur l'image des PDF pour les tests | 438 sur 41 documents d'indicateurs, 169 sur 24 états financiers |
+| Contrôle annuel (somme des 4 trimestres contre cumul annuel) | 288 contrôles : 205 ok, 41 en attente de révision, 20 ruptures de série, **22 écarts, tous expliqués** (11 retraitements de la banque, 7 erreurs dans le document de la banque, 3 reclassements, 1 arrondi, 0 erreur d'extraction) |
+| Révisions de plus de 2 % d'un total (cumul) | 137, chacune avec le document d'origine et le document révisé |
+| Valeurs saisies à la main | 438 (13 documents BTE publiés en image, deux valeurs illisibles STB), toutes passées aux contrôles de cohérence ; un document relu une seconde fois en entier (BTE 2020T2) |
+| États financiers | 168 arrêtés, 504 valeurs retenues (résultat net, total de l'actif, capitaux propres), aucune vide |
+| Cours boursiers | 1 955 séances par banque, du 02/01/2019 au 20/10/2026 ; 63 opérations sur titres, chacune avec le cours de référence publié |
+| Tests automatiques | 37, tous réussis |
 
-Autres fichiers utiles :
+## Démarche qualité
 
-| Fichier | Contenu |
+- **Versions révisées.** Les banques corrigent souvent leurs chiffres de l'année précédente.
+  Chaque valeur est gardée dans toutes ses versions (publiée dans le document du trimestre,
+  révisée dans le document de l'année suivante) ; la version révisée est retenue, et une
+  révision de plus de 2 % du cumul est marquée comme rupture de série. Les variations sur un an
+  sont toujours calculées dans un même document.
+- **Contrôles.** Produits − charges = PNB dans chaque colonne, trimestre contre cumul, composantes
+  des charges opératoires, ordres de grandeur, somme des trimestres contre cumul annuel, équilibre
+  du bilan. Chaque écart du contrôle annuel a sa cause et sa source dans `docs/ecarts_annuels.csv`.
+- **Colonnes fausses écartées.** Deux colonnes de comparaison erronées dans les documents des
+  banques (UIB 2023T2, Wifak 2023T4), vérifiées sur l'image, ne sont jamais retenues.
+- **Saisies manuelles tracées.** Les documents publiés en image sont relevés à la main dans
+  `saisies_manuelles.csv`, avec le fichier, la page, la valeur publiée, l'unité et la vérification ;
+  le chargement refuse toute valeur incohérente avec son unité.
+- **Événements identifiés.** Les ruptures expliquées sont décrites dans `evenements.csv`, avec la
+  source : don au Fonds 1818 (Covid-19, 2020), moratoire Covid de l'UIB (2020), accord salarial du
+  secteur (2021), retraitement BH (2024), déchéance fiscale BNA (2025).
+- **Définitions harmonisées.** Le contenu des charges opératoires et des capitaux propres
+  trimestriels varie d'une banque à l'autre (`gabarits.csv`) : les comparaisons utilisent un
+  coefficient d'exploitation harmonisé et les capitaux propres du bilan.
+- **Tests.** L'extraction est comparée aux valeurs relevées à la main sur l'image des documents.
+
+## Structure du dépôt
+
+```
+├── collecte_banques.py          collecte et extraction des indicateurs trimestriels
+├── scripts/                     états financiers, cours, PDF de docs/, outils de vérification, audit
+├── tests/                       tests et valeurs relevées à la main
+├── gabarits.csv                 mise en page de chaque banque par période
+├── saisies_manuelles.csv        valeurs relevées sur les documents publiés en image
+├── exclusions_colonnes.csv      colonnes de comparaison fausses, jamais retenues
+├── evenements.csv               événements expliquant des ruptures (publié pour Power BI, URL raw)
+├── operations_titres.csv        dividendes, attributions, division (publié pour Power BI, URL raw)
+├── donnees_reference/
+│   └── banques.xlsx             actionnariat des 12 banques, sourcé, une ligne par période
+├── powerquery/                  requêtes Power Query (M)
+├── dax/                         mesures DAX (à venir)
+├── powerbi/                     projet Power BI (.pbip, à venir)
+├── docs/
+│   ├── SPECIFICATION.md         spécification complète (modèle, mesures, pages, limites)
+│   ├── utilisation.md           mode d'emploi des scripts
+│   ├── guide_powerbi.md         requêtes et mesures expliquées pas à pas
+│   ├── ecarts_annuels.csv       cause de chaque écart du contrôle annuel
+│   ├── revisions_importantes.csv
+│   └── *.pdf                    spécification et rapport d'avancement
+└── donnees/                     PDF et CSV produits par les scripts (non versionné)
+```
+
+Pour reproduire les données : **[docs/utilisation.md](docs/utilisation.md)**.
+
+## État d'avancement
+
+| Étape | État |
 |---|---|
-| `docs/revisions_importantes.csv` | Révisions de plus de 2 % des totaux (cumul) : valeur publiée, valeur retenue, fichiers ; produit par `python scripts/bilan_extraction.py` |
-| `scripts/bilan_extraction.py` | Bilan par banque (statuts, saisies, valeurs non disponibles, valeurs de référence, révisions importantes) |
-| `scripts/verifier_manifeste.py` | Contrôle du manifeste après un téléchargement (PDF présents, URL, orphelins) |
-| `scripts/diagnostic_pdf.py`, `scripts/essai_banque.py` | Diagnostic d'un PDF et extraction d'une banque seule, en lecture seule |
-| `scripts/generer_pdf.py` | Régénère `docs/Specification_projet.pdf` (à partir de `docs/SPECIFICATION.md`) et `docs/Rapport_avancement.pdf` (chiffres recalculés à partir des fichiers du projet, tests relancés) ; voir « Documents PDF » plus haut |
+| Collecte et extraction des indicateurs trimestriels (T4 2019 → T3 2026) | Terminé |
+| États financiers (ROE, ROA), cours boursiers, opérations sur titres | Terminé |
+| Examen des écarts du contrôle annuel, actionnariat des banques | Terminé |
+| Requêtes Power Query | En cours (paramètre du dossier, lecture des CSV, versions des indicateurs) |
+| Modèle en étoile, mesures DAX, pages du rapport | À faire |
+| Note de validation par échantillon (`docs/validation.md`), captures du rapport | À faire |
 
-Colonnes de valeurs (`colonne`) :
+## Limites
 
-- `trim_N` : le trimestre seul ; `trim_N1` : le même trimestre de l'année précédente
-- `cumul_N` : cumul depuis le 1er janvier (ou solde à la date pour les stocks) ; `cumul_N1` : idem un an plus tôt
-- `exercice_N1` : fin de l'exercice précédent
+- Les indicateurs trimestriels sont **provisoires et non audités** : ils sont publiés par les
+  banques elles-mêmes et souvent révisés l'année suivante.
+- La somme des trimestres publiés peut différer du cumul annuel publié (retraitements en cours
+  d'année) ; les chiffres annuels viennent toujours du cumul.
+- Les définitions des postes diffèrent d'une banque à l'autre ; Wifak, banque islamique, est
+  comparée par équivalences (marges et revenus assimilés pour les intérêts, financements pour les
+  crédits).
+- Le résultat net n'est pas dans les indicateurs trimestriels : ROE et ROA ne sont que semestriels
+  et annuels ; les résultats semestriels ne sont pas audités.
+- En dehors des valeurs de référence et des saisies manuelles, les valeurs ne sont pas relevées une
+  à une : elles sont contrôlées par les règles de cohérence.
+- Le seuil de 2 % pour signaler une révision importante est un choix d'analyse, pas une norme.
 
-`valeur_mdt` est en millions de dinars, quelle que soit l'unité du document
-(l'unité est déduite de l'ordre de grandeur du PNB), avec 9 décimales pour garder le millime.
+Le détail des limites est dans la spécification, section 10.
 
-## Lecture des tableaux
+## Données
 
-Les montants sont alignés à droite : le script repère le bord droit de chaque colonne de
-chiffres sur la page, rattache chaque morceau de nombre (« 6 », « 479 », « 908 ») à sa colonne,
-puis le recolle. Il se fie à la position sur la page, pas à l'ordre du texte du PDF (qui est
-parfois inversé). Le nom de chaque colonne (trimestre / cumul, année N / N-1, exercice N-1)
-est lu dans l'en-tête du tableau ; si l'en-tête n'est pas lisible, l'ordre habituel est supposé
-et le document passe en `a verifier`.
+Les chiffres viennent de publications publiques : indicateurs d'activité et états financiers
+publiés par les banques auprès du Conseil du Marché Financier (CMF) et de la Bourse de Tunis
+(BVMT), documents des sites des banques, archives et bulletins de cotation de la Bourse, volumes
+d'ilboursa. Les documents d'origine restent la propriété de leurs auteurs ; ils ne sont pas
+redistribués dans ce dépôt (le dossier `donnees/` n'est pas versionné) : les scripts les
+téléchargent depuis leurs adresses publiques. Les fichiers CSV du dépôt donnent, pour chaque
+valeur, le document et la page d'où elle vient.
 
-**Gabarits (`gabarits.csv`)** : pour chaque banque et chaque période de mise en page
-(premier et dernier trimestre, trimestres concernés), l'ordre des colonnes, l'unité et les
-libellés particuliers (`CODE=regex`, séparés par `||`), et le contenu des charges opératoires
-publiées (`definition_charges_operatoires` : `sans dotations`, `avec dotations publiees`,
-`avec reste non detaille`, `composantes non publiees`). Quand un gabarit existe, il décide ;
-la lecture de l'en-tête et l'unité déduite du PNB deviennent des contrôles qui signalent tout
-désaccord. Le nom du gabarit appliqué figure dans `controle_extraction.csv` et dans les données.
+## Licence
 
-## Contrôles (`controle_extraction.csv`)
+Le code de ce dépôt (scripts Python, requêtes Power Query, mesures DAX) est publié sous licence
+MIT : voir [LICENSE](LICENSE).
 
-- produits − charges d'exploitation = PNB (à 2 % près) ;
-- PNB cumulé présent ; au T1, trimestre = cumul ; aux autres trimestres, trimestre ≤ cumul ;
-- ordres de grandeur plausibles (PNB, charges opératoires, crédits, dépôts, capitaux propres,
-  coefficient d'exploitation, crédits / dépôts) ;
-- `ecart trimestre/cumul` : le trimestre publié diffère de plus de 0,1 % de « cumul du trimestre
-  − cumul du trimestre précédent » (document précédent de la même année). Cas constaté au T3 2025
-  chez BIAT et UIB : le premier semestre a été retraité après la publication du T2. Règle dans
-  Power BI : cumul publié pour l'année et le cumul annuel, trimestre publié pour l'analyse
-  trimestrielle (voir `docs/SPECIFICATION.md`, section 5.2) ;
-- `ecart composantes` : les charges opératoires publiées ne correspondent pas à leurs composantes
-  selon la définition du gabarit (ex. BT 2020T3, BNA 2023T2 : vérifié dans le PDF, c'est la
-  banque qui publie des chiffres incohérents ; rien n'est corrigé) ;
-- `retraitement possible` : le cumul N-1 d'un document diffère du cumul N publié un an plus tôt
-  pour le même trimestre. Ce sont souvent de vrais retraitements de la banque (signalés « chiffres
-  retraités » dans le PDF) ; on garde le chiffre de l'année N tel que publié dans le document de l'année N.
+## Auteur
 
-## Test de l'extraction
-
-```
-python tests/test_extraction.py     # ou : python -m pytest tests
-```
-
-Compare l'extraction aux valeurs relevées à la main dans les PDF (`tests/valeurs_reference.csv` :
-PNB du trimestre et cumulé, charges opératoires, crédits, dépôts, avec la page). Les PDF ne sont
-pas versionnés : il faut les avoir téléchargés avant de lancer le test.
-
-CSV séparés par `;`, décimales avec un **point** : dans Power Query, changez le type
-avec « Utilisation des paramètres régionaux » → Anglais (États-Unis).
-
-## États financiers (ROE et ROA)
-
-```
-python scripts/etats_financiers.py tout
-```
-
-Télécharge les états financiers **individuels** annuels (31/12, 2019 →) et semestriels
-(30/06, 2020 →) sur le site de la BVMT, en extrait le résultat net (**avant modifications
-comptables** : l'effet d'une modification concerne des exercices antérieurs et passe en résultats
-reportés ; le résultat après modifications est gardé pour information), le total de l'actif et le
-total des capitaux propres, puis compare le résultat net annuel à ilboursa.
-
-Contrôles : total actif = total passif et capitaux propres, résultat de l'état de résultat =
-résultat inscrit au bilan (bloquants) ; recoupement capitaux propres − résultat = capitaux propres
-« hors résultat » des indicateurs trimestriels (colonne `recoupement_trimestriel`, non bloquant).
-La comparaison avec ilboursa (`verification_ilboursa.csv`) est **purement informative** : ilboursa
-ne précise pas s'il s'agit de comptes individuels ou consolidés (probablement consolidés) ; elle ne
-change jamais le statut d'un document. Valeurs relevées à la main pour les tests :
-`tests/valeurs_reference_ef.csv`.
-Option `--bulletins` (avec `telecharger`) : cherche aussi dans les Bulletins Officiels du CMF.
-
-Fichiers produits : `etats_financiers_long.csv`, `controle_etats_financiers.csv`,
-`verification_ilboursa.csv`, `manifeste_etats_financiers.csv`, `pdf_etats_financiers/`.
-
-## Limites — à lire avant d'utiliser les chiffres
-
-- L'extraction des indicateurs trimestriels est comparée à 383 valeurs relevées à la main sur
-  l'image de 36 documents (2 par banque, 8 pour BIAT et UIB : `tests/valeurs_reference.csv`).
-  Les autres documents ne sont contrôlés que par les règles de cohérence.
-- Le site de la BVMT renvoie des pages vides aux scripts : seuls les liens directs vers les PDF
-  fonctionnent. Les noms de fichiers changent d'une période à l'autre.
-- Les PDF scannés (images) ne sont pas lisibles : statut `echec`, saisie manuelle nécessaire
-  (cas connus : BH 2019T4 ; BTE, 13 documents de 2020 à 2023). Quand le document suivant ne
-  reprend pas les chiffres, ils sont saisis dans `saisies_manuelles.csv` ; les 13 documents BTE
-  en image le sont tous (leurs colonnes N-1 publient des corrections que rien d'autre ne donne),
-  relus sur l'image et contrôlés ; statut `saisie manuelle`. Une valeur
-  illisible dans un document lisible peut aussi y être saisie (STB 2026T2, revenus du portefeuille).
-  Une mesure qu'aucun document lisible ne donne serait marquée
-  « non disponible (image) » dans `indicateurs_versions.csv`, sans valeur (jamais zéro).
-  Vérification par une personne : `python scripts/verification_saisie.py preparer BTE 2020T2`,
-  remplir la colonne « verification », puis `... reporter BTE 2020T2`.
-- Vérifiez à la main toutes les lignes `a verifier` du fichier de contrôle,
-  et quelques lignes `ok` au hasard contre les PDF.
-- Ces indicateurs sont provisoires et non audités.
+Auteur : Ahmed Ben Arfa

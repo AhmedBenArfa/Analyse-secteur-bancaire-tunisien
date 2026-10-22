@@ -1,3 +1,4 @@
+# Auteur : Ahmed Ben Arfa
 """Utilisation : python scripts/couche_texte.py BH
 Pour chaque PDF d'une banque : nombre de pages, caractères de texte et images par page
 (lecture seule). Un PDF sans texte mais avec une grande image par page est un scan."""

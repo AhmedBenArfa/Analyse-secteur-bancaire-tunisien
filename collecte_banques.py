@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Auteur : Ahmed Ben Arfa
 """
 Collecte des indicateurs d'activité trimestriels des banques cotées à la BVMT
 (T4 2019 -> dernier trimestre publié) et export en CSV pour Power BI.

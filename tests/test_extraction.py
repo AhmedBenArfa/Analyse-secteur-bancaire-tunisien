@@ -1,3 +1,4 @@
+# Auteur : Ahmed Ben Arfa
 """
 Compare l'extraction automatique aux valeurs relevées à la main dans les PDF
 (tests/valeurs_reference.csv : banque, trimestre, fichier, page, indicateur, colonne, valeur).

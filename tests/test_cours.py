@@ -1,3 +1,4 @@
+# Auteur : Ahmed Ben Arfa
 """Lecture des cours (scripts/cours_boursiers.py) : droits, périodes, bulletins officiels.
 Les tests sur les vrais bulletins sont sautés si les PDF ne sont pas téléchargés."""
 

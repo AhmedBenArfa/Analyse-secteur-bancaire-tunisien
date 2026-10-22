@@ -1,3 +1,4 @@
+# Auteur : Ahmed Ben Arfa
 """Utilisation : python scripts/verifier_manifeste.py
 Vérifie donnees/manifeste_telechargements.csv (lecture seule) : doublons, statuts, PDF présents
 et lisibles pour chaque entrée « ok », URL renseignée, PDF orphelins dans donnees/pdf/.

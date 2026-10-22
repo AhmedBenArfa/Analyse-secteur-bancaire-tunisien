@@ -1,3 +1,4 @@
+# Auteur : Ahmed Ben Arfa
 """Vérification à la main d'un document saisi (saisies_manuelles.csv).
 
   python scripts/verification_saisie.py preparer BTE 2020T2

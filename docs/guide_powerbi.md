@@ -1,3 +1,4 @@
+<!-- Auteur : Ahmed Ben Arfa -->
 # Guide Power BI — Analyse du secteur bancaire tunisien
 
 Ce guide explique, étape par étape, chaque requête Power Query et chaque mesure DAX du rapport :

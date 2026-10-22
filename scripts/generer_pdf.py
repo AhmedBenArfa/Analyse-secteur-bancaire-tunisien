@@ -1,3 +1,4 @@
+# Auteur : Ahmed Ben Arfa
 """
 Génère les deux documents PDF du dossier docs/ :
   - docs/Specification_projet.pdf : rendu de docs/SPECIFICATION.md ;
@@ -106,7 +107,7 @@ def vers_pdf(html_txt, sortie, titre, sujet, pied):
     n = doc.page_count
     for i, p in enumerate(doc, 1):
         w, h = p.rect.width, p.rect.height
-        p.insert_text((48, h - 26), pied, fontsize=7.5, fontname="helv", color=(0.42, 0.48, 0.55))
+        p.insert_text((48, h - 26), f"{pied} — {AUTEUR}", fontsize=7.5, fontname="helv", color=(0.42, 0.48, 0.55))
         t = f"{i} / {n}"
         p.insert_text((w - 48 - fitz.get_text_length(t, "helv", 7.5), h - 26), t,
                       fontsize=7.5, fontname="helv", color=(0.42, 0.48, 0.55))
@@ -135,6 +136,7 @@ def resultat_tests():
 # --------------------------------------------------------------------------- spécification
 def specification():
     md = (R / "docs/SPECIFICATION.md").read_text(encoding="utf-8")
+    md = re.sub(r"\A<!--.*?-->\s*", "", md, flags=re.S)   # en-tête « Auteur » en commentaire
     titre, reste = md.split("\n", 1)
     rendu = mistune.create_markdown(plugins=["table", "strikethrough"], escape=False)(reste)
     corps = (f'<div class="titre"><h1>{e(titre.lstrip("# ").strip())}</h1>'
@@ -620,7 +622,7 @@ def rapport():
       else f"{fr(par_banque.min())} à {fr(par_banque.max())}") + " séances par banque, "
       f"{fr(len(cours))} lignes : archives annuelles de la BVMT ({fr(src_cours.get('bvmt_archive', 0))} "
       f"lignes, 2019–2025), bulletins quotidiens de la Bourse ({fr(src_cours.get('bvmt_bulletin', 0) + src_cours.get('bvmt_bulletin+ilboursa_volume', 0))} "
-      "lignes, 2026 ; volume d'ilboursa à partir du 14/04/2026). "
+      "lignes, 2026 ; volume d'ilboursa). "
       f"{fr(int(cours.cloture.isna().sum()))} clôtures vides (cours à 0 dans l'archive), jamais remplacées. "
       f"Opérations sur titres (<code>operations_titres.csv</code>) : {len(ops)} opérations "
       f"({', '.join(f'{n} {k}' for k, n in ops.types.str.split('+').explode().str.strip().value_counts().items())}), "
@@ -643,9 +645,12 @@ def rapport():
          f"Fait ({len(efr)} valeurs retenues)"],
         ["4c", "Examen des écarts du contrôle annuel",
          f"Fait : {len(ec)} écarts, cause et source de chacun"],
-        ["5–6", "Requêtes Power Query, modèle en étoile, mesures DAX", "<b>Prochaine étape</b>"],
+        ["5–6", "Requêtes Power Query, modèle en étoile, mesures DAX",
+         "<b>En cours</b> : " + ", ".join(f"<code>{q.stem}</code>" for q in sorted((R / "powerquery").glob("*.pq")))
+         + " écrites ; guide <code>docs/guide_powerbi.md</code>"],
         ["7", "Pages du rapport Power BI", "À faire"],
-        ["8", "README final et captures pour le portfolio", "À faire"]]))
+        ["8", "README final et captures pour le portfolio",
+         "README réécrit en page d'accueil du dépôt ; captures et mise à jour finale après le rapport"]]))
 
     vers_pdf(page_html("Rapport d'avancement", "".join(o)), R / "docs/Rapport_avancement.pdf",
              "Rapport d'avancement — Analyse du secteur bancaire tunisien", "Rapport d'avancement",

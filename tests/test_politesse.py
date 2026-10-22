@@ -1,3 +1,4 @@
+# Auteur : Ahmed Ben Arfa
 """Lecture du robots.txt (collecte_banques.Politesse), sans réseau : délai et chemins interdits."""
 
 from __future__ import annotations

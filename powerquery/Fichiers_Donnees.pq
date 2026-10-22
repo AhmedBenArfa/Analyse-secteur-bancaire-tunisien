@@ -1,3 +1,4 @@
+// Auteur : Ahmed Ben Arfa
 // Requête intermédiaire (non chargée) : les CSV du dossier donnees\, lus avec le connecteur Dossier.
 // Les autres requêtes y prennent leur fichier par son nom : un seul endroit dépend du disque.
 let

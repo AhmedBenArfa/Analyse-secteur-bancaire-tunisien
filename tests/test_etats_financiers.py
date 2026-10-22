@@ -1,3 +1,4 @@
+# Auteur : Ahmed Ben Arfa
 """
 Test de scripts/etats_financiers.py sur un bilan simulé (aucun téléchargement) : nombres écrits
 morceau par morceau (comme UIB), colonne Notes, comptes N et N-1, état de résultat sur une
