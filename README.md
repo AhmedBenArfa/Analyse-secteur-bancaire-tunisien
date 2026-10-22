@@ -72,7 +72,7 @@ Fichiers versionnés à la racine (lus par le script ou par Power BI) :
 |---|---|
 | `gabarits.csv` | Mise en page de chaque banque par période : ordre des colonnes, unité, libellés, contenu des charges opératoires |
 | `saisies_manuelles.csv` | Valeurs relevées sur l'image des tableaux publiés en image (BTE 2020–2023), avec fichier, page et vérification |
-| `donnees_reference/banques.xlsx` | Actionnariat des 12 banques (actionnaire de référence, part du capital, classement public / privé tunisien / groupe étranger, groupe), une ligne par période quand l'actionnaire de référence a changé (UBCI 2021, Wifak 2022, BTE 2024), avec la source et la page ; règle dans la spécification 5.3 |
+| `donnees_reference/banques.xlsx` | Actionnariat des 12 banques (actionnaire de référence, part du capital, classement selon le contrôle : public / groupe étranger / mixte / privé sans contrôle étranger, groupe), une ligne par période quand l'actionnaire de référence a changé (UBCI 2021, Wifak 2022, BTE 2024), avec la source et la page ; règle dans la spécification 5.3 |
 | `evenements.csv` | Événements à annoter dans Power BI (don au Fonds 1818 en 2020, moratoire Covid de l'UIB en 2020, accord salarial du secteur en 2021, retraitement BH 2024), avec la source PDF et la page |
 | `exclusions_colonnes.csv` | Colonnes de comparaison (N-1) fausses dans le document de la banque, jamais retenues, avec la raison, le fichier et la page (WIB 2023T4) ; les colonnes N-1 où produits − charges ≠ PNB sont exclues automatiquement (UIB 2023T2) |
 

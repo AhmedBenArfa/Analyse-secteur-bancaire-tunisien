@@ -442,30 +442,46 @@ avec les parties liées), rapports annuels des banques. Colonnes : `code_banque`
 source), `source`, `page`, `date_debut`, `date_fin` (période, vides quand l'actionnaire de référence n'a pas
 changé de 2019 à 2026), `remarque`. Une valeur sans source reste vide et la remarque le dit.
 
-**Règle de classement** (`actionnariat`) :
-- **public** si l'État et les entreprises publiques détiennent ensemble plus de 50 % du capital ;
-- **groupe étranger** si un groupe bancaire ou financier étranger est l'actionnaire de contrôle (majorité
-  du capital ou contrôle écrit dans une source) ;
-- sinon **privé tunisien**.
+**Règle de classement** (`actionnariat`), fondée sur le **contrôle** de la banque (décision du
+22/10/2026) :
+- **public** : contrôle par l'État et les entreprises publiques (ensemble plus de 50 % du capital ou
+  des droits de vote) ;
+- **groupe étranger** : contrôle par un groupe bancaire ou financier étranger (majorité du capital ou
+  des droits de vote, ou contrôle écrit dans une source) ;
+- **mixte** : contrôle conjoint d'actionnaires publics tunisiens et d'un actionnaire étranger (droits de
+  vote partagés, aucun ne contrôlant seul) ;
+- **privé sans contrôle étranger** : tous les autres cas, y compris quand un actionnaire étranger est le
+  premier actionnaire sans contrôler la banque.
+
+Classement et preuve du contrôle :
+
+| Banque | Actionnariat | Preuve |
+|---|---|---|
+| BNA | public | actionnaires publics 50,23 % (BNA_EF_2019-12.pdf p. 5, BNA_EF_2025-12_cmf.pdf p. 6) |
+| BH | public | État 33,37 % + entreprises publiques 22,26 % = 55,63 % (rapport annuel BH 2025, p. 19) |
+| STB | public | État 71,56 % + entreprises publiques 11,85 % (STB_EF_2025-12_cmf.pdf p. 6 ; 2019 : p. 5) |
+| ATB | groupe étranger | Arab Bank PLC 64,24 % (rapport annuel 2019 p. 14 ; fiche Bourse 2026) |
+| Attijari | groupe étranger | Attijariwafa bank, via Andalucarthage Holding (57,21 %), « détient la majorité des droits de vote et assure le contrôle » (plaquette financière d'avril 2022, p. 1) |
+| UIB | groupe étranger | Société Générale 52,34 %, « société mère » (UIB_EF_2020-12.pdf p. 38) |
+| UBCI jusqu'au 15/03/2021 | groupe étranger | BNP Paribas 50,085 % (UBCI_EF_2019-12.pdf p. 9) |
+| BTE | mixte | État (+ La Poste depuis 2024) et ADIA : 50 % des droits de vote chacun (BTE_EF_2019-12.pdf p. 25, BTE_EF_2024-12.pdf p. 32) |
+| AB, BIAT, UBCI depuis le 16/03/2021 | privé sans contrôle étranger | premiers actionnaires tunisiens (COMAR 28,76 %, groupe Mabrouk 38,75 %, groupe Carte 39,86 %) |
+| BT | privé sans contrôle étranger | BFCM 35,33 %, « influence notable » seulement (BT_EF_2019-12.pdf p. 65) |
+| Wifak | privé sans contrôle étranger | ICD 30 % sans majorité jusqu'en 2021, puis groupe Ben Ayed (39,86 %) |
 
 **Changements d'actionnaire de référence entre 2019 et 2026** (une ligne par période) :
 - UBCI : BNP Paribas (50,085 %, groupe étranger) jusqu'à la cession de 39 % au groupe Carte, réalisation
-  annoncée le 16/03/2021 (UBCI_EF_2020-12.pdf p. 5) ; ensuite groupe Carte (39,86 %, privé tunisien) ;
-- Wifak : ICD (30 %) jusqu'au 31/12/2021, puis groupe Ben Ayed (32,9 % « début 2022 », 39,86 % depuis
-  2023 ; rapports annuels 2021 p. 13, 2022 p. 16, 2023 p. 22) ;
+  annoncée le 16/03/2021 (UBCI_EF_2020-12.pdf p. 5) ; ensuite groupe Carte (39,86 %, privé sans contrôle
+  étranger) : seul changement de catégorie ;
+- Wifak : ICD (30 %) jusqu'au 31/12/2021, puis groupe Ben Ayed (32,9 % « début 2022 », 01/01/2022 retenu,
+  39,86 % depuis 2023 ; rapports annuels 2021 p. 13, 2022 p. 16, 2023 p. 22) ; catégorie inchangée ;
 - BTE : État tunisien et ADIA à parts égales (38,9 % chacun) jusqu'au 30/06/2024 ; augmentation de capital
-  au second semestre 2024 : ADIA 40,80 %, État 32,19 %, La Poste tunisienne 8,62 % (BTE_EF_2024-12.pdf p. 32).
+  au second semestre 2024 (date exacte non trouvée) : ADIA 40,80 %, État 32,19 %, La Poste tunisienne
+  8,62 % (BTE_EF_2024-12.pdf p. 32) ; catégorie inchangée (mixte).
 
-**Cas que la règle ne tranche pas** (actionnariat laissé vide, décision de l'utilisateur à prendre) :
-- BH : État 33,37 % + ETAP 16,57 % = 49,94 % ; les actionnaires de moins de 5 % (26,87 %) ne sont pas
-  détaillés, la part publique totale n'est donc pas connue ;
-- BTE : contrôle conjoint (50 % des droits de vote côté public, 50 % pour ADIA) ; part publique 38,9 %
-  puis 40,81 % du capital.
-
-Classements à confirmer : BT (BFCM 35,33 %, « influence notable », pas de contrôle : privé tunisien) ;
-Wifak 2019–2021 (ICD 30 %, premier actionnaire sans majorité : privé tunisien) ; Attijari (le lien Andalu
-Carthage Holding – Attijariwafa bank est déduit de l'engagement d'Attijariwafa bank à garder au moins 55 %,
-TJARI_EF_2019-12.pdf p. 14).
+Limites : l'actionnariat de BH en 2019 n'a pas été trouvé (seul le rapport 2025 est en ligne) ; la part
+d'UIB et l'actionnaire de référence de BIAT en 2019 ne sont pas relevés (contrôle et catégorie confirmés
+par d'autres sources, voir la colonne `remarque`).
 
 Dans Power Query, l'actionnariat d'une banque à une date est celui de la ligne dont la période couvre
 cette date (colonne conditionnelle « segment d'actionnariat » sur les faits) ; `Dim_Banque` porte
@@ -491,7 +507,7 @@ Tables de faits :
 Dimensions :
 
 - `Dim_Date` (DAX) : une ligne par jour, de 2019-01-01 à 2026-12-31
-- `Dim_Banque` : code, nom, ticker, actionnariat (public / privé tunisien / groupe étranger), groupe
+- `Dim_Banque` : code, nom, ticker, actionnariat (public / groupe étranger / mixte / privé sans contrôle étranger), groupe
 - `Banques_Actionnariat` (depuis `donnees_reference/banques.xlsx`) : une ligne par banque et par période d'actionnaire de référence (`date_debut`, `date_fin`), avec la source et la page
 - `Dim_Indicateur` : code, libellé, catégorie (activité, résultat, bilan), nature (flux / stock), ordre
 
@@ -1148,7 +1164,7 @@ Part de marché, Var PNB A/A % (Variations_Comparables) — pour un seul visuel 
 1. Historique de 27 trimestres au lieu d'une seule date.
 2. Valeurs trimestrielles et cumulées, et contrôle entre les deux.
 3. Comparaison à la médiane et à la moyenne pondérée du secteur, rangs.
-4. Segmentation par actionnariat (public, privé tunisien, groupe étranger).
+4. Segmentation par actionnariat (public, groupe étranger, mixte, privé sans contrôle étranger), selon le contrôle.
 5. Matrice de positionnement : croissance du PNB (variation comparable, 7.3) × coefficient d'exploitation harmonisé.
 6. Concentration du secteur (HHI) et parts de marché PNB et dépôts.
 7. Périodes Avant Covid / Covid / Après Covid.
