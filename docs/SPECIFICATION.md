@@ -86,7 +86,7 @@ PDF (BVMT, CMF, bulletins officiels)
                               donnees/dim_indicateur.csv, dim_banque.csv
                               donnees/controle_extraction.csv
 scripts/cours_boursiers.py ─> donnees/cours_banques.csv
-Excel de référence ─────────> referentiel.xlsx
+Fiche émetteur, états financiers, rapports annuels ─> donnees_reference/banques.xlsx (actionnariat, sourcé)
                      │
                 Power Query (ETL)
                      │
@@ -105,7 +105,7 @@ Excel de référence ─────────> referentiel.xlsx
 | `Controle_Annuel` | `controle_annuel.csv` | types ; somme des trimestres vs cumul T4, statut (`ok`, `en attente de révision`, `rupture de série`, `ecart`) |
 | `Ecarts_Annuels` | `docs/ecarts_annuels.csv` (versionné) | cause de chaque `ecart` du contrôle annuel : `categorie` (retraitement de la banque / reclassement / arrondi / erreur d'extraction / erreur dans le document de la banque), `cause`, `fichier`, `page`, `correction` ; fusion avec `Controle_Annuel` sur `banque`, `annee`, `code_indicateur` ; page « qualité des données » |
 | `Variations_Comparables` | `variations_comparables.csv` | types ; une ligne par banque × trimestre × indicateur × mesure (`trim` / `cumul`) : `valeur_N`, `valeur_N1` **du même document**, `variation_pct` ; source de toutes les variations sur un an (7.3) |
-| `Dim_Banque` | `dim_banque.csv` + Excel | fusion avec l'onglet Excel (actionnariat, groupe), nettoyage |
+| `Dim_Banque` | `dim_banque.csv` + `donnees_reference/banques.xlsx` (table `Banques`) | fusion avec la table Excel (actionnaire de référence, actionnariat, groupe) ; une banque peut avoir plusieurs lignes (périodes `date_debut` – `date_fin`) : l'actionnariat d'une période est celui de la ligne qui la couvre (5.3) |
 | `Dim_Indicateur` | `dim_indicateur.csv` | types, ordre de tri |
 | `Operations_Titres` (intermédiaire) | `operations_titres.csv` (versionné : lien *raw* GitHub, source URL) | types ; facteur = `cours_reference_publie / cloture_veille` (une valeur par banque et date d'effet) ; colonne conditionnelle `capital` (vrai sauf dividende seul) ; facteurs cumulés par banque (produit des facteurs des dates postérieures), un pour le prix (opérations sur le capital) et un pour le rendement total (toutes) |
 | `Fait_Cours` | `cours_banques.csv` | types (paramètres régionaux en-US), fusion avec `Operations_Titres` (facteur cumulé de la séance), colonnes `cloture_ajustee_prix` et `cloture_ajustee_rendement` = clôture × facteur cumulé, `Rendement` (variation de la clôture ajustée d'une séance à l'autre ; dernière clôture connue quand elle est vide) ; colonne conditionnelle `sans_transaction` (statut contenant « sans transaction », mesure de liquidité 7.5) ; `statut` gardé pour la page qualité |
@@ -432,6 +432,45 @@ Excel de référence ─────────> referentiel.xlsx
 - **Nommage** : étapes renommées en français (« Types modifiés », « Filtre colonnes utiles »…).
 - Désactiver le chargement des requêtes intermédiaires.
 
+### 5.3 Actionnariat des banques (`donnees_reference/banques.xlsx`)
+
+Fichier versionné, rempli à partir de sources officielles uniquement (22/10/2026) : fiche émetteur de
+la Bourse de Tunis (`tunis-stockexchange.com/informations-<banque>`, rubrique 4 « Principaux
+actionnaires », date de l'AGO), états financiers annuels (note sur la structure du capital, conventions
+avec les parties liées), rapports annuels des banques. Colonnes : `code_banque`, `nom`,
+`actionnaire_reference`, `part_capital_pct`, `actionnariat`, `groupe`, `date_reference` (date de la
+source), `source`, `page`, `date_debut`, `date_fin` (période, vides quand l'actionnaire de référence n'a pas
+changé de 2019 à 2026), `remarque`. Une valeur sans source reste vide et la remarque le dit.
+
+**Règle de classement** (`actionnariat`) :
+- **public** si l'État et les entreprises publiques détiennent ensemble plus de 50 % du capital ;
+- **groupe étranger** si un groupe bancaire ou financier étranger est l'actionnaire de contrôle (majorité
+  du capital ou contrôle écrit dans une source) ;
+- sinon **privé tunisien**.
+
+**Changements d'actionnaire de référence entre 2019 et 2026** (une ligne par période) :
+- UBCI : BNP Paribas (50,085 %, groupe étranger) jusqu'à la cession de 39 % au groupe Carte, réalisation
+  annoncée le 16/03/2021 (UBCI_EF_2020-12.pdf p. 5) ; ensuite groupe Carte (39,86 %, privé tunisien) ;
+- Wifak : ICD (30 %) jusqu'au 31/12/2021, puis groupe Ben Ayed (32,9 % « début 2022 », 39,86 % depuis
+  2023 ; rapports annuels 2021 p. 13, 2022 p. 16, 2023 p. 22) ;
+- BTE : État tunisien et ADIA à parts égales (38,9 % chacun) jusqu'au 30/06/2024 ; augmentation de capital
+  au second semestre 2024 : ADIA 40,80 %, État 32,19 %, La Poste tunisienne 8,62 % (BTE_EF_2024-12.pdf p. 32).
+
+**Cas que la règle ne tranche pas** (actionnariat laissé vide, décision de l'utilisateur à prendre) :
+- BH : État 33,37 % + ETAP 16,57 % = 49,94 % ; les actionnaires de moins de 5 % (26,87 %) ne sont pas
+  détaillés, la part publique totale n'est donc pas connue ;
+- BTE : contrôle conjoint (50 % des droits de vote côté public, 50 % pour ADIA) ; part publique 38,9 %
+  puis 40,81 % du capital.
+
+Classements à confirmer : BT (BFCM 35,33 %, « influence notable », pas de contrôle : privé tunisien) ;
+Wifak 2019–2021 (ICD 30 %, premier actionnaire sans majorité : privé tunisien) ; Attijari (le lien Andalu
+Carthage Holding – Attijariwafa bank est déduit de l'engagement d'Attijariwafa bank à garder au moins 55 %,
+TJARI_EF_2019-12.pdf p. 14).
+
+Dans Power Query, l'actionnariat d'une banque à une date est celui de la ligne dont la période couvre
+cette date (colonne conditionnelle « segment d'actionnariat » sur les faits) ; `Dim_Banque` porte
+l'actionnariat actuel.
+
 ## 6. Modèle en étoile
 
 Tables de faits :
@@ -453,6 +492,7 @@ Dimensions :
 
 - `Dim_Date` (DAX) : une ligne par jour, de 2019-01-01 à 2026-12-31
 - `Dim_Banque` : code, nom, ticker, actionnariat (public / privé tunisien / groupe étranger), groupe
+- `Banques_Actionnariat` (depuis `donnees_reference/banques.xlsx`) : une ligne par banque et par période d'actionnaire de référence (`date_debut`, `date_fin`), avec la source et la page
 - `Dim_Indicateur` : code, libellé, catégorie (activité, résultat, bilan), nature (flux / stock), ordre
 
 Relations (1 → plusieurs, filtre simple) :
