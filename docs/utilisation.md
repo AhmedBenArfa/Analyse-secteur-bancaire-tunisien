@@ -196,7 +196,20 @@ vrais documents demandent les PDF de `donnees/` ; ils sont sautés s'ils sont ab
 - `docs/ecarts_annuels.csv` : cause et source de chaque écart du contrôle annuel ; un nouvel écart
   fait échouer `test_ecarts_annuels_expliques` tant qu'il n'y est pas expliqué.
 
-## 8. Documents PDF de `docs/`
+## 8. Données publiées (`donnees_publiees/`)
+
+```
+python scripts/publier_donnees.py
+```
+
+Régénère le dossier versionné `donnees_publiees/` à partir de `donnees/` : les CSV finaux lus par
+Power BI (indicateurs, versions, variations comparables, contrôles, états financiers, cours,
+dimensions, manifestes), sans PDF ni archive. La colonne `fichier` des manifestes et du contrôle des
+états financiers est ramenée au nom du fichier. La commande refuse un fichier de plus de 50 Mo, un
+chemin local ou un fichier non décrit dans `donnees_publiees/LISEZMOI.md`. À relancer après chaque
+extraction, avant le commit.
+
+## 9. Documents PDF de `docs/`
 
 ```
 python scripts/generer_pdf.py
@@ -207,7 +220,7 @@ Régénère `docs/Specification_projet.pdf` (rendu de `docs/SPECIFICATION.md`) e
 environ une minute). À relancer après chaque extraction ou modification de la spécification.
 Conversion par Microsoft Edge en mode headless (chemin modifiable par la variable `EDGE`).
 
-## 9. Avant de publier (push)
+## 10. Avant de publier (push)
 
 ```
 python scripts/audit_publication.py
@@ -217,5 +230,5 @@ Le dépôt est public. L'audit lit tout l'historique git, l'index et les nouveau
 fichier suivi ne doit correspondre à une exclusion (`.gitignore`, `.git/info/exclude`), aucun nom
 interdit, secret ou chemin personnel ne doit apparaître (texte, texte et métadonnées des PDF,
 contenu des fichiers Excel), ni dans les messages de commit ; les adresses e-mail trouvées sont
-listées. Les noms interdits sont lus dans `.git/info/noms_interdits` (fichier local, un nom par
+listées ; un fichier suivi de plus de 50 Mo fait aussi échouer l'audit. Les noms interdits sont lus dans `.git/info/noms_interdits` (fichier local, un nom par
 ligne). Code de sortie 1 en cas de problème.

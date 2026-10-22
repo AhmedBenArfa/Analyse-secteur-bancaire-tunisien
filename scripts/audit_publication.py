@@ -2,7 +2,7 @@
 """Utilisation : python scripts/audit_publication.py
 Audit avant chaque push (le dépôt est public), en lecture seule :
   1. aucun fichier suivi ne correspond à une exclusion (.gitignore, .git/info/exclude) : données
-     locales et fichiers de travail jamais publiés ;
+     locales et fichiers de travail jamais publiés ; aucun fichier de plus de 50 Mo ;
   2. chaque fichier de tout l'historique git, de l'index et des fichiers nouveaux non ignorés
      (texte, texte et métadonnées des PDF, XML des fichiers xlsx/zip) est cherché pour des noms
      interdits, des secrets (jetons, clés, mots de passe) et des chemins personnels ;
@@ -96,8 +96,11 @@ def main():
     # 1. fichiers suivis qui devraient être exclus
     suivis_exclus = git("ls-files", "-ci", "--exclude-standard").decode("utf-8").split()
     problemes += [f"fichier suivi alors qu'il est exclu : {c}" for c in suivis_exclus]
-    print(f"1. Fichiers suivis : {len(git('ls-files').split())}, dont exclus par .gitignore ou "
-          f".git/info/exclude : {len(suivis_exclus)}")
+    suivis = git("ls-files", "-co", "--exclude-standard").decode("utf-8").splitlines()
+    gros = [c for c in suivis if (RACINE / c).exists() and (RACINE / c).stat().st_size > 50 * 1024 * 1024]
+    problemes += [f"fichier de plus de 50 Mo : {c}" for c in gros]
+    print(f"1. Fichiers suivis ou nouveaux : {len(suivis)}, dont exclus par .gitignore ou "
+          f".git/info/exclude : {len(suivis_exclus)}, de plus de 50 Mo : {len(gros)}")
 
     # 2. contenu de chaque fichier, et chemins
     trouve, n, temoin = collections.defaultdict(set), 0, 0

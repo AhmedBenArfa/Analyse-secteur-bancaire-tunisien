@@ -1,0 +1,169 @@
+﻿banque;arrete;type;statut;resultat_net_mdt;total_actif_mdt;capitaux_propres_mdt;alertes;fichier;recoupement_trimestriel;modifications_comptables_mdt;resultat_apres_modifications_mdt
+AB;2019-12;annuel;ok;145.165;8951.913;1014.548;;AB_EF_2019-12.pdf;non comparable (31/12 après affectation du résultat);0.0;145.165
+AB;2020-06;semestriel;ok;38.94;8805.266;1053.454;;AB_EF_2020-06.pdf;ok;0.0;38.94
+AB;2020-12;annuel;ok;99.659;9177.571;1113.951;;AB_EF_2020-12.pdf;non comparable (31/12 après affectation du résultat);0.0;99.659
+AB;2021-06;semestriel;ok;69.235;9660.428;1126.09;;AB_EF_2021-06.pdf;ok;0.0;69.235
+AB;2021-12;annuel;ok;129.655;9543.41;1186.243;;AB_EF_2021-12.pdf;non comparable (31/12 après affectation du résultat);0.0;129.655
+AB;2022-06;semestriel;ok;84.112;10101.198;1231.733;;AB_EF_2022-06.pdf;ok;0.0;84.112
+AB;2022-12;annuel;ok;154.879;10406.77;1302.173;;AB_EF_2022-12.pdf;non comparable (31/12 après affectation du résultat);0.0;154.879
+AB;2023-06;semestriel;ok;112.604;10994.813;1360.292;;AB_EF_2023-06.pdf;ok;0.0;112.604
+AB;2023-12;annuel;ok;194.871;10996.093;1442.273;;AB_EF_2023-12.pdf;non comparable (31/12 après affectation du résultat);0.0;194.871
+AB;2024-06;semestriel;ok;124.607;11318.022;1469.16;;AB_EF_2024-06.pdf;ok;;124.607
+AB;2024-12;annuel;ok;229.957;11855.711;1574.007;;AB_EF_2024-12.pdf;non comparable (31/12 après affectation du résultat);;
+AB;2025-06;semestriel;ok;130.897;12348.844;1589.673;;AB_EF_2025-06.pdf;ok;;
+AB;2025-12;annuel;ok;248.652;12569.041;1707.363;;AB_EF_2025-12_cmf.pdf;non comparable (31/12 après affectation du résultat);;
+AB;2026-06;semestriel;ok;161.947;13191.512;1743.545;;AB_EF_2026-06_cmf.pdf;ok;;
+ATB;2019-12;annuel;ok;6.3;7150.364;545.754;;ATB_EF_2019-12.pdf;ok;;6.3
+ATB;2020-06;semestriel;ok;5.134;7337.675;550.889;;ATB_EF_2020-06_cmf.pdf;ok;0.0;5.134
+ATB;2020-12;annuel;ok;8.198;7399.214;553.952;;ATB_EF_2020-12.pdf;ok;;8.198
+ATB;2021-06;semestriel;ok;1.661;7830.327;555.613;;ATB_EF_2021-06.pdf;ok;0.0;1.661
+ATB;2021-12;annuel;ok;-68.502;7660.712;555.45;;ATB_EF_2021-12.pdf;ok;;-68.502
+ATB;2022-06;semestriel;ok;8.478;7751.995;563.928;;ATB_EF_2022-06.pdf;ok;0.0;8.478
+ATB;2022-12;annuel;ok;11.397;7807.412;566.847;;ATB_EF_2022-12.pdf;ok;;11.397
+ATB;2023-06;semestriel;ok;10.363;7765.185;577.211;;ATB_EF_2023-06.pdf;ok;0.0;10.363
+ATB;2023-12;annuel;ok;-9.406;7631.376;557.442;;ATB_EF_2023-12.pdf;ok;;-9.406
+ATB;2024-06;semestriel;ok;12.409;7543.697;569.851;;ATB_EF_2024-06.pdf;ok;0.0;12.409
+ATB;2024-12;annuel;ok;10.218;8381.908;567.66;;ATB_EF_2024-12.pdf;ok;;10.218
+ATB;2025-06;semestriel;ok;2.567;7995.376;570.227;;ATB_EF_2025-06.pdf;ok;0.0;2.567
+ATB;2025-12;annuel;ok;-30.918;8089.4;613.742;;ATB_EF_2025-12_cmf.pdf;ecart -35.543 MDT (EF 613.742 résultat inclus, trimestriel 649.285, ATB_2025T4.pdf);;-30.918
+ATB;2026-06;semestriel;ok;-27.595;7914.252;586.147;;ATB_EF_2026-06_cmf.pdf;ecart -4.344 MDT (EF 586.147 résultat inclus, trimestriel 590.491, ATB_2026T2.pdf);0.0;-27.595
+BH;2019-12;annuel;echec;;;;RES_NET introuvable | TOTAL_ACTIF introuvable | CAP_PROPRES_EF introuvable | pages en image (états scannés ?) : p.2,3,4,12,13,14,15,16,17,18,19,20;BH_EF_2019-12_cmf.pdf;incomplet;;
+BH;2020-06;semestriel;ok;44.034;12410.496;1025.29;;BH_EF_2020-06_cmf.pdf;ok;0.0;44.034
+BH;2020-12;annuel;ok;72.943;12243.399;1054.552;;BH_EF_2020-12.pdf;ok;0.0;72.943
+BH;2021-06;semestriel;ok;63.877;12092.231;1090.099;;BH_EF_2021-06.pdf;ok;0.0;63.877
+BH;2021-12;annuel;ok;134.734;12405.184;1161.408;;BH_EF_2021-12.pdf;ok;;
+BH;2022-06;semestriel;ok;80.361;12847.539;1196.893;;BH_EF_2022-06.pdf;ok;0.0;80.361
+BH;2022-12;annuel;ok;118.711;13626.285;1235.523;;BH_EF_2022-12.pdf;ok;0.0;118.711
+BH;2023-06;semestriel;ok;59.096;13820.396;1252.054;;BH_EF_2023-06.pdf;ok;0.0;59.096
+BH;2023-12;annuel;ok;140.013;13514.862;1333.361;;BH_EF_2023-12.pdf;ok;0.0;140.013
+BH;2024-06;semestriel;ok;77.591;14414.258;1358.876;;BH_EF_2024-06.pdf;ok;0.0;77.591
+BH;2024-12;annuel;ok;70.404;14476.639;1352.085;;BH_EF_2024-12.pdf;ok;0.0;70.404
+BH;2025-06;semestriel;ok;54.385;15022.093;1387.604;;BH_EF_2025-06.pdf;ok;0.0;54.385
+BH;2025-12;annuel;ok;39.769;15244.878;1373.273;;BH_EF_2025-12_cmf.pdf;ok;0.0;39.769
+BH;2026-06;semestriel;ok;15.225;15361.765;1378.82;;BH_EF_2026-06_cmf.pdf;ok;-10.185;5.04
+BIAT;2019-12;annuel;ok;333.006;16331.766;1471.578;;BIAT_EF_2019-12.pdf;non comparable (31/12 après affectation du résultat);;333.006
+BIAT;2020-06;semestriel;ok;102.132;16202.828;1573.915;;BIAT_EF_2020-06.pdf;ok;;102.132
+BIAT;2020-12;annuel;ok;281.842;17874.418;1753.926;;BIAT_EF_2020-12.pdf;non comparable (31/12 après affectation du résultat);;281.842
+BIAT;2021-06;semestriel;ok;111.735;18013.527;1687.344;;BIAT_EF_2021-06_cmf.pdf;ok;;111.735
+BIAT;2021-12;annuel;ok;266.84;19229.873;1842.76;;BIAT_EF_2021-12.pdf;non comparable (31/12 après affectation du résultat);;266.84
+BIAT;2022-06;semestriel;ok;208.748;19687.172;1866.105;;BIAT_EF_2022-06.pdf;ok;;208.748
+BIAT;2022-12;annuel;ok;299.676;21115.024;1957.25;;BIAT_EF_2022-12.pdf;non comparable (31/12 après affectation du résultat);;299.676
+BIAT;2023-06;semestriel;ok;222.891;21545.96;1973.333;;BIAT_EF_2023-06.pdf;ok;;222.891
+BIAT;2023-12;annuel;ok;331.444;22944.526;2082.12;;BIAT_EF_2023-12.pdf;non comparable (31/12 après affectation du résultat);;331.444
+BIAT;2024-06;semestriel;ok;219.743;22841.287;2087.999;;BIAT_EF_2024-06.pdf;ok;;219.743
+BIAT;2024-12;annuel;ok;357.754;24996.225;2226.391;;BIAT_EF_2024-12.pdf;non comparable (31/12 après affectation du résultat);;357.754
+BIAT;2025-06;semestriel;ok;246.08;25995.832;2228.186;;BIAT_EF_2025-06.pdf;ecart -1.281 MDT (EF 1982.106 hors résultat, trimestriel 1983.387, BIAT_2026T2.pdf, après affectation du résultat + résultat de la période non inclus);;246.08
+BIAT;2025-12;annuel;ok;385.264;26606.988;2367.818;;BIAT_EF_2025-12_cmf.pdf;non comparable (31/12 après affectation du résultat);;385.264
+BIAT;2026-06;semestriel;ok;271.404;28038.964;2394.95;;BIAT_EF_2026-06_cmf.pdf;ecart +0.067 MDT (EF 2123.546 hors résultat, trimestriel 2123.479, BIAT_2026T2.pdf, après affectation du résultat + résultat de la période non inclus);;271.404
+BNA;2019-12;annuel;ok;123.433;13015.194;1522.944;;BNA_EF_2019-12.pdf;ok;;
+BNA;2020-06;semestriel;ok;66.803;13549.165;1590.318;;BNA_EF_2020-06_cmf.pdf;ok;;
+BNA;2020-12;annuel;ok;102.283;14422.115;1626.199;;BNA_EF_2020-12.pdf;ok;;
+BNA;2021-06;semestriel;ok;94.782;15217.074;1689.663;;BNA_EF_2021-06.pdf;ok;;
+BNA;2021-12;annuel;ok;163.145;16909.196;1758.397;;BNA_EF_2021-12.pdf;ok;;
+BNA;2022-06;semestriel;ok;110.275;17795.011;1815.453;;BNA_EF_2022-06.pdf;ok;;
+BNA;2022-12;annuel;ok;159.251;19307.194;1864.049;;BNA_EF_2022-12.pdf;ok;;
+BNA;2023-06;semestriel;ok;90.226;20025.834;1903.552;;BNA_EF_2023-06.pdf;ok;;
+BNA;2023-12;annuel;ok;190.013;20468.708;2004.283;;BNA_EF_2023-12.pdf;ok;;
+BNA;2024-06;semestriel;ok;132.749;20829.457;2038.863;;BNA_EF_2024-06.pdf;ok;-40.975;91.774
+BNA;2024-12;annuel;ok;254.557;22459.08;2161.58;;BNA_EF_2024-12.pdf;ok;-40.975;213.582
+BNA;2025-06;semestriel;ok;155.069;23816.212;2235.791;;BNA_EF_2025-06.pdf;ok;-17.751;137.318
+BNA;2025-12;annuel;ok;274.544;25039.508;2372.903;;BNA_EF_2025-12_cmf.pdf;ecart +17.232 MDT (EF 2098.359 hors résultat, trimestriel 2081.127, BNA_2025T4.pdf, résultat de la période non inclus);0.0;274.544
+BNA;2026-06;semestriel;ok;156.332;25474.834;2458.184;;BNA_EF_2026-06_cmf.pdf;ecart +0.605 MDT (EF 2301.852 hors résultat, trimestriel 2301.247, BNA_2026T2.pdf, résultat de la période non inclus);0.0;156.332
+BT;2019-12;annuel;ok;135.29;6022.87;918.366;;BT_EF_2019-12.pdf;ok;;
+BT;2020-06;semestriel;ok;36.489;6054.297;954.855;;BT_EF_2020-06.pdf;ok;;
+BT;2020-12;annuel;ok;102.288;6286.476;1020.654;;BT_EF_2020-12.pdf;ok;;
+BT;2021-06;semestriel;ok;45.773;6542.751;987.677;;BT_EF_2021-06.pdf;ok;;
+BT;2021-12;annuel;ok;161.362;6630.314;1103.266;;BT_EF_2021-12.pdf;ok;;
+BT;2022-06;semestriel;ok;65.804;6832.498;1106.07;;BT_EF_2022-06.pdf;ok;;
+BT;2022-12;annuel;ok;166.317;7210.529;1206.583;;BT_EF_2022-12.pdf;ok;;
+BT;2023-06;semestriel;ok;76.397;7483.398;1207.38;;BT_EF_2023-06.pdf;ok;;
+BT;2023-12;annuel;ok;170.327;7718.521;1301.31;;BT_EF_2023-12.pdf;ok;;
+BT;2024-06;semestriel;ok;81.171;7934.298;1304.182;;BT_EF_2024-06.pdf;ok;;
+BT;2024-12;annuel;ok;188.415;8638.841;1411.425;;BT_EF_2024-12.pdf;ok;;
+BT;2025-06;semestriel;ok;85.016;8646.449;1401.942;;BT_EF_2025-06.pdf;ok;;
+BT;2025-12;annuel;ok;190.265;8884.449;1507.191;;BT_EF_2025-12_cmf.pdf;ok;;
+BT;2026-06;semestriel;ok;95.616;8930.007;1508.306;;BT_EF_2026-06_cmf.pdf;ok;;
+BTE;2019-12;annuel;ok;5.913;1128.775;137.023;;BTE_EF_2019-12.pdf;ecart -2.959 MDT (EF 137.023 résultat inclus, trimestriel 139.982, BTE_2019T4.pdf);;
+BTE;2020-06;semestriel;ok;-7.204;1086.262;129.863;;BTE_EF_2020-06.pdf;pas de valeur trimestrielle;;
+BTE;2020-12;annuel;ok;-17.165;1198.454;119.875;;BTE_EF_2020-12.pdf;pas de valeur trimestrielle;;
+BTE;2021-06;semestriel;ok;-4.98;1207.057;114.89;;BTE_EF_2021-06.pdf;ok;;
+BTE;2021-12;annuel;ok;-31.671;1274.233;88.178;;BTE_EF_2021-12.pdf;pas de valeur trimestrielle;;
+BTE;2022-06;semestriel;ok;-12.843;1352.24;75.317;;BTE_EF_2022-06.pdf;ecart -0.659 MDT (EF 75.317 résultat inclus, trimestriel 75.976, BTE_2022T2.pdf);;
+BTE;2022-12;annuel;ok;-30.006;1321.276;89.914;;BTE_EF_2022-12.pdf;pas de valeur trimestrielle;;
+BTE;2023-06;semestriel;ok;-15.948;1366.65;73.709;;BTE_EF_2023-06.pdf;ok;;
+BTE;2023-12;annuel;ok;-36.327;1452.807;52.971;;BTE_EF_2023-12.pdf;ok;;
+BTE;2024-06;semestriel;ok;-11.296;1456.792;41.704;;BTE_EF_2024-06.pdf;ok;;
+BTE;2024-12;annuel;ok;-27.904;1540.056;38.903;;BTE_EF_2024-12.pdf;ok;-4.202;-32.106
+BTE;2025-06;semestriel;ok;-5.453;1646.397;33.476;;BTE_EF_2025-06.pdf;ok;-4.202;-5.453
+BTE;2025-12;annuel;ok;-9.9;1665.695;29.054;;BTE_EF_2025-12_cmf.pdf;ecart +3.227 MDT (EF 29.054 résultat inclus, trimestriel 25.827, BTE_2025T4.pdf);;
+BTE;2026-06;semestriel;ok;1.408;1742.986;29.125;;BTE_EF_2026-06_cmf.pdf;ecart -0.051 MDT (EF 29.125 résultat inclus, trimestriel 29.176, BTE_2026T2.pdf);-1.36;0.048
+STB;2019-12;annuel;ok;157.347;11301.86;1027.91;;STB_EF_2019-12.pdf;ok;0.0;157.347
+STB;2020-06;semestriel;ok;65.031;11758.077;1092.998;;STB_EF_2020-06.pdf;ok;0.0;65.031
+STB;2020-12;annuel;ok;72.159;12249.436;1100.124;;STB_EF_2020-12_cmf.pdf;ok;0.0;72.159
+STB;2021-06;semestriel;ok;59.084;12369.597;1159.108;;STB_EF_2021-06.pdf;ok;0.0;59.084
+STB;2021-12;annuel;ok;115.468;13505.756;1215.334;;STB_EF_2021-12.pdf;ok;0.0;115.468
+STB;2022-06;semestriel;ok;40.055;13679.318;1255.133;;STB_EF_2022-06.pdf;ecart +11.506 MDT (EF 1215.078 hors résultat, trimestriel 1203.572, STB_2023T2.pdf);0.0;40.055
+STB;2022-12;annuel;ok;93.083;14687.548;1296.364;;STB_EF_2022-12.pdf;ok;-11.506;81.577
+STB;2023-06;semestriel;illisible (image);;;;;STB_EF_2023-06.pdf;;;
+STB;2023-12;annuel;ok;50.601;14596.617;1220.609;;STB_EF_2023-12.pdf;ecart +18.835 MDT (EF 1170.008 hors résultat, trimestriel 1151.173, STB_2024T4.pdf);-8.457;42.144
+STB;2024-06;semestriel;ok;14.443;14337.162;1215.668;;STB_EF_2024-06.pdf;ok;-18.835;-4.392
+STB;2024-12;annuel;ok;82.5;14934.035;1283.202;;STB_EF_2024-12.pdf;ok;-18.835;63.665
+STB;2025-06;semestriel;ok;22.318;15236.092;1303.51;;STB_EF_2025-06.pdf;ok;0.0;22.318
+STB;2025-12;annuel;ok;65.93;15359.875;1343.516;;STB_EF_2025-12_cmf.pdf;ecart -0.546 MDT (EF 1277.586 hors résultat, trimestriel 1278.132, STB_2025T4.pdf);0.0;65.93
+STB;2026-06;semestriel;ok;9.062;15900.74;1320.109;;STB_EF_2026-06_cmf.pdf;ecart +0.437 MDT (EF 1311.047 hors résultat, trimestriel 1310.610, STB_2026T2.pdf);;9.062
+TJARI;2019-12;annuel;ok;174.196;9310.456;720.27;;TJARI_EF_2019-12.pdf;ok;;174.196
+TJARI;2020-06;semestriel;ok;71.455;9434.348;791.769;;TJARI_EF_2020-06.pdf;ok;;71.455
+TJARI;2020-12;annuel;ok;131.712;9684.942;852.112;;TJARI_EF_2020-12.pdf;ok;;131.712
+TJARI;2021-06;semestriel;ok;65.136;10265.242;807.326;;TJARI_EF_2021-06_cmf.pdf;ecart +131.712 MDT (EF 742.190 hors résultat, trimestriel 610.478, TJARI_2022T2.pdf, résultat de la période non inclus);;65.136
+TJARI;2021-12;annuel;ok;160.045;10252.049;902.319;;TJARI_EF_2021-12.pdf;ok;;160.045
+TJARI;2022-06;semestriel;ok;95.195;10694.517;869.263;;TJARI_EF_2022-06.pdf;ok;;95.195
+TJARI;2022-12;annuel;ok;186.057;10903.298;960.202;;TJARI_EF_2022-12.pdf;ok;;186.057
+TJARI;2023-06;semestriel;ok;109.149;11070.27;906.454;;TJARI_EF_2023-06.pdf;ok;;109.149
+TJARI;2023-12;annuel;ok;212.023;11641.543;1058.592;;TJARI_EF_2023-12.pdf;ok;;212.023
+TJARI;2024-06;semestriel;ok;120.442;12223.364;995.767;;TJARI_EF_2024-06.pdf;ok;;120.442
+TJARI;2024-12;annuel;ok;232.388;12203.678;1107.782;;TJARI_EF_2024-12.pdf;ok;;
+TJARI;2025-06;semestriel;ok;116.183;12965.741;1014.027;;TJARI_EF_2025-06.pdf;ok;;116.183
+TJARI;2025-12;annuel;ok;232.101;13762.592;1130.003;;TJARI_EF_2025-12.pdf;ok;;
+TJARI;2026-06;semestriel;ok;123.056;14014.194;1043.118;"information : TOTAL_ACTIF imprimé « 12 983 60 » dans le PDF (p.2, colonne N-1) ; déduit du total des capitaux propres et passifs de la même colonne (12 983 608)";TJARI_EF_2026-06_cmf.pdf;ok;;
+UBCI;2019-12;annuel;ok;57.498;3543.296;387.467;;UBCI_EF_2019-12.pdf;ok;0.0;57.498
+UBCI;2020-06;semestriel;ok;17.638;3566.783;405.105;;UBCI_EF_2020-06.pdf;ok;0.0;17.638
+UBCI;2020-12;annuel;ok;42.125;3470.722;429.592;;UBCI_EF_2020-12.pdf;ok;0.0;42.125
+UBCI;2021-06;semestriel;ok;12.178;3830.938;421.769;;UBCI_EF_2021-06.pdf;ok;0.0;12.178
+UBCI;2021-12;annuel;ok;37.608;3975.008;447.199;;UBCI_EF_2021-12.pdf;ok;0.0;37.608
+UBCI;2022-06;semestriel;ok;27.808;4227.833;460.006;;UBCI_EF_2022-06.pdf;ok;0.0;27.808
+UBCI;2022-12;annuel;ok;59.215;4177.564;491.413;;UBCI_EF_2022-12.pdf;ok;0.0;59.215
+UBCI;2023-06;semestriel;ok;25.2;4456.042;491.611;;UBCI_EF_2023-06.pdf;ok;0.0;25.2
+UBCI;2023-12;annuel;ok;52.929;4552.517;519.34;;UBCI_EF_2023-12.pdf;ok;0.0;52.929
+UBCI;2024-06;semestriel;ok;23.106;4788.061;517.444;;UBCI_EF_2024-06.pdf;ok;0.0;23.106
+UBCI;2024-12;annuel;ok;54.093;5175.899;548.431;;UBCI_EF_2024-12.pdf;ok;0.0;54.093
+UBCI;2025-06;semestriel;ok;27.365;5687.13;550.794;;UBCI_EF_2025-06.pdf;ok;0.0;27.365
+UBCI;2025-12;annuel;ok;65.851;5644.261;589.28;;UBCI_EF_2025-12_cmf.pdf;ok;0.0;65.851
+UBCI;2026-06;semestriel;ok;30.024;6218.165;593.302;;UBCI_EF_2026-06_cmf.pdf;ok;0.0;30.024
+UIB;2019-12;annuel;ok;117.058;6303.588;623.494;;UIB_EF_2019-12.pdf;ok;;
+UIB;2020-06;semestriel;ok;-41.182;6341.731;582.365;;UIB_EF_2020-06.pdf;ok;;
+UIB;2020-12;annuel;ok;61.62;6459.243;685.194;;UIB_EF_2020-12.pdf;ok;;
+UIB;2021-06;semestriel;ok;35.096;6460.437;696.201;;UIB_EF_2021-06_cmf.pdf;ok;;
+UIB;2021-12;annuel;ok;81.369;6777.766;742.506;;UIB_EF_2021-12.pdf;ok;;
+UIB;2022-06;semestriel;ok;67.21;6778.972;785.649;;UIB_EF_2022-06.pdf;ok;;
+UIB;2022-12;annuel;ok;132.172;7207.184;850.577;;UIB_EF_2022-12.pdf;ok;;
+UIB;2023-06;semestriel;ok;57.785;7394.314;880.827;;UIB_EF_2023-06.pdf;ok;;
+UIB;2023-12;annuel;ok;126.617;7680.911;949.839;;UIB_EF_2023-12.pdf;ok;;
+UIB;2024-06;semestriel;ok;33.271;7974.529;953.851;;UIB_EF_2024-06.pdf;ok;;
+UIB;2024-12;annuel;ok;85.707;8235.52;1006.48;;UIB_EF_2024-12.pdf;ok;;
+UIB;2025-06;semestriel;ok;49.048;8507.152;1026.351;;UIB_EF_2025-06.pdf;ok;;
+UIB;2025-12;annuel;ok;100.835;8707.067;1078.325;;UIB_EF_2025-12_cmf.pdf;ok;;
+UIB;2026-06;semestriel;ok;52.286;8746.07;1096.222;;UIB_EF_2026-06_cmf.pdf;ok;;
+WIB;2019-12;annuel;ok;-22.008;630.936;158.994;;WIB_EF_2019-12_cmf.pdf;ok;;
+WIB;2020-06;semestriel;ok;-3.145;776.549;155.851;;WIB_EF_2020-06_cmf.pdf;ecart +3.145 MDT (EF 158.996 hors résultat, trimestriel 155.851, WIB_2021T2_bulletin.pdf, résultat de la période non inclus);;
+WIB;2020-12;annuel;ok;-5.376;827.192;153.123;;WIB_EF_2020-12_cmf.pdf;ok;;
+WIB;2021-06;semestriel;ok;2.706;926.204;152.89;;WIB_EF_2021-06_cmf.pdf;ok;;
+WIB;2021-12;annuel;ok;5.342;995.219;154.927;;WIB_EF_2021-12.pdf;ok;;
+WIB;2022-06;semestriel;ok;3.266;1114.017;158.194;;WIB_EF_2022-06.pdf;ok;;
+WIB;2022-12;annuel;ok;5.27;1250.039;160.199;;WIB_EF_2022-12.pdf;ok;;
+WIB;2023-06;semestriel;ok;3.03;1325.552;163.23;;WIB_EF_2023-06.pdf;ok;;
+WIB;2023-12;annuel;ok;7.473;1461.527;167.672;;WIB_EF_2023-12.pdf;ok;;
+WIB;2024-06;semestriel;ok;2.608;1552.167;170.502;;WIB_EF_2024-06.pdf;ok;;
+WIB;2024-12;annuel;ok;9.243;1725.007;177.353;;WIB_EF_2024-12.pdf;ok;;
+WIB;2025-06;semestriel;ok;2.157;1868.528;179.513;;WIB_EF_2025-06.pdf;ok;;
+WIB;2025-12;annuel;ok;8.319;2045.577;170.666;;WIB_EF_2025-12_cmf.pdf;ecart +0.426 MDT (EF 162.347 hors résultat, trimestriel 161.921, WIB_2025T4_bulletin.pdf, résultat de la période non inclus);;
+WIB;2026-06;semestriel;ok;2.193;2199.8;172.859;;WIB_EF_2026-06_cmf.pdf;ok;;

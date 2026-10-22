@@ -1,0 +1,25 @@
+﻿code_indicateur;libelle;categorie;nature;ordre
+PROD_EXPL;Produits d'exploitation bancaire;Activité;flux;1
+INT_PERCUS;Intérêts perçus;Activité;flux;2
+COMM_PROD;Commissions en produits;Activité;flux;3
+REV_PORTEF;Revenus du portefeuille-titres;Activité;flux;4
+CHG_EXPL;Charges d'exploitation bancaire;Activité;flux;5
+INT_ENCOURUS;Intérêts encourus;Activité;flux;6
+COMM_CHG;Commissions encourues;Activité;flux;7
+PNB;Produit net bancaire;Résultat;flux;8
+AUTRES_PROD;Autres produits d'exploitation;Résultat;flux;9
+CHG_OPER;Charges opératoires;Résultat;flux;10
+FRAIS_PERS;Frais de personnel;Résultat;flux;11
+CHG_GEN;Charges générales d'exploitation;Résultat;flux;12
+DOT_AMORT;Dotations aux amortissements;Résultat;flux;13
+PORTEF;Structure du portefeuille;Bilan;stock;14
+PORTEF_COMM;Portefeuille-titres commercial;Bilan;stock;15
+PORTEF_INV;Portefeuille-titres d'investissement;Bilan;stock;16
+CREDITS;Encours des crédits à la clientèle;Bilan;stock;17
+DEPOTS;Encours des dépôts de la clientèle;Bilan;stock;18
+DEP_VUE;Dépôts à vue;Bilan;stock;19
+DEP_EPARGNE;Dépôts d'épargne;Bilan;stock;20
+DEP_TERME;Dépôts à terme et assimilés;Bilan;stock;21
+DEP_AUTRES;Autres dépôts et avoirs;Bilan;stock;22
+EMPRUNTS;Emprunts et ressources spéciales;Bilan;stock;23
+CAP_PROPRES;Capitaux propres hors résultat de la période;Bilan;stock;24

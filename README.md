@@ -116,6 +116,7 @@ un fichier Excel et une URL.
 ├── powerquery/                  requêtes Power Query (M)
 ├── dax/                         mesures DAX (à venir)
 ├── powerbi/                     projet Power BI (.pbip, à venir)
+├── donnees_publiees/            CSV finaux lus par Power BI (versionnés, régénérés par un script)
 ├── docs/
 │   ├── SPECIFICATION.md         spécification complète (modèle, mesures, pages, limites)
 │   ├── utilisation.md           mode d'emploi des scripts
@@ -123,10 +124,12 @@ un fichier Excel et une URL.
 │   ├── ecarts_annuels.csv       cause de chaque écart du contrôle annuel
 │   ├── revisions_importantes.csv
 │   └── *.pdf                    spécification et rapport d'avancement
-└── donnees/                     PDF et CSV produits par les scripts (non versionné)
+└── donnees/                     dossier de travail : PDF et CSV produits par les scripts (non versionné)
 ```
 
-Pour reproduire les données : **[docs/utilisation.md](docs/utilisation.md)**.
+Les CSV finaux sont dans [`donnees_publiees/`](donnees_publiees/LISEZMOI.md), pour que le rapport
+puisse s'ouvrir après un simple clonage du dépôt. Pour reproduire les données depuis les PDF :
+**[docs/utilisation.md](docs/utilisation.md)**.
 
 ## État d'avancement
 
@@ -163,8 +166,9 @@ publiés par les banques auprès du Conseil du Marché Financier (CMF) et de la 
 (BVMT), documents des sites des banques, archives et bulletins de cotation de la Bourse, volumes
 d'ilboursa. Les documents d'origine restent la propriété de leurs auteurs ; ils ne sont pas
 redistribués dans ce dépôt (le dossier `donnees/` n'est pas versionné) : les scripts les
-téléchargent depuis leurs adresses publiques. Les fichiers CSV du dépôt donnent, pour chaque
-valeur, le document et la page d'où elle vient.
+téléchargent depuis leurs adresses publiques. Les fichiers CSV du dépôt (`donnees_publiees/`)
+donnent, pour chaque valeur, le document et la page d'où elle vient, et les manifestes l'adresse
+de chaque document.
 
 ## Licence
 
