@@ -382,3 +382,41 @@ UIB;2021T2;UIB_2021T2.pdf;1;DOT_AMORT;cumul_N;5833;milliers de dinars;5.833;
 UIB;2021T2;UIB_2021T2.pdf;1;CREDITS;cumul_N;5823014;milliers de dinars;5823.014;
 UIB;2021T2;UIB_2021T2.pdf;1;DEPOTS;cumul_N;5158762;milliers de dinars;5158.762;
 UIB;2021T2;UIB_2021T2.pdf;1;CAP_PROPRES;cumul_N;661106;milliers de dinars;661.106;
+STB;2026T3;STB_2026T3.pdf;1;PROD_EXPL;trim_N;372217305;dinars;372.217305;
+STB;2026T3;STB_2026T3.pdf;1;PROD_EXPL;cumul_N;1035860843;dinars;1035.860843;
+STB;2026T3;STB_2026T3.pdf;1;CHG_EXPL;cumul_N;528172524;dinars;528.172524;libellé en lettres espacées (« Char ges »)
+STB;2026T3;STB_2026T3.pdf;1;PNB;trim_N;193988486;dinars;193.988486;libellé en lettres espacées (« Pr oduit net bancair e »)
+STB;2026T3;STB_2026T3.pdf;1;PNB;cumul_N;507688319;dinars;507.688319;
+STB;2026T3;STB_2026T3.pdf;1;PNB;cumul_N1;522716552;dinars;522.716552;
+STB;2026T3;STB_2026T3.pdf;1;PNB;exercice_N1;698552101;dinars;698.552101;colonne « VAR% » entre le 30/09/2025 et le 31/12/2025
+STB;2026T3;STB_2026T3.pdf;1;CHG_OPER;trim_N;89739240;dinars;89.73924;
+STB;2026T3;STB_2026T3.pdf;1;CHG_OPER;cumul_N;268426770;dinars;268.42677;
+STB;2026T3;STB_2026T3.pdf;1;FRAIS_PERS;cumul_N;202093887;dinars;202.093887;
+STB;2026T3;STB_2026T3.pdf;1;CHG_GEN;cumul_N;66332883;dinars;66.332883;
+STB;2026T3;STB_2026T3.pdf;1;CREDITS;cumul_N;8625301372;dinars;8625.301372;
+STB;2026T3;STB_2026T3.pdf;1;DEPOTS;cumul_N;13209132800;dinars;13209.1328;
+STB;2026T3;STB_2026T3.pdf;1;CAP_PROPRES;cumul_N;1308632489;dinars;1308.632489;
+TJARI;2021T2;TJARI_2021T2.pdf;1;PNB;trim_N;129131;milliers de dinars;129.131;document trouvé sur tunis-stockexchange.com le 22/10/2026
+TJARI;2021T2;TJARI_2021T2.pdf;1;PNB;cumul_N;259046;milliers de dinars;259.046;
+TJARI;2021T2;TJARI_2021T2.pdf;1;PNB;cumul_N1;244790;milliers de dinars;244.790;30/06/2020 retraité (*)
+TJARI;2021T2;TJARI_2021T2.pdf;1;PNB;exercice_N1;487180;milliers de dinars;487.180;
+TJARI;2021T2;TJARI_2021T2.pdf;1;CHG_OPER;trim_N;57415;milliers de dinars;57.415;
+TJARI;2021T2;TJARI_2021T2.pdf;1;CHG_OPER;cumul_N;114937;milliers de dinars;114.937;
+TJARI;2021T2;TJARI_2021T2.pdf;1;FRAIS_PERS;cumul_N;80492;milliers de dinars;80.492;
+TJARI;2021T2;TJARI_2021T2.pdf;1;CHG_GEN;cumul_N;34445;milliers de dinars;34.445;
+TJARI;2021T2;TJARI_2021T2.pdf;1;CREDITS;cumul_N;6224426;milliers de dinars;6224.426;
+TJARI;2021T2;TJARI_2021T2.pdf;1;DEPOTS;cumul_N;8575506;milliers de dinars;8575.506;
+TJARI;2021T2;TJARI_2021T2.pdf;1;CAP_PROPRES;cumul_N;742189;milliers de dinars;742.189;hors résultat de la période et de l'exercice précédent
+AB;2026T3;AB_2026T3.pdf;1;PROD_EXPL;trim_N;311740;milliers de dinars;311.740;libellé sur trois lignes, fin 8,7 pt sous les chiffres
+AB;2026T3;AB_2026T3.pdf;1;PROD_EXPL;cumul_N;982240;milliers de dinars;982.240;
+AB;2026T3;AB_2026T3.pdf;1;CHG_EXPL;cumul_N;469792;milliers de dinars;469.792;
+AB;2026T3;AB_2026T3.pdf;1;PNB;trim_N;150021;milliers de dinars;150.021;
+AB;2026T3;AB_2026T3.pdf;1;PNB;cumul_N;512448;milliers de dinars;512.448;
+AB;2026T3;AB_2026T3.pdf;1;PNB;exercice_N1;590069;milliers de dinars;590.069;
+AB;2026T3;AB_2026T3.pdf;1;CHG_OPER;trim_N;70032;milliers de dinars;70.032;
+AB;2026T3;AB_2026T3.pdf;1;CHG_OPER;cumul_N;198043;milliers de dinars;198.043;
+AB;2026T3;AB_2026T3.pdf;1;FRAIS_PERS;cumul_N;141813;milliers de dinars;141.813;
+AB;2026T3;AB_2026T3.pdf;1;CHG_GEN;cumul_N;47440;milliers de dinars;47.440;
+AB;2026T3;AB_2026T3.pdf;1;CREDITS;cumul_N;7545244;milliers de dinars;7545.244;
+AB;2026T3;AB_2026T3.pdf;1;DEPOTS;cumul_N;9312610;milliers de dinars;9312.610;
+AB;2026T3;AB_2026T3.pdf;1;CAP_PROPRES;cumul_N;1581578;milliers de dinars;1581.578;hors résultat de la période

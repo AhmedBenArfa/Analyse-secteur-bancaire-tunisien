@@ -218,6 +218,34 @@ def test_saisies_manuelles():
     assert proche(v[("REV_PORTEF", "trim_N")], 130.764489) and proche(v[("REV_PORTEF", "trim_N1")], 115.893522)
 
 
+def test_bte_t4_seuls_saisis():
+    """BTE 2021T4 et 2022T4 (tableaux en image, documents T4 suivants aussi en image) : le T4 seul
+    n'est repris nulle part, saisi le 22/10/2026. PNB du T4 : 15 339 (2021), 15 989 (2022) ; colonne
+    N-1 de 2022T4 = T4 2021 corrigé, 15 591."""
+    for tri, attendu in (("2021T4", {("PNB", "trim_N"): 15.339, ("PNB", "trim_N1"): 18.309}),
+                         ("2022T4", {("PNB", "trim_N"): 15.989, ("PNB", "trim_N1"): 15.591})):
+        chemin = cb.DOSSIER_PDF / "BTE" / f"BTE_{tri}.pdf"
+        if not chemin.exists():
+            continue
+        lignes, alertes, origine = cb.extraire_document("BTE", tri, chemin)
+        v = {(l["code_indicateur"], l["colonne"]): l["valeur_mdt"] for l in lignes}
+        assert origine == cb.ORIGINE_SAISIE
+        assert all(proche(v[k], x) for k, x in attendu.items()), (tri, v)
+
+
+def test_candidats_liste_cmf_non_publie():
+    """« non publié » : aucun nom de la liste du CMF ne porte la banque, l'année et le rang du
+    trimestre (score 0). Un PDF de la banque pour un autre trimestre de la même année n'y suffit pas."""
+    base = "https://www.cmf.tn/sites/default/files/pdfs/emetteurs/informations/indicateurs/"
+    urls = [base + "ind_2eme_trim_2026_amen_bank.pdf", base + "ind_3eme_trim_2026_bna.pdf",
+            base + "banque_de_tunisie_indic_3eme_trim_2026.pdf", base + "indic_3trim26_bh_bank.pdf"]
+    t = cb.Trimestre(2026, 3)
+    assert [s for s, _ in cb.candidats_liste_cmf("AB", t, urls, avec_score=True)] == [1]
+    for code, nom in (("BNA", "ind_3eme_trim_2026_bna.pdf"), ("BT", "banque_de_tunisie_indic_3eme_trim_2026.pdf"),
+                      ("BH", "indic_3trim26_bh_bank.pdf")):
+        assert cb.candidats_liste_cmf(code, t, urls, avec_score=True)[0] == (0, base + nom)
+
+
 def test_seuil_materialite_uib_2025():
     """UIB, PNB 2025 : 522,651 initial (T4 2025), 525,528 au 31/12 du T2 2026 (+0,55 %, document
     annoté « chiffres retraités pour les besoins de comparabilité ») : sous 2 % → retraitement_mineur,

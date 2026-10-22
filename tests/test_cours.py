@@ -54,6 +54,24 @@ REFERENCES = [
 ]
 
 
+def test_bulletin_20260923_bien_date():
+    """ilboursa diffère du bulletin du 23/09/2026 pour 7 banques : le bulletin est bien celui de la
+    séance (n° 8928 imprimé entre le 8927 du 22 et le 8929 du 24) et s'enchaîne avec ses voisins :
+    référence du jour = clôture de la veille, pour les 12 banques."""
+    jours = ("20260922", "20260923", "20260924")
+    chemins = [cbo.DOSSIER_BULLETINS / f"bull{j}.pdf" for j in jours]
+    if not all(p.exists() for p in chemins):
+        pytest.skip("bulletins de septembre 2026 non téléchargés")
+    import fitz
+    for p, (num, jour) in zip(chemins, [("8927", "mardi 22"), ("8928", "mercredi 23"), ("8929", "jeudi 24")]):
+        entete = fitz.open(p)[0].get_text()[:300]
+        assert num in entete and f"{jour} septembre 2026" in entete
+    veille, jour, lendemain = (cbo.lire_bulletin(p) for p in chemins)
+    for b in jour:
+        assert jour[b]["reference"] == veille[b]["cloture"]
+        assert lendemain[b]["reference"] == jour[b]["cloture"]
+
+
 @pytest.mark.parametrize("fichier,banque,attendu", REFERENCES)
 def test_bulletins(fichier, banque, attendu):
     p = cbo.DOSSIER_BULLETINS / fichier

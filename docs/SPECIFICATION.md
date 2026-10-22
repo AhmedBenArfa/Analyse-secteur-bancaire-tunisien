@@ -208,8 +208,20 @@ Excel de référence ─────────> referentiel.xlsx
        (BNA), +3,645 MDT (BT).
      - Attijari : pas de note sur le Fonds 1818 ; sa révision des charges opératoires 2020
        (+10,8 MDT pour l'année) vient du changement de contenu du T4 2021 (reste non détaillé
-       ajouté, colonnes N-1 retraitées, voir `gabarits.csv`). Le premier semestre 2021 manque
-       (document 2021T2 non trouvé).
+       ajouté, colonnes N-1 retraitées, voir `gabarits.csv`). Même cause pour le premier semestre
+       2021 (document 2021T2, trouvé le 22/10/2026 sur tunis-stockexchange.com) : charges
+       opératoires 114,937 MDT publiées, 143,703 dans le document 2022T2 (+25,0 %).
+
+  **Document absent** (décision du 22/10/2026) : ordre de recherche sites BVMT/CMF → liste des
+  indicateurs du CMF (`--rafraichir-liste-cmf` relit seulement les pages de tête, jusqu'à la
+  première page déjà connue : la liste va du plus récent au plus ancien) → Bulletins Officiels.
+  Statut du manifeste `non publié` quand, dans les 90 jours qui suivent la fin du trimestre, le
+  document n'est pas aux adresses habituelles (essayées dans le même lancement) et qu'aucun PDF de
+  la liste ne porte dans son nom la banque, l'année et le rang du trimestre (pas encore déposé) ;
+  `manquant` (introuvable) sinon : document listé mais qui n'est pas le bon, ou trimestre ancien
+  absent des trois sources. La liste seule ne suffit pas : le 22/10/2026, le T3 2026 de AB, ATB,
+  BIAT, BTE et UBCI était déjà en ligne au CMF sous son nom habituel mais pas encore dans la
+  liste. Dans `controle_extraction.csv` : `non publié` ou `pdf manquant`.
 
   **Document illisible** : un tableau publié en image (BH 2019T4, page 1 : 252 caractères de
   texte, 2 images) a le statut `illisible (image)` dans `controle_extraction.csv` ; sa version
@@ -221,7 +233,9 @@ Excel de référence ─────────> referentiel.xlsx
   2023T1 et 2023T3) ; repris par le document suivant : 2021T2, 2022T1, 2022T3, 2023T2, 2023T4 en
   entier, 2021T4 et 2022T4 pour le cumul annuel et les soldes seulement ; **non repris : 2020T1 à
   2020T4, 2021T1 et 2021T3** (le document de l'année suivante est lui aussi une image) : saisie
-  manuelle décidée le 17/10/2026, voir ci-dessous.
+  manuelle décidée le 17/10/2026, voir ci-dessous. **2021T4 et 2022T4** : le trimestre seul n'est
+  repris nulle part (le document T4 suivant est aussi une image) ; sans lui, les totaux du secteur
+  de ces deux trimestres seraient vides (règle des 12 banques) : documents saisis le 22/10/2026.
 
   **Saisie manuelle** (`saisies_manuelles.csv`, versionné, à la racine) : seulement pour les
   documents illisibles que le document suivant ne reprend pas, et seulement pour les indicateurs
@@ -234,10 +248,16 @@ Excel de référence ─────────> referentiel.xlsx
   manuelle` dans `controle_extraction.csv`, colonnes `source` = « saisie manuelle » et
   `verification` dans les données) et passe les contrôles de l'extraction plus un contrôle strict
   (produits − charges = PNB à 2 kDT près dans chaque colonne) ; une alerte la met en
-  `a verifier`. Contrôles faits pendant la saisie BTE (6 documents, 208 valeurs, aucune erreur) :
+  `a verifier`. Contrôles faits pendant la saisie BTE (8 documents, 264 valeurs, aucune erreur) :
   produits − charges = PNB, charges opératoires = frais de personnel + charges générales,
   colonne « Variation montant » du PDF = cumul N − cumul N-1, dépôts = somme des quatre
   catégories ; les trimestres 2020T3 sont confirmés par la colonne N-1 du document 2021T3.
+  2022T4 : trimestre saisi = cumul annuel saisi − cumul de 9 mois retenu, exactement, pour les six
+  flux. 2021T4 : totaux à 0,02 MDT près du cumul annuel − cumul de 9 mois publié au T3 2021, mais
+  frais de personnel (+0,58) et charges générales (−0,60) se compensent : reclassement de la
+  banque en cours d'année (image relue : 10 607 + 3 615 = 14 222), signalé par le statut
+  `ecart trimestre/cumul`. Les colonnes N-1 de ces documents (T4 2020, T4 2021, « données
+  corrigées ») deviennent les versions révisées de BTE 2020T4 et 2021T4.
   BTE 2020T2 : 36 valeurs relues indépendamment, `verification` = « vérifié par Ahmed Ben Arfa ».
   **Saisie partielle** d'un document lisible : quand quelques valeurs sont illisibles dans le texte
   du PDF (STB 2026T2 : revenus du portefeuille du trimestre superposés à leur libellé ; l'extraction
@@ -247,8 +267,9 @@ Excel de référence ─────────> referentiel.xlsx
   revenus du portefeuille = produits dans chaque colonne.
 
   **Valeur non disponible** : quand un document est illisible et qu'aucun autre ne reprend une
-  mesure (BTE : T4 seul de 2021 et de 2022, le document T4 de l'année suivante étant aussi une
-  image), `indicateurs_versions.csv` porte une ligne `statut_revision` = « non disponible (image) »,
+  mesure (BTE 2023T4 : autres produits d'exploitation du trimestre, absents du document 2024T4 ;
+  jusqu'au 22/10/2026 aussi le T4 seul de 2021 et de 2022, saisi depuis),
+  `indicateurs_versions.csv` porte une ligne `statut_revision` = « non disponible (image) »,
   sans valeur ni valeur retenue. Elle apparaît dans `Revisions` (page « qualité des données »),
   jamais dans `Fait_Indicateurs` : la valeur reste vide dans les graphiques, jamais à zéro (aucune
   mesure DAX ne doit remplacer un vide par 0, pas de `+ 0` ni de `COALESCE ( …, 0 )` sur les
@@ -637,7 +658,11 @@ Rang PNB             = RANKX ( ALL ( Dim_Banque ), [PNB],, DESC, DENSE )
   bulletin (statut si elles diffèrent) ; une séance d'ilboursa sans bulletin n'est pas retenue.
   En 2026 : 26 écarts, dont 14 jours de réservation (ilboursa donne le dernier cours échangé) et
   12 autres, surtout le 23/09/2026 pour 7 banques (BNA : bulletin 18,720 vérifié sur l'image,
-  ilboursa 19,630) ; le bulletin fait foi. Une séance du bulletin sans volume chez ilboursa garde
+  ilboursa 19,630) ; le bulletin fait foi. Bulletin du 23/09/2026 vérifié le 22/10/2026 : n° 8928
+  du « mercredi 23 septembre 2026 », entre le n° 8927 du 22 et le n° 8929 du 24 ; cours de
+  référence du 23 = clôtures du 22 et cours de référence du 24 = clôtures du 23 pour les 12 banques
+  (test `test_bulletin_20260923_bien_date`) : pas de bulletin mal nommé ; ilboursa concorde avec
+  les bulletins le 22 et le 24, c'est sa donnée du 23 qui diffère. Une séance du bulletin sans volume chez ilboursa garde
   un volume vide (Wifak 23/09/2026).
   Les cours, nombres de transactions et capitaux d'ilboursa ne sont pas utilisés (plus hauts et
   plus bas différents de la BVMT, « Volume MDT » estimé, cours anciens ajustés sans méthode

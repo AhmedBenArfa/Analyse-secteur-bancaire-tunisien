@@ -183,7 +183,7 @@ def rapport():
     src = ok.source.value_counts()
 
     st = ctl.statut.value_counts()
-    lus = ctl[~ctl.statut.isin(["pdf manquant", "illisible (image)"])]
+    lus = ctl[~ctl.statut.isin(["pdf manquant", "non publié", "illisible (image)"])]
     illis = ctl[ctl.statut == "illisible (image)"]
     saisis = ctl[ctl.statut == "saisie manuelle"]
 
@@ -227,13 +227,15 @@ def rapport():
     A("<h2>2. Collecte des documents</h2>")
     A("<h3>Sources et ordre de recherche</h3>")
     A(f"<p>Pour chaque banque et chaque trimestre, le script essaie les sources dans cet ordre et "
-      f"s'arrête au premier document trouvé ; il garde une pause de {fr(0.4,1)}&nbsp;s entre deux "
-      "requêtes, sans téléchargements en parallèle, et reprend là où il s'était arrêté "
+      "s'arrête au premier document trouvé ; il respecte le robots.txt de chaque site (pause de "
+      "10&nbsp;s entre deux requêtes à la BVMT, à tunis-stockexchange.com et au CMF depuis le "
+      "20/10/2026, 0,4&nbsp;s avant), sans téléchargements en parallèle, et reprend là où il s'était arrêté "
       "(<code>donnees/manifeste_telechargements.csv</code>).</p><ol>"
       "<li><b>Sites de la BVMT et du CMF</b> : adresses construites à partir des formats de nom "
       "constatés pour chaque banque ;</li>"
       f"<li><b>Liste des indicateurs publiés sur le site du CMF</b> "
-      f"(<code>liste_indicateurs_cmf.csv</code>, {fr(len(listecmf))} adresses relevées sur 150 pages) ;</li>"
+      f"(<code>liste_indicateurs_cmf.csv</code>, {fr(len(listecmf))} adresses, jusqu'aux documents de 2011 ; les pages de tête sont relues à chaque "
+      "mise à jour) ;</li>"
       "<li><b>Bulletins Officiels du CMF</b> : le bloc de la banque est découpé dans le bulletin du "
       "jour ; il doit contenir « produit net bancaire » (règle ajoutée après un faux positif, "
       "voir plus bas).</li></ol>")
@@ -261,16 +263,19 @@ def rapport():
     autres = manq[manq.trimestre != trims[-1]]
     der = f"T{trims[-1][-1]} {trims[-1][:4]}"
     A(f"<p><b>{len(manq)} documents manquants</b> :</p><ul>")
-    if len(t3):
-        A(f"<li><b>{len(t3)} × {der}</b> (" + ("toutes les banques" if len(t3) == len(banques)
-          else ", ".join(t3.banque)) + ") : pas encore publiés ou pas encore collectés (publication "
-          "au plus tard 20 jours après la fin du trimestre).</li>")
+    for statut, sens in (("non publié", "non publiés : absents de la liste du CMF (aucun PDF de la banque "
+                                        "pour ce trimestre), publication attendue au plus tard 20 jours "
+                                        "après la fin du trimestre"),
+                         ("manquant", "introuvables pour l'instant (sites, liste du CMF, Bulletins Officiels)")):
+        x = t3[t3.statut == statut]
+        if len(x):
+            A(f"<li><b>{len(x)} × {der}</b> (" + ("toutes les banques" if len(x) == len(banques)
+              else ", ".join(x.banque)) + f") : {sens}.</li>")
     for b, t in autres[["banque", "trimestre"]].values:
-        A(f"<li><b>{b} {t}</b> : introuvable dans les trois sources (aucune adresse BVMT/CMF valide, "
-          "absent des 150 pages de la liste du CMF lues et des Bulletins Officiels). "
-          + ("Une lecture plus longue de la liste du CMF (400 pages) est prévue." if b == "TJARI" else
-             "Les colonnes N-1 du document de l'année suivante donnent les chiffres de comparaison.")
-          + "</li>")
+        A(f"<li><b>{b} {t}</b> : introuvable (aucune adresse BVMT/CMF valide, absent de la liste du CMF, "
+          "lue jusqu'aux documents de 2011, et des Bulletins Officiels ; sur tunis-stockexchange.com, aucune "
+          "publication de la banque entre le 26/04/2022 et le 31/12/2022, vérifié le 22/10/2026). Les colonnes "
+          "N-1 du document de l'année suivante donnent les chiffres de comparaison.</li>")
     A("</ul>")
     A("<p><b>Document rejeté</b> : pour AB 2021T1, le premier document retenu (Bulletin Officiel du "
       "14/04/2021) était une note d'opération d'emprunt qui ne faisait qu'annoncer les indicateurs. "
@@ -320,20 +325,20 @@ def rapport():
 
     A("<h3>Statut des documents</h3>")
     ordre = ["ok", "retraitement possible", "ecart trimestre/cumul", "ecart composantes", "a verifier",
-             "saisie manuelle", "illisible (image)", "pdf manquant"]
+             "saisie manuelle", "illisible (image)", "non publié", "pdf manquant"]
     sens = {"ok": "aucune alerte", "retraitement possible": "colonne N-1 ≠ valeur publiée un an plus tôt (révision de la banque)",
             "ecart trimestre/cumul": "trimestre ≠ différence des cumuls (révision en cours d'année)",
             "ecart composantes": "total des charges opératoires incohérent avec ses composantes",
             "a verifier": "alerte bloquante à examiner", "saisie manuelle": "tableau en image, valeurs saisies",
             "illisible (image)": "tableau en image, repris par d'autres documents",
-            "pdf manquant": "document non trouvé"}
+            "non publié": "absent de la liste du CMF (trimestre récent)", "pdf manquant": "document non trouvé"}
     A(table(["Statut", "Documents", "Signification"],
             [[f"<code>{s}</code>", fr(st.get(s, 0)), e(sens[s])] for s in ordre]
             + [["<b>Total</b>", f"<b>{st.sum()}</b>", ""]]))
     ct = pd.crosstab(ctl.banque, ctl.statut)
     abr = {"ok": "ok", "retraitement possible": "retrait.", "ecart trimestre/cumul": "trim./cumul",
            "ecart composantes": "compos.", "a verifier": "à vérif.", "saisie manuelle": "saisie",
-           "illisible (image)": "image", "pdf manquant": "manquant"}
+           "illisible (image)": "image", "non publié": "non publ.", "pdf manquant": "manquant"}
     A(table(["Banque"] + [abr[s] for s in ordre],
             [[f"<b>{b}</b>"] + [fr(ct.loc[b].get(s, 0)) if ct.loc[b].get(s, 0) else "·" for s in ordre]
              for b in banques], "num"))
@@ -364,8 +369,8 @@ def rapport():
       + ", ".join(f"{b} {t}" for b, t in illis[["banque", "trimestre"]].values)
       + ". Leurs chiffres sont repris des colonnes N-1 du document de l'année suivante quand il est "
       "lisible : en entier pour BH 2019T4 (document BH 2020T4), UIB 2022T3, BTE 2021T2, 2022T1, "
-      "2022T3, 2023T2 et 2023T4 ; seulement pour le cumul annuel et les soldes pour BTE 2021T4 et "
-      "2022T4. Pas de saisie manuelle quand un autre document donne les chiffres.</p>")
+      "2022T3, 2023T2 et 2023T4. Pas de saisie manuelle quand un autre document donne les chiffres ; "
+      "BTE 2021T4 et 2022T4 (trimestre seul repris nulle part) sont saisis depuis le 22/10/2026.</p>")
     nd = ver[ver.statut_revision == "non disponible (image)"].groupby(["banque", "trimestre"]).size()
     A(f"<p><b>Valeurs non disponibles</b> : {int(nd.sum())} lignes « non disponible (image) » dans "
       "<code>indicateurs_versions.csv</code> ("

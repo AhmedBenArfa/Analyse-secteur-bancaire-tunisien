@@ -39,7 +39,7 @@ def main():
     tot = Counter()
     for b in sorted({c["banque"] for c in ctrl}):
         s = Counter(c["statut"] for c in ctrl if c["banque"] == b)
-        pdf = sum(n for k, n in s.items() if k != "pdf manquant")
+        pdf = sum(n for k, n in s.items() if k not in ("pdf manquant", "non publié"))
         lus = pdf - s["illisible (image)"] - s["echec"]
         sd = len({x["trimestre"] for x in saisies if x["banque"] == b})
         sv = sum(x["banque"] == b for x in saisies)
@@ -48,13 +48,14 @@ def main():
         rv = sum(x["banque"] == b for x in ref)
         ligne = {"pdf": pdf, "lus": lus, "ok": s["ok"], "retr": s["retraitement possible"],
                  "ectc": s["ecart trimestre/cumul"], "ecc": s["ecart composantes"], "av": s["a verifier"],
-                 "sm": s["saisie manuelle"], "ill": s["illisible (image)"], "manq": s["pdf manquant"],
+                 "sm": s["saisie manuelle"], "ill": s["illisible (image)"], "manq": s["pdf manquant"] + s["non publié"],
                  "sd": sd, "sv": sv, "nd": nd, "rd": rd, "rv": rv, "rev": len(rev[b])}
         tot.update(ligne)
         afficher(b, ligne)
     afficher("Total", tot)
     print("\na verifier :", [(c["banque"], c["trimestre"]) for c in ctrl if c["statut"] == "a verifier"])
     print("pdf manquants :", [(c["banque"], c["trimestre"]) for c in ctrl if c["statut"] == "pdf manquant"])
+    print("non publiés :", [(c["banque"], c["trimestre"]) for c in ctrl if c["statut"] == "non publié"])
     exclues = Counter(v["statut_revision"].split(" :")[0] for v in vers if v["statut_revision"].startswith("exclue ("))
     print("versions exclues :", dict(exclues))
 

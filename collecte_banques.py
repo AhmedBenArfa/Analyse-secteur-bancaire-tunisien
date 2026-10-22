@@ -451,6 +451,8 @@ def telecharger_sites(client: Client, codes: list[str], liste_t: list[Trimestre]
 # ---------------------------------------------------------------------------
 
 URL_LISTE_CMF = "https://www.cmf.tn/?page={page}&q=indicateurs-d-activit-"
+STATUT_NON_PUBLIE = "non publié"   # absent de la liste du CMF, trimestre récent
+DELAI_NON_PUBLIE = 90              # jours après la fin du trimestre où l'absence vaut « non publié »
 LISTE_CMF = DOSSIER / "liste_indicateurs_cmf.csv"
 # mots qui désignent une autre société que la banque (filiales d'assurance, leasing…)
 MOTS_AUTRES_SOCIETES = {"assurance", "assurances", "leasing", "lease", "sicar", "sicav", "vie", "mag",
@@ -460,10 +462,15 @@ MOTS_AUTRES_SOCIETES = {"assurance", "assurances", "leasing", "lease", "sicar", 
 def lire_liste_cmf(client: "Client", max_pages: int, rafraichir: bool) -> list[str]:
     """URL des PDF d'indicateurs listés par le CMF. La liste est gardée dans donnees/ ;
     elle n'est relue sur le site qu'avec `rafraichir` (ou si elle n'existe pas). On s'arrête
-    à la première page qui n'apporte aucun lien nouveau."""
-    if LISTE_CMF.exists() and not rafraichir:
+    à la première page qui n'apporte aucun lien nouveau. La liste va du plus récent au plus ancien :
+    avec `rafraichir`, seules les pages de tête sont relues (arrêt à la première page déjà
+    connue) et leurs liens sont ajoutés devant ceux qui sont gardés."""
+    connus: list[str] = []
+    if LISTE_CMF.exists():
         with LISTE_CMF.open(encoding="utf-8") as f:
-            return [r["url"] for r in csv.DictReader(f)]
+            connus = [r["url"] for r in csv.DictReader(f)]
+        if not rafraichir:
+            return connus
     urls: list[str] = []
     for page in range(1, max_pages + 1):
         try:
@@ -479,12 +486,13 @@ def lire_liste_cmf(client: "Client", max_pages: int, rafraichir: bool) -> list[s
             if "/indicateurs/" not in l:
                 continue
             u = requests.compat.urljoin("https://www.cmf.tn/", l.replace(" ", "%20"))
-            if u not in urls and u not in nouveaux:
+            if u not in urls and u not in nouveaux and u not in connus:
                 nouveaux.append(u)
         if not nouveaux:
             break
         urls += nouveaux
         print(f"  liste du CMF, page {page} : {len(nouveaux)} liens")
+    urls += connus
     LISTE_CMF.parent.mkdir(parents=True, exist_ok=True)
     with LISTE_CMF.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -498,9 +506,10 @@ def jetons_nom(url: str) -> list[str]:
     return [j for j in re.split(r"[^a-z0-9]+", nom) if j]
 
 
-def candidats_liste_cmf(code: str, t: Trimestre, urls: list[str]) -> list[str]:
+def candidats_liste_cmf(code: str, t: Trimestre, urls: list[str], avec_score: bool = False) -> list:
     """PDF de la liste du CMF qui peuvent être le document (banque, trimestre), du plus
-    probable au moins probable. Le contenu est vérifié ensuite (bon_document)."""
+    probable au moins probable. Le contenu est vérifié ensuite (bon_document). Avec `avec_score` :
+    couples (score, url), score 0 = l'année et le rang du trimestre sont dans le nom."""
     conf = BANQUES[code]
     noms_banque = {tuple(s.replace("-", "_").split("_")) for s in conf["slugs"] + conf.get("prefixes", [])}
     noms_banque.add((conf["ticker"].lower(),))
@@ -520,12 +529,15 @@ def candidats_liste_cmf(code: str, t: Trimestre, urls: list[str]) -> list[str]:
             continue
         score = (0 if annee else 2) + (0 if rang else 1)
         sortie.append((score, u))
-    return [u for _, u in sorted(sortie)]
+    return sorted(sortie) if avec_score else [u for _, u in sorted(sortie)]
 
 
 def telecharger_liste_cmf(client: "Client", manifeste: dict, max_pages: int, rafraichir: bool,
-                          perimetre: set[tuple[str, str]] | None = None):
-    """Pour chaque document manquant (du périmètre demandé), cherche dans la liste des indicateurs du CMF."""
+                          perimetre: set[tuple[str, str]] | None = None, sites_cherches: bool = True):
+    """Pour chaque document manquant (du périmètre demandé), cherche dans la liste des indicateurs du CMF.
+    « non publié » n'est donné que si les adresses habituelles ont été essayées dans le même lancement
+    (`sites_cherches`) : la liste peut avoir du retard sur les fichiers (22/10/2026 : AB, ATB, BIAT,
+    BTE et UBCI déjà en ligne au CMF sous leur nom habituel, mais absents de la liste)."""
     manquants = sorted(cle for cle, r in manifeste.items()
                        if r["statut"] != "ok" and (perimetre is None or cle in perimetre))
     if not manquants:
@@ -536,7 +548,9 @@ def telecharger_liste_cmf(client: "Client", manifeste: dict, max_pages: int, raf
     for code, tri in manquants:
         t = Trimestre.depuis_texte(tri)
         trouve = None
-        for url in candidats_liste_cmf(code, t, urls)[:6]:
+        scores = candidats_liste_cmf(code, t, urls, avec_score=True)
+        cands = [u for _, u in scores]
+        for url in cands[:6]:
             contenu = client.pdf(url)
             if not contenu:
                 continue
@@ -558,6 +572,14 @@ def telecharger_liste_cmf(client: "Client", manifeste: dict, max_pages: int, raf
                                       "fichier": str(p), "pages": ""}
             ecrire_manifeste(manifeste)
             print(f"  OK  {code} {tri}  <- {url}")
+        elif (sites_cherches and not any(sc == 0 for sc, _ in scores)
+              and dt.date.today() <= t.fin + dt.timedelta(days=DELAI_NON_PUBLIE)):
+            # trimestre récent sans aucun PDF de la banque à ce trimestre dans la liste (nom portant
+            # l'année et le rang) : « non publié », pas encore déposé ; un document listé mais
+            # illisible, ou un trimestre ancien absent partout, reste « manquant » (introuvable)
+            manifeste[(code, tri)]["statut"] = STATUT_NON_PUBLIE
+            ecrire_manifeste(manifeste)
+            print(f"  --  {code} {tri}  absent de la liste du CMF (non publié)")
 
 
 def urls_bulletin(d: dt.date) -> list[str]:
@@ -663,7 +685,8 @@ def cmd_telecharger(args):
     if not args.sans_sites:
         telecharger_sites(client, codes, liste_t, manifeste)
     if not args.sans_liste_cmf:
-        telecharger_liste_cmf(client, manifeste, args.pages_liste_cmf, args.rafraichir_liste_cmf, perimetre)
+        telecharger_liste_cmf(client, manifeste, args.pages_liste_cmf, args.rafraichir_liste_cmf, perimetre,
+                              sites_cherches=not args.sans_sites)
     if not args.sans_bulletins:
         telecharger_bulletins(client, manifeste, garder=args.garder_bulletins, perimetre=perimetre)
     ok = sum(1 for r in manifeste.values() if r["statut"] == "ok")
@@ -1837,7 +1860,7 @@ def extraire_pdf(chemin: Path, t: Trimestre | None = None,
                 # fin du libellé juste sous les chiffres (TJARI 2022T2 : « 1) PRODUITS D'EXPLOITATION »,
                 # chiffres, « BANCAIRE »)
                 s = toutes[i + 1]
-                if s.libelle and not s.nombres and s.page == l.page and 0 <= s.top - l.top <= 8:   # AB : 6,1 pt ; WIB 2025T3 : 7,2 pt
+                if s.libelle and not s.nombres and s.page == l.page and 0 <= s.top - l.top <= 9:   # AB : 6,1 pt ; WIB 2025T3 : 7,2 pt ; AB 2026T3 : 8,7 pt
                     lib = (lib + " " + s.libelle).strip()
                     consommees.add(i + 1)
             fusion.append(Ligne(lib, l.nombres, l.page, l.top))
@@ -2102,7 +2125,8 @@ def cmd_extraire(args):
         w.writeheader()
         for (code, tri), r in sorted(manifeste.items()):
             if (code, tri) not in resultats:
-                wc.writerow([code, tri, "pdf manquant", 0, "", ""])
+                wc.writerow([code, tri, STATUT_NON_PUBLIE if r["statut"] == STATUT_NON_PUBLIE
+                             else "pdf manquant", 0, "", ""])
                 continue
             t = Trimestre.depuis_texte(tri)
             lignes, alertes = resultats[(code, tri)]
