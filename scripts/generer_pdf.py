@@ -171,6 +171,11 @@ def rapport():
     tests = resultat_tests()
     exc = lire_csv(R / "exclusions_colonnes.csv", 6)
     listecmf = pd.read_csv(D / "liste_indicateurs_cmf.csv")
+    cours = pd.read_csv(D / "cours_banques.csv", sep=";", encoding="utf-8-sig", dtype=str)
+    ops = pd.read_csv(R / "operations_titres.csv", sep=";", encoding="utf-8-sig", dtype=str)
+    efv = pd.read_csv(D / "etats_financiers_versions.csv", sep=";", encoding="utf-8-sig", dtype=str)
+    efr = efv[efv.version == efv.source_valeur]
+    jour = lambda d: f"{d[8:10]}/{d[5:7]}/{d[:4]}"
     noms = dict(zip(dimb.code_banque, dimb.nom))
     banques = list(dimb.code_banque)
 
@@ -201,6 +206,7 @@ def rapport():
       f'<div class="kpi"><b>{fr(len(lng))}</b><span>valeurs lues dans les documents</span></div>'
       f'<div class="kpi"><b>{len(ref)}</b><span>valeurs de référence relevées à la main</span></div>'
       f'<div class="kpi"><b>{len(ri)}</b><span>révisions de plus de 2&nbsp;% (totaux, cumul)</span></div>'
+      f'<div class="kpi"><b>{jour(cours.date.max())}</b><span>dernière séance des cours boursiers</span></div>'
       "</div>")
 
     # 1. Objectif ---------------------------------------------------------------------------
@@ -601,28 +607,45 @@ def rapport():
       f"<li>{len(autres)} documents introuvables hors {der} ("
       + ", ".join(f"{b} {t}" for b, t in autres[["banque", "trimestre"]].values) + ").</li>"
       "<li>Pas de résultat net dans les indicateurs trimestriels : ROE et ROA seulement semestriels "
-      "et annuels (états financiers, pas encore collectés).</li>"
+      "et annuels (états financiers).</li>"
       "<li>Le contrôle par échantillon (<code>docs/validation.md</code>) reste à écrire ; les "
       f"{len(ref)} valeurs de référence en tiennent lieu pour l'instant.</li></ul>")
 
-    # 7. Prochaines étapes ------------------------------------------------------------------
-    A("<h2>7. Prochaines étapes</h2>")
+    # 7. Cours boursiers et états financiers -------------------------------------------------
+    A("<h2>7. Cours boursiers et états financiers</h2>")
+    par_banque = cours.groupby("banque").size()
+    src_cours = cours.source.value_counts()
+    A(f"<p><b>Cours</b> (<code>donnees/cours_banques.csv</code>) : du {jour(cours.date.min())} au "
+      f"{jour(cours.date.max())}, " + (f"{fr(par_banque.min())}" if par_banque.min() == par_banque.max()
+      else f"{fr(par_banque.min())} à {fr(par_banque.max())}") + " séances par banque, "
+      f"{fr(len(cours))} lignes : archives annuelles de la BVMT ({fr(src_cours.get('bvmt_archive', 0))} "
+      f"lignes, 2019–2025), bulletins quotidiens de la Bourse ({fr(src_cours.get('bvmt_bulletin', 0) + src_cours.get('bvmt_bulletin+ilboursa_volume', 0))} "
+      "lignes, 2026 ; volume d'ilboursa à partir du 14/04/2026). "
+      f"{fr(int(cours.cloture.isna().sum()))} clôtures vides (cours à 0 dans l'archive), jamais remplacées. "
+      f"Opérations sur titres (<code>operations_titres.csv</code>) : {len(ops)} opérations "
+      f"({', '.join(f'{n} {k}' for k, n in ops.types.str.split('+').explode().str.strip().value_counts().items())}), "
+      "chacune avec le cours de référence publié par la Bourse.</p>")
+    A(f"<p><b>États financiers</b> (<code>donnees/etats_financiers_versions.csv</code>) : "
+      f"{efr.date_arrete.nunique()} arrêtés (31/12 de 2019 à 2025, 30/06 de 2020 à 2026) × "
+      f"{efr.banque.nunique()} banques × 3 valeurs (résultat net, total de l'actif, capitaux propres) "
+      f"= {len(efr)} valeurs retenues, {int(efr.valeur_retenue.isna().sum())} vide ; comptes "
+      "individuels, règle des versions comme pour les indicateurs trimestriels.</p>")
+
+    # 8. Prochaines étapes ------------------------------------------------------------------
+    A("<h2>8. Prochaines étapes</h2>")
     A(table(["#", "Étape", "État"], [
         ["1–2", "Collecte et extraction des indicateurs (12 gabarits)",
-         "Fait jusqu'au " + (lambda t: f"T{t[-1]} {t[:4]}")(sorted(ok.trimestre)[-1])],
+         "Fait jusqu'au " + (lambda t: f"T{t[-1]} {t[:4]}")(sorted(ok.trimestre)[-1])
+         + f" ({len(ok)}/{nb_att} documents)"],
         ["3", "Validation manuelle d'un échantillon", f"{len(ref)} valeurs relevées ; <code>docs/validation.md</code> à écrire"],
+        ["4", "Cours boursiers 2019–2026", f"Fait (jusqu'au {jour(cours.date.max())})"],
         ["4b", "États financiers (résultat net, total actif, capitaux propres) pour ROE et ROA",
-         "<b>Prochaine étape</b> : script écrit et testé sur un PDF simulé, jamais lancé sur le vrai site"],
-        ["2", "T3 2026", "Après le 20/10/2026 : téléchargement, extraction, contrôles, tests"],
-        ["4", "Cours boursiers 2019–2026 (BVMT ou ilboursa)", "À faire"],
-        ["4c", f"Examiner les {len(ec)} écarts du contrôle annuel", "À faire, avant l'étape Power BI"],
-        ["5–6", "Requêtes Power Query, modèle en étoile, mesures DAX", "À faire"],
+         f"Fait ({len(efr)} valeurs retenues)"],
+        ["4c", "Examen des écarts du contrôle annuel",
+         f"Fait : {len(ec)} écarts, cause et source de chacun"],
+        ["5–6", "Requêtes Power Query, modèle en étoile, mesures DAX", "<b>Prochaine étape</b>"],
         ["7", "Pages du rapport Power BI", "À faire"],
         ["8", "README final et captures pour le portfolio", "À faire"]]))
-    A("<p>Étape 4b, dans l'ordre : test court sur une banque (BNA, exercice 2024 : adresses, "
-      "téléchargement, extraction, comparaison à la main au PDF), corrections, extension banque par "
-      "banque avec deux documents relevés à la main, lancement complet, puis comparaison du résultat "
-      "net annuel avec ilboursa (écarts de plus de 1&nbsp;% signalés).</p>")
 
     vers_pdf(page_html("Rapport d'avancement", "".join(o)), R / "docs/Rapport_avancement.pdf",
              "Rapport d'avancement — Analyse du secteur bancaire tunisien", "Rapport d'avancement",
