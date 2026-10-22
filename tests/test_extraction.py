@@ -233,6 +233,33 @@ def test_bte_t4_seuls_saisis():
         assert all(proche(v[k], x) for k, x in attendu.items()), (tri, v)
 
 
+def test_bte_images_restantes_saisies():
+    """BTE 2021T2, 2022T1, 2022T3, 2023T2, 2023T4 (tableaux en image, bte.com.tn ne publie pas ses
+    indicateurs trimestriels) : saisis le 22/10/2026. 2022T1 publie le T1 2021 corrigé (charges
+    opératoires 8 120 au lieu de 10 906, frais de personnel 5 825) : c'est lui qui explique les
+    frais de personnel du T2 2021 de BTE_2022T2 (11 196 = 9 097 publiés à l'origine + 2 099 de
+    révision, aussi dans le S1). Plus aucun écart annuel BTE de 2020 à 2022."""
+    attendus = {"2021T2": {("FRAIS_PERS", "trim_N"): 9.097, ("CHG_OPER", "cumul_N"): 20.467},
+                "2022T1": {("CHG_OPER", "trim_N1"): 8.12, ("FRAIS_PERS", "trim_N1"): 5.825, ("PNB", "trim_N"): 12.108},
+                "2022T3": {("PNB", "trim_N"): 16.727, ("DEPOTS", "cumul_N"): 1001.376},
+                "2023T2": {("PNB", "cumul_N"): 31.233, ("CHG_OPER", "trim_N1"): 14.819},
+                "2023T4": {("PNB", "trim_N"): 19.325, ("CHG_OPER", "cumul_N"): 57.925}}
+    for tri, attendu in attendus.items():
+        chemin = cb.DOSSIER_PDF / "BTE" / f"BTE_{tri}.pdf"
+        if not chemin.exists():
+            continue
+        lignes, alertes, origine = cb.extraire_document("BTE", tri, chemin)
+        v = {(l["code_indicateur"], l["colonne"]): l["valeur_mdt"] for l in lignes}
+        assert origine == cb.ORIGINE_SAISIE
+        assert all(proche(v[k], x) for k, x in attendu.items()), (tri, v)
+    controle = cb.DOSSIER / "controle_annuel.csv"
+    if controle.exists():
+        with controle.open(encoding="utf-8-sig") as f:
+            bte = [r for r in csv.DictReader(f, delimiter=";")
+                   if r["banque"] == "BTE" and r["annee"] in ("2021", "2022")]
+        assert bte and all(r["statut"] == "ok" for r in bte), bte
+
+
 def test_ecarts_annuels_expliques():
     """Étape 4c : chaque « ecart » du contrôle annuel a sa cause dans docs/ecarts_annuels.csv (même
     écart, catégorie connue, document source téléchargé) ; une erreur d'extraction ne doit pas y

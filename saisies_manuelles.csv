@@ -265,3 +265,175 @@ BTE;2022T4;BTE_2022T4.pdf;1;DEPOTS;cumul_N;884226;milliers de dinars;884.226;lec
 BTE;2022T4;BTE_2022T4.pdf;1;DEPOTS;cumul_N1;871455;milliers de dinars;871.455;lecture image + contrôles de cohérence;
 STB;2026T2;STB_2026T2.pdf;1;REV_PORTEF;trim_N;130764489;dinars;130.764489;lecture image + contrôles de cohérence;chiffres superposés au libellé dans le PDF (non extraits) ; intérêts + commissions + portefeuille = produits 325 730 499
 STB;2026T2;STB_2026T2.pdf;1;REV_PORTEF;trim_N1;115893522;dinars;115.893522;lecture image + contrôles de cohérence;extraction erronée (893 522 : début du nombre mêlé au libellé) ; intérêts + commissions + portefeuille = produits 374 828 698
+BTE;2021T2;BTE_2021T2.pdf;1;PROD_EXPL;trim_N;29706;milliers de dinars;29.706;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;PROD_EXPL;trim_N1;26651;milliers de dinars;26.651;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;PROD_EXPL;cumul_N;58479;milliers de dinars;58.479;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;PROD_EXPL;cumul_N1;50193;milliers de dinars;50.193;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;PROD_EXPL;exercice_N1;106929;milliers de dinars;106.929;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_EXPL;trim_N;12146;milliers de dinars;12.146;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_EXPL;trim_N1;14473;milliers de dinars;14.473;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_EXPL;cumul_N;26231;milliers de dinars;26.231;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_EXPL;cumul_N1;30388;milliers de dinars;30.388;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_EXPL;exercice_N1;58060;milliers de dinars;58.06;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;PNB;trim_N;17560;milliers de dinars;17.56;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;PNB;trim_N1;12178;milliers de dinars;12.178;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;PNB;cumul_N;32248;milliers de dinars;32.248;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;PNB;cumul_N1;19805;milliers de dinars;19.805;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;PNB;exercice_N1;48869;milliers de dinars;48.869;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_OPER;trim_N;12347;milliers de dinars;12.347;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_OPER;trim_N1;11173;milliers de dinars;11.173;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_OPER;cumul_N;20467;milliers de dinars;20.467;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_OPER;cumul_N1;19438;milliers de dinars;19.438;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_OPER;exercice_N1;40885;milliers de dinars;40.885;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;FRAIS_PERS;trim_N;9097;milliers de dinars;9.097;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;FRAIS_PERS;trim_N1;8109;milliers de dinars;8.109;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;FRAIS_PERS;cumul_N;14922;milliers de dinars;14.922;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;FRAIS_PERS;cumul_N1;14060;milliers de dinars;14.06;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;FRAIS_PERS;exercice_N1;29400;milliers de dinars;29.4;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_GEN;trim_N;3250;milliers de dinars;3.25;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_GEN;trim_N1;3064;milliers de dinars;3.064;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_GEN;cumul_N;5545;milliers de dinars;5.545;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_GEN;cumul_N1;5378;milliers de dinars;5.378;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CHG_GEN;exercice_N1;11485;milliers de dinars;11.485;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CREDITS;cumul_N;851252;milliers de dinars;851.252;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CREDITS;cumul_N1;747557;milliers de dinars;747.557;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;CREDITS;exercice_N1;796188;milliers de dinars;796.188;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;DEPOTS;cumul_N;852445;milliers de dinars;852.445;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;DEPOTS;cumul_N1;717192;milliers de dinars;717.192;lecture image + contrôles de cohérence;
+BTE;2021T2;BTE_2021T2.pdf;1;DEPOTS;exercice_N1;767154;milliers de dinars;767.154;lecture image + contrôles de cohérence;
+BTE;2022T1;BTE_2022T1.pdf;1;PROD_EXPL;trim_N;28371;milliers de dinars;28.371;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;PROD_EXPL;cumul_N;28371;milliers de dinars;28.371;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;PROD_EXPL;trim_N1;28773;milliers de dinars;28.773;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;PROD_EXPL;cumul_N1;28773;milliers de dinars;28.773;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;PROD_EXPL;exercice_N1;123687;milliers de dinars;123.687;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_EXPL;trim_N;16263;milliers de dinars;16.263;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_EXPL;cumul_N;16263;milliers de dinars;16.263;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_EXPL;trim_N1;14085;milliers de dinars;14.085;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_EXPL;cumul_N1;14085;milliers de dinars;14.085;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_EXPL;exercice_N1;60583;milliers de dinars;60.583;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;PNB;trim_N;12108;milliers de dinars;12.108;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;PNB;cumul_N;12108;milliers de dinars;12.108;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;PNB;trim_N1;14688;milliers de dinars;14.688;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;PNB;cumul_N1;14688;milliers de dinars;14.688;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;PNB;exercice_N1;63104;milliers de dinars;63.104;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_OPER;trim_N;10176;milliers de dinars;10.176;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_OPER;cumul_N;10176;milliers de dinars;10.176;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_OPER;trim_N1;8120;milliers de dinars;8.12;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_OPER;cumul_N1;8120;milliers de dinars;8.12;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_OPER;exercice_N1;50625;milliers de dinars;50.625;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;FRAIS_PERS;trim_N;8093;milliers de dinars;8.093;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;FRAIS_PERS;cumul_N;8093;milliers de dinars;8.093;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;FRAIS_PERS;trim_N1;5825;milliers de dinars;5.825;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;FRAIS_PERS;cumul_N1;5825;milliers de dinars;5.825;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;FRAIS_PERS;exercice_N1;35565;milliers de dinars;35.565;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_GEN;trim_N;2083;milliers de dinars;2.083;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_GEN;cumul_N;2083;milliers de dinars;2.083;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_GEN;trim_N1;2295;milliers de dinars;2.295;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_GEN;cumul_N1;2295;milliers de dinars;2.295;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CHG_GEN;exercice_N1;15060;milliers de dinars;15.06;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CREDITS;cumul_N;877947;milliers de dinars;877.947;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CREDITS;cumul_N1;821278;milliers de dinars;821.278;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;CREDITS;exercice_N1;853363;milliers de dinars;853.363;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;DEPOTS;cumul_N;908365;milliers de dinars;908.365;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;DEPOTS;cumul_N1;814065;milliers de dinars;814.065;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T1;BTE_2022T1.pdf;1;DEPOTS;exercice_N1;871455;milliers de dinars;871.455;lecture image + contrôles de cohérence;T1 : une seule colonne par année (trimestre = cumul)
+BTE;2022T3;BTE_2022T3.pdf;1;PROD_EXPL;trim_N;36115;milliers de dinars;36.115;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;PROD_EXPL;trim_N1;28367;milliers de dinars;28.367;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;PROD_EXPL;cumul_N;98093;milliers de dinars;98.093;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;PROD_EXPL;cumul_N1;90767;milliers de dinars;90.767;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;PROD_EXPL;exercice_N1;123687;milliers de dinars;123.687;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_EXPL;trim_N;19388;milliers de dinars;19.388;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_EXPL;trim_N1;15208;milliers de dinars;15.208;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_EXPL;cumul_N;52651;milliers de dinars;52.651;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_EXPL;cumul_N1;43254;milliers de dinars;43.254;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_EXPL;exercice_N1;60583;milliers de dinars;60.583;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;PNB;trim_N;16727;milliers de dinars;16.727;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;PNB;trim_N1;13159;milliers de dinars;13.159;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;PNB;cumul_N;45442;milliers de dinars;45.442;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;PNB;cumul_N1;47513;milliers de dinars;47.513;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;PNB;exercice_N1;63104;milliers de dinars;63.104;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_OPER;trim_N;11163;milliers de dinars;11.163;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_OPER;trim_N1;13275;milliers de dinars;13.275;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_OPER;cumul_N;36158;milliers de dinars;36.158;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_OPER;cumul_N1;35855;milliers de dinars;35.855;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_OPER;exercice_N1;50625;milliers de dinars;50.625;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;FRAIS_PERS;trim_N;8583;milliers de dinars;8.583;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;FRAIS_PERS;trim_N1;8425;milliers de dinars;8.425;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;FRAIS_PERS;cumul_N;26734;milliers de dinars;26.734;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;FRAIS_PERS;cumul_N1;25446;milliers de dinars;25.446;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;FRAIS_PERS;exercice_N1;35565;milliers de dinars;35.565;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_GEN;trim_N;2580;milliers de dinars;2.58;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_GEN;trim_N1;4850;milliers de dinars;4.85;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_GEN;cumul_N;9424;milliers de dinars;9.424;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_GEN;cumul_N1;10409;milliers de dinars;10.409;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CHG_GEN;exercice_N1;15060;milliers de dinars;15.06;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CREDITS;cumul_N;949419;milliers de dinars;949.419;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CREDITS;cumul_N1;845372;milliers de dinars;845.372;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;CREDITS;exercice_N1;853363;milliers de dinars;853.363;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;DEPOTS;cumul_N;1001376;milliers de dinars;1001.376;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;DEPOTS;cumul_N1;850988;milliers de dinars;850.988;lecture image + contrôles de cohérence;
+BTE;2022T3;BTE_2022T3.pdf;1;DEPOTS;exercice_N1;871455;milliers de dinars;871.455;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;PROD_EXPL;trim_N;38870;milliers de dinars;38.87;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;PROD_EXPL;trim_N1;34308;milliers de dinars;34.308;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;PROD_EXPL;cumul_N;72365;milliers de dinars;72.365;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;PROD_EXPL;cumul_N1;61978;milliers de dinars;61.978;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;PROD_EXPL;exercice_N1;133209;milliers de dinars;133.209;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_EXPL;trim_N;23912;milliers de dinars;23.912;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_EXPL;trim_N1;17000;milliers de dinars;17;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_EXPL;cumul_N;41132;milliers de dinars;41.132;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_EXPL;cumul_N1;33263;milliers de dinars;33.263;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_EXPL;exercice_N1;72733;milliers de dinars;72.733;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;PNB;trim_N;14958;milliers de dinars;14.958;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;PNB;trim_N1;17308;milliers de dinars;17.308;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;PNB;cumul_N;31233;milliers de dinars;31.233;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;PNB;cumul_N1;28715;milliers de dinars;28.715;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;PNB;exercice_N1;60476;milliers de dinars;60.476;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_OPER;trim_N;15876;milliers de dinars;15.876;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_OPER;trim_N1;14819;milliers de dinars;14.819;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_OPER;cumul_N;26091;milliers de dinars;26.091;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_OPER;cumul_N1;24995;milliers de dinars;24.995;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_OPER;exercice_N1;54076;milliers de dinars;54.076;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;FRAIS_PERS;trim_N;12308;milliers de dinars;12.308;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;FRAIS_PERS;trim_N1;10058;milliers de dinars;10.058;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;FRAIS_PERS;cumul_N;20054;milliers de dinars;20.054;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;FRAIS_PERS;cumul_N1;18151;milliers de dinars;18.151;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;FRAIS_PERS;exercice_N1;38556;milliers de dinars;38.556;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_GEN;trim_N;3568;milliers de dinars;3.568;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_GEN;trim_N1;4761;milliers de dinars;4.761;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_GEN;cumul_N;6037;milliers de dinars;6.037;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_GEN;cumul_N1;6844;milliers de dinars;6.844;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CHG_GEN;exercice_N1;15520;milliers de dinars;15.52;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CREDITS;cumul_N;890841;milliers de dinars;890.841;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CREDITS;cumul_N1;940644;milliers de dinars;940.644;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;CREDITS;exercice_N1;883365;milliers de dinars;883.365;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;DEPOTS;cumul_N;946733;milliers de dinars;946.733;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;DEPOTS;cumul_N1;962977;milliers de dinars;962.977;lecture image + contrôles de cohérence;
+BTE;2023T2;BTE_2023T2.pdf;1;DEPOTS;exercice_N1;884237;milliers de dinars;884.237;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;PROD_EXPL;trim_N;42915;milliers de dinars;42.915;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;PROD_EXPL;trim_N1;35432;milliers de dinars;35.432;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;PROD_EXPL;cumul_N;150118;milliers de dinars;150.118;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;PROD_EXPL;cumul_N1;133209;milliers de dinars;133.209;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CHG_EXPL;trim_N;23590;milliers de dinars;23.59;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CHG_EXPL;trim_N1;20082;milliers de dinars;20.082;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CHG_EXPL;cumul_N;85834;milliers de dinars;85.834;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CHG_EXPL;cumul_N1;72733;milliers de dinars;72.733;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;PNB;trim_N;19325;milliers de dinars;19.325;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;PNB;trim_N1;15350;milliers de dinars;15.35;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;PNB;cumul_N;64284;milliers de dinars;64.284;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;PNB;cumul_N1;60476;milliers de dinars;60.476;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CHG_OPER;trim_N;18501;milliers de dinars;18.501;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CHG_OPER;trim_N1;17914;milliers de dinars;17.914;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CHG_OPER;cumul_N;57925;milliers de dinars;57.925;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CHG_OPER;cumul_N1;54076;milliers de dinars;54.076;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;FRAIS_PERS;trim_N;13057;milliers de dinars;13.057;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;FRAIS_PERS;trim_N1;11822;milliers de dinars;11.822;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;FRAIS_PERS;cumul_N;42382;milliers de dinars;42.382;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;FRAIS_PERS;cumul_N1;38556;milliers de dinars;38.556;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CHG_GEN;trim_N;5444;milliers de dinars;5.444;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CHG_GEN;trim_N1;6092;milliers de dinars;6.092;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CHG_GEN;cumul_N;15543;milliers de dinars;15.543;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CHG_GEN;cumul_N1;15520;milliers de dinars;15.52;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CREDITS;cumul_N;925128;milliers de dinars;925.128;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;CREDITS;cumul_N1;883365;milliers de dinars;883.365;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;DEPOTS;cumul_N;974326;milliers de dinars;974.326;lecture image + contrôles de cohérence;
+BTE;2023T4;BTE_2023T4.pdf;1;DEPOTS;cumul_N1;884237;milliers de dinars;884.237;lecture image + contrôles de cohérence;

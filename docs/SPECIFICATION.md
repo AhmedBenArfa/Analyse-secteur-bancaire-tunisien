@@ -235,12 +235,16 @@ Excel de référence ─────────> referentiel.xlsx
   retraités » : PNB 2019 = 492,929 MDT, PNB du T4 2019 = 156,644 MDT). Pas de saisie manuelle tant
   que le document suivant donne les chiffres. Seuil de détection : page avec images et moins de
   1 000 caractères de texte. **BTE** : 13 documents dans ce cas (2020T1 à 2023T4, sauf 2022T2,
-  2023T1 et 2023T3) ; repris par le document suivant : 2021T2, 2022T1, 2022T3, 2023T2, 2023T4 en
-  entier, 2021T4 et 2022T4 pour le cumul annuel et les soldes seulement ; **non repris : 2020T1 à
-  2020T4, 2021T1 et 2021T3** (le document de l'année suivante est lui aussi une image) : saisie
-  manuelle décidée le 17/10/2026, voir ci-dessous. **2021T4 et 2022T4** : le trimestre seul n'est
-  repris nulle part (le document T4 suivant est aussi une image) ; sans lui, les totaux du secteur
-  de ces deux trimestres seraient vides (règle des 12 banques) : documents saisis le 22/10/2026.
+  2023T1 et 2023T3), **tous saisis à la main** : d'abord ceux que le document suivant ne reprend
+  pas (2020T1 à 2020T4, 2021T1 et 2021T3, 17/10/2026 ; T4 seuls 2021T4 et 2022T4, 22/10/2026),
+  puis les 5 autres (2021T2, 2022T1, 2022T3, 2023T2, 2023T4, 22/10/2026). Raison de la saisie
+  complète : la colonne N-1 d'un document en image peut publier une correction que rien d'autre
+  ne donne. BTE 2022T1 publie le T1 2021 « données corrigées » (charges opératoires 8 120 au lieu
+  de 10 906, frais de personnel 5 825 au lieu de 8 786) ; sans lui, les frais de personnel du
+  T2 2021 de BTE_2022T2 (11 196, soit 9 097 publiés à l'origine + 2 099 de révision, aussi dans le
+  S1) semblaient faux. Le site de la BTE (`bte.com.tn`, rubrique « Publications et rapports ») ne
+  publie que les rapports annuels et ceux des commissaires aux comptes, pas les indicateurs
+  trimestriels (vérifié le 22/10/2026, robots.txt respecté).
 
   **Saisie manuelle** (`saisies_manuelles.csv`, versionné, à la racine) : seulement pour les
   documents illisibles que le document suivant ne reprend pas, et seulement pour les indicateurs
@@ -253,7 +257,7 @@ Excel de référence ─────────> referentiel.xlsx
   manuelle` dans `controle_extraction.csv`, colonnes `source` = « saisie manuelle » et
   `verification` dans les données) et passe les contrôles de l'extraction plus un contrôle strict
   (produits − charges = PNB à 2 kDT près dans chaque colonne) ; une alerte la met en
-  `a verifier`. Contrôles faits pendant la saisie BTE (8 documents, 264 valeurs, aucune erreur) :
+  `a verifier`. Contrôles faits pendant la saisie BTE (13 documents, 436 valeurs, aucune erreur) :
   produits − charges = PNB, charges opératoires = frais de personnel + charges générales,
   colonne « Variation montant » du PDF = cumul N − cumul N-1, dépôts = somme des quatre
   catégories ; les trimestres 2020T3 sont confirmés par la colonne N-1 du document 2021T3.
@@ -264,6 +268,9 @@ Excel de référence ─────────> referentiel.xlsx
   `ecart trimestre/cumul`. Les colonnes N-1 de ces documents (T4 2020, T4 2021, « données
   corrigées ») deviennent les versions révisées de BTE 2020T4 et 2021T4.
   BTE 2020T2 : 36 valeurs relues indépendamment, `verification` = « vérifié par Ahmed Ben Arfa ».
+  Avec les 13 documents saisis, la somme des trimestres BTE retrouve le cumul annuel en 2021 et
+  2022 ; 2020 : à 0,019 MDT près sur les charges opératoires (T1 2020 corrigé dans 2021T1 mais
+  pas dans le cumul du S1 de 2021T2), statut `rupture de série`.
   **Saisie partielle** d'un document lisible : quand quelques valeurs sont illisibles dans le texte
   du PDF (STB 2026T2 : revenus du portefeuille du trimestre superposés à leur libellé ; l'extraction
   laissait le T2 2026 vide et lisait 893 522 au lieu de 115 893 522 pour le T2 2025), les valeurs
@@ -272,8 +279,8 @@ Excel de référence ─────────> referentiel.xlsx
   revenus du portefeuille = produits dans chaque colonne.
 
   **Valeur non disponible** : quand un document est illisible et qu'aucun autre ne reprend une
-  mesure (BTE 2023T4 : autres produits d'exploitation du trimestre, absents du document 2024T4 ;
-  jusqu'au 22/10/2026 aussi le T4 seul de 2021 et de 2022, saisi depuis),
+  mesure (jusqu'au 22/10/2026 : BTE, T4 seul de 2021 et de 2022 et autres produits du T4 2023 ;
+  plus aucun cas depuis la saisie des documents BTE en image),
   `indicateurs_versions.csv` porte une ligne `statut_revision` = « non disponible (image) »,
   sans valeur ni valeur retenue. Elle apparaît dans `Revisions` (page « qualité des données »),
   jamais dans `Fait_Indicateurs` : la valeur reste vide dans les graphiques, jamais à zéro (aucune
@@ -296,7 +303,8 @@ Excel de référence ─────────> referentiel.xlsx
     trimestres retenus ne retrouve pas le cumul. Signalé, pas corrigé ;
   - `ecart` : examiné (étape 4c) ; la cause de chacun est dans `docs/ecarts_annuels.csv`.
 
-  **Causes des écarts annuels** (étape 4c, 22/10/2026 ; 29 écarts, de 0,003 à 3,441 MDT). Méthode :
+  **Causes des écarts annuels** (étape 4c, 22/10/2026 ; 29 écarts, 22 après la saisie des documents
+  BTE en image, de 0,003 à 3,441 MDT). Méthode :
   pour chaque écart, l'origine de chaque trimestre retenu et du cumul retenu, puis, document par
   document de l'année suivante (et de l'année elle-même), « cumul − trimestre − cumul précédent » :
   le document où ce reste n'est pas nul est la source de l'écart ; chaque nombre en cause a été
@@ -304,11 +312,16 @@ Excel de référence ─────────> referentiel.xlsx
 
   | Catégorie | Écarts | Cas |
   |---|---|---|
-  | retraitement de la banque | 17 | la banque révise un trimestre passé dans le cumul seulement (ou dans le trimestre seulement) : ATB 2021, BH 2023, BT 2023, BTE 2020 (3), BTE 2021 (3), BTE 2024, STB 2022, UBCI 2021 (2), UBCI 2024, UIB 2020, Wifak 2023 (2) |
-  | erreur dans le document de la banque | 8 | colonnes déjà exclues : Wifak 2022 (4, colonne T4 2022 recopiée du T3), UIB 2022 (3, colonne T2 2022 incohérente) ; BTE 2021 charges opératoires (+2,765 MDT) : colonne T2 2021 de BTE_2022T2 (frais de personnel 11 196 contre 8 235 = S1 − T1), gardée car seule source du T2 2021 |
+  | retraitement de la banque | 11 | la banque révise un trimestre passé dans le cumul seulement (ou dans le trimestre seulement) : ATB 2021, BH 2023, BT 2023, BTE 2024, STB 2022, UBCI 2021 (2), UBCI 2024, UIB 2020, Wifak 2023 (2) |
+  | erreur dans le document de la banque | 7 | colonnes déjà exclues : Wifak 2022 (4, colonne T4 2022 recopiée du T3), UIB 2022 (3, colonne T2 2022 incohérente) |
   | reclassement | 3 | UIB 2024 : 0,677 MDT entre commissions encourues et charges générales (note (1) de UIB_2025T3), appliqué au trimestre et pas au cumul |
   | arrondi | 1 | Attijari 2021, PNB : 3 kDT (chiffres en milliers) |
   | erreur d'extraction | 0 | — |
+
+  Les 7 écarts BTE de 2020 et 2021 (dont les charges opératoires 2021, +2,765 MDT, d'abord classées
+  « erreur dans le document de la banque ») ont disparu avec la saisie des documents BTE en image :
+  ils venaient de corrections publiées dans des colonnes N-1 en image (T1 2021 dans BTE 2022T1,
+  S1 2020 dans BTE 2021T2).
 
   Aucune valeur n'est corrigée : ce sont des chiffres publiés par les banques. Un test vérifie que
   chaque `ecart` du contrôle annuel a sa cause dans `docs/ecarts_annuels.csv` et qu'aucune erreur

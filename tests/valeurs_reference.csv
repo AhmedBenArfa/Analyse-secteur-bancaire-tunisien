@@ -434,3 +434,6 @@ WIB;2022T3;WIB_2022T3.pdf;1;CHG_GEN;cumul_N;8640;milliers de dinars;8.640;
 WIB;2022T3;WIB_2022T3.pdf;1;CREDITS;cumul_N;742188;milliers de dinars;742.188;encours net des financements
 WIB;2022T3;WIB_2022T3.pdf;1;DEPOTS;cumul_N;735440;milliers de dinars;735.440;
 WIB;2022T3;WIB_2022T3.pdf;1;CAP_PROPRES;cumul_N;154928;milliers de dinars;154.928;hors résultat de la période
+BTE;2026T3;BTE_2026T3.pdf;1;CAP_PROPRES;cumul_N;29585;milliers de dinars;29.585;libellé « Cap itaux propres » (espace), règle du gabarit
+BTE;2026T3;BTE_2026T3.pdf;1;CAP_PROPRES;cumul_N1;30226;milliers de dinars;30.226;
+BTE;2026T3;BTE_2026T3.pdf;1;CAP_PROPRES;exercice_N1;29054;milliers de dinars;29.054;

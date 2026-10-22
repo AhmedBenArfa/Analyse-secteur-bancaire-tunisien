@@ -71,7 +71,7 @@ Fichiers versionnés à la racine (lus par le script ou par Power BI) :
 | Fichier | Contenu |
 |---|---|
 | `gabarits.csv` | Mise en page de chaque banque par période : ordre des colonnes, unité, libellés, contenu des charges opératoires |
-| `saisies_manuelles.csv` | Valeurs relevées sur l'image des tableaux publiés en image (BTE 2020–2021), avec fichier, page et vérification |
+| `saisies_manuelles.csv` | Valeurs relevées sur l'image des tableaux publiés en image (BTE 2020–2023), avec fichier, page et vérification |
 | `evenements.csv` | Événements à annoter dans Power BI (don au Fonds 1818 en 2020, moratoire Covid de l'UIB en 2020, accord salarial du secteur en 2021, retraitement BH 2024), avec la source PDF et la page |
 | `exclusions_colonnes.csv` | Colonnes de comparaison (N-1) fausses dans le document de la banque, jamais retenues, avec la raison, le fichier et la page (WIB 2023T4) ; les colonnes N-1 où produits − charges ≠ PNB sont exclues automatiquement (UIB 2023T2) |
 
@@ -175,10 +175,11 @@ Fichiers produits : `etats_financiers_long.csv`, `controle_etats_financiers.csv`
   fonctionnent. Les noms de fichiers changent d'une période à l'autre.
 - Les PDF scannés (images) ne sont pas lisibles : statut `echec`, saisie manuelle nécessaire
   (cas connus : BH 2019T4 ; BTE, 13 documents de 2020 à 2023). Quand le document suivant ne
-  reprend pas les chiffres, ils sont saisis dans `saisies_manuelles.csv` (BTE 2020T1 à 2020T4,
-  2021T1 et 2021T3), relus sur l'image et contrôlés ; statut `saisie manuelle`. Une valeur
+  reprend pas les chiffres, ils sont saisis dans `saisies_manuelles.csv` ; les 13 documents BTE
+  en image le sont tous (leurs colonnes N-1 publient des corrections que rien d'autre ne donne),
+  relus sur l'image et contrôlés ; statut `saisie manuelle`. Une valeur
   illisible dans un document lisible peut aussi y être saisie (STB 2026T2, revenus du portefeuille).
-  Une mesure qu'aucun document lisible ne donne (BTE : T4 seul 2021 et 2022) est marquée
+  Une mesure qu'aucun document lisible ne donne serait marquée
   « non disponible (image) » dans `indicateurs_versions.csv`, sans valeur (jamais zéro).
   Vérification par une personne : `python scripts/verification_saisie.py preparer BTE 2020T2`,
   remplir la colonne « verification », puis `... reporter BTE 2020T2`.

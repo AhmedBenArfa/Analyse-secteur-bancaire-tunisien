@@ -369,19 +369,23 @@ def rapport():
             + [["autres", fr(sum(n for k, n in refi.most_common()[8:]))]], "num"))
 
     A("<h3>Documents illisibles et saisies manuelles</h3>")
-    A(f"<p><b>{len(illis)} documents ont leur tableau publié en image</b> (page avec images et moins "
+    A(f"<p><b>{len(illis)} documents ont leur tableau publié en image sans être saisis</b> (page avec images et moins "
       "de 1 000 caractères de texte) : "
       + ", ".join(f"{b} {t}" for b, t in illis[["banque", "trimestre"]].values)
       + ". Leurs chiffres sont repris des colonnes N-1 du document de l'année suivante quand il est "
-      "lisible : en entier pour BH 2019T4 (document BH 2020T4), UIB 2022T3, BTE 2021T2, 2022T1, "
-      "2022T3, 2023T2 et 2023T4. Pas de saisie manuelle quand un autre document donne les chiffres ; "
-      "BTE 2021T4 et 2022T4 (trimestre seul repris nulle part) sont saisis depuis le 22/10/2026.</p>")
+      "lisible : en entier pour BH 2019T4 (document BH 2020T4) et UIB 2022T3. Les 13 documents BTE "
+      "en image (2020T1 à 2023T4, sauf 2022T2, 2023T1 et 2023T3) sont tous saisis à la main : leurs "
+      "colonnes N-1 publient des corrections que rien d'autre ne donne (T1 2021 corrigé dans BTE "
+      "2022T1).</p>")
     nd = ver[ver.statut_revision == "non disponible (image)"].groupby(["banque", "trimestre"]).size()
-    A(f"<p><b>Valeurs non disponibles</b> : {int(nd.sum())} lignes « non disponible (image) » dans "
-      "<code>indicateurs_versions.csv</code> ("
-      + ", ".join(f"{b} {t} : {n}" for (b, t), n in nd.items())
-      + ") : le trimestre seul (T4) n'est publié par aucun document lisible. Elles restent vides, "
-      "jamais à zéro.</p>")
+    if nd.sum():
+        A(f"<p><b>Valeurs non disponibles</b> : {int(nd.sum())} lignes « non disponible (image) » dans "
+          "<code>indicateurs_versions.csv</code> ("
+          + ", ".join(f"{b} {t} : {n}" for (b, t), n in nd.items())
+          + ") : aucun document lisible ne les publie. Elles restent vides, jamais à zéro.</p>")
+    else:
+        A("<p><b>Valeurs non disponibles</b> : aucune ligne « non disponible (image) » dans "
+          "<code>indicateurs_versions.csv</code>.</p>")
     sb = collections.Counter((s["banque"], s["trimestre"]) for s in sai)
     sv = collections.Counter(s["verification"] for s in sai)
     bte = {k: n for k, n in sb.items() if k[0] == "BTE"}
@@ -592,7 +596,7 @@ def rapport():
       "changement).</li>"
       "<li>Définitions des postes différentes d'une banque à l'autre (charges opératoires) ; Wifak "
       "comparée par équivalences.</li>"
-      f"<li>{len(illis)} documents en image ; {int(nd.sum())} valeurs non disponibles (BTE) ; "
+      f"<li>{len(illis)} documents en image non saisis ; {int(nd.sum())} valeurs non disponibles ; "
       f"{len(sai)} valeurs saisies à la main, toutes tracées.</li>"
       f"<li>{len(autres)} documents introuvables hors {der} ("
       + ", ".join(f"{b} {t}" for b, t in autres[["banque", "trimestre"]].values) + ").</li>"
