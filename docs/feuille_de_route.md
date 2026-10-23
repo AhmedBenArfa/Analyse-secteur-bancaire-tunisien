@@ -21,7 +21,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Dim_Indicateur` (27 lignes), `Fait_Indicateurs` (7 173 lignes), `Revisions` (14 884 lignes) écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop le 23/10/2026 , `Banques_Actionnariat` (fichier Excel, 15 lignes) et `Dim_Banque` (12 lignes) vérifiées ; `AdresseDepot`, `Operations_Titres` et `Evenements` (source URL) écrites, à vérifier |
 | 6 | Modèle en étoile et mesures DAX | À faire |
 | 7 | Pages du rapport | À faire |
-| 8 | README final et captures | README réécrit ; captures du rapport à faire |
+| 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
 ## En cours
 
@@ -30,9 +30,9 @@ projet est dans le [README](../README.md), le détail des règles dans la
   conditionnelle « capital », facteurs cumulés prix et rendement total ; 63 lignes) et `Evenements`
   (11 lignes), lues par URL. Vérifiées le 23/10/2026 : `Banques_Actionnariat` (connecteur Excel,
   15 lignes) et `Dim_Banque` (12 banques, fusion avec l'actionnariat en cours) ; part du capital
-  affichée avec trois décimales (UBCI 2019 : 50,085 %). Point à régler avec le segment d'actionnariat :
-  pour BTE, aucune période ne couvre du 01/07/2024 au 30/12/2024 (date de l'augmentation de capital
-  inconnue ; catégorie « mixte » avant et après). Vérifiées le 23/10/2026 dans Power BI Desktop : `Dim_Indicateur`,
+  affichée avec trois décimales (UBCI 2019 : 50,085 %). BTE : seconde période d'actionnariat à partir
+  du 01/07/2024 (date de l'augmentation de capital inconnue, entre le 30/06 et le 31/12/2024) ; test
+  de continuité des périodes de 2019 à aujourd'hui pour les 12 banques. Vérifiées le 23/10/2026 dans Power BI Desktop : `Dim_Indicateur`,
   `Fait_Indicateurs` (fusion avec `Dim_Indicateur`, colonne conditionnelle sur les stocks, « non »
   pour les ruptures) et `Revisions` (filtre inverse, écart calculé, colonnes conditionnelles) ; tous
   les contrôles du guide (section 1) conformes.
@@ -45,6 +45,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 2. Mesures DAX (totaux du secteur seulement quand les 12 banques sont présentes, nombre de banques
    présentes, dernier trimestre complet).
 3. `docs/validation.md`, pages du rapport, captures.
+4. Publication du rapport terminé sur le web (« Publier sur le web ») et lien en tête du README.
 
 ## Trimestres incomplets pour le secteur
 
@@ -90,3 +91,5 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 23/10/2026 | Documentation des transformations | `docs/Guide_PowerBI.pdf` : chaque transformation expliquée, code M de chaque requête et feuille de route en annexe, régénéré après chaque requête ou groupe de mesures |
 | 23/10/2026 | Niveaux de confidentialité | Même niveau pour toutes les sources (Professionnel), dossier du projet plutôt que tout le disque, accès anonyme à GitHub |
 | 23/10/2026 | Facteur d'ajustement « prix » | Dividende détaché le même jour qu'une attribution retiré de la clôture de la veille avant la parité (BT 10/05/2022 : 0,834 au lieu de 0,796) |
+| 23/10/2026 | BTE, actionnariat 2024 | Date de l'augmentation de capital introuvable dans les états financiers : seconde période à partir du 01/07/2024, « date exacte inconnue, entre le 30/06 et le 31/12/2024 » ; périodes continues contrôlées par un test |
+| 23/10/2026 | Ouverture du projet par un tiers | Cache des données Power BI versionné (données publiques) : le projet s'ouvre avec ses données sans réglage ; section « Ouvrir le rapport » du README ; publication sur le web à la fin |

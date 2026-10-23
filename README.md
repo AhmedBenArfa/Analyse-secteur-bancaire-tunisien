@@ -75,7 +75,7 @@ un fichier Excel et une URL.
 | Valeurs saisies à la main | 680 (13 documents BTE publiés en image, deux valeurs illisibles STB), toutes passées aux contrôles de cohérence ; un document relu une seconde fois en entier (BTE 2020T2) |
 | États financiers | 168 arrêtés, 504 valeurs retenues (résultat net, total de l'actif, capitaux propres), aucune vide |
 | Cours boursiers | 1 955 séances par banque, du 02/01/2019 au 20/10/2026 ; 63 opérations sur titres, chacune avec le cours de référence publié |
-| Tests automatiques | 39, tous réussis |
+| Tests automatiques | 41, tous réussis |
 
 ## Démarche qualité
 
@@ -159,6 +159,30 @@ puisse s'ouvrir après un simple clonage du dépôt. Pour reproduire les donnée
 - Le seuil de 2 % pour signaler une révision importante est un choix d'analyse, pas une norme.
 
 Le détail des limites est dans la spécification, section 10.
+
+## Ouvrir le rapport
+
+**Pour le consulter** : le lien de la version en ligne (« Publier sur le web », sans Power BI ni
+compte) et les captures des pages seront ajoutés ici quand le rapport sera terminé. En attendant, la
+préparation des données est décrite étape par étape dans
+[docs/Guide_PowerBI.pdf](docs/Guide_PowerBI.pdf).
+
+**Pour l'ouvrir dans Power BI Desktop** (Windows, gratuit) :
+
+1. Cloner le dépôt (ou le télécharger en ZIP).
+2. Ouvrir `powerbi/SecteurBancaireTunisien.pbip`. Le cache des données est versionné : le rapport
+   s'ouvre avec ses données, sans autre réglage.
+3. **Seulement pour actualiser** les données (après une nouvelle publication des CSV) :
+   - **Accueil › Transformer les données › Gérer les paramètres** : donner à `CheminDonnees` le dossier
+     du clone (par exemple `C:\Projets\Analyse-secteur-bancaire-tunisien`) ;
+   - **Accueil › Actualiser** ; Power BI demande une fois, pour chaque source, un niveau de
+     confidentialité (choisir le dossier du clone et **Professionnel**, ou « Organisationnel », pour
+     toutes les sources) et, pour l'adresse GitHub, un mode d'accès (**Anonyme**). Ces réponses
+     restent sur le poste ; aucune n'est enregistrée dans le projet.
+
+Le rapport lit trois types de sources : le dossier `donnees_publiees/` (CSV), le fichier Excel
+`donnees_reference/banques.xlsx` (actionnariat) et deux fichiers du dépôt par leur adresse GitHub
+(`operations_titres.csv`, `evenements.csv`).
 
 ## Données
 

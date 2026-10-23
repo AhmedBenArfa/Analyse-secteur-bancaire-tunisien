@@ -514,8 +514,16 @@ Classement et preuve du contrôle :
 - Wifak : ICD (30 %) jusqu'au 31/12/2021, puis groupe Ben Ayed (32,9 % « début 2022 », 01/01/2022 retenu,
   39,86 % depuis 2023 ; rapports annuels 2021 p. 13, 2022 p. 16, 2023 p. 22) ; catégorie inchangée ;
 - BTE : État tunisien et ADIA à parts égales (38,9 % chacun) jusqu'au 30/06/2024 ; augmentation de capital
-  au second semestre 2024 (date exacte non trouvée) : ADIA 40,80 %, État 32,19 %, La Poste tunisienne
-  8,62 % (BTE_EF_2024-12.pdf p. 32) ; catégorie inchangée (mixte).
+  décidée par l'AGE du 30/04/2024 (BTE_EF_2024-06.pdf p. 32), réalisée au second semestre 2024 : ADIA
+  40,80 %, État 32,19 %, La Poste tunisienne 8,62 % (BTE_EF_2024-12.pdf p. 32) ; catégorie inchangée
+  (mixte). **Date exacte inconnue** (aucune dans les notes des états financiers de 2024 et 2025) : la
+  seconde période commence au 01/07/2024 pour que les périodes se suivent (décision du 23/10/2026).
+  Indice non confirmé : capitaux propres trimestriels 41,704 MDT au 30/06/2024 et 62,764 MDT au
+  30/09/2024 (BTE_2025T2.pdf et BTE_2025T3.pdf p. 1), hausse proche des 18,744 MDT de capital.
+
+Contrôle : `tests/test_actionnariat.py` vérifie que, pour chaque banque, les périodes se suivent sans
+trou ni chevauchement du 01/01/2019 à aujourd'hui, et que chaque ligne a une catégorie de la règle,
+une source et une page.
 
 Limites : l'actionnariat de BH en 2019 n'a pas été trouvé (seul le rapport 2025 est en ligne) ; la part
 d'UIB et l'actionnaire de référence de BIAT en 2019 ne sont pas relevés (contrôle et catégorie confirmés

@@ -4,12 +4,6 @@ expression CheminDonnees = "D:\Projet\Analyse-secteur-bancaire-tunisien" meta [I
 
 	annotation PBI_ResultType = Text
 
-/// Adresse des fichiers bruts du dépôt GitHub public (branche main) : source URL de operations_titres.csv et evenements.csv
-expression AdresseDepot = "https://raw.githubusercontent.com/AhmedBenArfa/Analyse-secteur-bancaire-tunisien/main" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
-	lineageTag: 7a0d57a6-360f-4a92-a2d6-b42c1d4bc349
-
-	annotation PBI_ResultType = Text
-
 /// Requête intermédiaire : CSV du dossier donnees_publiees (connecteur Dossier)
 expression Fichiers_Donnees =
 		// Auteur : Ahmed Ben Arfa
@@ -70,6 +64,12 @@ expression Versions =
 	annotation PBI_NavigationStepName = Navigation
 
 	annotation PBI_ResultType = Table
+
+/// Adresse des fichiers bruts du dépôt GitHub public (branche main) : source URL de operations_titres.csv et evenements.csv
+expression AdresseDepot = "https://raw.githubusercontent.com/AhmedBenArfa/Analyse-secteur-bancaire-tunisien/main" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 7a0d57a6-360f-4a92-a2d6-b42c1d4bc349
+
+	annotation PBI_ResultType = Text
 
 /// Requête intermédiaire : opérations sur titres (GitHub), facteurs d'ajustement de la Bourse et facteurs cumulés
 expression Operations_Titres =
@@ -142,3 +142,4 @@ expression Operations_Titres =
 	annotation PBI_NavigationStepName = Navigation
 
 	annotation PBI_ResultType = Table
+

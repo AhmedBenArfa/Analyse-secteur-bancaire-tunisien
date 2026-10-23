@@ -50,8 +50,13 @@ versions), sinon les fusions entre sources peuvent être bloquées. Pour l'adres
 **Anonyme** (dépôt public). Ces réglages sont enregistrés sur le poste, pas dans le projet : une
 personne qui clone le dépôt les donne une fois.
 
-Ne sont pas versionnés (`.gitignore`) : `.pbi/cache.abf` (données importées), `.pbi/localSettings.json`
-(réglages et signature de sécurité propres au poste) et l'ancien `SecteurBancaireTunisien.pbix`.
+Ne sont pas versionnés (`.gitignore`) : `.pbi/localSettings.json` (réglages et signature de sécurité
+propres au poste) et l'ancien `SecteurBancaireTunisien.pbix`. **Le cache des données
+(`.pbi/cache.abf`) est versionné** (décision du 23/10/2026) : le projet s'ouvre avec ses données sans
+actualiser, donc sans changer `CheminDonnees` ni répondre aux questions d'accès. Toutes ces données
+sont déjà publiques dans le dépôt. Le fichier est compressé : l'audit ne peut pas lire son contenu.
+Il est commité seulement après une vérification dans Power BI Desktop suivie d'un enregistrement,
+pour que les données publiées correspondent au modèle.
 
 **Vérifier après une réouverture.** Ouvrir `SecteurBancaireTunisien.pbip`, **Accueil › Transformer les
 données** : les requêtes apparaissent dans l'ordre de la section 2, les intermédiaires en italique
@@ -239,7 +244,9 @@ avec la source et la page de chaque ligne, dans un fichier qu'on peut relire et 
 spécification 5.3. Les périodes (`date_debut`, `date_fin`) servent au segment d'actionnariat des
 faits : UBCI change de catégorie le 16/03/2021 (BNP Paribas → groupe Carte) ; Wifak et BTE changent
 d'actionnaire de référence sans changer de catégorie. Pour BTE, la date de l'augmentation de capital
-du second semestre 2024 n'est pas connue : aucune ligne ne couvre du 01/07/2024 au 30/12/2024.
+du second semestre 2024 n'est pas connue : la seconde période commence au 01/07/2024 (« date exacte
+inconnue, entre le 30/06 et le 31/12/2024 »), pour que les périodes se suivent sans trou (contrôlé par
+`tests/test_actionnariat.py`).
 
 ### 2.8 `Dim_Banque` (chargée)
 

@@ -2,7 +2,7 @@ donnees/
 __pycache__/
 *.pyc
 
-# Power BI : cache des données importées et réglages locaux (signature liée au poste)
+# Power BI : réglages locaux (signature liée au poste) et ancien fichier .pbix. Le cache des données
+# (.pbi/cache.abf) est versionné : le projet s'ouvre avec ses données (toutes publiques) sans actualiser.
 powerbi/**/.pbi/localSettings.json
-powerbi/**/.pbi/cache.abf
 powerbi/*.pbix

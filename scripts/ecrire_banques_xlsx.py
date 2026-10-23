@@ -59,9 +59,12 @@ L = [
   "(BTE_EF_2024-06.pdf p. 24). Contrôle conjoint public / étranger : mixte."),
  ("BTE", "Banque de Tunisie et des Emirats", "Abou Dhabi Investment Authority (ADIA)", 40.80, "mixte",
   "État tunisien / ADIA", "2024-12-31",
-  "BVMT, états financiers annuels : BTE_EF_2024-12.pdf", "32", "2024-12-31", "",
-  "Augmentation de capital (AGE prévue le 30/04/2024, BTE_EF_2023-12.pdf p. 42), faite entre le 30/06/2024 et le 31/12/2024 "
-  "(date exacte non trouvée). État 32,19 % (39 % des droits de vote), La Poste tunisienne 8,62 % (11 %), ADIA 40,80 % (50 %), "
+  "BVMT, états financiers annuels : BTE_EF_2024-12.pdf", "32", "2024-07-01", "",
+  "Augmentation de capital (AGE prévue le 30/04/2024, BTE_EF_2023-12.pdf p. 42 ; décidée par l'AGE du 30/04/2024, "
+  "BTE_EF_2024-06.pdf p. 32) : date exacte inconnue, entre le 30/06 et le 31/12/2024 (capital 90 000 → 108 744 kDT, "
+  "BTE_EF_2024-12.pdf p. 31 ; aucune date dans les notes de 2024 et 2025) ; début de période fixé au 01/07/2024 pour que "
+  "les périodes se suivent. Indice non confirmé : capitaux propres trimestriels 41,704 MDT au 30/06/2024 (BTE_2025T2.pdf "
+  "p. 1) et 62,764 MDT au 30/09/2024 (BTE_2025T3.pdf p. 1). État 32,19 % (39 % des droits de vote), La Poste tunisienne 8,62 % (11 %), ADIA 40,80 % (50 %), "
   "ADP 18,39 %. Même structure à la fiche Bourse (AGO du 30/04/2026). Droits de vote : 50 % public (État + La Poste), "
   "50 % ADIA : contrôle conjoint, mixte."),
  ("STB", "Société Tunisienne de Banque", "État tunisien", 71.56, "public", "État tunisien", "2025-12-31",
