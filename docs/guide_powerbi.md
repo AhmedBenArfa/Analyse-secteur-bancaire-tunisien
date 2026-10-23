@@ -109,6 +109,9 @@ données** : les requêtes apparaissent dans l'ordre de la section 2, les interm
 | `Revisions_Etats_Financiers` | UIB 30/06/2020, RES_NET, version `initiale` | −41,182 publié ; 17,912 retenu ; `Ecart_MDT` = 59,094 ; « révision importante (plus de 2 %) » |
 | `Revisions_Etats_Financiers` | BNA 30/06/2025, RES_NET, version `revisee` | 137,318 ; 155,069 retenu ; « révisée non retenue (modification comptable incluse) » |
 | `Revisions_Etats_Financiers` | `Type_Revision` | 390 identiques, 24 retraitements mineurs, 8 révisions importantes, 1 révisée non retenue |
+| `Controle` | nombre de lignes | 336 (12 banques × 28 trimestres) ; somme de `nb_alertes` = 968 |
+| `Controle` | `Categorie_Statut` | 91 conformes, 228 écarts signalés, 13 saisis à la main, 2 repris du document suivant, 2 alertes bloquantes (UBCI 2025T3, UIB 2023T2) |
+| `Controle` | BTE 2021T4 | `statut` = saisie manuelle ; `date_arrete` = 31/12/2021 ; `nb_alertes` = 7 |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -136,6 +139,7 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | 12 | `Variations_Comparables` | oui | `variations_comparables.csv` + fusion avec `Dim_Indicateur` | valeur N et N-1 du même document, variation sur un an |
 | 13 | `Fait_Etats_Financiers` | oui | `etats_financiers_versions.csv` | résultat net, total de l'actif, capitaux propres du bilan (ROE, ROA) |
 | 14 | `Revisions_Etats_Financiers` | oui | `etats_financiers_versions.csv` | versions écartées des états financiers (page qualité) |
+| 15 | `Controle` | oui | `controle_extraction.csv` | statut d'extraction de chaque document (page qualité) |
 
 ### 2.1 `CheminDonnees` (paramètre)
 
@@ -399,6 +403,21 @@ retenue − valeur de la version et `Ecart_Pct` calculés dans Power Query (la c
 reprise), **colonne conditionnelle** `Type_Revision` (statut en clair). Exemple : résultat net de l'UIB au
 30/06/2020, −41,182 MDT publié, 17,912 retenu (+59,094 : intérêts du moratoire Covid réintégrés).
 
+### 2.12e `Controle` (chargée)
+
+Une ligne par document trimestriel (336) : statut de l'extraction, nombre de valeurs lues, alertes,
+fichier, gabarit de mise en page.
+
+| Étape | Ce qu'elle fait |
+|---|---|
+| `Fichier`, `Source`, `EnTetes`, `Types`, `VidesEnNull` | lit `controle_extraction.csv` ; textes vides → `null` |
+| `DateArrete` | **colonne calculée** `date_arrete` : fin du trimestre à partir du texte « 2024T3 » (année = 4 premiers caractères, mois = 3 × rang du trimestre, dernier jour du mois) ; servira à la relation avec la table des dates |
+| `NbAlertes` | nombre d'alertes du document (elles sont séparées par « \| ») ; 0 sans alerte |
+| `CategorieStatut` | **colonne conditionnelle** : conforme (`ok`) ; écart signalé, qui vient de la banque et ne bloque pas (`retraitement possible`, `ecart trimestre/cumul`, `ecart composantes`) ; tableau en image saisi à la main ; tableau en image repris du document suivant ; alerte bloquante (2 erreurs du document de la banque, vérifiées sur l'image) |
+
+**Pourquoi** : la page qualité montre, pour chaque banque et chaque trimestre, comment le chiffre a été
+obtenu ; les statuts techniques du script deviennent cinq catégories lisibles.
+
 ### 2.13 Fonctions et mots-clés M utilisés
 
 Chaque fonction du langage M (Power Query) employée dans les requêtes, ce qu'elle fait ici et où elle
@@ -443,7 +462,13 @@ ne manque à ce tableau.
 | `Text.Contains` | le texte contient-il ce mot (« sans transaction ») ? | `Fait_Cours` |
 | `Text.StartsWith` | le texte commence-t-il par ce préfixe (« revisee_31-12 », « exclue ») ? | `Revisions` |
 | `Text.Proper` | met une majuscule au début du mot (« trim » → « Trim ») | `Fait_Indicateurs` |
-| `Number.Abs` | valeur absolue (écart en % rapporté à la valeur absolue) | `Revisions` |
+| `Number.Abs` | valeur absolue (écart en % rapporté à la valeur absolue) | `Revisions`, `Variations_Comparables`, `Revisions_Etats_Financiers` |
+| `Number.From` | convertit un texte en nombre (« 2024 » → 2024) | `Controle` |
+| `Text.Start` | premiers caractères d'un texte (« 2024T3 » → « 2024 ») | `Controle` |
+| `Text.End` | derniers caractères d'un texte (« 2024T3 » → « 3 ») | `Controle` |
+| `Date.EndOfMonth` | dernier jour du mois d'une date (date d'arrêté du trimestre) | `Controle` |
+| `Text.Split` | découpe un texte selon un séparateur (alertes séparées par « \| ») | `Controle` |
+| `List.Count` | nombre d'éléments d'une liste (nombre d'alertes) | `Controle` |
 | `List.Contains` | la liste contient-elle cette valeur (les quatre catégories d'actionnariat) ? | `Banques_Actionnariat` |
 | `List.Product` | produit des nombres d'une liste (facteurs d'ajustement cumulés) | `Operations_Titres` |
 | `List.RemoveNulls` | retire les valeurs vides d'une liste (un facteur absent n'annule pas le produit) | `Operations_Titres` |
@@ -473,6 +498,7 @@ ne manque à ce tableau.
 | `if … then … else` | condition : c'est le code d'une colonne conditionnelle |
 | `error "…"` | provoque une erreur visible à l'actualisation (catégorie d'actionnariat inconnue) |
 | `#table(type table […], {…})` | table écrite dans la requête (3 codes des états financiers) |
+| `#date(année, mois, jour)` | date écrite à partir de nombres (premier jour du dernier mois du trimestre) |
 | `meta [IsParameterQuery = true …]` | fait d'une valeur un paramètre (`CheminDonnees`, `AdresseDepot`) |
 | `type number`, `type text`, `type date`, `Int64.Type`, `type logical` | types des colonnes : nombre décimal, texte, date, entier, vrai ou faux |
 | `null` | valeur absente ; un calcul avec `null` donne `null` (jamais zéro) |

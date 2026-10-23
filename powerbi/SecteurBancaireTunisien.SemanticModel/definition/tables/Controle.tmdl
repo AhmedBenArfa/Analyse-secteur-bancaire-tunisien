@@ -1,0 +1,139 @@
+/// Contrôle de l extraction : statut de chaque document trimestriel, nombre de valeurs et d alertes, catégorie de statut en clair (page qualité)
+table Controle
+	lineageTag: 5f734385-6486-4c21-8a2e-a500618aadfc
+
+	column banque
+		dataType: string
+		lineageTag: 29bbe99d-2d52-42e5-9f77-84790c01b03d
+		summarizeBy: none
+		sourceColumn: banque
+
+		annotation SummarizationSetBy = User
+
+	column trimestre
+		dataType: string
+		lineageTag: 29403365-8036-42bc-aa1d-a2ba8f17d46d
+		summarizeBy: none
+		sourceColumn: trimestre
+
+		annotation SummarizationSetBy = User
+
+	column statut
+		dataType: string
+		lineageTag: 53a4c125-2997-4b17-8204-5fc075b8d6af
+		summarizeBy: none
+		sourceColumn: statut
+
+		annotation SummarizationSetBy = User
+
+	column nb_valeurs
+		dataType: int64
+		formatString: 0
+		lineageTag: cc2b95a9-8674-47be-815b-0b7932b2166b
+		summarizeBy: none
+		sourceColumn: nb_valeurs
+
+		annotation SummarizationSetBy = User
+
+	column alertes
+		dataType: string
+		lineageTag: 85197e43-5ef6-48a0-a968-3aa46c9461cd
+		summarizeBy: none
+		sourceColumn: alertes
+
+		annotation SummarizationSetBy = User
+
+	column fichier
+		dataType: string
+		lineageTag: e1f2f759-3dc1-4052-9c5c-4cd29eaf4f42
+		summarizeBy: none
+		sourceColumn: fichier
+
+		annotation SummarizationSetBy = User
+
+	column gabarit
+		dataType: string
+		lineageTag: 527db8b0-77ff-49d4-aca8-7d4971a77517
+		summarizeBy: none
+		sourceColumn: gabarit
+
+		annotation SummarizationSetBy = User
+
+	column date_arrete
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 72b1bd2b-08bb-4dad-bbb7-83bad64bac31
+		summarizeBy: none
+		sourceColumn: date_arrete
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column nb_alertes
+		dataType: int64
+		formatString: 0
+		lineageTag: 55eca690-1721-458b-8d1a-0ae3d99174c6
+		summarizeBy: none
+		sourceColumn: nb_alertes
+
+		annotation SummarizationSetBy = User
+
+	column Categorie_Statut
+		dataType: string
+		lineageTag: 5c354902-7960-4f5c-b103-7952b65390f3
+		summarizeBy: none
+		sourceColumn: Categorie_Statut
+
+		annotation SummarizationSetBy = User
+
+	partition Controle = m
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Contrôle de l'extraction (chargée) : une ligne par document trimestriel (12 banques × 28 trimestres),
+				// avec son statut, le nombre de valeurs lues, les alertes, le fichier et le gabarit de mise en page.
+				// Page « qualité des données » (spécification 5.1 et 7.8).
+				let
+				    Fichier = Fichiers_Donnees{[fichier = "controle_extraction.csv"]}[contenu],
+				    Source = Csv.Document(Fichier, [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    EnTetes = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Types = Table.TransformColumnTypes(
+				        EnTetes,
+				        {
+				            {"banque", type text}, {"trimestre", type text}, {"statut", type text}, {"nb_valeurs", Int64.Type},
+				            {"alertes", type text}, {"fichier", type text}, {"gabarit", type text}
+				        },
+				        "en-US"
+				    ),
+				    VidesEnNull = Table.ReplaceValue(Types, "", null, Replacer.ReplaceValue, {"alertes", "gabarit"}),
+				    // date d'arrêté calculée à partir du trimestre (« 2024T3 » → 30/09/2024), pour la relier aux dates
+				    DateArrete = Table.AddColumn(
+				        VidesEnNull, "date_arrete",
+				        each Date.EndOfMonth(#date(Number.From(Text.Start([trimestre], 4)), 3 * Number.From(Text.End([trimestre], 1)), 1)),
+				        type date
+				    ),
+				    // nombre d'alertes : elles sont séparées par « | » dans le fichier
+				    NbAlertes = Table.AddColumn(
+				        DateArrete, "nb_alertes",
+				        each if [alertes] = null then 0 else List.Count(Text.Split([alertes], " | ")),
+				        Int64.Type
+				    ),
+				    // colonne conditionnelle : statut en clair, regroupé pour la page qualité
+				    CategorieStatut = Table.AddColumn(
+				        NbAlertes, "Categorie_Statut",
+				        each if [statut] = "ok" then "conforme"
+				            else if List.Contains({"retraitement possible", "ecart trimestre/cumul", "ecart composantes"}, [statut])
+				                then "écart signalé (vient de la banque, non bloquant)"
+				            else if [statut] = "saisie manuelle" then "tableau en image, saisi à la main"
+				            else if [statut] = "illisible (image)" then "tableau en image, repris du document suivant"
+				            else if [statut] = "a verifier" then "alerte bloquante (erreur du document vérifiée)"
+				            else [statut],
+				        type text
+				    )
+				in
+				    CategorieStatut
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
