@@ -112,6 +112,10 @@ données** : les requêtes apparaissent dans l'ordre de la section 2, les interm
 | `Controle` | nombre de lignes | 336 (12 banques × 28 trimestres) ; somme de `nb_alertes` = 968 |
 | `Controle` | `Categorie_Statut` | 91 conformes, 228 écarts signalés, 13 saisis à la main, 2 repris du document suivant, 2 alertes bloquantes (UBCI 2025T3, UIB 2023T2) |
 | `Controle` | BTE 2021T4 | `statut` = saisie manuelle ; `date_arrete` = 31/12/2021 ; `nb_alertes` = 7 |
+| `Ecarts_Annuels` (Power Query, intermédiaire) | nombre de lignes | 22 |
+| `Controle_Annuel` | nombre de lignes | 288 (12 banques × 6 années × 4 indicateurs) |
+| `Controle_Annuel` | `Statut_Clair` | 205 « somme des trimestres = cumul annuel », 41 « en attente du document de l'année suivante », 20 « changement de méthode en cours d'année », 22 « écart expliqué : … » (11 retraitements de la banque, 7 erreurs dans le document de la banque, 3 reclassements, 1 arrondi), **0** « écart sans cause écrite » |
+| `Controle_Annuel` | ATB 2021, CHG_EXPL | somme 309,5 ; cumul 312,374 ; `Ecart_MDT` = −2,874 ; « écart expliqué : retraitement de la banque » ; preuve ATB_2022T2.pdf p. 1 |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -140,6 +144,8 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | 13 | `Fait_Etats_Financiers` | oui | `etats_financiers_versions.csv` | résultat net, total de l'actif, capitaux propres du bilan (ROE, ROA) |
 | 14 | `Revisions_Etats_Financiers` | oui | `etats_financiers_versions.csv` | versions écartées des états financiers (page qualité) |
 | 15 | `Controle` | oui | `controle_extraction.csv` | statut d'extraction de chaque document (page qualité) |
+| 16 | `Ecarts_Annuels` | non | `docs\ecarts_annuels.csv` (connecteur Fichier) | cause de chaque écart du contrôle annuel |
+| 17 | `Controle_Annuel` | oui | `controle_annuel.csv` + fusion avec `Ecarts_Annuels` | somme des trimestres contre cumul annuel, statut et cause |
 
 ### 2.1 `CheminDonnees` (paramètre)
 
@@ -417,6 +423,26 @@ fichier, gabarit de mise en page.
 
 **Pourquoi** : la page qualité montre, pour chaque banque et chaque trimestre, comment le chiffre a été
 obtenu ; les statuts techniques du script deviennent cinq catégories lisibles.
+
+### 2.12f `Ecarts_Annuels` (intermédiaire) et `Controle_Annuel` (chargée)
+
+`Controle_Annuel` compare, pour chaque banque, année (2020–2025) et indicateur de flux (PNB, produits
+et charges d'exploitation, charges opératoires), la somme des 4 trimestres retenus au cumul annuel
+retenu (288 lignes). `Ecarts_Annuels` donne la cause de chacun des 22 écarts, trouvée dans les PDF.
+
+| Requête | Étape | Ce qu'elle fait |
+|---|---|---|
+| `Ecarts_Annuels` | `Source` | lit `docs\ecarts_annuels.csv` dans le dossier du projet (`File.Contents(CheminDonnees & …)`) : fichier versionné, examiné à la main, hors de `donnees_publiees` |
+| `Ecarts_Annuels` | `Types`, `Colonnes` | types `en-US` ; garde la clé (banque, année, indicateur) et l'explication (catégorie, cause, fichier, page, correction) |
+| `Controle_Annuel` | `Fichier` … `Types` | lit `controle_annuel.csv` |
+| `Controle_Annuel` | `Ecart` | **colonne calculée** `Ecart_MDT` = somme des trimestres − cumul annuel (la colonne du CSV n'est pas reprise) |
+| `Controle_Annuel` | `DateArrete` | 31/12 de l'année, pour la relation avec les dates |
+| `Controle_Annuel` | `Fusion`, `Developpee` | **fusion sur trois colonnes** (banque, année, indicateur) avec `Ecarts_Annuels` : catégorie, cause, fichier et page de la preuve, correction |
+| `Controle_Annuel` | `StatutClair` | **colonne conditionnelle** : statut en clair ; un « ecart » sans cause écrite serait affiché « écart sans cause écrite » (aucun aujourd'hui, `test_ecarts_annuels_expliques` le garantit) |
+
+**Pourquoi** : un écart entre la somme des trimestres et l'année n'est jamais corrigé en silence ; la
+page qualité montre sa cause et le document qui la prouve (ex. ATB 2021 : T2 retraité dans la colonne
+du trimestre mais pas dans le cumul du semestre).
 
 ### 2.13 Fonctions et mots-clés M utilisés
 

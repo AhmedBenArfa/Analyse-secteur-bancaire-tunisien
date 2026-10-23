@@ -1,0 +1,187 @@
+/// Contrôle annuel : somme des 4 trimestres retenus contre cumul annuel retenu, statut en clair et cause de chaque écart (page qualité)
+table Controle_Annuel
+	lineageTag: fc3fe072-7ffe-45dd-9af7-061b4645c365
+
+	column banque
+		dataType: string
+		lineageTag: f472e35e-1768-41f8-9127-52ecf86ffd81
+		summarizeBy: none
+		sourceColumn: banque
+
+		annotation SummarizationSetBy = User
+
+	column annee
+		dataType: int64
+		formatString: 0
+		lineageTag: f0ca05e2-e41a-4631-88f9-f7b4a5d039b4
+		summarizeBy: none
+		sourceColumn: annee
+
+		annotation SummarizationSetBy = User
+
+	column code_indicateur
+		dataType: string
+		lineageTag: 07c919b8-ead0-4cbc-b772-7d1628513357
+		summarizeBy: none
+		sourceColumn: code_indicateur
+
+		annotation SummarizationSetBy = User
+
+	column somme_trimestres
+		dataType: double
+		lineageTag: 63b1eadb-d107-42fd-9981-dee0935557e2
+		summarizeBy: none
+		sourceColumn: somme_trimestres
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column cumul_T4
+		dataType: double
+		lineageTag: ed305ad3-4198-434b-9bcf-f35aaa362073
+		summarizeBy: none
+		sourceColumn: cumul_T4
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column source_cumul
+		dataType: string
+		lineageTag: 4955323a-30a8-4734-9b2b-27604a43407c
+		summarizeBy: none
+		sourceColumn: source_cumul
+
+		annotation SummarizationSetBy = User
+
+	column statut
+		dataType: string
+		lineageTag: e9fcae34-f500-4255-8fda-fc22dbc6075c
+		summarizeBy: none
+		sourceColumn: statut
+
+		annotation SummarizationSetBy = User
+
+	column Ecart_MDT
+		dataType: double
+		lineageTag: 426f2cc1-1240-469c-83a2-ababb4eab520
+		summarizeBy: none
+		sourceColumn: Ecart_MDT
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column date_arrete
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 83298453-91fc-48dc-8173-c7e2f9e2b0d9
+		summarizeBy: none
+		sourceColumn: date_arrete
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column categorie_ecart
+		dataType: string
+		lineageTag: efb050f3-84ed-4696-855d-73b79578bd93
+		summarizeBy: none
+		sourceColumn: categorie_ecart
+
+		annotation SummarizationSetBy = User
+
+	column cause_ecart
+		dataType: string
+		lineageTag: dad005d7-9da7-4538-8956-08794e4eae42
+		summarizeBy: none
+		sourceColumn: cause_ecart
+
+		annotation SummarizationSetBy = User
+
+	column fichier_preuve
+		dataType: string
+		lineageTag: 7e930ef8-f8f2-4cab-a375-63875e996854
+		summarizeBy: none
+		sourceColumn: fichier_preuve
+
+		annotation SummarizationSetBy = User
+
+	column page_preuve
+		dataType: int64
+		formatString: 0
+		lineageTag: db2ab7e8-afcd-41c0-8f11-5e4f7ef12029
+		summarizeBy: none
+		sourceColumn: page_preuve
+
+		annotation SummarizationSetBy = User
+
+	column correction
+		dataType: string
+		lineageTag: 7d66c1bd-8beb-4000-9b56-d70d2e3467f9
+		summarizeBy: none
+		sourceColumn: correction
+
+		annotation SummarizationSetBy = User
+
+	column Statut_Clair
+		dataType: string
+		lineageTag: 9954e964-5531-41cc-b01b-37b2a724d960
+		summarizeBy: none
+		sourceColumn: Statut_Clair
+
+		annotation SummarizationSetBy = User
+
+	partition Controle_Annuel = m
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Contrôle annuel (chargée) : pour chaque banque, année (2020–2025) et indicateur de flux, somme des 4
+				// trimestres retenus comparée au cumul annuel retenu, avec le statut et, pour chaque écart, sa cause
+				// (Ecarts_Annuels). Page « qualité des données » (spécification 5.1 et 5.2).
+				let
+				    Fichier = Fichiers_Donnees{[fichier = "controle_annuel.csv"]}[contenu],
+				    Source = Csv.Document(Fichier, [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    EnTetes = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Types = Table.TransformColumnTypes(
+				        EnTetes,
+				        {
+				            {"banque", type text}, {"annee", Int64.Type}, {"code_indicateur", type text},
+				            {"somme_trimestres", type number}, {"cumul_T4", type number}, {"source_cumul", type text},
+				            {"ecart", type number}, {"statut", type text}
+				        },
+				        "en-US"
+				    ),
+				    // écart recalculé ici (la colonne du CSV n'est pas reprise) : somme des trimestres − cumul annuel
+				    Ecart = Table.AddColumn(
+				        Table.RemoveColumns(Types, {"ecart"}), "Ecart_MDT", each [somme_trimestres] - [cumul_T4], type number
+				    ),
+				    // date de l'exercice (31/12), pour la relier aux dates
+				    DateArrete = Table.AddColumn(Ecart, "date_arrete", each #date([annee], 12, 31), type date),
+				    // fusion avec Ecarts_Annuels : la cause de chaque écart (vide pour les autres statuts)
+				    Fusion = Table.NestedJoin(
+				        DateArrete, {"banque", "annee", "code_indicateur"},
+				        Ecarts_Annuels, {"banque", "annee", "code_indicateur"}, "Cause", JoinKind.LeftOuter
+				    ),
+				    Developpee = Table.ExpandTableColumn(
+				        Fusion, "Cause", {"categorie", "cause", "fichier", "page", "correction"},
+				        {"categorie_ecart", "cause_ecart", "fichier_preuve", "page_preuve", "correction"}
+				    ),
+				    // colonne conditionnelle : statut en clair pour la page qualité
+				    StatutClair = Table.AddColumn(
+				        Developpee, "Statut_Clair",
+				        each if [statut] = "ok" then "somme des trimestres = cumul annuel"
+				            else if [statut] = "en attente de révision" then "en attente du document de l'année suivante"
+				            else if [statut] = "rupture de série" then "changement de méthode en cours d'année"
+				            else if [statut] = "ecart" and [categorie_ecart] <> null then "écart expliqué : " & [categorie_ecart]
+				            else if [statut] = "ecart" then "écart sans cause écrite"
+				            else [statut],
+				        type text
+				    )
+				in
+				    StatutClair
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
