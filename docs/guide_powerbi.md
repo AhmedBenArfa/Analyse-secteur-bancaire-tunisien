@@ -647,7 +647,50 @@ Contrôles attendus (vue **Données**, table `Dim_Date`) :
 | **Outils de table › Marquer comme table de dates** | coché, colonne `Date` |
 | Volet **Données** | `Cle_Trimestre` et `Ordre_Periode` absentes (masquées) |
 
-Pas encore de relation : la table ne filtre rien tant que les relations (3.2) ne sont pas créées.
+La table ne filtre les faits qu'à travers les relations (3.2).
+
+### 3.2 Relations du modèle en étoile
+
+Un modèle en étoile relie chaque table de faits à des **dimensions** (dates, banques, indicateurs) :
+une ligne de la dimension correspond à plusieurs lignes du fait (relation **1 → plusieurs**), et le
+filtre ne va que de la dimension vers le fait (**filtre simple**). Un segment de banque, de trimestre
+ou d'indicateur filtre alors toutes les tables de la même façon, sans relation entre les faits
+eux-mêmes (deux faits ne se filtrent jamais directement : pas de chemin ambigu). Les relations sont
+écrites dans `definition/relationships.tmdl` (`python scripts/ecrire_tmdl_table.py relations`) ;
+28 relations :
+
+| Dimension (côté 1) | Tables de faits (côté plusieurs) | Nombre |
+|---|---|---|
+| `Dim_Date[Date]` | `date_arrete` de `Fait_Indicateurs`, `Variations_Comparables`, `Fait_Etats_Financiers`, `Revisions`, `Revisions_Etats_Financiers`, `Controle`, `Controle_Annuel` ; `Evenements[date]` ; `Fait_Cours[date]` | 9 |
+| `Dim_Banque[code_banque]` | `banque` des 9 mêmes tables, de `Definitions_Charges` et de `Definitions_Capitaux_Propres` ; `Banques_Actionnariat[code_banque]` | 12 |
+| `Dim_Indicateur[code_indicateur]` | `code_indicateur` de `Fait_Indicateurs`, `Variations_Comparables`, `Revisions`, `Controle_Annuel` ; `Evenements[indicateur]` ; `code` de `Fait_Etats_Financiers` et `Revisions_Etats_Financiers` | 7 |
+
+Choix :
+
+- **`Fait_Cours` relié par la banque** (`code_banque` → `banque`) et non par le ticker comme dans la
+  première version de la spécification : `Fait_Cours` contient aussi le code de la banque, et une même
+  clé partout est plus simple à lire (une dimension n'a de toute façon qu'une relation active vers une
+  table).
+- **`Banques_Actionnariat` et les définitions** (charges opératoires, capitaux propres) reliées à
+  `Dim_Banque` : le segment de banque de la fiche banque les filtre aussi.
+- **Codes des états financiers** (`RES_NET`, `TOTAL_ACTIF`, `CAP_PROPRES_EF`) : ajoutés à
+  `Dim_Indicateur` dans Power Query (2.4), ce qui permet la relation avec `Fait_Etats_Financiers` et
+  garde les événements sur le résultat net (moratoire UIB 2020).
+- **Contrôle d'intégrité avant d'écrire** : chaque banque, code et date des faits existe dans sa
+  dimension (aucune clé vide ; dates du 02/01/2019 au 20/10/2026). Sinon Power BI ajoute une ligne
+  « (vide) » à la dimension, qui regroupe les lignes orphelines.
+
+Contrôles attendus :
+
+| Contrôle | Attendu |
+|---|---|
+| Vue **Modèle**, ou **Accueil › Gérer les relations** | 28 relations, toutes actives, cardinalité « plusieurs à un (*:1) », filtre « Unique » |
+| Visuel Table : `Dim_Date[Periode]` + nombre de `Fait_Cours[date]` | Avant Covid 3 480, Covid 5 484, Après Covid 14 496 (total 23 460) |
+| Même visuel, segment `Dim_Banque[code_banque]` = BIAT | Covid 457 séances |
+| Visuel Table : `Dim_Date[Periode]` + nombre de `Evenements[id_evenement]` | Covid 9, Après Covid 2 (pas de ligne Avant Covid) |
+| Visuel Table : `Dim_Date[Periode]` + nombre de `Controle[banque]` | Avant Covid 12, Covid 96, Après Covid 228 |
+| Visuel Table : `Dim_Indicateur[code_indicateur]` + nombre de `Fait_Etats_Financiers[valeur_mdt]` | `RES_NET`, `TOTAL_ACTIF`, `CAP_PROPRES_EF` : 168 chacun |
+| Segment de banque ou de période dans ces visuels | aucune ligne « (vide) » |
 
 ### 3.9 Fonctions DAX utilisées
 

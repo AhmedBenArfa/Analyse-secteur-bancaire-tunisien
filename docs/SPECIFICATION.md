@@ -563,7 +563,8 @@ Relations (1 → plusieurs, filtre simple) :
 - `Dim_Date[Date]` → `Fait_Indicateurs[date_arrete]`, `Variations_Comparables[date_arrete]`,
   `Revisions[date_arrete]` et `Fait_Cours[date]`
 - `Dim_Banque[code_banque]` → `Fait_Indicateurs[banque]`, `Variations_Comparables[banque]` et `Revisions[banque]`
-- `Dim_Banque[ticker_bvmt]` → `Fait_Cours[ticker]`
+- `Dim_Banque[code_banque]` → `Fait_Cours[banque]` (23/10/2026 : par le code de la banque, présent dans
+  `Fait_Cours`, au lieu de `ticker_bvmt` → `ticker` : une même clé partout)
 - `Dim_Indicateur[code_indicateur]` → `Fait_Indicateurs[code_indicateur]` et `Variations_Comparables[code_indicateur]`
 - `Dim_Date[Date]` → `Evenements[date]`, `Dim_Banque[code_banque]` → `Evenements[banque]`,
   `Dim_Indicateur[code_indicateur]` → `Evenements[indicateur]` (annotations filtrées comme les courbes).
@@ -572,6 +573,12 @@ Relations (1 → plusieurs, filtre simple) :
   −41,182 à 17,912 MDT) : ces 3 codes sont ajoutés à `Dim_Indicateur` dans Power Query (ajout de
   lignes, nature `flux` pour le résultat, `stock` pour les deux autres) pour que la relation
   garde l'annotation sur la page « Rentabilité »
+- Liste complète écrite dans le modèle (23/10/2026, 28 relations, `relationships.tmdl`) : `Dim_Date` vers
+  les dates de `Fait_Indicateurs`, `Variations_Comparables`, `Fait_Etats_Financiers`, `Revisions`,
+  `Revisions_Etats_Financiers`, `Controle`, `Controle_Annuel`, `Evenements`, `Fait_Cours` ; `Dim_Banque` vers
+  la banque de ces 9 tables, de `Definitions_Charges`, `Definitions_Capitaux_Propres` et
+  `Banques_Actionnariat` ; `Dim_Indicateur` vers `Fait_Indicateurs`, `Variations_Comparables`, `Revisions`,
+  `Controle_Annuel`, `Evenements`, `Fait_Etats_Financiers[code]`, `Revisions_Etats_Financiers[code]`
 
 ### Table de dates
 

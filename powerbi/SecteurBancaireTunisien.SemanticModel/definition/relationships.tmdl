@@ -1,0 +1,112 @@
+relationship 626ddfdf-61df-4461-9d8f-c7c51dd7ac34
+	fromColumn: Fait_Indicateurs.date_arrete
+	toColumn: Dim_Date.Date
+
+relationship b9d00d75-6989-4b65-96c0-1ea64657589b
+	fromColumn: Variations_Comparables.date_arrete
+	toColumn: Dim_Date.Date
+
+relationship 69148a9a-a100-4c82-b37c-d88c7b118736
+	fromColumn: Fait_Etats_Financiers.date_arrete
+	toColumn: Dim_Date.Date
+
+relationship f453d521-d1ec-4977-8463-608be3c3a83b
+	fromColumn: Revisions.date_arrete
+	toColumn: Dim_Date.Date
+
+relationship 46401929-063e-4f2c-8296-61cf1d502f9c
+	fromColumn: Revisions_Etats_Financiers.date_arrete
+	toColumn: Dim_Date.Date
+
+relationship 7cdad800-8a0f-4662-a1ab-56884fd6b5bc
+	fromColumn: Controle.date_arrete
+	toColumn: Dim_Date.Date
+
+relationship d2aaba3f-251d-49a0-a280-472bdd53c58c
+	fromColumn: Controle_Annuel.date_arrete
+	toColumn: Dim_Date.Date
+
+relationship dc76fe27-9997-4a0b-a791-ee35a73f13a1
+	fromColumn: Evenements.date
+	toColumn: Dim_Date.Date
+
+relationship 9efdfc2a-8298-401a-8b6d-8758456375dc
+	fromColumn: Fait_Cours.date
+	toColumn: Dim_Date.Date
+
+relationship f78a856d-b8d9-412a-86d9-a7b73f8ea75c
+	fromColumn: Fait_Indicateurs.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship cbbb34fe-cb7c-474a-a4c3-ab6bafa6c961
+	fromColumn: Variations_Comparables.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship 740d6139-035e-4883-9003-1033be734fdd
+	fromColumn: Fait_Etats_Financiers.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship 3c997fdc-348e-4c2a-8357-1bbbc8a6180d
+	fromColumn: Revisions.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship b915e502-81e7-4711-86bb-72636867fa88
+	fromColumn: Revisions_Etats_Financiers.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship bda17cea-4445-4dda-99d2-3bbd1f2de046
+	fromColumn: Controle.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship 71b8a3fc-4f90-4418-a7e9-7985ebf051a8
+	fromColumn: Controle_Annuel.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship 8636a82a-a881-46c1-9a05-d7343c138c34
+	fromColumn: Evenements.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship 004d80b3-c049-41e8-b829-139bab0c65e9
+	fromColumn: Fait_Cours.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship 59b84acd-886f-4be7-a208-e99f4d5a57ff
+	fromColumn: Definitions_Charges.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship 3e85711b-4a34-4ae5-9958-c96903acfdfa
+	fromColumn: Definitions_Capitaux_Propres.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship 050633a8-636c-4b52-a9af-3251845b306d
+	fromColumn: Banques_Actionnariat.code_banque
+	toColumn: Dim_Banque.code_banque
+
+relationship f3c5bf55-2016-4aaf-9b21-409a2b210f26
+	fromColumn: Fait_Indicateurs.code_indicateur
+	toColumn: Dim_Indicateur.code_indicateur
+
+relationship 0a1fbc3f-4aae-4fe1-b4b9-bc40ddf4dbff
+	fromColumn: Variations_Comparables.code_indicateur
+	toColumn: Dim_Indicateur.code_indicateur
+
+relationship eb209240-9e31-46e7-8855-acae6511e69d
+	fromColumn: Revisions.code_indicateur
+	toColumn: Dim_Indicateur.code_indicateur
+
+relationship 203a6558-dbfe-40c6-9438-b700867cd96a
+	fromColumn: Controle_Annuel.code_indicateur
+	toColumn: Dim_Indicateur.code_indicateur
+
+relationship f34103a9-5f43-4ba4-89c7-7ca4442bac8b
+	fromColumn: Evenements.indicateur
+	toColumn: Dim_Indicateur.code_indicateur
+
+relationship 305179c2-b04a-4b9b-9364-ed845d6d444a
+	fromColumn: Fait_Etats_Financiers.code
+	toColumn: Dim_Indicateur.code_indicateur
+
+relationship 231be60c-c621-461e-93e1-419db70c3722
+	fromColumn: Revisions_Etats_Financiers.code
+	toColumn: Dim_Indicateur.code_indicateur
+

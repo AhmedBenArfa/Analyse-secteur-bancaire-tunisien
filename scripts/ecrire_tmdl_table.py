@@ -107,10 +107,54 @@ def ecrire_table_calculee(nom, description, colonnes, tri=None, cachees=(), tabl
     print(nom, "écrite (table calculée) :", len(colonnes), "colonnes")
 
 
+def colonnes_table(table):
+    txt = (DEF / "tables" / f"{table}.tmdl").read_bytes().decode("utf-8")
+    return set(re.findall(r"^\tcolumn (\S+)", txt, re.M))
+
+
+def ecrire_relations(relations):
+    """Réécrit relationships.tmdl : relations (table du côté plusieurs, colonne, dimension, clé), une
+    dimension vers plusieurs lignes, filtre simple (valeurs par défaut du TMDL). Une relation déjà
+    présente garde son nom (identifiant) ; chaque colonne doit exister."""
+    f = DEF / "relationships.tmdl"
+    anciens = {}
+    if f.exists():
+        txt = f.read_bytes().decode("utf-8")
+        for nom, de, vers in re.findall(r"^relationship (\S+)\r\n\tfromColumn: (\S+)\r\n\ttoColumn: (\S+)", txt, re.M):
+            anciens[(de, vers)] = nom
+    t = []
+    for table, col, dim, cle in relations:
+        assert col in colonnes_table(table), f"colonne absente : {table}.{col}"
+        assert cle in colonnes_table(dim), f"colonne absente : {dim}.{cle}"
+        de, vers = f"{table}.{col}", f"{dim}.{cle}"
+        t += [f"relationship {anciens.get((de, vers), uuid.uuid4())}", f"\tfromColumn: {de}", f"\ttoColumn: {vers}", ""]
+    f.write_bytes((NL.join(t) + NL).encode("utf-8") if t else b"")
+    print(len(relations), "relations écrites")
+
+
+# Relations du modèle en étoile (étape 6, spécification 6)
+FAITS_DATES = [("Fait_Indicateurs", "date_arrete"), ("Variations_Comparables", "date_arrete"),
+               ("Fait_Etats_Financiers", "date_arrete"), ("Revisions", "date_arrete"),
+               ("Revisions_Etats_Financiers", "date_arrete"), ("Controle", "date_arrete"),
+               ("Controle_Annuel", "date_arrete"), ("Evenements", "date"), ("Fait_Cours", "date")]
+TABLES_BANQUE = [t for t, _ in FAITS_DATES] + ["Definitions_Charges", "Definitions_Capitaux_Propres"]
+FAITS_INDICATEURS = [("Fait_Indicateurs", "code_indicateur"), ("Variations_Comparables", "code_indicateur"),
+                     ("Revisions", "code_indicateur"), ("Controle_Annuel", "code_indicateur"),
+                     ("Evenements", "indicateur"), ("Fait_Etats_Financiers", "code"),
+                     ("Revisions_Etats_Financiers", "code")]
+RELATIONS = ([(t, c, "Dim_Date", "Date") for t, c in FAITS_DATES]
+             + [(t, "banque", "Dim_Banque", "code_banque") for t in TABLES_BANQUE]
+             + [("Banques_Actionnariat", "code_banque", "Dim_Banque", "code_banque")]
+             + [(t, c, "Dim_Indicateur", "code_indicateur") for t, c in FAITS_INDICATEURS])
+
+
 if __name__ == "__main__":
     import sys
+    if sys.argv[1:] == ["relations"]:
+        ecrire_relations(RELATIONS)
+        sys.exit()
     if sys.argv[1:] != ["Dim_Date"]:
-        sys.exit("utilisation : python scripts/ecrire_tmdl_table.py Dim_Date (autres tables : depuis Python)")
+        sys.exit("utilisation : python scripts/ecrire_tmdl_table.py Dim_Date | relations (autres tables : depuis Python)")
     ecrire_table_calculee(
         "Dim_Date",
         "Table des dates (DAX) : un jour par ligne du 01/01/2019 au 31/12/2026, trimestre au format des faits, "
