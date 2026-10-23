@@ -24,6 +24,9 @@ commande, `python scripts/ecrire_tmdl_table.py Dim_Date` écrit la table des dat
 Relations et vue Modèle : `ecrire_relations(RELATIONS)` réécrit relationships.tmdl,
 `ecrire_diagramme(DIAGRAMME)` réécrit diagramLayout.json (un onglet par thème) ; en ligne de commande,
 `python scripts/ecrire_tmdl_table.py relations` ou `diagramme`.
+
+Mesures : `ecrire_mesures()` écrit la table Mesures depuis dax/mesures.dax (dossier, format et description
+de chaque mesure dans le fichier) ; en ligne de commande, `python scripts/ecrire_tmdl_table.py mesures`.
 """
 import re, uuid
 from pathlib import Path
@@ -109,6 +112,58 @@ def ecrire_table_calculee(nom, description, colonnes, tri=None, cachees=(), tabl
     f.write_bytes((NL.join(t) + NL).encode("utf-8"))
     ajouter_au_modele(nom)
     print(nom, "écrite (table calculée) :", len(colonnes), "colonnes")
+
+
+def lire_mesures(fichier=None):
+    """Mesures de dax/mesures.dax : [(nom, dossier, format, description, lignes de l'expression)]. Chaque
+    mesure : « // [dossier | format] description », « MEASURE Mesures[Nom] = », expression jusqu'à la
+    ligne vide suivante."""
+    lignes = (fichier or R / "dax" / "mesures.dax").read_text(encoding="utf-8").split("\n")
+    mesures = []
+    for i, l in enumerate(lignes):
+        m = re.match(r"^MEASURE Mesures\[(.+?)\] =\s*$", l)
+        if not m:
+            continue
+        entete = re.match(r"^// \[(.+?) \| (.+?)\] (.+)$", lignes[i - 1])
+        assert entete, f"ligne « // [dossier | format] description » manquante avant {m.group(1)}"
+        fin = next((j for j in range(i + 1, len(lignes)) if not lignes[j].strip()), len(lignes))
+        corps = [x[4:] if x.startswith("    ") else x for x in lignes[i + 1:fin]]
+        assert corps, f"expression vide : {m.group(1)}"
+        mesures.append((m.group(1), *entete.groups(), corps))
+    noms = [m[0] for m in mesures]
+    assert len(noms) == len(set(noms)), "mesure en double dans dax/mesures.dax"
+    return mesures
+
+
+def ecrire_mesures():
+    """Table Mesures (une colonne masquée, toutes les mesures de dax/mesures.dax). Les lineageTag des
+    mesures déjà écrites sont gardés (même nom)."""
+    nom = "Mesures"
+    f = DEF / "tables" / f"{nom}.tmdl"
+    table_tag, anciens = lineage_existants(f)
+    if f.exists():
+        anciens |= dict(re.findall(r"\tmeasure ('(?:[^']|'')+'|\S+) =.*?\r\n(?:\t\t\t.*\r\n)*(?:\t\t.*\r\n)*?\t\tlineageTag: (\S+)",
+                                   f.read_bytes().decode("utf-8")))
+    cite = lambda n: n if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", n) else "'" + n.replace("'", "''") + "'"
+    t = ["/// Mesures DAX du rapport (dax/mesures.dax), rangées par dossier", f"table {nom}",
+         f"\tlineageTag: {table_tag}", ""]
+    for mesure, dossier, fmt, description, corps in lire_mesures():
+        t += [f"\t/// {description}"]
+        if len(corps) == 1:
+            t += [f"\tmeasure {cite(mesure)} = {corps[0].strip()}"]
+        else:
+            t += [f"\tmeasure {cite(mesure)} ="] + ["\t\t\t" + x for x in corps]
+        t += [f"\t\tformatString: {fmt}", f"\t\tdisplayFolder: {dossier}",
+              f"\t\tlineageTag: {anciens.get(cite(mesure), uuid.uuid4())}", ""]
+    t += ["\tcolumn Colonne_Masquee", "\t\tdataType: int64", "\t\tisHidden", "\t\tformatString: 0",
+          f"\t\tlineageTag: {anciens.get('Colonne_Masquee', uuid.uuid4())}", "\t\tsummarizeBy: none",
+          "\t\tisNameInferred", "\t\tsourceColumn: [Colonne_Masquee]", "",
+          "\t\tannotation SummarizationSetBy = User", "",
+          f"\tpartition {nom} = calculated", "\t\tmode: import", "\t\tsource =",
+          "\t\t\t\t// Auteur : Ahmed Ben Arfa", '\t\t\t\tROW ( "Colonne_Masquee", 0 )', ""]
+    f.write_bytes((NL.join(t) + NL).encode("utf-8"))
+    ajouter_au_modele(nom)
+    print(nom, "écrite :", len(lire_mesures()), "mesures")
 
 
 def colonnes_table(table):
@@ -212,8 +267,11 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["diagramme"]:
         ecrire_diagramme(DIAGRAMME)
         sys.exit()
+    if sys.argv[1:] == ["mesures"]:
+        ecrire_mesures()
+        sys.exit()
     if sys.argv[1:] != ["Dim_Date"]:
-        sys.exit("utilisation : python scripts/ecrire_tmdl_table.py Dim_Date | relations | diagramme "
+        sys.exit("utilisation : python scripts/ecrire_tmdl_table.py Dim_Date | relations | diagramme | mesures "
                  "(autres tables : depuis Python)")
     ecrire_table_calculee(
         "Dim_Date",

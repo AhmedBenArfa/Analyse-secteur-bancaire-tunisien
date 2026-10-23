@@ -620,8 +620,10 @@ Colonne calculée utile : `EstDernierTrimestre` (le dernier trimestre présent d
 
 ```dax
 -- Valeur_Trim et Valeur_Cumul sont les valeurs retenues : révisée si elle existe, sinon initiale (5.2)
-Valeur Trim  = SUM ( Fait_Indicateurs[Valeur_Trim] )
-Valeur Cumul = SUM ( Fait_Indicateurs[Valeur_Cumul] )
+-- Garde-fou (23/10/2026) : vide si la sélection couvre plusieurs dates d'arrêté (jamais la somme de
+-- plusieurs trimestres ni de plusieurs cumuls ou soldes) ; code exact : dax/mesures.dax
+Valeur Trim  = IF ( DISTINCTCOUNT ( Fait_Indicateurs[date_arrete] ) = 1, SUM ( Fait_Indicateurs[Valeur_Trim] ) )
+Valeur Cumul = IF ( DISTINCTCOUNT ( Fait_Indicateurs[date_arrete] ) = 1, SUM ( Fait_Indicateurs[Valeur_Cumul] ) )
 
 -- Flux, analyse trimestrielle : trimestre publié (voir 5.2, règle trimestre / cumul)
 PNB              = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "PNB" )
@@ -633,12 +635,12 @@ PNB annuel       = CALCULATE ( [PNB cumul brut], Dim_Date[Trimestre] = "T4" )   
 Charges operatoires = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "CHG_OPER" )
 Frais personnel  = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "FRAIS_PERS" )
 Charges generales = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "CHG_GEN" )
+-- vide si l'un des deux termes manque (en DAX, vide − x = −x : un vide serait lu comme zéro)
 Marge interets   =
-    CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "INT_PERCUS" )
-  - CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "INT_ENCOURUS" )
-Marge commissions =
-    CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "COMM_PROD" )
-  - CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "COMM_CHG" )
+    VAR Percus = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "INT_PERCUS" )
+    VAR Encourus = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "INT_ENCOURUS" )
+    RETURN IF ( NOT ISBLANK ( Percus ) && NOT ISBLANK ( Encourus ), Percus - Encourus )
+Marge commissions = -- même modèle avec COMM_PROD et COMM_CHG
 Revenus portefeuille = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "REV_PORTEF" )
 
 -- Stocks : dernière valeur disponible de la période, jamais la somme
@@ -648,7 +650,9 @@ Depots brut  = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "DE
 Depots       = CALCULATE ( [Depots brut], LASTNONBLANK ( Dim_Date[Date], [Depots brut] ) )
 ```
 
-Même modèle pour les dépôts à vue, d'épargne, à terme et les emprunts. Capitaux propres :
+Même modèle pour les dépôts à vue, d'épargne, à terme et les emprunts (`Depots a vue`, `Depots epargne`,
+`Depots terme`, `Emprunts`). Toutes les mesures sont dans la table `Mesures` du modèle (dossiers
+d'affichage, format `#,0.000`). Capitaux propres :
 
 ```dax
 -- jamais la colonne 31/12 provisoire (5.2). FICHE BANQUE SEULEMENT : la définition varie selon la

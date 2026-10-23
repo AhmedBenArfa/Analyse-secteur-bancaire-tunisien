@@ -1,0 +1,189 @@
+/// Mesures DAX du rapport (dax/mesures.dax), rangées par dossier
+table Mesures
+	lineageTag: efa45667-b404-4cb3-8b89-e41cd9c44144
+
+	/// Somme des valeurs retenues du trimestre seul ; vide si la sélection couvre plusieurs dates d'arrêté (jamais la somme de plusieurs trimestres)
+	measure 'Valeur Trim' = IF ( DISTINCTCOUNT ( Fait_Indicateurs[date_arrete] ) = 1, SUM ( Fait_Indicateurs[Valeur_Trim] ) )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Intermédiaires
+		lineageTag: 2651b576-b937-4b3e-867e-1ddc7b3f816b
+
+	/// Somme des valeurs retenues du cumul depuis janvier (flux) ou du solde (stock) ; vide si la sélection couvre plusieurs dates d'arrêté
+	measure 'Valeur Cumul' = IF ( DISTINCTCOUNT ( Fait_Indicateurs[date_arrete] ) = 1, SUM ( Fait_Indicateurs[Valeur_Cumul] ) )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Intermédiaires
+		lineageTag: c7a262a7-b93a-449c-b1ab-b6969616f48b
+
+	/// Produit net bancaire du trimestre seul (MDT)
+	measure PNB = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "PNB" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Flux du trimestre
+		lineageTag: 24a7c969-1d19-4274-8a93-c206038235c2
+
+	/// Charges opératoires publiées du trimestre (contenu propre à chaque banque : Definitions_Charges)
+	measure 'Charges operatoires' = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "CHG_OPER" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Flux du trimestre
+		lineageTag: 654feed3-d9c2-410b-aa64-5c745a063224
+
+	/// Frais de personnel du trimestre
+	measure 'Frais personnel' = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "FRAIS_PERS" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Flux du trimestre
+		lineageTag: ba9bb69e-fb0f-4ff1-8b47-11582a7174b9
+
+	/// Charges générales d'exploitation du trimestre
+	measure 'Charges generales' = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "CHG_GEN" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Flux du trimestre
+		lineageTag: a8fed403-de09-4ebb-a40a-b391643c5da4
+
+	/// Intérêts perçus − intérêts encourus du trimestre ; vide si l'un des deux manque (un vide n'est jamais lu comme zéro)
+	measure 'Marge interets' =
+			VAR Percus = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "INT_PERCUS" )
+			VAR Encourus = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "INT_ENCOURUS" )
+			RETURN
+			    IF ( NOT ISBLANK ( Percus ) && NOT ISBLANK ( Encourus ), Percus - Encourus )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Flux du trimestre
+		lineageTag: 9c121d53-a472-418a-bbb2-5b7af21e7c97
+
+	/// Commissions en produits − commissions encourues du trimestre ; vide si l'une des deux manque
+	measure 'Marge commissions' =
+			VAR Produits = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "COMM_PROD" )
+			VAR Charges = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "COMM_CHG" )
+			RETURN
+			    IF ( NOT ISBLANK ( Produits ) && NOT ISBLANK ( Charges ), Produits - Charges )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Flux du trimestre
+		lineageTag: d5605fbc-08c6-42f2-8b2e-8415a3ec4ba8
+
+	/// Revenus du portefeuille-titres du trimestre
+	measure 'Revenus portefeuille' = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "REV_PORTEF" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Flux du trimestre
+		lineageTag: 7541328b-6439-4edb-817c-b5d5c7ec86fe
+
+	/// PNB cumulé depuis janvier à une date d'arrêté
+	measure 'PNB cumul brut' = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "PNB" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Intermédiaires
+		lineageTag: 54cc4c27-92d2-42b3-80c3-1ce7b9b4fb4f
+
+	/// PNB cumulé publié au dernier trimestre de la sélection qui a une valeur (jamais la somme des trimestres)
+	measure 'PNB depuis debut annee' = CALCULATE ( [PNB cumul brut], LASTNONBLANK ( Dim_Date[Date], [PNB cumul brut] ) )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Flux cumulés
+		lineageTag: 6b7d9094-3c83-4623-bafd-7400f00baa5a
+
+	/// PNB de l'année : cumul publié au 31/12 ; vide pour une année sans T4 publié ou si plusieurs années sont sélectionnées
+	measure 'PNB annuel' = CALCULATE ( [PNB cumul brut], Dim_Date[Trimestre] = "T4" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Flux cumulés
+		lineageTag: d8bc00e0-3f27-4d75-9fc9-5e0135725dac
+
+	/// Encours des crédits à une date d'arrêté
+	measure 'Credits brut' = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "CREDITS" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Intermédiaires
+		lineageTag: 505ca9f4-70f3-43b9-a786-83af9cbbbd31
+
+	/// Encours des crédits à la dernière date de la sélection qui a une valeur (jamais additionné dans le temps)
+	measure Credits = CALCULATE ( [Credits brut], LASTNONBLANK ( Dim_Date[Date], [Credits brut] ) )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Encours
+		lineageTag: 0689f863-cad5-4b7c-a529-48806c3ed71c
+
+	/// Encours des dépôts à une date d'arrêté
+	measure 'Depots brut' = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "DEPOTS" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Intermédiaires
+		lineageTag: 66f35591-7d4d-4db4-985a-798940734dfd
+
+	/// Encours des dépôts de la clientèle à la dernière date de la sélection qui a une valeur
+	measure Depots = CALCULATE ( [Depots brut], LASTNONBLANK ( Dim_Date[Date], [Depots brut] ) )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Encours
+		lineageTag: b7c635be-dcf9-4955-81e1-8d0262ecf7b1
+
+	/// Dépôts à vue à une date d'arrêté
+	measure 'Depots a vue brut' = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "DEP_VUE" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Intermédiaires
+		lineageTag: a9c07d0b-e4ee-4d38-ad44-b252189d8b13
+
+	/// Dépôts à vue à la dernière date de la sélection qui a une valeur
+	measure 'Depots a vue' = CALCULATE ( [Depots a vue brut], LASTNONBLANK ( Dim_Date[Date], [Depots a vue brut] ) )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Encours
+		lineageTag: 0e37f5ac-ea00-454f-8708-f15fd0a14c21
+
+	/// Dépôts d'épargne à une date d'arrêté
+	measure 'Depots epargne brut' = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "DEP_EPARGNE" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Intermédiaires
+		lineageTag: 7421d4fa-8f40-4b8b-ab9a-905b2e1639a4
+
+	/// Dépôts d'épargne à la dernière date de la sélection qui a une valeur
+	measure 'Depots epargne' = CALCULATE ( [Depots epargne brut], LASTNONBLANK ( Dim_Date[Date], [Depots epargne brut] ) )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Encours
+		lineageTag: d71dc6e3-15f5-4b9a-a89c-9ac76113a68a
+
+	/// Dépôts à terme à une date d'arrêté (publiés par une partie des banques seulement)
+	measure 'Depots terme brut' = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "DEP_TERME" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Intermédiaires
+		lineageTag: be07326f-0eb8-45c5-8aef-4fdc6fd26b51
+
+	/// Dépôts à terme à la dernière date de la sélection qui a une valeur (publiés par une partie des banques seulement)
+	measure 'Depots terme' = CALCULATE ( [Depots terme brut], LASTNONBLANK ( Dim_Date[Date], [Depots terme brut] ) )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Encours
+		lineageTag: e64edca7-b666-49d9-ad98-a30b5d57738f
+
+	/// Emprunts et ressources spéciales à une date d'arrêté
+	measure 'Emprunts brut' = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "EMPRUNTS" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Intermédiaires
+		lineageTag: 698824b9-30db-48eb-b29d-3f3483a71bf9
+
+	/// Emprunts et ressources spéciales à la dernière date de la sélection qui a une valeur
+	measure Emprunts = CALCULATE ( [Emprunts brut], LASTNONBLANK ( Dim_Date[Date], [Emprunts brut] ) )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Encours
+		lineageTag: 26cfab42-7e4b-4b8a-8231-9b7116ceacfd
+
+	/// Capitaux propres trimestriels à une date d'arrêté (définition propre à chaque banque)
+	measure 'Capitaux propres hors resultat brut' = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "CAP_PROPRES" )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Intermédiaires
+		lineageTag: 47f2b19c-b4ae-4d55-84aa-afd0d50f8fd4
+
+	/// Capitaux propres trimestriels publiés : FICHE BANQUE SEULEMENT, avec Definitions_Capitaux_Propres ; les comparaisons entre banques utilisent les capitaux propres du bilan (7.7)
+	measure 'Capitaux propres hors resultat de la periode' =
+			CALCULATE (
+			    [Capitaux propres hors resultat brut],
+			    LASTNONBLANK ( Dim_Date[Date], [Capitaux propres hors resultat brut] )
+			)
+		formatString: #,0.000
+		displayFolder: 1. Bases\Fiche banque
+		lineageTag: 4377c99a-f0e9-434b-bbbb-37b03a1b7212
+
+	column Colonne_Masquee
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7149c0a3-3419-4613-881d-a855cceebcc0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Colonne_Masquee]
+
+		annotation SummarizationSetBy = User
+
+	partition Mesures = calculated
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				ROW ( "Colonne_Masquee", 0 )
+

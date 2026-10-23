@@ -1,0 +1,34 @@
+// Auteur : Ahmed Ben Arfa
+// Contrôle des mesures de base (guide, section 3.3) : coller ce texte dans la vue Requête DAX de Power BI
+// Desktop (icône DAX à gauche), puis Exécuter ; trois résultats, à comparer aux valeurs attendues du guide.
+// 1. Une ligne par banque au T3 2024 : flux du trimestre, cumul depuis janvier, encours.
+EVALUATE
+SUMMARIZECOLUMNS (
+    Dim_Banque[code_banque],
+    TREATAS ( { "2024T3" }, Dim_Date[Annee_Trimestre] ),
+    "PNB", [PNB],
+    "Marge interets", [Marge interets],
+    "Marge commissions", [Marge commissions],
+    "Frais personnel", [Frais personnel],
+    "PNB depuis debut annee", [PNB depuis debut annee],
+    "Credits", [Credits],
+    "Depots", [Depots]
+)
+ORDER BY Dim_Banque[code_banque]
+// 2. PNB de l'année 2024 (cumul au 31/12) ; PNB du trimestre sur une année entière : vide (jamais la somme)
+EVALUATE
+SUMMARIZECOLUMNS (
+    Dim_Banque[code_banque],
+    TREATAS ( { 2024 }, Dim_Date[Annee] ),
+    "PNB annuel", [PNB annuel],
+    "PNB sur l'annee (vide attendu)", [PNB]
+)
+ORDER BY Dim_Banque[code_banque]
+// 3. Somme des 12 banques au T3 2024, et mesures sans aucun filtre (vides attendus)
+EVALUATE
+ROW (
+    "PNB 2024T3", CALCULATE ( [PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Credits 2024T3", CALCULATE ( [Credits], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "PNB sans filtre (vide attendu)", [PNB],
+    "PNB annuel sans filtre (vide attendu)", [PNB annuel]
+)

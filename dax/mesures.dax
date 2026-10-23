@@ -1,0 +1,121 @@
+// Auteur : Ahmed Ben Arfa
+// Mesures DAX du rapport (spécification 7), dans la table Mesures du modèle : écrites dans le TMDL par
+// python scripts/ecrire_tmdl_table.py mesures. Chaque mesure : une ligne « // [dossier | format] description »,
+// puis « MEASURE Mesures[Nom] = » et son expression, jusqu'à la ligne vide suivante.
+// Règles : aucune valeur absente remplacée par zéro ; un flux annuel vient du cumul publié, jamais de la
+// somme des trimestres ; un encours (stock) se lit à une date, jamais additionné dans le temps.
+
+// ===== 1. Bases (spécification 7.1) =====
+
+// [1. Bases\Intermédiaires | #,0.000] Somme des valeurs retenues du trimestre seul ; vide si la sélection couvre plusieurs dates d'arrêté (jamais la somme de plusieurs trimestres)
+MEASURE Mesures[Valeur Trim] =
+    IF ( DISTINCTCOUNT ( Fait_Indicateurs[date_arrete] ) = 1, SUM ( Fait_Indicateurs[Valeur_Trim] ) )
+
+// [1. Bases\Intermédiaires | #,0.000] Somme des valeurs retenues du cumul depuis janvier (flux) ou du solde (stock) ; vide si la sélection couvre plusieurs dates d'arrêté
+MEASURE Mesures[Valeur Cumul] =
+    IF ( DISTINCTCOUNT ( Fait_Indicateurs[date_arrete] ) = 1, SUM ( Fait_Indicateurs[Valeur_Cumul] ) )
+
+// [1. Bases\Flux du trimestre | #,0.000] Produit net bancaire du trimestre seul (MDT)
+MEASURE Mesures[PNB] =
+    CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "PNB" )
+
+// [1. Bases\Flux du trimestre | #,0.000] Charges opératoires publiées du trimestre (contenu propre à chaque banque : Definitions_Charges)
+MEASURE Mesures[Charges operatoires] =
+    CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "CHG_OPER" )
+
+// [1. Bases\Flux du trimestre | #,0.000] Frais de personnel du trimestre
+MEASURE Mesures[Frais personnel] =
+    CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "FRAIS_PERS" )
+
+// [1. Bases\Flux du trimestre | #,0.000] Charges générales d'exploitation du trimestre
+MEASURE Mesures[Charges generales] =
+    CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "CHG_GEN" )
+
+// [1. Bases\Flux du trimestre | #,0.000] Intérêts perçus − intérêts encourus du trimestre ; vide si l'un des deux manque (un vide n'est jamais lu comme zéro)
+MEASURE Mesures[Marge interets] =
+    VAR Percus = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "INT_PERCUS" )
+    VAR Encourus = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "INT_ENCOURUS" )
+    RETURN
+        IF ( NOT ISBLANK ( Percus ) && NOT ISBLANK ( Encourus ), Percus - Encourus )
+
+// [1. Bases\Flux du trimestre | #,0.000] Commissions en produits − commissions encourues du trimestre ; vide si l'une des deux manque
+MEASURE Mesures[Marge commissions] =
+    VAR Produits = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "COMM_PROD" )
+    VAR Charges = CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "COMM_CHG" )
+    RETURN
+        IF ( NOT ISBLANK ( Produits ) && NOT ISBLANK ( Charges ), Produits - Charges )
+
+// [1. Bases\Flux du trimestre | #,0.000] Revenus du portefeuille-titres du trimestre
+MEASURE Mesures[Revenus portefeuille] =
+    CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "REV_PORTEF" )
+
+// [1. Bases\Intermédiaires | #,0.000] PNB cumulé depuis janvier à une date d'arrêté
+MEASURE Mesures[PNB cumul brut] =
+    CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "PNB" )
+
+// [1. Bases\Flux cumulés | #,0.000] PNB cumulé publié au dernier trimestre de la sélection qui a une valeur (jamais la somme des trimestres)
+MEASURE Mesures[PNB depuis debut annee] =
+    CALCULATE ( [PNB cumul brut], LASTNONBLANK ( Dim_Date[Date], [PNB cumul brut] ) )
+
+// [1. Bases\Flux cumulés | #,0.000] PNB de l'année : cumul publié au 31/12 ; vide pour une année sans T4 publié ou si plusieurs années sont sélectionnées
+MEASURE Mesures[PNB annuel] =
+    CALCULATE ( [PNB cumul brut], Dim_Date[Trimestre] = "T4" )
+
+// [1. Bases\Intermédiaires | #,0.000] Encours des crédits à une date d'arrêté
+MEASURE Mesures[Credits brut] =
+    CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "CREDITS" )
+
+// [1. Bases\Encours | #,0.000] Encours des crédits à la dernière date de la sélection qui a une valeur (jamais additionné dans le temps)
+MEASURE Mesures[Credits] =
+    CALCULATE ( [Credits brut], LASTNONBLANK ( Dim_Date[Date], [Credits brut] ) )
+
+// [1. Bases\Intermédiaires | #,0.000] Encours des dépôts à une date d'arrêté
+MEASURE Mesures[Depots brut] =
+    CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "DEPOTS" )
+
+// [1. Bases\Encours | #,0.000] Encours des dépôts de la clientèle à la dernière date de la sélection qui a une valeur
+MEASURE Mesures[Depots] =
+    CALCULATE ( [Depots brut], LASTNONBLANK ( Dim_Date[Date], [Depots brut] ) )
+
+// [1. Bases\Intermédiaires | #,0.000] Dépôts à vue à une date d'arrêté
+MEASURE Mesures[Depots a vue brut] =
+    CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "DEP_VUE" )
+
+// [1. Bases\Encours | #,0.000] Dépôts à vue à la dernière date de la sélection qui a une valeur
+MEASURE Mesures[Depots a vue] =
+    CALCULATE ( [Depots a vue brut], LASTNONBLANK ( Dim_Date[Date], [Depots a vue brut] ) )
+
+// [1. Bases\Intermédiaires | #,0.000] Dépôts d'épargne à une date d'arrêté
+MEASURE Mesures[Depots epargne brut] =
+    CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "DEP_EPARGNE" )
+
+// [1. Bases\Encours | #,0.000] Dépôts d'épargne à la dernière date de la sélection qui a une valeur
+MEASURE Mesures[Depots epargne] =
+    CALCULATE ( [Depots epargne brut], LASTNONBLANK ( Dim_Date[Date], [Depots epargne brut] ) )
+
+// [1. Bases\Intermédiaires | #,0.000] Dépôts à terme à une date d'arrêté (publiés par une partie des banques seulement)
+MEASURE Mesures[Depots terme brut] =
+    CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "DEP_TERME" )
+
+// [1. Bases\Encours | #,0.000] Dépôts à terme à la dernière date de la sélection qui a une valeur (publiés par une partie des banques seulement)
+MEASURE Mesures[Depots terme] =
+    CALCULATE ( [Depots terme brut], LASTNONBLANK ( Dim_Date[Date], [Depots terme brut] ) )
+
+// [1. Bases\Intermédiaires | #,0.000] Emprunts et ressources spéciales à une date d'arrêté
+MEASURE Mesures[Emprunts brut] =
+    CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "EMPRUNTS" )
+
+// [1. Bases\Encours | #,0.000] Emprunts et ressources spéciales à la dernière date de la sélection qui a une valeur
+MEASURE Mesures[Emprunts] =
+    CALCULATE ( [Emprunts brut], LASTNONBLANK ( Dim_Date[Date], [Emprunts brut] ) )
+
+// [1. Bases\Intermédiaires | #,0.000] Capitaux propres trimestriels à une date d'arrêté (définition propre à chaque banque)
+MEASURE Mesures[Capitaux propres hors resultat brut] =
+    CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "CAP_PROPRES" )
+
+// [1. Bases\Fiche banque | #,0.000] Capitaux propres trimestriels publiés : FICHE BANQUE SEULEMENT, avec Definitions_Capitaux_Propres ; les comparaisons entre banques utilisent les capitaux propres du bilan (7.7)
+MEASURE Mesures[Capitaux propres hors resultat de la periode] =
+    CALCULATE (
+        [Capitaux propres hors resultat brut],
+        LASTNONBLANK ( Dim_Date[Date], [Capitaux propres hors resultat brut] )
+    )

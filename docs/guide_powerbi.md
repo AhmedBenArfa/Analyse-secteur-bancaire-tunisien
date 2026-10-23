@@ -700,6 +700,63 @@ Contrôles attendus :
 | Visuel Table : `Dim_Indicateur[code_indicateur]` + nombre de `Fait_Etats_Financiers[valeur_mdt]` | `RES_NET`, `TOTAL_ACTIF`, `CAP_PROPRES_EF` : 168 chacun |
 | Segment de banque ou de période dans ces visuels | aucune ligne « (vide) » |
 
+### 3.3 Mesures de base (groupe 1, spécification 7.1)
+
+Les mesures sont rangées dans une table **`Mesures`** (en tête du volet Données, icône de calculatrice) :
+une table sans données (une colonne masquée, `ROW ( "Colonne_Masquee", 0 )`) qui ne sert qu'à regrouper
+les mesures, au lieu de les disperser dans les tables de faits. Chaque mesure a un **dossier d'affichage**
+(`1. Bases\Flux du trimestre`…), un **format** (`#,0.000` : millions de dinars à trois décimales,
+comme les documents en milliers de dinars) et une **description** (info-bulle dans le volet Données).
+Le texte de chaque mesure est dans `dax/mesures.dax` ; `python scripts/ecrire_tmdl_table.py mesures`
+l'écrit dans le modèle.
+
+**Deux mesures intermédiaires portent toutes les autres** : `Valeur Trim` (somme de
+`Fait_Indicateurs[Valeur_Trim]`, trimestre seul) et `Valeur Cumul` (somme de `Valeur_Cumul` : cumul depuis
+janvier pour un flux, solde pour un encours). Les valeurs sont déjà les valeurs retenues (version révisée
+quand elle existe, 2.5). Chacune ne renvoie un nombre que si la sélection ne contient **qu'une date
+d'arrêté** (`DISTINCTCOUNT ( Fait_Indicateurs[date_arrete] ) = 1`) : un visuel qui couvre une année
+entière n'additionne donc jamais quatre trimestres ni quatre cumuls, il reste vide. Ce garde-fou applique
+deux règles du projet : un chiffre annuel vient du cumul publié au 31/12 (les révisions en cours d'année
+rendent la somme des trimestres fausse), et un encours ne s'additionne pas dans le temps. Plusieurs banques
+à une même date s'additionnent bien (somme du secteur, encadrée par le groupe 2).
+
+| Dossier | Mesures | Calcul |
+|---|---|---|
+| Flux du trimestre | `PNB`, `Charges operatoires`, `Frais personnel`, `Charges generales`, `Revenus portefeuille` | `Valeur Trim` filtrée sur le code de l'indicateur (`CALCULATE`) |
+| Flux du trimestre | `Marge interets`, `Marge commissions` | intérêts perçus − encourus, commissions en produits − encourues ; **vide si l'une des deux manque** (en DAX, `vide − x` vaut `−x` : le test `ISBLANK` empêche qu'un vide soit lu comme zéro) |
+| Flux cumulés | `PNB depuis debut annee` | cumul publié à la dernière date de la sélection qui a une valeur (`LASTNONBLANK`) |
+| Flux cumulés | `PNB annuel` | cumul publié au T4 (31/12) de l'année sélectionnée ; vide pour 2026 (pas encore de T4) |
+| Encours | `Credits`, `Depots`, `Depots a vue`, `Depots epargne`, `Depots terme`, `Emprunts` | solde à la dernière date de la sélection qui a une valeur ; dépôts à terme publiés par une partie des banques seulement |
+| Fiche banque | `Capitaux propres hors resultat de la periode` | capitaux propres trimestriels, définition propre à chaque banque (`Definitions_Capitaux_Propres`) : jamais dans une comparaison entre banques (capitaux propres du bilan, groupe ROE/ROA) |
+| Intermédiaires | `Valeur Trim`, `Valeur Cumul`, `PNB cumul brut` et les `… brut` des encours | valeur à une date, avant le choix de la dernière date |
+
+Comment lire `LASTNONBLANK ( Dim_Date[Date], [Credits brut] )` : parmi les jours de la sélection, garder le
+dernier où `Credits brut` n'est pas vide (le 30/09/2024 pour le T3 2024, le 30/09/2026 pour l'année 2026),
+puis calculer la mesure à ce seul jour.
+
+**Contrôle** : coller `dax/controle_bases.dax` dans la **vue Requête DAX** (icône « DAX » à gauche), puis
+**Exécuter** ; trois résultats. Valeurs attendues (calculées à part depuis `donnees_publiees/`, MDT) :
+
+| Banque | PNB 2024T3 | Marge intérêts | Marge commissions | Frais personnel | PNB depuis début 2024 | Crédits | Dépôts | PNB annuel 2024 |
+|---|---|---|---|---|---|---|---|---|
+| AB | 126,287 | 45,766 | 30,502 | 42,345 | 421,264 | 7 171,877 | 8 371,009 | 566,487 |
+| ATB | 93,205 | 53,355 | 20,903 | 34,407 | 275,494 | 5 399,421 | 6 272,819 | 380,166 |
+| BH | 188,447 | 89,940 | 38,689 | 49,212 | 552,339 | 10 687,376 | 9 082,984 | 701,188 |
+| BIAT | 367,474 | 169,526 | 70,309 | 85,746 | 1 089,618 | 12 431,844 | 19 724,504 | 1 479,715 |
+| BNA | 243,669 | 68,654 | 39,763 | 68,339 | 742,424 | 14 329,840 | 13 079,843 | 976,006 |
+| BT | 117,182 | 75,149 | 18,395 | 24,507 | 376,220 | 5 845,271 | 6 163,804 | 509,985 |
+| BTE | 17,232 | 6,105 | 6,459 | 9,873 | 49,315 | 950,098 | 1 049,998 | 66,296 |
+| STB | 174,182 | 72,269 | 31,165 | 55,592 | 490,165 | 9 969,862 | 11 127,667 | 649,739 |
+| TJARI | 177,670 | 96,537 | 34,700 | 58,910 | 526,362 | 7 237,843 | 10 478,881 | 707,895 |
+| UBCI | 82,232 | 45,962 | 17,065 | 34,247 | 235,617 | 3 061,387 | 3 707,111 | 320,707 |
+| UIB | 133,481 | 80,165 | 36,647 | 46,822 | 399,804 | 6 286,998 | 6 635,941 | 536,335 |
+| WIB | 23,461 | 15,771 | 7,118 | 8,548 | 66,224 | 1 107,241 | 1 056,805 | 92,880 |
+
+Troisième résultat : PNB 2024T3 des 12 banques 1 744,522 ; crédits 84 479,057 ; `PNB` et `PNB annuel` sans
+filtre vides. Deuxième résultat : la colonne « PNB sur l'annee » vide pour chaque banque (garde-fou). BH
+2024 : 701,188 et non 765,932, car la valeur retenue est la version révisée du document 2025T4 (retraitement
+« pour des raisons de comparabilité », événement `BH_RETRAITEMENT_2024`).
+
 ### 3.9 Fonctions DAX utilisées
 
 Chaque fonction DAX employée dans `dax/*.dax`, ce qu'elle fait ici et où elle sert. Le test
@@ -716,6 +773,16 @@ tableau.
 | `MOD` | reste de la division entière (mois multiple de 3 = fin de trimestre) | `Dim_Date` |
 | `SWITCH` | renvoie la valeur de la première condition vraie ; avec `TRUE ()`, sert de colonne conditionnelle | `Dim_Date` |
 | `TRUE` | valeur vraie | `Dim_Date` |
+| `CALCULATE` | calcule une expression dans un filtre modifié (ici : un code d'indicateur, un trimestre, une date) | `mesures` |
+| `SUM` | somme d'une colonne dans le filtre courant | `mesures` |
+| `DISTINCTCOUNT` | nombre de valeurs distinctes d'une colonne (ici : dates d'arrêté de la sélection) | `mesures` |
+| `IF` | renvoie une valeur si la condition est vraie, sinon vide (pas de troisième argument : jamais zéro) | `mesures` |
+| `ISBLANK`, `NOT` | vrai si la valeur est vide ; négation | `mesures` |
+| `LASTNONBLANK` | dernière valeur d'une colonne (ici : dernier jour) pour laquelle une expression n'est pas vide | `mesures` |
+| `VAR` … `RETURN` | mots-clés : valeurs intermédiaires nommées, calculées une fois, puis résultat | `mesures` |
+| `SUMMARIZECOLUMNS` | requête : une ligne par valeur des colonnes de regroupement, avec les mesures demandées | `controle_bases` |
+| `TREATAS` | applique une liste de valeurs comme filtre sur une colonne (ici : « 2024T3 », 2024) | `controle_bases` |
+| `ROW` | table d'une ligne aux colonnes nommées (table `Mesures`, troisième résultat du contrôle) | `mesures`, `controle_bases` |
 
 ## 4. Pages du rapport : visuels, champs et mesures
 
