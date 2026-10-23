@@ -1,0 +1,67 @@
+/// Dossier du projet sur ce poste (contient donnees_publiees, donnees_reference et docs) : à changer après un clonage
+expression CheminDonnees = "D:\Projet\Analyse-secteur-bancaire-tunisien" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: be5fb828-c8ea-446c-be77-dea30810e2f3
+
+	annotation PBI_ResultType = Text
+
+/// Requête intermédiaire : CSV du dossier donnees_publiees (connecteur Dossier)
+expression Fichiers_Donnees =
+		// Auteur : Ahmed Ben Arfa
+		// Requête intermédiaire (non chargée) : les CSV du dossier versionné donnees_publiees\, lus avec le
+		// connecteur Dossier. Les autres requêtes y prennent leur fichier par son nom : un seul endroit dépend
+		// du disque. Le dossier est régénéré par python scripts/publier_donnees.py (donnees\ reste local).
+		let
+		    Source = Folder.Files(CheminDonnees & "\donnees_publiees"),
+		    // seulement les CSV posés directement dans donnees_publiees\ (pas LISEZMOI.md)
+		    CsvDuDossier = Table.SelectRows(
+		        Source,
+		        each [Extension] = ".csv" and [Folder Path] = CheminDonnees & "\donnees_publiees\"
+		    ),
+		    Colonnes = Table.SelectColumns(CsvDuDossier, {"Name", "Content", "Date modified"}),
+		    Renommees = Table.RenameColumns(Colonnes, {{"Name", "fichier"}, {"Content", "contenu"}, {"Date modified", "modifie_le"}})
+		in
+		    Renommees
+	lineageTag: cd521bcc-1f81-41b5-bb2f-cbfe7160bfe6
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+/// Requête intermédiaire : toutes les versions des indicateurs trimestriels, typées
+expression Versions =
+		// Auteur : Ahmed Ben Arfa
+		// Requête intermédiaire (non chargée) : toutes les versions de chaque valeur des indicateurs trimestriels
+		// (initiale, révisée par le document suivant, 31/12 provisoire), une ligne par banque × trimestre ×
+		// indicateur × mesure (trim / cumul) × version. Fait_Indicateurs et Revisions en partent.
+		let
+		    Fichier = Fichiers_Donnees{[fichier = "indicateurs_versions.csv"]}[contenu],
+		    Source = Csv.Document(Fichier, [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+		    EnTetes = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+		    // le CSV écrit les décimales avec un point : types appliqués avec les paramètres régionaux en-US
+		    Types = Table.TransformColumnTypes(
+		        EnTetes,
+		        {
+		            {"banque", type text}, {"trimestre", type text}, {"date_arrete", type date},
+		            {"annee", Int64.Type}, {"num_trimestre", Int64.Type}, {"code_indicateur", type text},
+		            {"mesure", type text}, {"version", type text}, {"valeur_mdt", type number},
+		            {"fichier", type text}, {"page", Int64.Type}, {"valeur_retenue", type number},
+		            {"source_valeur", type text}, {"ecart_vs_retenue", type number},
+		            {"statut_revision", type text}, {"note_definition", type text},
+		            {"mention_retraitement", type text}, {"rupture_serie", type text},
+		            {"detail_rupture", type text}
+		        },
+		        "en-US"
+		    ),
+		    // cases vides du CSV (valeur non disponible, pas de note) : null, jamais zéro
+		    VidesEnNull = Table.ReplaceValue(
+		        Types, "", null, Replacer.ReplaceValue,
+		        {"statut_revision", "note_definition", "mention_retraitement", "rupture_serie", "detail_rupture"}
+		    )
+		in
+		    VidesEnNull
+	lineageTag: 6c06666e-3349-47c6-b853-041b53c53608
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

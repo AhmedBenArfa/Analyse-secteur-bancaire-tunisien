@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "SecteurBancaireTunisien"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "e135460a-a50a-44e6-8d2c-e97c9cae6b1c"
+  }
+}

@@ -234,6 +234,32 @@ def test_bte_t4_seuls_saisis():
         assert all(proche(v[k], x) for k, x in attendu.items()), (tri, v)
 
 
+def test_bte_composantes_t4_saisies():
+    """BTE T4 2021 et T4 2022 : composantes du trimestre seul (intérêts, commissions, portefeuille,
+    autres produits) saisies le 23/10/2026, avec les colonnes N-1 des documents suivants (versions
+    révisées) ; les gains de change, publiés sur une ligne à part, ne déclenchent pas d'alerte.
+    2023T4 : autres produits d'exploitation = 0 publié."""
+    attendus = {"2021T4": {("INT_PERCUS", "trim_N"): 22.069, ("COMM_CHG", "trim_N"): -0.132},
+                "2022T4": {("INT_PERCUS", "trim_N"): 25.05, ("INT_PERCUS", "trim_N1"): 22.367,
+                           ("COMM_CHG", "trim_N1"): 0.033},
+                "2023T4": {("COMM_CHG", "trim_N1"): 1.157, ("AUTRES_PROD", "trim_N"): 0.0}}
+    for tri, attendu in attendus.items():
+        chemin = cb.DOSSIER_PDF / "BTE" / f"BTE_{tri}.pdf"
+        if not chemin.exists():
+            continue
+        lignes, alertes, origine = cb.extraire_document("BTE", tri, chemin)
+        v = {(l["code_indicateur"], l["colonne"]): l["valeur_mdt"] for l in lignes}
+        assert origine == cb.ORIGINE_SAISIE
+        assert not [a for a in alertes if a.startswith("saisie ")], (tri, alertes)
+        assert all(proche(v[k], x) for k, x in attendu.items()), (tri, v)
+    # contrôle strict : composantes au-dessus du total = alerte, même pour BTE
+    valeurs = {"PROD_EXPL": {"trim_N": 100}, "INT_PERCUS": {"trim_N": 90}, "COMM_PROD": {"trim_N": 15},
+               "REV_PORTEF": {"trim_N": 1}, "CHG_EXPL": {"trim_N": 50}, "INT_ENCOURUS": {"trim_N": 40},
+               "COMM_CHG": {"trim_N": 5}}
+    alertes = cb.controle_saisie(valeurs, {"INT_PERCUS", "INT_ENCOURUS"}, "BTE")
+    assert len(alertes) == 2, alertes
+
+
 def test_bte_images_restantes_saisies():
     """BTE 2021T2, 2022T1, 2022T3, 2023T2, 2023T4 (tableaux en image, bte.com.tn ne publie pas ses
     indicateurs trimestriels) : saisis le 22/10/2026. 2022T1 publie le T1 2021 corrigé (charges

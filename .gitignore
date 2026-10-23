@@ -1,3 +1,8 @@
 donnees/
 __pycache__/
 *.pyc
+
+# Power BI : cache des données importées et réglages locaux (signature liée au poste)
+powerbi/**/.pbi/localSettings.json
+powerbi/**/.pbi/cache.abf
+powerbi/*.pbix

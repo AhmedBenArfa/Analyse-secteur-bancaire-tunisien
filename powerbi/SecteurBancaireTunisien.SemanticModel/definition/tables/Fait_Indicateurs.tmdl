@@ -1,0 +1,197 @@
+/// Table de faits des indicateurs trimestriels : valeur retenue (version révisée quand elle existe), trimestre seul et cumul côte à côte, avec la version, le fichier, la page et la rupture de série
+table Fait_Indicateurs
+	lineageTag: 89c53261-d401-4cfe-a457-01501cdddb5b
+
+	column banque
+		dataType: string
+		lineageTag: 4306072c-2ae6-435d-b3e4-0cca6524110d
+		summarizeBy: none
+		sourceColumn: banque
+
+		annotation SummarizationSetBy = User
+
+	column trimestre
+		dataType: string
+		lineageTag: 8768d1d7-f32d-4c05-a690-d0805c495ecb
+		summarizeBy: none
+		sourceColumn: trimestre
+
+		annotation SummarizationSetBy = User
+
+	column date_arrete
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 4a454821-fbef-4eca-a874-339d1d1e6733
+		summarizeBy: none
+		sourceColumn: date_arrete
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column code_indicateur
+		dataType: string
+		lineageTag: 4b6daf17-621b-4f2f-a2bd-f87c312076ed
+		summarizeBy: none
+		sourceColumn: code_indicateur
+
+		annotation SummarizationSetBy = User
+
+	column Valeur_Trim
+		dataType: double
+		lineageTag: d9dd33e4-1d90-4784-b360-1e99efacecb8
+		summarizeBy: none
+		sourceColumn: Valeur_Trim
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Valeur_Cumul
+		dataType: double
+		lineageTag: 8cb794c9-06a9-43b0-bf5b-af52242536f5
+		summarizeBy: none
+		sourceColumn: Valeur_Cumul
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Source_Trim
+		dataType: string
+		lineageTag: 960204b8-44b4-4cf9-8f7b-199fd2f9b112
+		summarizeBy: none
+		sourceColumn: Source_Trim
+
+		annotation SummarizationSetBy = User
+
+	column Source_Cumul
+		dataType: string
+		lineageTag: 7e042188-e33c-4bb5-ab25-6b7dd08a0cd6
+		summarizeBy: none
+		sourceColumn: Source_Cumul
+
+		annotation SummarizationSetBy = User
+
+	column Fichier_Trim
+		dataType: string
+		lineageTag: 3cfdfdf4-4109-4d01-b2d5-dd42619e69f9
+		summarizeBy: none
+		sourceColumn: Fichier_Trim
+
+		annotation SummarizationSetBy = User
+
+	column Fichier_Cumul
+		dataType: string
+		lineageTag: c820761a-ad30-4c19-9eeb-c59a20099e12
+		summarizeBy: none
+		sourceColumn: Fichier_Cumul
+
+		annotation SummarizationSetBy = User
+
+	column Page_Trim
+		dataType: int64
+		formatString: 0
+		lineageTag: 988a3a43-775f-4307-82a2-377c99033558
+		summarizeBy: none
+		sourceColumn: Page_Trim
+
+		annotation SummarizationSetBy = User
+
+	column Page_Cumul
+		dataType: int64
+		formatString: 0
+		lineageTag: 15f1329b-4a37-4bfe-ab6f-a777f8177c6e
+		summarizeBy: none
+		sourceColumn: Page_Cumul
+
+		annotation SummarizationSetBy = User
+
+	column Rupture_Trim
+		dataType: string
+		lineageTag: b027b117-7837-46d1-9689-07f82aa6856e
+		summarizeBy: none
+		sourceColumn: Rupture_Trim
+
+		annotation SummarizationSetBy = User
+
+	column Rupture_Cumul
+		dataType: string
+		lineageTag: fc33e91f-2a5a-44ab-aa18-d8c5258336a2
+		summarizeBy: none
+		sourceColumn: Rupture_Cumul
+
+		annotation SummarizationSetBy = User
+
+	column Detail_Rupture_Trim
+		dataType: string
+		lineageTag: 4f654664-6850-4f54-9fab-6c0775c67e8e
+		summarizeBy: none
+		sourceColumn: Detail_Rupture_Trim
+
+		annotation SummarizationSetBy = User
+
+	column Detail_Rupture_Cumul
+		dataType: string
+		lineageTag: d34659ed-2a14-4623-8acc-074b3f778a87
+		summarizeBy: none
+		sourceColumn: Detail_Rupture_Cumul
+
+		annotation SummarizationSetBy = User
+
+	partition Fait_Indicateurs = m
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Table de faits des indicateurs trimestriels (chargée) : la valeur retenue de chaque indicateur, une
+				// ligne par banque × trimestre × indicateur, avec le trimestre seul et le cumul côte à côte, et pour
+				// chacun la version retenue, le fichier, la page et la rupture de série (spécification 5.1 et 5.2).
+				let
+				    Source = Versions,
+				    // filtre explicite : seule la version retenue (révisée quand elle existe) entre dans les faits ;
+				    // les versions écartées vont dans la requête Revisions (page qualité)
+				    VersionRetenue = Table.SelectRows(Source, each [version] = [source_valeur]),
+				    Colonnes = Table.SelectColumns(
+				        VersionRetenue,
+				        {"banque", "trimestre", "date_arrete", "code_indicateur", "mesure",
+				         "valeur_retenue", "source_valeur", "fichier", "page", "rupture_serie", "detail_rupture"}
+				    ),
+				    // noms des attributs tels qu'ils seront préfixés après le pivot (Valeur_Trim, Source_Cumul…)
+				    Renommees = Table.RenameColumns(
+				        Colonnes,
+				        {{"valeur_retenue", "Valeur"}, {"source_valeur", "Source"}, {"fichier", "Fichier"},
+				         {"page", "Page"}, {"rupture_serie", "Rupture"}, {"detail_rupture", "Detail_Rupture"}}
+				    ),
+				    // dépivotage : une ligne par attribut ; une case vide (pas de rupture) ne donne pas de ligne
+				    Depivotees = Table.UnpivotOtherColumns(
+				        Renommees, {"banque", "trimestre", "date_arrete", "code_indicateur", "mesure"}, "attribut", "contenu"
+				    ),
+				    // nom de la future colonne : attribut + mesure (« trim » → Trim, « cumul » → Cumul)
+				    NomColonne = Table.AddColumn(Depivotees, "colonne", each [attribut] & "_" & Text.Proper([mesure]), type text),
+				    SansMesure = Table.RemoveColumns(NomColonne, {"mesure", "attribut"}),
+				    // pivot sans agrégation (une seule valeur par cellule) ; liste fixe : les colonnes existent toujours
+				    Pivotees = Table.Pivot(
+				        SansMesure,
+				        {"Valeur_Trim", "Valeur_Cumul", "Source_Trim", "Source_Cumul", "Fichier_Trim", "Fichier_Cumul",
+				         "Page_Trim", "Page_Cumul", "Rupture_Trim", "Rupture_Cumul", "Detail_Rupture_Trim", "Detail_Rupture_Cumul"},
+				        "colonne",
+				        "contenu"
+				    ),
+				    Types = Table.TransformColumnTypes(
+				        Pivotees,
+				        {
+				            {"Valeur_Trim", type number}, {"Valeur_Cumul", type number},
+				            {"Source_Trim", type text}, {"Source_Cumul", type text},
+				            {"Fichier_Trim", type text}, {"Fichier_Cumul", type text},
+				            {"Page_Trim", Int64.Type}, {"Page_Cumul", Int64.Type},
+				            {"Rupture_Trim", type text}, {"Rupture_Cumul", type text},
+				            {"Detail_Rupture_Trim", type text}, {"Detail_Rupture_Cumul", type text}
+				        }
+				    )
+				in
+				    Types
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

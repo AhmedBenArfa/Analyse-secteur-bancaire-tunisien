@@ -27,10 +27,33 @@ faire dans Power Query s'y fait, pour que la préparation des données reste vis
    ajoute exclut le cache des données (`cache.abf`) et les réglages locaux : seules les définitions
    sont versionnées, jamais les données.
 
-Ajout d'une requête : **Accueil › Transformer les données**, puis dans Power Query **Nouvelle source ›
-Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer la requête exactement
-comme le fichier (sans `.pq`). Requête intermédiaire : clic droit › décocher **Activer le chargement**.
-Après chaque série d'ajouts : **Fermer et appliquer**, puis enregistrer (Ctrl+S).
+**Où sont les requêtes dans le projet.** Le modèle est stocké en texte (TMDL) dans
+`powerbi/SecteurBancaireTunisien.SemanticModel/definition/` :
+
+| Fichier | Contenu |
+|---|---|
+| `expressions.tmdl` | le paramètre `CheminDonnees` et les requêtes intermédiaires non chargées (`Fichiers_Donnees`, `Versions`) |
+| `tables/<Table>.tmdl` | une table chargée : ses colonnes (type, synthèse) et sa requête (partition `m`) |
+| `model.tmdl` | options du modèle, ordre des requêtes dans Power Query (`PBI_QueryOrder`), liste des tables |
+
+Le code M de chaque requête est le même que celui du fichier `powerquery/<Requête>.pq`, gardé comme
+copie lisible : une modification faite dans Power Query doit être reportée dans le `.pq` (et
+inversement). Les requêtes sont écrites directement dans ces fichiers, Power BI Desktop fermé ;
+à la réouverture, Power BI les lit et les affiche dans Power Query.
+
+Ne sont pas versionnés (`.gitignore`) : `.pbi/cache.abf` (données importées), `.pbi/localSettings.json`
+(réglages et signature de sécurité propres au poste) et l'ancien `SecteurBancaireTunisien.pbix`.
+
+**Vérifier après une réouverture.** Ouvrir `SecteurBancaireTunisien.pbip`, **Accueil › Transformer les
+données** : les requêtes apparaissent dans l'ordre de la section 2, les intermédiaires en italique
+(chargement désactivé). Revenir au rapport et **Actualiser**. Contrôles sur `Fait_Indicateurs` :
+7 137 lignes ; AB 2026T3, PNB : `Valeur_Trim` = 150,021 et `Valeur_Cumul` = 512,448 (valeurs relevées
+sur l'image du document, `tests/valeurs_reference.csv`).
+
+Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
+puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
+la requête exactement comme le fichier (sans `.pq`). Requête intermédiaire : clic droit › décocher
+**Activer le chargement**. Puis **Fermer et appliquer** et enregistrer (Ctrl+S).
 
 ## 2. Requêtes Power Query
 

@@ -2021,23 +2021,40 @@ def charger_saisies(chemin: Path = FICHIER_SAISIES) -> dict[tuple[str, str], lis
     return sortie
 
 
-def controle_saisie(valeurs: dict[str, dict[str, float]], codes_saisis: set[str] | None = None) -> list[str]:
+# Banques dont les produits d'exploitation ont une ligne publiée sans code (BTE : gains nets sur
+# opérations de change) : les composantes saisies ne peuvent pas dépasser les produits, et le reste
+# est vérifié sur l'image au moment de la saisie.
+PRODUITS_AVEC_LIGNE_NON_CODEE = {"BTE": "gains nets sur opérations de change"}
+
+
+def controle_saisie(valeurs: dict[str, dict[str, float]], codes_saisis: set[str] | None = None,
+                    banque: str = "") -> list[str]:
     """Contrôles stricts d'un document contenant des valeurs saisies (unité de la source, 2 unités
-    d'arrondi) : produits − charges d'exploitation = PNB dans chaque colonne ; si des composantes des
-    produits sont saisies (codes_saisis), intérêts + commissions + revenus du portefeuille = produits
-    dans chaque colonne (STB 2026T2). Les autres contrôles sont ceux de l'extraction."""
+    d'arrondi) : produits − charges d'exploitation = PNB dans chaque colonne ; si des composantes
+    sont saisies (codes_saisis), intérêts + commissions + revenus du portefeuille = produits (STB
+    2026T2 ; pour BTE, au plus les produits, voir PRODUITS_AVEC_LIGNE_NON_CODEE) et intérêts encourus
+    + commissions encourues = charges d'exploitation, dans chaque colonne (BTE T4 2021 à 2023).
+    Les autres contrôles sont ceux de l'extraction."""
     alertes = []
     for col, pnb in valeurs.get("PNB", {}).items():
         p, ch = valeurs.get("PROD_EXPL", {}).get(col), valeurs.get("CHG_EXPL", {}).get(col)
         if None not in (p, ch) and abs(p - ch - pnb) > 2:
             alertes.append(f"saisie {col} : produits - charges = {p - ch:,.0f} ≠ PNB {pnb:,.0f}")
-    composantes = GROUPES["PROD_EXPL"]
-    if codes_saisis and codes_saisis & set(composantes):
-        for col, total in valeurs.get("PROD_EXPL", {}).items():
+    for total, libelle in (("PROD_EXPL", "intérêts + commissions + portefeuille"),
+                           ("CHG_EXPL", "intérêts encourus + commissions encourues")):
+        composantes = GROUPES[total]
+        if not (codes_saisis and codes_saisis & set(composantes)):
+            continue
+        for col, t in valeurs.get(total, {}).items():
             vals = [valeurs.get(c, {}).get(col) for c in composantes]
-            if None not in vals and abs(sum(vals) - total) > 2:
-                alertes.append(f"saisie {col} : intérêts + commissions + portefeuille = {sum(vals):,.0f} "
-                               f"≠ produits {total:,.0f}")
+            if None in vals:
+                continue
+            reste = t - sum(vals)
+            if total == "PROD_EXPL" and banque in PRODUITS_AVEC_LIGNE_NON_CODEE:
+                if reste < -2:
+                    alertes.append(f"saisie {col} : {libelle} = {sum(vals):,.0f} > produits {t:,.0f}")
+            elif abs(reste) > 2:
+                alertes.append(f"saisie {col} : {libelle} = {sum(vals):,.0f} ≠ total {t:,.0f}")
     return alertes
 
 
@@ -2074,14 +2091,14 @@ def extraire_document(code: str, tri: str, chemin: Path) -> tuple[list[dict], li
         valeurs: dict[str, dict[str, float]] = {}
         for l in lignes:
             valeurs.setdefault(l["code_indicateur"], {})[l["colonne"]] = l["valeur_source"]
-        return lignes, alertes + controle_saisie(valeurs, {s["code_indicateur"] for s in saisie}), ""
+        return lignes, alertes + controle_saisie(valeurs, {s["code_indicateur"] for s in saisie}, code), ""
     if not any(a.startswith(PREFIXE_ILLISIBLE) for a in alertes):
         return lignes, alertes, ""
     valeurs: dict[str, dict[str, float]] = {}
     for l in saisie:
         valeurs.setdefault(l["code_indicateur"], {})[l["colonne"]] = l["valeur_source"]
     alertes = controles(valeurs, FACTEURS_UNITE[saisie[0]["unite_source"]], t) + \
-        controle_saisie(valeurs, {s["code_indicateur"] for s in saisie})
+        controle_saisie(valeurs, {s["code_indicateur"] for s in saisie}, code)
     gab = gabarit_pour(code, t)
     if gab:
         alertes += controle_definition_chg_oper(valeurs, gab.definition_chg_oper)

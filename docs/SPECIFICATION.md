@@ -259,7 +259,16 @@ Fiche émetteur, états financiers, rapports annuels ─> donnees_reference/banq
   manuelle` dans `controle_extraction.csv`, colonnes `source` = « saisie manuelle » et
   `verification` dans les données) et passe les contrôles de l'extraction plus un contrôle strict
   (produits − charges = PNB à 2 kDT près dans chaque colonne) ; une alerte la met en
-  `a verifier`. Contrôles faits pendant la saisie BTE (13 documents, 436 valeurs, aucune erreur) :
+  `a verifier`. **Composantes** (23/10/2026, décision de l'utilisateur) : pour BTE T4 2021 et
+  T4 2022, intérêts perçus et encourus, commissions en produits et encourues, revenus du
+  portefeuille et autres produits du trimestre seul, colonne N et colonne N-1 du document suivant
+  (versions révisées, 2022T4 et 2023T4), plus les autres produits de 2023T4 (0 publié) : 26 valeurs.
+  Contrôle strict ajouté : intérêts encourus + commissions encourues = charges d'exploitation ;
+  intérêts + commissions + portefeuille au plus égal aux produits pour BTE, qui publie ses gains
+  nets sur opérations de change sur une ligne à part sans code (reste vérifié sur l'image : égal
+  aux gains de change à 1 kDT près). Les composantes de 2020T1 à 2021T3 (sauf 2021T2) ne sont pas
+  saisies : voir « Trimestres incomplets » ci-dessous.
+  Contrôles faits pendant la saisie BTE (13 documents, 436 valeurs, aucune erreur) :
   produits − charges = PNB, charges opératoires = frais de personnel + charges générales,
   colonne « Variation montant » du PDF = cumul N − cumul N-1, dépôts = somme des quatre
   catégories ; les trimestres 2020T3 sont confirmés par la colonne N-1 du document 2021T3.
@@ -288,6 +297,24 @@ Fiche émetteur, états financiers, rapports annuels ─> donnees_reference/banq
   jamais dans `Fait_Indicateurs` : la valeur reste vide dans les graphiques, jamais à zéro (aucune
   mesure DAX ne doit remplacer un vide par 0, pas de `+ 0` ni de `COALESCE ( …, 0 )` sur les
   valeurs ; le contrôle annuel saute ces années).
+
+  **Trimestres incomplets pour le secteur** (valeur retenue présente pour chaque banque qui publie
+  l'indicateur ; vérifié le 23/10/2026 sur `indicateurs_versions.csv`, 28 trimestres de 2019T4 à
+  2026T3) :
+  - **complets (28/28)**, trimestre seul et cumul : PNB, produits et charges d'exploitation
+    bancaire, charges opératoires, frais de personnel, charges générales ; crédits et dépôts ;
+  - **22/28** : intérêts perçus et encourus, commissions en produits et encourues, revenus du
+    portefeuille (donc marge d'intérêts et marge sur commissions), portefeuille-titres et
+    portefeuille d'investissement, dépôts à vue et d'épargne, emprunts : il manque **BTE 2020T1 à
+    2020T4, 2021T1 et 2021T3** (documents en image, seuls les indicateurs principaux saisis) ;
+  - capitaux propres trimestriels : 20/28 (BTE, mêmes trimestres plus 2021T4 et 2022T4), fiche
+    banque seulement (les comparaisons utilisent les capitaux propres du bilan) ;
+  - jamais complets, publiés par une partie des banques seulement : dotations aux amortissements
+    (2 banques), dépôts à terme (5), autres dépôts (2) ; portefeuille commercial (BT et BTE
+    absents à plusieurs dates) ; autres produits d'exploitation (aucune valeur pour Wifak, BTE
+    imprime « - » à plusieurs dates : vérifié pour 2026T2 et 2026T3) : hors indicateurs du rapport.
+  Le total du secteur d'un indicateur n'est calculé que pour les trimestres complets de cet
+  indicateur (mesure « nombre de banques présentes »).
 
   Les périodes de la dernière année publiée (2026) sont en version initiale. Toutes les versions
   restent dans `indicateurs_versions.csv` pour la traçabilité (colonnes `fichier`, `page`), avec

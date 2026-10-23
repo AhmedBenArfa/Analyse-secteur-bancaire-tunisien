@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "SecteurBancaireTunisien"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "dd503011-dab7-4920-9d80-a5d4475363d2"
+  }
+}

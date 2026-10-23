@@ -72,10 +72,10 @@ un fichier Excel et une URL.
 | Valeurs relevées à la main sur l'image des PDF pour les tests | 438 sur 41 documents d'indicateurs, 169 sur 24 états financiers |
 | Contrôle annuel (somme des 4 trimestres contre cumul annuel) | 288 contrôles : 205 ok, 41 en attente de révision, 20 ruptures de série, **22 écarts, tous expliqués** (11 retraitements de la banque, 7 erreurs dans le document de la banque, 3 reclassements, 1 arrondi, 0 erreur d'extraction) |
 | Révisions de plus de 2 % d'un total (cumul) | 137, chacune avec le document d'origine et le document révisé |
-| Valeurs saisies à la main | 438 (13 documents BTE publiés en image, deux valeurs illisibles STB), toutes passées aux contrôles de cohérence ; un document relu une seconde fois en entier (BTE 2020T2) |
+| Valeurs saisies à la main | 464 (13 documents BTE publiés en image, deux valeurs illisibles STB), toutes passées aux contrôles de cohérence ; un document relu une seconde fois en entier (BTE 2020T2) |
 | États financiers | 168 arrêtés, 504 valeurs retenues (résultat net, total de l'actif, capitaux propres), aucune vide |
 | Cours boursiers | 1 955 séances par banque, du 02/01/2019 au 20/10/2026 ; 63 opérations sur titres, chacune avec le cours de référence publié |
-| Tests automatiques | 37, tous réussis |
+| Tests automatiques | 38, tous réussis |
 
 ## Démarche qualité
 
@@ -115,12 +115,13 @@ un fichier Excel et une URL.
 │   └── banques.xlsx             actionnariat des 12 banques, sourcé, une ligne par période
 ├── powerquery/                  requêtes Power Query (M)
 ├── dax/                         mesures DAX (à venir)
-├── powerbi/                     projet Power BI (.pbip, à venir)
+├── powerbi/                     projet Power BI (.pbip : modèle en texte TMDL, en cours)
 ├── donnees_publiees/            CSV finaux lus par Power BI (versionnés, régénérés par un script)
 ├── docs/
 │   ├── SPECIFICATION.md         spécification complète (modèle, mesures, pages, limites)
 │   ├── utilisation.md           mode d'emploi des scripts
 │   ├── guide_powerbi.md         requêtes et mesures expliquées pas à pas
+│   ├── feuille_de_route.md      état d'avancement et décisions prises
 │   ├── ecarts_annuels.csv       cause de chaque écart du contrôle annuel
 │   ├── revisions_importantes.csv
 │   └── *.pdf                    spécification et rapport d'avancement
@@ -138,7 +139,7 @@ puisse s'ouvrir après un simple clonage du dépôt. Pour reproduire les donnée
 | Collecte et extraction des indicateurs trimestriels (T4 2019 → T3 2026) | Terminé |
 | États financiers (ROE, ROA), cours boursiers, opérations sur titres | Terminé |
 | Examen des écarts du contrôle annuel, actionnariat des banques | Terminé |
-| Requêtes Power Query | En cours (paramètre du dossier, lecture des CSV, versions des indicateurs) |
+| Requêtes Power Query | En cours : paramètre du dossier, lecture des CSV, versions et table de faits des indicateurs (détail et décisions : [docs/feuille_de_route.md](docs/feuille_de_route.md)) |
 | Modèle en étoile, mesures DAX, pages du rapport | À faire |
 | Note de validation par échantillon (`docs/validation.md`), captures du rapport | À faire |
 

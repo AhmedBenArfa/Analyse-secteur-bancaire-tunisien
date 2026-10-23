@@ -13407,6 +13407,8 @@ BTE;2021T3;2021-09-30;2021;3;PROD_EXPL;cumul;initiale;90.758;BTE_2021T3.pdf;1;90
 BTE;2021T3;2021-09-30;2021;3;PROD_EXPL;trim;revisee_T3_N+1;28.367;BTE_2022T3.pdf;1;28.367;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2021T3;2021-09-30;2021;3;PROD_EXPL;trim;initiale;28.358;BTE_2021T3.pdf;1;28.367;revisee_T3_N+1;-0.009;retraitement_mineur;;;;
 BTE;2021T4;2021-12-31;2021;4;AUTRES_PROD;cumul;revisee_31-12_T2_N+1;0.0;BTE_2022T2.pdf;1;0.0;revisee_31-12_T2_N+1;0.0;retenue;;;;
+BTE;2021T4;2021-12-31;2021;4;AUTRES_PROD;trim;revisee_T4_N+1;0.0;BTE_2022T4.pdf;1;0.0;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T4;2021-12-31;2021;4;AUTRES_PROD;trim;initiale;0.0;BTE_2021T4.pdf;1;0.0;revisee_T4_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T4;2021-12-31;2021;4;CAP_PROPRES;cumul;revisee_31-12_T2_N+1;88.178;BTE_2022T2.pdf;1;;;;exclue (capitaux propres, 31/12 provisoire);;;;
 BTE;2021T4;2021-12-31;2021;4;CHG_EXPL;cumul;revisee_T4_N+1;60.583;BTE_2022T4.pdf;1;60.583;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2021T4;2021-12-31;2021;4;CHG_EXPL;cumul;revisee_31-12_T3_N+1;60.583;BTE_2022T3.pdf;1;60.583;revisee_T4_N+1;0.0;retraitement_mineur;;;;
@@ -13430,7 +13432,11 @@ BTE;2021T4;2021-12-31;2021;4;CHG_OPER;cumul;initiale;50.077;BTE_2021T4.pdf;1;50.
 BTE;2021T4;2021-12-31;2021;4;CHG_OPER;trim;revisee_T4_N+1;14.77;BTE_2022T4.pdf;1;14.77;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2021T4;2021-12-31;2021;4;CHG_OPER;trim;initiale;14.222;BTE_2021T4.pdf;1;14.77;revisee_T4_N+1;-0.548;retraitement_mineur;;;;
 BTE;2021T4;2021-12-31;2021;4;COMM_CHG;cumul;revisee_31-12_T2_N+1;0.537;BTE_2022T2.pdf;1;0.537;revisee_31-12_T2_N+1;0.0;retenue;;;;
+BTE;2021T4;2021-12-31;2021;4;COMM_CHG;trim;revisee_T4_N+1;0.033;BTE_2022T4.pdf;1;0.033;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T4;2021-12-31;2021;4;COMM_CHG;trim;initiale;-0.132;BTE_2021T4.pdf;1;0.033;revisee_T4_N+1;-0.165;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T4;2021-12-31;2021;4;COMM_PROD;cumul;revisee_31-12_T2_N+1;25.976;BTE_2022T2.pdf;1;25.976;revisee_31-12_T2_N+1;0.0;retenue;;;;
+BTE;2021T4;2021-12-31;2021;4;COMM_PROD;trim;revisee_T4_N+1;7.645;BTE_2022T4.pdf;1;7.645;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T4;2021-12-31;2021;4;COMM_PROD;trim;initiale;7.645;BTE_2021T4.pdf;1;7.645;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T4;2021-12-31;2021;4;CREDITS;cumul;revisee_T4_N+1;853.363;BTE_2022T4.pdf;1;853.363;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2021T4;2021-12-31;2021;4;CREDITS;cumul;revisee_31-12_T3_N+1;853.363;BTE_2022T3.pdf;1;853.363;revisee_T4_N+1;0.0;retraitement_mineur;;;;
 BTE;2021T4;2021-12-31;2021;4;CREDITS;cumul;revisee_31-12_T2_N+1;853.363;BTE_2022T2.pdf;1;853.363;revisee_T4_N+1;0.0;retraitement_mineur;;;;
@@ -13454,7 +13460,11 @@ BTE;2021T4;2021-12-31;2021;4;FRAIS_PERS;cumul;initiale;36.053;BTE_2021T4.pdf;1;3
 BTE;2021T4;2021-12-31;2021;4;FRAIS_PERS;trim;revisee_T4_N+1;10.119;BTE_2022T4.pdf;1;10.119;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2021T4;2021-12-31;2021;4;FRAIS_PERS;trim;initiale;10.607;BTE_2021T4.pdf;1;10.119;revisee_T4_N+1;0.488;retraitement_mineur;;;;
 BTE;2021T4;2021-12-31;2021;4;INT_ENCOURUS;cumul;revisee_31-12_T2_N+1;60.046;BTE_2022T2.pdf;1;60.046;revisee_31-12_T2_N+1;0.0;retenue;;;;
+BTE;2021T4;2021-12-31;2021;4;INT_ENCOURUS;trim;revisee_T4_N+1;17.296;BTE_2022T4.pdf;1;17.296;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T4;2021-12-31;2021;4;INT_ENCOURUS;trim;initiale;17.297;BTE_2021T4.pdf;1;17.296;revisee_T4_N+1;0.001;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T4;2021-12-31;2021;4;INT_PERCUS;cumul;revisee_31-12_T2_N+1;85.513;BTE_2022T2.pdf;1;85.513;revisee_31-12_T2_N+1;0.0;retenue;;;;
+BTE;2021T4;2021-12-31;2021;4;INT_PERCUS;trim;revisee_T4_N+1;22.367;BTE_2022T4.pdf;1;22.367;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T4;2021-12-31;2021;4;INT_PERCUS;trim;initiale;22.069;BTE_2021T4.pdf;1;22.367;revisee_T4_N+1;-0.298;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T4;2021-12-31;2021;4;PNB;cumul;revisee_T4_N+1;63.104;BTE_2022T4.pdf;1;63.104;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2021T4;2021-12-31;2021;4;PNB;cumul;revisee_31-12_T3_N+1;63.104;BTE_2022T3.pdf;1;63.104;revisee_T4_N+1;0.0;retraitement_mineur;;;;
 BTE;2021T4;2021-12-31;2021;4;PNB;cumul;revisee_31-12_T2_N+1;63.104;BTE_2022T2.pdf;1;63.104;revisee_T4_N+1;0.0;retraitement_mineur;;;;
@@ -13473,6 +13483,8 @@ BTE;2021T4;2021-12-31;2021;4;PROD_EXPL;cumul;initiale;123.271;BTE_2021T4.pdf;1;1
 BTE;2021T4;2021-12-31;2021;4;PROD_EXPL;trim;revisee_T4_N+1;32.92;BTE_2022T4.pdf;1;32.92;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2021T4;2021-12-31;2021;4;PROD_EXPL;trim;initiale;32.504;BTE_2021T4.pdf;1;32.92;revisee_T4_N+1;-0.416;retraitement_mineur;;;;
 BTE;2021T4;2021-12-31;2021;4;REV_PORTEF;cumul;revisee_31-12_T2_N+1;7.114;BTE_2022T2.pdf;1;7.114;revisee_31-12_T2_N+1;0.0;retenue;;;;
+BTE;2021T4;2021-12-31;2021;4;REV_PORTEF;trim;revisee_T4_N+1;1.767;BTE_2022T4.pdf;1;1.767;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T4;2021-12-31;2021;4;REV_PORTEF;trim;initiale;1.648;BTE_2021T4.pdf;1;1.767;revisee_T4_N+1;-0.119;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2022T1;2022-03-31;2022;1;AUTRES_PROD;cumul;revisee_T1_N+1;0.0;BTE_2023T1.pdf;1;0.0;revisee_T1_N+1;0.0;retenue;;;;
 BTE;2022T1;2022-03-31;2022;1;AUTRES_PROD;trim;revisee_T1_N+1;0.0;BTE_2023T1.pdf;1;0.0;revisee_T1_N+1;0.0;retenue;;;;
 BTE;2022T1;2022-03-31;2022;1;CAP_PROPRES;cumul;revisee_T1_N+1;80.954;BTE_2023T1.pdf;1;80.954;revisee_T1_N+1;0.0;retenue;;;;
@@ -13632,6 +13644,8 @@ BTE;2022T3;2022-09-30;2022;3;PROD_EXPL;trim;initiale;36.115;BTE_2022T3.pdf;1;35.
 BTE;2022T3;2022-09-30;2022;3;REV_PORTEF;cumul;revisee_T3_N+1;7.049;BTE_2023T3.pdf;1;7.049;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2022T3;2022-09-30;2022;3;REV_PORTEF;trim;revisee_T3_N+1;2.037;BTE_2023T3.pdf;1;2.037;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2022T4;2022-12-31;2022;4;AUTRES_PROD;cumul;revisee_31-12_T1_N+1;0.0;BTE_2023T1.pdf;1;0.0;revisee_31-12_T1_N+1;0.0;retenue;;;;
+BTE;2022T4;2022-12-31;2022;4;AUTRES_PROD;trim;revisee_T4_N+1;0.0;BTE_2023T4.pdf;1;0.0;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2022T4;2022-12-31;2022;4;AUTRES_PROD;trim;initiale;0.0;BTE_2022T4.pdf;1;0.0;revisee_T4_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2022T4;2022-12-31;2022;4;CAP_PROPRES;cumul;revisee_31-12_T3_N+1;89.914;BTE_2023T3.pdf;1;;;;exclue (capitaux propres, 31/12 provisoire);;;;
 BTE;2022T4;2022-12-31;2022;4;CAP_PROPRES;cumul;revisee_31-12_T1_N+1;89.914;BTE_2023T1.pdf;1;;;;exclue (capitaux propres, 31/12 provisoire);;;;
 BTE;2022T4;2022-12-31;2022;4;CHG_EXPL;cumul;revisee_T4_N+1;72.733;BTE_2023T4.pdf;1;72.733;revisee_T4_N+1;0.0;retenue;;;;
@@ -13657,8 +13671,12 @@ BTE;2022T4;2022-12-31;2022;4;CHG_OPER;trim;revisee_T4_N+1;17.914;BTE_2023T4.pdf;
 BTE;2022T4;2022-12-31;2022;4;CHG_OPER;trim;initiale;15.523;BTE_2022T4.pdf;1;17.914;revisee_T4_N+1;-2.391;revision_importante;;;oui;2022T4 révisé de +4.6 % sur le cumul (51.685 publié, 54.076 dans le document 2023T4)
 BTE;2022T4;2022-12-31;2022;4;COMM_CHG;cumul;revisee_31-12_T3_N+1;3.129;BTE_2023T3.pdf;1;3.129;revisee_31-12_T3_N+1;0.0;retenue;;;;
 BTE;2022T4;2022-12-31;2022;4;COMM_CHG;cumul;revisee_31-12_T1_N+1;3.129;BTE_2023T1.pdf;1;3.129;revisee_31-12_T3_N+1;0.0;;;;;
+BTE;2022T4;2022-12-31;2022;4;COMM_CHG;trim;revisee_T4_N+1;1.157;BTE_2023T4.pdf;1;1.157;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2022T4;2022-12-31;2022;4;COMM_CHG;trim;initiale;0.764;BTE_2022T4.pdf;1;1.157;revisee_T4_N+1;-0.393;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2022T4;2022-12-31;2022;4;COMM_PROD;cumul;revisee_31-12_T3_N+1;29.982;BTE_2023T3.pdf;1;29.982;revisee_31-12_T3_N+1;0.0;retenue;;;;
 BTE;2022T4;2022-12-31;2022;4;COMM_PROD;cumul;revisee_31-12_T1_N+1;29.982;BTE_2023T1.pdf;1;29.982;revisee_31-12_T3_N+1;0.0;;;;;
+BTE;2022T4;2022-12-31;2022;4;COMM_PROD;trim;revisee_T4_N+1;7.629;BTE_2023T4.pdf;1;7.629;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2022T4;2022-12-31;2022;4;COMM_PROD;trim;initiale;7.629;BTE_2022T4.pdf;1;7.629;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2022T4;2022-12-31;2022;4;CREDITS;cumul;revisee_T4_N+1;883.365;BTE_2023T4.pdf;1;883.365;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2022T4;2022-12-31;2022;4;CREDITS;cumul;revisee_31-12_T3_N+1;883.365;BTE_2023T3.pdf;1;883.365;revisee_T4_N+1;0.0;retraitement_mineur;;;;
 BTE;2022T4;2022-12-31;2022;4;CREDITS;cumul;revisee_31-12_T2_N+1;883.365;BTE_2023T2.pdf;1;883.365;revisee_T4_N+1;0.0;retraitement_mineur;;;;
@@ -13688,8 +13706,12 @@ BTE;2022T4;2022-12-31;2022;4;FRAIS_PERS;trim;revisee_T4_N+1;11.822;BTE_2023T4.pd
 BTE;2022T4;2022-12-31;2022;4;FRAIS_PERS;trim;initiale;11.404;BTE_2022T4.pdf;1;11.822;revisee_T4_N+1;-0.418;revision_importante;;;oui;2022T4 révisé de +1.1 % sur le cumul (38.138 publié, 38.556 dans le document 2023T4)
 BTE;2022T4;2022-12-31;2022;4;INT_ENCOURUS;cumul;revisee_31-12_T3_N+1;69.604;BTE_2023T3.pdf;1;69.604;revisee_31-12_T3_N+1;0.0;retenue;;;;
 BTE;2022T4;2022-12-31;2022;4;INT_ENCOURUS;cumul;revisee_31-12_T1_N+1;69.604;BTE_2023T1.pdf;1;69.604;revisee_31-12_T3_N+1;0.0;;;;;
+BTE;2022T4;2022-12-31;2022;4;INT_ENCOURUS;trim;revisee_T4_N+1;18.925;BTE_2023T4.pdf;1;18.925;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2022T4;2022-12-31;2022;4;INT_ENCOURUS;trim;initiale;18.925;BTE_2022T4.pdf;1;18.925;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2022T4;2022-12-31;2022;4;INT_PERCUS;cumul;revisee_31-12_T3_N+1;89.658;BTE_2023T3.pdf;1;89.658;revisee_31-12_T3_N+1;0.0;retenue;;;;
 BTE;2022T4;2022-12-31;2022;4;INT_PERCUS;cumul;revisee_31-12_T1_N+1;89.658;BTE_2023T1.pdf;1;89.658;revisee_31-12_T3_N+1;0.0;;;;;
+BTE;2022T4;2022-12-31;2022;4;INT_PERCUS;trim;revisee_T4_N+1;24.651;BTE_2023T4.pdf;1;24.651;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2022T4;2022-12-31;2022;4;INT_PERCUS;trim;initiale;25.05;BTE_2022T4.pdf;1;24.651;revisee_T4_N+1;0.399;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2022T4;2022-12-31;2022;4;PNB;cumul;revisee_T4_N+1;60.476;BTE_2023T4.pdf;1;60.476;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2022T4;2022-12-31;2022;4;PNB;cumul;revisee_31-12_T3_N+1;60.476;BTE_2023T3.pdf;1;60.476;revisee_T4_N+1;0.0;retraitement_mineur;;;;
 BTE;2022T4;2022-12-31;2022;4;PNB;cumul;revisee_31-12_T2_N+1;60.476;BTE_2023T2.pdf;1;60.476;revisee_T4_N+1;0.0;retraitement_mineur;;;;
@@ -13712,6 +13734,8 @@ BTE;2022T4;2022-12-31;2022;4;PROD_EXPL;trim;revisee_T4_N+1;35.432;BTE_2023T4.pdf
 BTE;2022T4;2022-12-31;2022;4;PROD_EXPL;trim;initiale;35.678;BTE_2022T4.pdf;1;35.432;revisee_T4_N+1;0.246;retraitement_mineur;;;;
 BTE;2022T4;2022-12-31;2022;4;REV_PORTEF;cumul;revisee_31-12_T3_N+1;9.686;BTE_2023T3.pdf;1;9.686;revisee_31-12_T3_N+1;0.0;retenue;;;;
 BTE;2022T4;2022-12-31;2022;4;REV_PORTEF;cumul;revisee_31-12_T1_N+1;9.686;BTE_2023T1.pdf;1;9.686;revisee_31-12_T3_N+1;0.0;;;;;
+BTE;2022T4;2022-12-31;2022;4;REV_PORTEF;trim;revisee_T4_N+1;2.637;BTE_2023T4.pdf;1;2.637;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2022T4;2022-12-31;2022;4;REV_PORTEF;trim;initiale;2.485;BTE_2022T4.pdf;1;2.637;revisee_T4_N+1;-0.152;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2023T1;2023-03-31;2023;1;AUTRES_PROD;cumul;revisee_T1_N+1;0.0;BTE_2024T1.pdf;1;0.0;revisee_T1_N+1;0.0;retenue;;;;
 BTE;2023T1;2023-03-31;2023;1;AUTRES_PROD;cumul;initiale;0.0;BTE_2023T1.pdf;1;0.0;revisee_T1_N+1;0.0;;;;;
 BTE;2023T1;2023-03-31;2023;1;AUTRES_PROD;trim;revisee_T1_N+1;0.0;BTE_2024T1.pdf;1;0.0;revisee_T1_N+1;0.0;retenue;;;;
@@ -13916,6 +13940,8 @@ BTE;2023T3;2023-09-30;2023;3;REV_PORTEF;cumul;initiale;11.287;BTE_2023T3.pdf;1;1
 BTE;2023T3;2023-09-30;2023;3;REV_PORTEF;trim;revisee_T3_N+1;3.079;BTE_2024T3.pdf;1;3.079;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2023T3;2023-09-30;2023;3;REV_PORTEF;trim;initiale;3.08;BTE_2023T3.pdf;1;3.079;revisee_T3_N+1;0.001;retraitement_mineur;;;;
 BTE;2023T4;2023-12-31;2023;4;AUTRES_PROD;cumul;revisee_31-12_T1_N+1;0.0;BTE_2024T1.pdf;1;0.0;revisee_31-12_T1_N+1;0.0;retenue;;;;
+BTE;2023T4;2023-12-31;2023;4;AUTRES_PROD;cumul;initiale;0.0;BTE_2023T4.pdf;1;0.0;revisee_31-12_T1_N+1;0.0;;autres produits d'exploitation : 0 publié;;;
+BTE;2023T4;2023-12-31;2023;4;AUTRES_PROD;trim;initiale;0.0;BTE_2023T4.pdf;1;0.0;initiale;0.0;retenue;autres produits d'exploitation : 0 publié;;;
 BTE;2023T4;2023-12-31;2023;4;CAP_PROPRES;cumul;revisee_T4_N+1;52.971;BTE_2024T4.pdf;1;52.971;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2023T4;2023-12-31;2023;4;CAP_PROPRES;cumul;revisee_31-12_T3_N+1;52.971;BTE_2024T3.pdf;1;52.971;revisee_T4_N+1;0.0;exclue (capitaux propres, 31/12 provisoire);;;;
 BTE;2023T4;2023-12-31;2023;4;CAP_PROPRES;cumul;revisee_31-12_T2_N+1;52.971;BTE_2024T2.pdf;1;52.971;revisee_T4_N+1;0.0;exclue (capitaux propres, 31/12 provisoire);;;;
