@@ -19,7 +19,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
-| 6 | Modèle en étoile et mesures DAX | **En cours** : table des dates et 28 relations chargées dans Power BI Desktop ; vue Modèle rangée (un onglet par thème), à revoir ; ensuite mesures |
+| 6 | Modèle en étoile et mesures DAX | **En cours** : table des dates et 28 relations vérifiées dans Power BI Desktop ; vue Modèle rangée (un onglet par thème) ; prochaine action : mesures de base |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
@@ -47,7 +47,7 @@ Un groupe à la fois, vérifié dans Power BI Desktop avant le suivant :
    chronologiquement, fin de trimestre, **période Covid** (avant le 01/03/2020, jusqu'au 31/12/2021,
    après) triée par une colonne d'ordre ; libellé du trimestre au format des faits (« 2024T3 ») ;
    marquée comme table de dates.
-2. **Relations du modèle en étoile** (28 relations écrites le 23/10/2026, à vérifier ; clés contrôlées :
+2. **Relations du modèle en étoile** (28 relations, vérifiées le 23/10/2026 dans « Gérer les relations » ; clés contrôlées :
    aucune banque, aucun code, aucune date des faits absents de leur dimension) (une dimension vers plusieurs lignes, filtre simple) : dates, banques
    et indicateurs vers les tables de faits, de qualité et d'événements.
 3. **Mesures DAX par groupes** : bases ; totaux du secteur, nombre de banques présentes et dernier
