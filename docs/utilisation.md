@@ -185,6 +185,16 @@ vrais documents demandent les PDF de `donnees/` ; ils sont sautés s'ils sont ab
 | `python scripts/chercher_actionnariat.py "donnees/pdf_etats_financiers/BTE/*.pdf"` | Pages qui décrivent la structure du capital |
 | `python scripts/lire_site.py DOSSIER URL…` | Lecture polie de quelques pages d'un site (robots.txt, 2 s au moins), réponses enregistrées |
 
+**Outils du projet Power BI** (écrivent le modèle TMDL de `powerbi/SecteurBancaireTunisien.SemanticModel/`,
+fins de ligne CRLF comme Power BI ; à lancer seulement quand ce projet est fermé dans Power BI Desktop,
+sinon un enregistrement dans Power BI efface la modification) :
+
+| Commande | Usage |
+|---|---|
+| `ecrire_table(nom, description, colonnes, apres)` (`scripts/ecrire_tmdl_table.py`, depuis Python) | Ajoute ou remplace une table chargée : colonnes typées, code M de `powerquery/<nom>.pq`, ordre des requêtes |
+| `python scripts/ecrire_tmdl_expression.py NOM "description" APRES` | Ajoute ou remplace une requête intermédiaire non chargée dans `expressions.tmdl` |
+| `python scripts/ecrire_tmdl_segment.py` | Ajoute une colonne et remplace le code M d'une table sans toucher au reste du fichier, ajoute une fonction personnalisée ; sans argument, applique le segment d'actionnariat (déjà fait : relancer ne change rien) |
+
 ## 7. Fichiers de référence
 
 - `donnees_reference/banques.xlsx` (table Excel `Banques`) : actionnariat des 12 banques, une ligne
