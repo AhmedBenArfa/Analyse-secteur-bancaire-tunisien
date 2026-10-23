@@ -170,7 +170,7 @@ def specification():
 def guide():
     """Guide des transformations : docs/guide_powerbi.md (chaque étape de chaque requête expliquée),
     puis en annexe le code M exact de chaque requête (powerquery/*.pq, dans l'ordre de Power Query
-    lu dans model.tmdl) et le journal des décisions (docs/feuille_de_route.md)."""
+    lu dans model.tmdl), le code DAX (dax/*.dax) et le journal des décisions (docs/feuille_de_route.md)."""
     rendre = mistune.create_markdown(plugins=["table", "strikethrough"], escape=False)
     sans_entete = lambda md: re.sub(r"\A<!--.*?-->\s*", "", md, flags=re.S)
     titre, reste = sans_entete((R / "docs/guide_powerbi.md").read_text(encoding="utf-8")).split("\n", 1)
@@ -180,14 +180,18 @@ def guide():
     noms += sorted(p.stem for p in (R / "powerquery").glob("*.pq") if p.stem not in noms)
     annexe = "".join(f"<h3>{e(n)}</h3><pre><code>{e((R / 'powerquery' / (n + '.pq')).read_text(encoding='utf-8'))}"
                      f"</code></pre>" for n in noms if (R / "powerquery" / (n + ".pq")).exists())
+    annexe_dax = "".join(f"<h3>{e(p.stem)}</h3><pre><code>{e(p.read_text(encoding='utf-8'))}</code></pre>"
+                         for p in sorted((R / "dax").glob("*.dax")))
     feuille = sans_entete((R / "docs/feuille_de_route.md").read_text(encoding="utf-8")).split("\n", 1)[1]
     corps = (f'<div class="titre"><h1>{e(titre.lstrip("# ").strip())}</h1>'
              f'<div class="soustitre">Chaque transformation Power Query et chaque mesure DAX, expliquées '
              f'étape par étape</div><div class="meta">{AUTEUR} · version du {DATE} (générée à partir de '
-             f'docs/guide_powerbi.md, powerquery/*.pq et docs/feuille_de_route.md)</div></div>{rendre(reste)}'
+             f'docs/guide_powerbi.md, powerquery/*.pq, dax/*.dax et docs/feuille_de_route.md)</div></div>{rendre(reste)}'
              f'<h2>Annexe A — Code M de chaque requête</h2><p>Texte exact des fichiers <code>powerquery/*.pq</code>, '
              f'identique au code du projet <code>.pbip</code>, dans l\'ordre de Power Query.</p>{annexe}'
-             f'<h2>Annexe B — Feuille de route et décisions</h2>{rendre(feuille)}')
+             + (f'<h2>Annexe A bis — Code DAX</h2><p>Texte exact des fichiers <code>dax/*.dax</code>, identique '
+                f'au code du projet <code>.pbip</code>.</p>{annexe_dax}' if annexe_dax else '')
+             + f'<h2>Annexe B — Feuille de route et décisions</h2>{rendre(feuille)}')
     vers_pdf(page_html("Guide Power BI", corps), R / "docs/Guide_PowerBI.pdf",
              "Guide Power BI — Analyse du secteur bancaire tunisien", "Transformations Power Query et mesures DAX",
              f"Analyse du secteur bancaire tunisien — Guide Power BI ({DATE})")

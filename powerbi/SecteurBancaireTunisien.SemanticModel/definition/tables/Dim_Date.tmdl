@@ -1,0 +1,118 @@
+/// Table des dates (DAX) : un jour par ligne du 01/01/2019 au 31/12/2026, trimestre au format des faits, période Covid ; marquée comme table de dates
+table Dim_Date
+	lineageTag: cdcee5c1-068a-4867-83ee-b3636d235299
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		lineageTag: 0486900b-dfbe-4cb0-b49a-b17dfab29fc1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Annee
+		dataType: int64
+		formatString: 0
+		lineageTag: 15df462f-30e8-487b-93e1-5aa4c54a9bec
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Annee]
+
+		annotation SummarizationSetBy = User
+
+	column Trimestre
+		dataType: string
+		lineageTag: df5b15ed-63e4-43dc-9a89-5fac08459ae2
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Trimestre]
+
+		annotation SummarizationSetBy = User
+
+	column Annee_Trimestre
+		dataType: string
+		lineageTag: dcc105b3-4a39-4d5f-a7ef-fd99704e12ee
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Annee_Trimestre]
+		sortByColumn: Cle_Trimestre
+
+		annotation SummarizationSetBy = User
+
+	column Cle_Trimestre
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a002ee76-37e4-46b8-8f1e-d020be0e416e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Cle_Trimestre]
+
+		annotation SummarizationSetBy = User
+
+	column Fin_Trimestre
+		dataType: boolean
+		lineageTag: cd126c3c-e00e-4c9d-b764-c7a994681b6c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Fin_Trimestre]
+
+		annotation SummarizationSetBy = User
+
+	column Periode
+		dataType: string
+		lineageTag: 1ca92a80-5206-40f2-9621-0b0847ba58c5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Periode]
+		sortByColumn: Ordre_Periode
+
+		annotation SummarizationSetBy = User
+
+	column Ordre_Periode
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4304dc69-7976-44f9-bdb3-208b89ee2a91
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ordre_Periode]
+
+		annotation SummarizationSetBy = User
+
+	partition Dim_Date = calculated
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Table des dates (spécification 6) : une ligne par jour du 01/01/2019 au 31/12/2026.
+				// Annee_Trimestre a le format des faits (« 2024T3 ») et se trie par Cle_Trimestre (20243) ;
+				// Periode : Avant Covid avant le 01/03/2020, Covid jusqu'au 31/12/2021, Après Covid ensuite,
+				// triée par Ordre_Periode (sinon l'ordre alphabétique mettrait « Après Covid » en premier).
+				ADDCOLUMNS (
+				    CALENDAR ( DATE ( 2019, 1, 1 ), DATE ( 2026, 12, 31 ) ),
+				    "Annee", YEAR ( [Date] ),
+				    "Trimestre", "T" & QUARTER ( [Date] ),
+				    "Annee_Trimestre", YEAR ( [Date] ) & "T" & QUARTER ( [Date] ),
+				    "Cle_Trimestre", YEAR ( [Date] ) * 10 + QUARTER ( [Date] ),
+				    "Fin_Trimestre", [Date] = EOMONTH ( [Date], 0 ) && MOD ( MONTH ( [Date] ), 3 ) = 0,
+				    "Periode",
+				        SWITCH (
+				            TRUE (),
+				            [Date] < DATE ( 2020, 3, 1 ), "Avant Covid",
+				            [Date] < DATE ( 2022, 1, 1 ), "Covid",
+				            "Après Covid"
+				        ),
+				    "Ordre_Periode",
+				        SWITCH (
+				            TRUE (),
+				            [Date] < DATE ( 2020, 3, 1 ), 1,
+				            [Date] < DATE ( 2022, 1, 1 ), 2,
+				            3
+				        )
+				)

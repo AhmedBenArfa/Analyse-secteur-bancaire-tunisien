@@ -19,7 +19,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
-| 6 | Modèle en étoile et mesures DAX | **Prochaine étape** |
+| 6 | Modèle en étoile et mesures DAX | **En cours** : table des dates `Dim_Date` écrite, à vérifier dans Power BI Desktop ; ensuite relations, puis mesures |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
@@ -38,13 +38,15 @@ types avec paramètres régionaux, colonnes conditionnelles, regroupements, fonc
 (segment d'actionnariat à la date de chaque valeur). Chaque étape est expliquée dans
 [`guide_powerbi.md`](guide_powerbi.md) et dans `Guide_PowerBI.pdf`.
 
-## Prochaine étape : étape 6, modèle et mesures DAX
+## Étape 6 (en cours) : modèle et mesures DAX
 
 Un groupe à la fois, vérifié dans Power BI Desktop avant le suivant :
 
-1. **Table des dates** (DAX) : du 01/01/2019 au 31/12/2026, année, trimestre, libellé du trimestre trié
+1. **Table des dates** (écrite le 23/10/2026, `dax/Dim_Date.dax`, à vérifier : 2 922 jours, 32 fins de
+   trimestre, Avant Covid 425 / Covid 671 / Après Covid 1 826 jours) : du 01/01/2019 au 31/12/2026, année, trimestre, libellé du trimestre trié
    chronologiquement, fin de trimestre, **période Covid** (avant le 01/03/2020, jusqu'au 31/12/2021,
-   après) ; marquée comme table de dates.
+   après) triée par une colonne d'ordre ; libellé du trimestre au format des faits (« 2024T3 ») ;
+   marquée comme table de dates.
 2. **Relations du modèle en étoile** (une dimension vers plusieurs lignes, filtre simple) : dates, banques
    et indicateurs vers les tables de faits, de qualité et d'événements.
 3. **Mesures DAX par groupes** : bases ; totaux du secteur, nombre de banques présentes et dernier
@@ -118,3 +120,4 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 23/10/2026 | Ouverture du projet par un tiers | Cache des données Power BI versionné (données publiques) : le projet s'ouvre avec ses données sans réglage ; section « Ouvrir le rapport » du README ; publication sur le web à la fin |
 | 23/10/2026 | Documentation des fonctions M | Tableau de chaque fonction M utilisée (ce qu'elle fait, requêtes) dans le guide et son PDF, contrôlé par un test |
 | 23/10/2026 | Étape 5 terminée | Les 22 requêtes Power Query sont vérifiées ; passage à l'étape 6 (table des dates, relations, mesures DAX) |
+| 23/10/2026 | Table des dates | Code de la spécification, libellé du trimestre « 2024T3 » (format des faits) au lieu de « 2024-T3 », période Covid triée par `Ordre_Periode` ; tables calculées écrites par `scripts/ecrire_tmdl_table.py` (outil existant étendu) ; code DAX dans `dax/`, en annexe du guide en PDF |

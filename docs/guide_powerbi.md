@@ -589,9 +589,82 @@ ne manque à ce tableau.
 | `type number`, `type text`, `type date`, `Int64.Type`, `type logical` | types des colonnes : nombre décimal, texte, date, entier, vrai ou faux |
 | `null` | valeur absente ; un calcul avec `null` donne `null` (jamais zéro) |
 
-## 3. Mesures DAX
+## 3. Modèle et mesures DAX
 
-À écrire après les requêtes (`dax/mesures.dax`).
+Le modèle se construit par groupes, chacun vérifié dans Power BI Desktop avant le suivant : table des
+dates, relations du modèle en étoile, puis mesures (bases, totaux du secteur, ratios, croissances, ROE et
+ROA, Bourse, qualité). Le code DAX est dans `dax/` (copie lisible, identique au code du projet `.pbip`) ;
+une table calculée s'écrit dans le TMDL avec `ecrire_table_calculee` de `scripts/ecrire_tmdl_table.py`
+(`python scripts/ecrire_tmdl_table.py Dim_Date` pour la table des dates).
+
+### 3.1 `Dim_Date` (table calculée DAX)
+
+Une table de dates sert de filtre commun à toutes les tables qui ont une date (indicateurs, variations,
+états financiers, cours, révisions, contrôles, événements) : un segment « 2024T3 » ou « Covid » filtre
+alors toutes les pages de la même façon, et les fonctions de temps de DAX (`LASTNONBLANK`, `DATEADD`…)
+ont besoin d'une colonne de dates continue, sans jour manquant. Elle est écrite en DAX plutôt qu'en
+Power Query parce qu'elle ne lit aucune source : elle se calcule dans le modèle (`dax/Dim_Date.dax`).
+Le code part de celui de la spécification (section 6), avec deux changements : le libellé du
+trimestre au format des faits et la colonne de tri de la période.
+
+Étapes :
+
+1. **`CALENDAR ( DATE ( 2019, 1, 1 ), DATE ( 2026, 12, 31 ) )`** : une ligne par jour, colonne `Date`.
+   Bornes fixes : les données vont du 02/01/2019 (premier cours) au 31/12/2026 au plus ; des bornes
+   fixes évitent qu'une date erronée dans un fait étire la table (ce que ferait `CALENDARAUTO`). Les
+   trimestres 2019T1 à 2019T3 restent dans la table pour les cours de 2019.
+2. **`ADDCOLUMNS`** ajoute à chaque jour :
+   - `Annee` (`YEAR`) et `Trimestre` (« T1 » à « T4 », `QUARTER`) : la mesure du chiffre annuel prend
+     le cumul au trimestre « T4 » (spécification 7.1) ;
+   - `Annee_Trimestre` : « 2024T3 », **au même format que la colonne `trimestre` des faits et des
+     documents** (`BIAT_2024T3.pdf`), plutôt que le « 2024-T3 » de la première version de la
+     spécification : un même libellé partout ;
+   - `Cle_Trimestre` : 20243 (= 2024 × 10 + 3), nombre qui suit l'ordre chronologique ;
+     `Annee_Trimestre` est **triée par** cette colonne (un texte se trierait bien ici aussi, mais le
+     tri explicite ne dépend pas du format du libellé) ;
+   - `Fin_Trimestre` : vrai le dernier jour d'un trimestre (31/03, 30/06, 30/09, 31/12), seuls jours
+     où il y a des indicateurs trimestriels et des états financiers ;
+   - `Periode` (colonne conditionnelle, `SWITCH ( TRUE (), … )` : la première condition vraie
+     l'emporte) : « Avant Covid » avant le 01/03/2020, « Covid » jusqu'au 31/12/2021, « Après Covid »
+     ensuite. Pour les indicateurs, datés de la fin du trimestre : 2019T4 avant Covid, 2020T1 à
+     2021T4 Covid (8 trimestres), 2022T1 à 2026T3 après Covid (19 trimestres) ;
+   - `Ordre_Periode` (1, 2, 3) : `Periode` est triée par cette colonne, sinon l'ordre alphabétique
+     mettrait « Après Covid » en premier dans les segments et les axes.
+3. **Réglages du modèle** (dans le TMDL) : table **marquée comme table de dates** sur la colonne `Date`
+   (`dataCategory: Time`, `isKey` ; dans Power BI : **Outils de table › Marquer comme table de
+   dates**) ; colonnes de tri `Cle_Trimestre` et `Ordre_Periode` **masquées** (elles ne servent qu'au
+   tri) ; synthèse « Ne pas résumer » partout (une année ne s'additionne pas).
+
+Contrôles attendus (vue **Données**, table `Dim_Date`) :
+
+| Contrôle | Attendu |
+|---|---|
+| Nombre de lignes (bas de la fenêtre) | 2 922 (8 années, dont 2020 et 2024 bissextiles) |
+| `Fin_Trimestre` = Vrai (filtre de la colonne) | 32 lignes, du 31/03/2019 au 31/12/2026 |
+| `Periode` (filtre de la colonne, ou visuel Table avec le nombre de `Date`) | Avant Covid 425, Covid 671, Après Covid 1 826 |
+| Ordre dans un segment `Periode` | Avant Covid, Covid, Après Covid |
+| `Annee_Trimestre` | 32 valeurs, de 2019T1 à 2026T4, dans l'ordre chronologique |
+| **Outils de table › Marquer comme table de dates** | coché, colonne `Date` |
+| Volet **Données** | `Cle_Trimestre` et `Ordre_Periode` absentes (masquées) |
+
+Pas encore de relation : la table ne filtre rien tant que les relations (3.2) ne sont pas créées.
+
+### 3.9 Fonctions DAX utilisées
+
+Chaque fonction DAX employée dans `dax/*.dax`, ce qu'elle fait ici et où elle sert. Le test
+`tests/test_guide_powerbi.py` vérifie qu'aucune fonction d'un fichier `dax/*.dax` ne manque à ce
+tableau.
+
+| Fonction | Ce qu'elle fait | Code |
+|---|---|---|
+| `CALENDAR` | table d'une colonne `Date`, un jour par ligne entre deux dates | `Dim_Date` |
+| `DATE` | date écrite à partir de l'année, du mois et du jour | `Dim_Date` |
+| `ADDCOLUMNS` | ajoute des colonnes calculées à chaque ligne d'une table | `Dim_Date` |
+| `YEAR`, `MONTH`, `QUARTER` | année, mois (1 à 12), trimestre (1 à 4) d'une date | `Dim_Date` |
+| `EOMONTH` | dernier jour du mois d'une date (décalé de n mois) | `Dim_Date` |
+| `MOD` | reste de la division entière (mois multiple de 3 = fin de trimestre) | `Dim_Date` |
+| `SWITCH` | renvoie la valeur de la première condition vraie ; avec `TRUE ()`, sert de colonne conditionnelle | `Dim_Date` |
+| `TRUE` | valeur vraie | `Dim_Date` |
 
 ## 4. Pages du rapport : visuels, champs et mesures
 

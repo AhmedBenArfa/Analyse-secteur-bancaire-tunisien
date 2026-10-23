@@ -1,0 +1,27 @@
+// Auteur : Ahmed Ben Arfa
+// Table des dates (spécification 6) : une ligne par jour du 01/01/2019 au 31/12/2026.
+// Annee_Trimestre a le format des faits (« 2024T3 ») et se trie par Cle_Trimestre (20243) ;
+// Periode : Avant Covid avant le 01/03/2020, Covid jusqu'au 31/12/2021, Après Covid ensuite,
+// triée par Ordre_Periode (sinon l'ordre alphabétique mettrait « Après Covid » en premier).
+ADDCOLUMNS (
+    CALENDAR ( DATE ( 2019, 1, 1 ), DATE ( 2026, 12, 31 ) ),
+    "Annee", YEAR ( [Date] ),
+    "Trimestre", "T" & QUARTER ( [Date] ),
+    "Annee_Trimestre", YEAR ( [Date] ) & "T" & QUARTER ( [Date] ),
+    "Cle_Trimestre", YEAR ( [Date] ) * 10 + QUARTER ( [Date] ),
+    "Fin_Trimestre", [Date] = EOMONTH ( [Date], 0 ) && MOD ( MONTH ( [Date] ), 3 ) = 0,
+    "Periode",
+        SWITCH (
+            TRUE (),
+            [Date] < DATE ( 2020, 3, 1 ), "Avant Covid",
+            [Date] < DATE ( 2022, 1, 1 ), "Covid",
+            "Après Covid"
+        ),
+    "Ordre_Periode",
+        SWITCH (
+            TRUE (),
+            [Date] < DATE ( 2020, 3, 1 ), 1,
+            [Date] < DATE ( 2022, 1, 1 ), 2,
+            3
+        )
+)

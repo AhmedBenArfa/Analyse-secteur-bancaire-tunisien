@@ -581,7 +581,7 @@ ADDCOLUMNS (
     CALENDAR ( DATE ( 2019, 1, 1 ), DATE ( 2026, 12, 31 ) ),
     "Annee", YEAR ( [Date] ),
     "Trimestre", "T" & QUARTER ( [Date] ),
-    "Annee_Trimestre", YEAR ( [Date] ) & "-T" & QUARTER ( [Date] ),
+    "Annee_Trimestre", YEAR ( [Date] ) & "T" & QUARTER ( [Date] ),   -- « 2024T3 », format des faits
     "Cle_Trimestre", YEAR ( [Date] ) * 10 + QUARTER ( [Date] ),
     "Fin_Trimestre", [Date] = EOMONTH ( [Date], 0 ) && MOD ( MONTH ( [Date] ), 3 ) = 0,
     "Periode",
@@ -590,11 +590,21 @@ ADDCOLUMNS (
             [Date] < DATE ( 2020, 3, 1 ), "Avant Covid",
             [Date] < DATE ( 2022, 1, 1 ), "Covid",
             "Après Covid"
+        ),
+    "Ordre_Periode",
+        SWITCH (
+            TRUE (),
+            [Date] < DATE ( 2020, 3, 1 ), 1,
+            [Date] < DATE ( 2022, 1, 1 ), 2,
+            3
         )
 )
 ```
 
-À marquer comme table de dates ; trier `Annee_Trimestre` par `Cle_Trimestre`.
+À marquer comme table de dates ; trier `Annee_Trimestre` par `Cle_Trimestre` et `Periode` par
+`Ordre_Periode` (sinon « Après Covid » viendrait en premier) ; masquer les deux colonnes de tri.
+Code du modèle : `dax/Dim_Date.dax` (23/10/2026 : libellé « 2024T3 » au format des faits, au lieu de
+« 2024-T3 »).
 Colonne calculée utile : `EstDernierTrimestre` (le dernier trimestre présent dans les faits).
 
 ## 7. Mesures DAX

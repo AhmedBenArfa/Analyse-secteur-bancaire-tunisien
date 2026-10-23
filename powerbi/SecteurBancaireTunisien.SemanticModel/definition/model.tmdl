@@ -27,6 +27,7 @@ ref table Controle
 ref table Controle_Annuel
 ref table Definitions_Charges
 ref table Definitions_Capitaux_Propres
+ref table Dim_Date
 
 ref cultureInfo fr-FR
 
