@@ -216,10 +216,11 @@ def ecrire_diagramme(onglets):
     actuel = json.loads(f.read_bytes().decode("utf-8"))
     tailles = {n["nodeIndex"]: n["size"] for d in actuel["diagrams"] for n in d["nodes"]}
     tags = {p.stem: lineage_existants(p)[0] for p in (DEF / "tables").glob("*.tmdl")}
+    entier = lambda v: int(v) if v == int(v) else v   # 426.0 → 426, 1843.5 reste 1843.5 (comme Power BI)
     diagrammes = []
     for ordinal, (nom, positions) in enumerate(onglets):
         assert set(positions) <= set(tags), f"table inconnue dans l'onglet {nom}"
-        noeuds = [{"location": {"x": int(x), "y": int(y)}, "nodeIndex": t, "nodeLineageTag": tags[t],
+        noeuds = [{"location": {"x": entier(x), "y": entier(y)}, "nodeIndex": t, "nodeLineageTag": tags[t],
                    "size": tailles.get(t, {"height": 300, "width": 234}), "zIndex": 0}
                   for t, (x, y) in positions.items()]
         diagrammes.append({"ordinal": ordinal, "scrollPosition": {"x": 0, "y": 0}, "nodes": noeuds, "name": nom,
@@ -241,8 +242,9 @@ DIAGRAMME = [
         "Dim_Indicateur": (1.5 * P, 420), "Dim_Date": (3 * P, 420), "Dim_Banque": (4.5 * P, 420),
         "Revisions": (P, 820), "Revisions_Etats_Financiers": (2 * P, 820), "Controle": (3 * P, 820),
         "Controle_Annuel": (4 * P, 820),
-        "Banques_Actionnariat": (6.5 * P, 220), "Definitions_Charges": (6.5 * P, 560),
-        "Definitions_Capitaux_Propres": (6.5 * P, 800)}),
+        # colonne de droite : positions ajustées à la main dans Power BI (23/10/2026), reprises telles quelles
+        "Banques_Actionnariat": (1843.5, 0), "Mesures": (1876, 418.75), "Definitions_Charges": (1853.5, 863.75),
+        "Definitions_Capitaux_Propres": (1939.75, 1101.25)}),
     ("Indicateurs trimestriels", {
         "Fait_Indicateurs": (0, 0), "Variations_Comparables": (P, 0), "Evenements": (2 * P, 0),
         "Dim_Indicateur": (0, 420), "Dim_Date": (P, 420), "Dim_Banque": (2 * P, 420),

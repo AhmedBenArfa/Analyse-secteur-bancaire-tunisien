@@ -19,7 +19,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 1
         },
         {
           "location": {
@@ -32,7 +32,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 2
         },
         {
           "location": {
@@ -45,7 +45,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 3
         },
         {
           "location": {
@@ -58,7 +58,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 4
         },
         {
           "location": {
@@ -71,7 +71,7 @@
             "height": 272,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 5
         },
         {
           "location": {
@@ -84,7 +84,7 @@
             "height": 224,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 6
         },
         {
           "location": {
@@ -97,7 +97,7 @@
             "height": 272,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 7
         },
         {
           "location": {
@@ -110,7 +110,7 @@
             "height": 272,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 8
         },
         {
           "location": {
@@ -123,7 +123,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 9
         },
         {
           "location": {
@@ -136,7 +136,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 10
         },
         {
           "location": {
@@ -149,7 +149,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 11
         },
         {
           "location": {
@@ -162,12 +162,12 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 12
         },
         {
           "location": {
-            "x": 1846,
-            "y": 220
+            "x": 1843.5,
+            "y": 0
           },
           "nodeIndex": "Banques_Actionnariat",
           "nodeLineageTag": "97d6b0b5-62d1-4c33-8770-a1d35f6dd636",
@@ -175,12 +175,12 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 13
         },
         {
           "location": {
-            "x": 1846,
-            "y": 560
+            "x": 1853.5,
+            "y": 863.75
           },
           "nodeIndex": "Definitions_Charges",
           "nodeLineageTag": "1eb1191d-4bfa-4abf-adf9-0836d46e2c3b",
@@ -188,12 +188,12 @@
             "height": 200,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 14
         },
         {
           "location": {
-            "x": 1846,
-            "y": 800
+            "x": 1939.75,
+            "y": 1101.25
           },
           "nodeIndex": "Definitions_Capitaux_Propres",
           "nodeLineageTag": "36ad60d0-9888-4e71-b076-627816a50e06",
@@ -201,7 +201,20 @@
             "height": 152,
             "width": 234
           },
-          "zIndex": 0
+          "zIndex": 15
+        },
+        {
+          "location": {
+            "x": 1876,
+            "y": 418.75
+          },
+          "nodeIndex": "Mesures",
+          "nodeLineageTag": "efa45667-b404-4cb3-8b89-e41cd9c44144",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 16
         }
       ],
       "name": "Toutes les tables",

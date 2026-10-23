@@ -9,7 +9,7 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_ProTooling = ["DevMode"]
+annotation PBI_ProTooling = ["DevMode","DaxQueryView_Desktop"]
 
 annotation PBI_QueryOrder = ["CheminDonnees","AdresseDepot","Fichiers_Donnees","Versions","Dim_Indicateur","Fait_Indicateurs","Revisions","Banques_Actionnariat","Dim_Banque","Actionnariat_A_La_Date","Operations_Titres","Evenements","Fait_Cours","Variations_Comparables","Fait_Etats_Financiers","Revisions_Etats_Financiers","Controle","Ecarts_Annuels","Controle_Annuel","Gabarits","Definitions_Charges","Definitions_Capitaux_Propres"]
 

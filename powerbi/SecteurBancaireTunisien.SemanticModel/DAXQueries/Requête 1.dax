@@ -1,0 +1,30 @@
+EVALUATE
+SUMMARIZECOLUMNS (
+    Dim_Banque[code_banque],
+    TREATAS ( { "2024T3" }, Dim_Date[Annee_Trimestre] ),
+    "PNB", [PNB],
+    "Marge interets", [Marge interets],
+    "Marge commissions", [Marge commissions],
+    "Frais personnel", [Frais personnel],
+    "PNB depuis debut annee", [PNB depuis debut annee],
+    "Credits", [Credits],
+    "Depots", [Depots]
+)
+ORDER BY Dim_Banque[code_banque]
+
+EVALUATE
+SUMMARIZECOLUMNS (
+    Dim_Banque[code_banque],
+    TREATAS ( { 2024 }, Dim_Date[Annee] ),
+    "PNB annuel", [PNB annuel],
+    "PNB sur l'annee (vide attendu)", [PNB]
+)
+ORDER BY Dim_Banque[code_banque]
+
+EVALUATE
+ROW (
+    "PNB 2024T3", CALCULATE ( [PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Credits 2024T3", CALCULATE ( [Credits], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "PNB sans filtre (vide attendu)", [PNB],
+    "PNB annuel sans filtre (vide attendu)", [PNB annuel]
+)
