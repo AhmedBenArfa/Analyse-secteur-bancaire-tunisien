@@ -2,29 +2,30 @@ EVALUATE
 SUMMARIZECOLUMNS (
     Dim_Banque[code_banque],
     TREATAS ( { "2024T3" }, Dim_Date[Annee_Trimestre] ),
-    "PNB", [PNB],
-    "Marge interets", [Marge interets],
-    "Marge commissions", [Marge commissions],
-    "Frais personnel", [Frais personnel],
-    "PNB depuis debut annee", [PNB depuis debut annee],
-    "Credits", [Credits],
-    "Depots", [Depots]
+    "Part de marche PNB", [Part de marche PNB],
+    "Rang PNB", [Rang PNB],
+    "Part de marche credits", [Part de marche credits],
+    "Part de marche depots", [Part de marche depots]
 )
-ORDER BY Dim_Banque[code_banque]
-
-EVALUATE
-SUMMARIZECOLUMNS (
-    Dim_Banque[code_banque],
-    TREATAS ( { 2024 }, Dim_Date[Annee] ),
-    "PNB annuel", [PNB annuel],
-    "PNB sur l'annee (vide attendu)", [PNB]
-)
-ORDER BY Dim_Banque[code_banque]
+ORDER BY [Rang PNB]
 
 EVALUATE
 ROW (
-    "PNB 2024T3", CALCULATE ( [PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Credits 2024T3", CALCULATE ( [Credits], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "PNB sans filtre (vide attendu)", [PNB],
-    "PNB annuel sans filtre (vide attendu)", [PNB annuel]
+    "Banques presentes PNB 2024T3", CALCULATE ( [Banques presentes PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "PNB secteur 2024T3", CALCULATE ( [PNB secteur], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "HHI PNB 2024T3", CALCULATE ( [HHI PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Credits secteur 2024T3", CALCULATE ( [Credits secteur], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Depots secteur 2024T3", CALCULATE ( [Depots secteur], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Credits secteur 2026", CALCULATE ( [Credits secteur], Dim_Date[Annee] = 2026 ),
+    "Date fin credits 2026", CALCULATE ( [Date fin credits], Dim_Date[Annee] = 2026 ),
+    "Dernier trimestre complet", [Dernier trimestre complet],
+    "Date dernier trimestre complet", [Date dernier trimestre complet]
+)
+
+EVALUATE
+SUMMARIZECOLUMNS (
+    Dim_Indicateur[code_indicateur],
+    TREATAS ( { "PORTEF", "DEP_TERME" }, Dim_Indicateur[code_indicateur] ),
+    "Banques presentes 2020T1", CALCULATE ( [Banques presentes], Dim_Date[Annee_Trimestre] = "2020T1" ),
+    "Banques presentes 2024T3", CALCULATE ( [Banques presentes], Dim_Date[Annee_Trimestre] = "2024T3" )
 )
