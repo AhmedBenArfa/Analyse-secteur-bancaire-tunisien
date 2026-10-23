@@ -11,7 +11,7 @@ annotation __PBI_TimeIntelligenceEnabled = 1
 
 annotation PBI_ProTooling = ["DevMode"]
 
-annotation PBI_QueryOrder = ["CheminDonnees","AdresseDepot","Fichiers_Donnees","Versions","Dim_Indicateur","Fait_Indicateurs","Revisions","Banques_Actionnariat","Dim_Banque","Operations_Titres","Evenements","Fait_Cours","Variations_Comparables","Fait_Etats_Financiers","Revisions_Etats_Financiers","Controle","Ecarts_Annuels","Controle_Annuel"]
+annotation PBI_QueryOrder = ["CheminDonnees","AdresseDepot","Fichiers_Donnees","Versions","Dim_Indicateur","Fait_Indicateurs","Revisions","Banques_Actionnariat","Dim_Banque","Operations_Titres","Evenements","Fait_Cours","Variations_Comparables","Fait_Etats_Financiers","Revisions_Etats_Financiers","Controle","Ecarts_Annuels","Controle_Annuel","Gabarits","Definitions_Charges","Definitions_Capitaux_Propres"]
 
 ref table Fait_Indicateurs
 ref table Dim_Indicateur
@@ -25,6 +25,8 @@ ref table Fait_Etats_Financiers
 ref table Revisions_Etats_Financiers
 ref table Controle
 ref table Controle_Annuel
+ref table Definitions_Charges
+ref table Definitions_Capitaux_Propres
 
 ref cultureInfo fr-FR
 

@@ -65,13 +65,12 @@ table Controle_Annuel
 
 	column Ecart_MDT
 		dataType: double
+		formatString: #,0.000
 		lineageTag: 426f2cc1-1240-469c-83a2-ababb4eab520
 		summarizeBy: none
 		sourceColumn: Ecart_MDT
 
 		annotation SummarizationSetBy = User
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column date_arrete
 		dataType: dateTime
@@ -185,3 +184,4 @@ table Controle_Annuel
 	annotation PBI_NavigationStepName = Navigation
 
 	annotation PBI_ResultType = Table
+

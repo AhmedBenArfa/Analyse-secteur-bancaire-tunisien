@@ -108,13 +108,12 @@ table Revisions_Etats_Financiers
 
 	column Ecart_MDT
 		dataType: double
+		formatString: #,0.000
 		lineageTag: 27e3f96b-d78a-4a5a-a70c-4054273da6dd
 		summarizeBy: none
 		sourceColumn: Ecart_MDT
 
 		annotation SummarizationSetBy = User
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column Ecart_Pct
 		dataType: double

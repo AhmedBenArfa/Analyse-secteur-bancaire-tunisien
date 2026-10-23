@@ -124,13 +124,12 @@ table Revisions
 
 	column Ecart_MDT
 		dataType: double
+		formatString: #,0.000
 		lineageTag: 1928730d-9856-4a75-b360-65c40824a534
 		summarizeBy: none
 		sourceColumn: Ecart_MDT
 
 		annotation SummarizationSetBy = User
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column Ecart_Pct
 		dataType: double

@@ -116,6 +116,11 @@ données** : les requêtes apparaissent dans l'ordre de la section 2, les interm
 | `Controle_Annuel` | nombre de lignes | 288 (12 banques × 6 années × 4 indicateurs) |
 | `Controle_Annuel` | `Statut_Clair` | 205 « somme des trimestres = cumul annuel », 41 « en attente du document de l'année suivante », 20 « changement de méthode en cours d'année », 22 « écart expliqué : … » (11 retraitements de la banque, 7 erreurs dans le document de la banque, 3 reclassements, 1 arrondi), **0** « écart sans cause écrite » |
 | `Controle_Annuel` | ATB 2021, CHG_EXPL | somme 309,5 ; cumul 312,374 ; `Ecart_MDT` = −2,874 ; « écart expliqué : retraitement de la banque » ; preuve ATB_2022T2.pdf p. 1 |
+| `Controle_Annuel`, `Revisions`, `Revisions_Etats_Financiers` | `Ecart_MDT` | affiché avec trois décimales (format `#,0.000`) : 0,001 et non 0,000999999… (imprécision de calcul des nombres décimaux, valeur inchangée) |
+| `Gabarits` (Power Query, intermédiaire) | nombre de lignes | 46 |
+| `Definitions_Charges` | nombre de lignes | 13 (une par banque, deux pour Attijari) |
+| `Definitions_Charges` | TJARI | « sans dotations » de 2019T4 à 2021T3 ; « avec reste non detaille » de 2021T4 à 2026T3 |
+| `Definitions_Capitaux_Propres` | nombre de lignes | 12 ; « resultat inclus » pour ATB et BTE ; « hors resultat, apres affectation au 31/12 » pour AB et BIAT |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -146,6 +151,9 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | 15 | `Controle` | oui | `controle_extraction.csv` | statut d'extraction de chaque document (page qualité) |
 | 16 | `Ecarts_Annuels` | non | `docs\ecarts_annuels.csv` (connecteur Fichier) | cause de chaque écart du contrôle annuel |
 | 17 | `Controle_Annuel` | oui | `controle_annuel.csv` + fusion avec `Ecarts_Annuels` | somme des trimestres contre cumul annuel, statut et cause |
+| 18 | `Gabarits` | non | `gabarits.csv` (connecteur Fichier) | définitions de chaque banque, par mise en page |
+| 19 | `Definitions_Charges` | oui | `Gabarits` (regroupement) | contenu des charges opératoires publiées, par période |
+| 20 | `Definitions_Capitaux_Propres` | oui | `Gabarits` (lignes distinctes) | contenu des capitaux propres trimestriels publiés |
 
 ### 2.1 `CheminDonnees` (paramètre)
 
@@ -444,6 +452,27 @@ retenu (288 lignes). `Ecarts_Annuels` donne la cause de chacun des 22 écarts, t
 page qualité montre sa cause et le document qui la prouve (ex. ATB 2021 : T2 retraité dans la colonne
 du trimestre mais pas dans le cumul du semestre).
 
+### 2.12g `Gabarits` (intermédiaire), `Definitions_Charges` et `Definitions_Capitaux_Propres` (chargées)
+
+`gabarits.csv` (versionné à la racine) décrit la mise en page des documents de chaque banque ; deux de
+ses colonnes disent ce que la banque met dans ses charges opératoires et dans ses capitaux propres
+trimestriels.
+
+| Requête | Étape | Ce qu'elle fait |
+|---|---|---|
+| `Gabarits` | `Source` | lit `gabarits.csv` dans le dossier du projet (`File.Contents`), **11 colonnes** : la remarque, dernière colonne, contient parfois un « ; » |
+| `Gabarits` | `Colonnes`, `Types` | garde la banque, la période et les deux définitions |
+| `Definitions_Charges` | `Periodes` | **regroupement** par banque et définition : premier et dernier trimestre (`List.Min`, `List.Max`) ; les gabarits découpent l'historique par mise en page, la définition garde sa période entière |
+| `Definitions_Charges` | `Description` | **colonne conditionnelle** : la définition en clair (sans dotations ; avec dotations publiées ; avec un reste non détaillé) |
+| `Definitions_Capitaux_Propres` | `Colonnes`, `Distinctes` | une ligne par banque (`Table.Distinct`) |
+| `Definitions_Capitaux_Propres` | `Description` | **colonne conditionnelle** : hors résultat de la période ; résultat inclus ; hors résultat avec affectation au 31/12 |
+
+**Pourquoi** : le coefficient d'exploitation publié (charges opératoires / PNB) ne se compare pas d'une
+banque à l'autre (BT et BH sans dotations, UIB et Wifak avec, les autres avec un reste non détaillé) ;
+le rapport classe les banques avec le coefficient harmonisé et affiche la définition de chaque banque
+en info-bulle. De même, les capitaux propres trimestriels ne servent qu'à la fiche banque, avec leur
+définition ; les comparaisons utilisent ceux du bilan.
+
 ### 2.13 Fonctions et mots-clés M utilisés
 
 Chaque fonction du langage M (Power Query) employée dans les requêtes, ce qu'elle fait ici et où elle
@@ -497,6 +526,8 @@ ne manque à ce tableau.
 | `List.Count` | nombre d'éléments d'une liste (nombre d'alertes) | `Controle` |
 | `List.Contains` | la liste contient-elle cette valeur (les quatre catégories d'actionnariat) ? | `Banques_Actionnariat` |
 | `List.Product` | produit des nombres d'une liste (facteurs d'ajustement cumulés) | `Operations_Titres` |
+| `List.Min` | plus petite valeur d'une liste (premier trimestre d'une définition) | `Definitions_Charges` |
+| `List.Max` | plus grande valeur d'une liste (dernier trimestre d'une définition) | `Definitions_Charges` |
 | `List.RemoveNulls` | retire les valeurs vides d'une liste (un facteur absent n'annule pas le produit) | `Operations_Titres` |
 
 **Combiner et restructurer**
@@ -510,7 +541,8 @@ ne manque à ce tableau.
 | `Table.Combine` | **ajoute** des tables les unes sous les autres (codes des états financiers, séances des 12 banques) | `Dim_Indicateur`, `Fait_Cours` |
 | `Table.UnpivotOtherColumns` | **dépivotage** : une colonne par attribut devient une ligne par attribut | `Fait_Indicateurs` |
 | `Table.Pivot` | **pivot** : une ligne par attribut devient une colonne par attribut | `Fait_Indicateurs` |
-| `Table.Group` | **regroupement** : une table par banque, traitée à part (rendement séance par séance) | `Fait_Cours` |
+| `Table.Group` | **regroupement** : une table par banque, traitée à part (rendement séance par séance) ; une ligne par banque et définition (période des charges opératoires) | `Fait_Cours`, `Definitions_Charges` |
+| `Table.Distinct` | garde une seule fois chaque ligne identique (une définition des capitaux propres par banque) | `Definitions_Capitaux_Propres` |
 | `Table.Buffer` | garde une table en mémoire : elle n'est pas relue (ni retéléchargée) à chaque utilisation | `Operations_Titres`, `Fait_Cours` |
 | `List.Buffer` | même chose pour une liste (clôtures connues d'une banque) | `Fait_Cours` |
 

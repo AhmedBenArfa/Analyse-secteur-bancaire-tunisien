@@ -1,0 +1,82 @@
+/// Contenu des charges opératoires publiées par chaque banque, par période (coefficient publié non comparable)
+table Definitions_Charges
+	lineageTag: 1eb1191d-4bfa-4abf-adf9-0836d46e2c3b
+
+	column banque
+		dataType: string
+		lineageTag: 7ab69e62-5d88-4a22-9b30-d2f0fb21b154
+		summarizeBy: none
+		sourceColumn: banque
+
+		annotation SummarizationSetBy = User
+
+	column definition_charges_operatoires
+		dataType: string
+		lineageTag: 28b9010e-4609-4535-b43b-ee49bd255e97
+		summarizeBy: none
+		sourceColumn: definition_charges_operatoires
+
+		annotation SummarizationSetBy = User
+
+	column premier_trimestre
+		dataType: string
+		lineageTag: af016ff4-0d9a-4d87-b7d1-252da7b5b90b
+		summarizeBy: none
+		sourceColumn: premier_trimestre
+
+		annotation SummarizationSetBy = User
+
+	column dernier_trimestre
+		dataType: string
+		lineageTag: e5a2ad67-ce61-4ac5-adb2-cb6100f9b014
+		summarizeBy: none
+		sourceColumn: dernier_trimestre
+
+		annotation SummarizationSetBy = User
+
+	column description
+		dataType: string
+		lineageTag: 907739d4-496b-4508-ad2b-b9c0b82deb64
+		summarizeBy: none
+		sourceColumn: description
+
+		annotation SummarizationSetBy = User
+
+	partition Definitions_Charges = m
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Contenu des charges opératoires publiées par chaque banque, par période (chargée) : sans dotations,
+				// avec dotations publiées, ou avec un reste non détaillé. Explique pourquoi le coefficient publié n'est
+				// pas comparable d'une banque à l'autre (info-bulle du coefficient publié, page qualité ; spécification
+				// 7.2 et 7.4). Les classements utilisent le coefficient harmonisé.
+				let
+				    Source = Gabarits,
+				    // regroupement : les gabarits découpent l'historique par mise en page (et par rang du trimestre) ;
+				    // une définition garde la période allant de son premier à son dernier trimestre
+				    Periodes = Table.Group(
+				        Source, {"banque", "definition_charges_operatoires"},
+				        {{"premier_trimestre", each List.Min([premier_trimestre]), type text},
+				         {"dernier_trimestre", each List.Max([dernier_trimestre]), type text}}
+				    ),
+				    // colonne conditionnelle : la définition en clair (mêmes textes que le script d'extraction)
+				    Description = Table.AddColumn(
+				        Periodes, "description",
+				        each if [definition_charges_operatoires] = "sans dotations"
+				                then "total publié = frais de personnel + charges générales d'exploitation"
+				            else if [definition_charges_operatoires] = "avec dotations publiees"
+				                then "total publié = frais de personnel + charges générales + dotations aux amortissements, les trois lignes publiées"
+				            else if [definition_charges_operatoires] = "avec reste non detaille"
+				                then "total publié > frais de personnel + charges générales ; la différence (dotations ou autres charges) n'est pas détaillée dans le PDF"
+				            else if [definition_charges_operatoires] = "composantes non publiees"
+				                then "seul le total est publié ; coefficient harmonisé non calculable"
+				            else null,
+				        type text
+				    ),
+				    Triees = Table.Sort(Description, {{"banque", Order.Ascending}, {"premier_trimestre", Order.Ascending}})
+				in
+				    Triees
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
