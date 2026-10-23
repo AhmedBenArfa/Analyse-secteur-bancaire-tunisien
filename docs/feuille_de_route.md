@@ -18,23 +18,18 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4 | Cours boursiers 2019–2026 | Fait : 1 955 séances par banque, 63 opérations sur titres sourcées |
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
-| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Fait_Indicateurs` écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop (7 137 lignes) ; `Dim_Indicateur` et la fusion dans `Fait_Indicateurs` chargées dans Power BI Desktop (projet réenregistré), contrôles chiffrés à confirmer ; `Revisions` écrite, à vérifier |
+| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Dim_Indicateur` (27 lignes), `Fait_Indicateurs` (7 173 lignes), `Revisions` (14 884 lignes) écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop le 23/10/2026 |
 | 6 | Modèle en étoile et mesures DAX | À faire |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit ; captures du rapport à faire |
 
 ## En cours
 
-- Étape 5 : `Dim_Indicateur` (27 lignes : 24 indicateurs trimestriels et 3 codes des états
-  financiers ajoutés dans la requête) ; dans `Fait_Indicateurs`, fusion avec `Dim_Indicateur`
-  (nature), colonne conditionnelle qui écarte le « trimestre seul » des stocks (320 lignes : copie du
-  solde au T1, mouvement du trimestre chez STB et UBCI), « non » au lieu d'une case vide pour les
-  ruptures de série. Chargées par Power BI Desktop ; contrôles chiffrés à confirmer après
-  actualisation (guide Power BI, section 1 : 7 173 lignes depuis la saisie des composantes BTE).
-- `Revisions` (versions non retenues, page « qualité des données ») : filtre inverse de
-  `Fait_Indicateurs`, écart à la valeur retenue calculé dans Power Query, colonnes conditionnelles
-  « origine de la version » et « type de révision » ; 14 884 lignes attendues, à vérifier dans Power
-  BI Desktop.
+- Étape 5 : `Dim_Banque`, avec l'actionnariat de `donnees_reference/banques.xlsx` (connecteur
+  Excel, fusion). Vérifiées le 23/10/2026 dans Power BI Desktop : `Dim_Indicateur`,
+  `Fait_Indicateurs` (fusion avec `Dim_Indicateur`, colonne conditionnelle sur les stocks, « non »
+  pour les ruptures) et `Revisions` (filtre inverse, écart calculé, colonnes conditionnelles) ; tous
+  les contrôles du guide (section 1) conformes.
 
 ## Prochaines actions
 
