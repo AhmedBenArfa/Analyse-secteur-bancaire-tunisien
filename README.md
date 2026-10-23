@@ -68,14 +68,14 @@ un fichier Excel et une URL.
 | Élément | Valeur |
 |---|---|
 | Documents d'indicateurs trimestriels trouvés | **336 / 336** (12 banques × 28 trimestres) |
-| Valeurs retenues des indicateurs trimestriels | 11 473 (24 indicateurs, aucune vide) |
+| Valeurs retenues des indicateurs trimestriels | 11 545 (24 indicateurs, aucune vide) |
 | Valeurs relevées à la main sur l'image des PDF pour les tests | 438 sur 41 documents d'indicateurs, 169 sur 24 états financiers |
 | Contrôle annuel (somme des 4 trimestres contre cumul annuel) | 288 contrôles : 205 ok, 41 en attente de révision, 20 ruptures de série, **22 écarts, tous expliqués** (11 retraitements de la banque, 7 erreurs dans le document de la banque, 3 reclassements, 1 arrondi, 0 erreur d'extraction) |
 | Révisions de plus de 2 % d'un total (cumul) | 137, chacune avec le document d'origine et le document révisé |
-| Valeurs saisies à la main | 464 (13 documents BTE publiés en image, deux valeurs illisibles STB), toutes passées aux contrôles de cohérence ; un document relu une seconde fois en entier (BTE 2020T2) |
+| Valeurs saisies à la main | 680 (13 documents BTE publiés en image, deux valeurs illisibles STB), toutes passées aux contrôles de cohérence ; un document relu une seconde fois en entier (BTE 2020T2) |
 | États financiers | 168 arrêtés, 504 valeurs retenues (résultat net, total de l'actif, capitaux propres), aucune vide |
 | Cours boursiers | 1 955 séances par banque, du 02/01/2019 au 20/10/2026 ; 63 opérations sur titres, chacune avec le cours de référence publié |
-| Tests automatiques | 38, tous réussis |
+| Tests automatiques | 39, tous réussis |
 
 ## Démarche qualité
 
@@ -124,7 +124,7 @@ un fichier Excel et une URL.
 │   ├── feuille_de_route.md      état d'avancement et décisions prises
 │   ├── ecarts_annuels.csv       cause de chaque écart du contrôle annuel
 │   ├── revisions_importantes.csv
-│   └── *.pdf                    spécification et rapport d'avancement
+│   └── *.pdf                    spécification, guide Power BI (chaque transformation expliquée) et rapport d'avancement
 └── donnees/                     dossier de travail : PDF et CSV produits par les scripts (non versionné)
 ```
 

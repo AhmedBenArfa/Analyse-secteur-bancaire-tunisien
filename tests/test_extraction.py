@@ -260,6 +260,26 @@ def test_bte_composantes_t4_saisies():
     assert len(alertes) == 2, alertes
 
 
+def test_bte_composantes_2020_2021_saisies():
+    """BTE 2020T1 à 2021T3 (tableaux en image) : composantes saisies le 23/10/2026 avec les colonnes
+    N-1 des documents suivants. Avec les versions retenues, la somme des 4 trimestres égale le cumul
+    annuel en 2020 et 2021 pour les intérêts, commissions et revenus du portefeuille ; T2 2020 révisé
+    dans 2021T2 (commissions encourues 5 515 → 5, intérêts encourus 8 925 → 14 468 : reclassement)."""
+    chemin = cb.DOSSIER / "indicateurs_versions.csv"
+    if not chemin.exists():
+        return
+    with chemin.open(encoding="utf-8-sig") as f:
+        retenues = {(r["trimestre"], r["code_indicateur"], r["mesure"]): float(r["valeur_retenue"])
+                    for r in csv.DictReader(f, delimiter=";")
+                    if r["banque"] == "BTE" and r["version"] == r["source_valeur"] and r["valeur_retenue"]}
+    for annee in ("2020", "2021"):
+        for code in ("INT_PERCUS", "COMM_PROD", "REV_PORTEF", "INT_ENCOURUS", "COMM_CHG"):
+            trimestres = [retenues[(f"{annee}T{q}", code, "trim")] for q in range(1, 5)]
+            assert proche(sum(trimestres), retenues[(f"{annee}T4", code, "cumul")]), (annee, code)
+    assert proche(retenues[("2020T2", "COMM_CHG", "trim")], 0.005)
+    assert proche(retenues[("2020T2", "INT_ENCOURUS", "trim")], 14.468)
+
+
 def test_bte_images_restantes_saisies():
     """BTE 2021T2, 2022T1, 2022T3, 2023T2, 2023T4 (tableaux en image, bte.com.tn ne publie pas ses
     indicateurs trimestriels) : saisis le 22/10/2026. 2022T1 publie le T1 2021 corrigé (charges

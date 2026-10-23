@@ -212,12 +212,16 @@ extraction, avant le commit.
 ## 9. Documents PDF de `docs/`
 
 ```
-python scripts/generer_pdf.py
+python scripts/generer_pdf.py          # les trois documents
+python scripts/generer_pdf.py guide    # seulement le guide Power BI (quelques secondes)
 ```
 
-Régénère `docs/Specification_projet.pdf` (rendu de `docs/SPECIFICATION.md`) et
+Régénère `docs/Specification_projet.pdf` (rendu de `docs/SPECIFICATION.md`),
+`docs/Guide_PowerBI.pdf` (rendu de `docs/guide_powerbi.md` : chaque transformation Power Query et
+chaque mesure DAX expliquée, avec en annexe le code M de chaque requête et la feuille de route) et
 `docs/Rapport_avancement.pdf` (chiffres recalculés à partir des fichiers du projet, tests relancés :
-environ une minute). À relancer après chaque extraction ou modification de la spécification.
+environ une minute). À relancer après chaque extraction ou modification de la spécification ; le
+guide, après chaque requête ou groupe de mesures.
 Conversion par Microsoft Edge en mode headless (chemin modifiable par la variable `EDGE`).
 
 ## 10. Avant de publier (push)

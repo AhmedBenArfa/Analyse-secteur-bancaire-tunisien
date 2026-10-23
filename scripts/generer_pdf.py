@@ -1,7 +1,9 @@
 # Auteur : Ahmed Ben Arfa
 """
-Génère les deux documents PDF du dossier docs/ :
+Génère les trois documents PDF du dossier docs/ :
   - docs/Specification_projet.pdf : rendu de docs/SPECIFICATION.md ;
+  - docs/Guide_PowerBI.pdf : rendu de docs/guide_powerbi.md (chaque transformation expliquée), avec en
+    annexe le code M de chaque requête (powerquery/*.pq) et la feuille de route (décisions) ;
   - docs/Rapport_avancement.pdf : état d'avancement, chiffres recalculés à partir des fichiers
     du projet (manifeste, contrôle d'extraction, versions, variations comparables, contrôle
     annuel, gabarits, saisies manuelles, valeurs de référence, événements, révisions importantes).
@@ -11,9 +13,10 @@ d'environnement EDGE), puis numéros de page et métadonnées ajoutés avec PyMu
 Les tests (pytest) sont relancés pour donner leur résultat dans le rapport (environ 1 minute).
 
 Utilisation :
-  python scripts/generer_pdf.py
+  python scripts/generer_pdf.py                 # les trois documents
+  python scripts/generer_pdf.py guide           # seulement le guide (après chaque requête ou mesure)
 """
-import collections, csv, datetime, html, os, re, subprocess, sys, tempfile
+import collections, csv, datetime, html, os, posixpath, re, subprocess, sys, tempfile
 from pathlib import Path
 import pandas as pd, mistune, fitz
 
@@ -25,6 +28,7 @@ EDGE = os.environ.get("EDGE") or next(
                  r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"] if Path(c).exists()),
     "msedge")
 AUTEUR = "Ahmed Ben Arfa"
+DEPOT = "https://github.com/AhmedBenArfa/Analyse-secteur-bancaire-tunisien"
 DATE = datetime.date.today().strftime("%d/%m/%Y")
 
 
@@ -96,7 +100,17 @@ def page_html(titre, corps):
             f"<style>{CSS}</style></head><body>{corps}</body></html>")
 
 
+def liens_publics(html_txt, dossier="docs"):
+    """Liens relatifs du Markdown (../README.md, SPECIFICATION.md) -> adresses publiques du dépôt :
+    sinon Edge les résout en fichiers du dossier temporaire du poste, écrits dans le PDF."""
+    def absolu(m):
+        cible = posixpath.normpath(posixpath.join(dossier, m.group(1)))
+        return f'href="{DEPOT}/blob/main/{cible}"'
+    return re.sub(r'href="(?!https?:|mailto:|#)([^"]+)"', absolu, html_txt)
+
+
 def vers_pdf(html_txt, sortie, titre, sujet, pied):
+    html_txt = liens_publics(html_txt)
     src = TMP / (Path(sortie).stem + ".html")
     src.write_text(html_txt, encoding="utf-8")
     brut = TMP / (Path(sortie).stem + "_brut.pdf")
@@ -104,6 +118,10 @@ def vers_pdf(html_txt, sortie, titre, sujet, pied):
                     f"--user-data-dir={TMP / 'profil'}", f"--print-to-pdf={brut}", src.as_uri()],
                    check=True, capture_output=True, timeout=180)
     doc = fitz.open(brut)
+    locaux = [l.get("uri") or l.get("file") for p in doc for l in p.get_links()
+              if (l.get("uri") or "").startswith("file:") or l.get("file")]
+    if locaux:   # un lien vers un fichier du poste publierait un chemin local
+        sys.exit(f"{sortie} : liens vers des fichiers locaux {locaux}")
     n = doc.page_count
     for i, p in enumerate(doc, 1):
         w, h = p.rect.width, p.rect.height
@@ -146,6 +164,33 @@ def specification():
     vers_pdf(page_html("Spécification du projet", corps), R / "docs/Specification_projet.pdf",
              "Spécification — Analyse du secteur bancaire tunisien", "Spécification du projet",
              f"Analyse du secteur bancaire tunisien — Spécification ({DATE})")
+
+
+# --------------------------------------------------------------------------- guide Power BI
+def guide():
+    """Guide des transformations : docs/guide_powerbi.md (chaque étape de chaque requête expliquée),
+    puis en annexe le code M exact de chaque requête (powerquery/*.pq, dans l'ordre de Power Query
+    lu dans model.tmdl) et le journal des décisions (docs/feuille_de_route.md)."""
+    rendre = mistune.create_markdown(plugins=["table", "strikethrough"], escape=False)
+    sans_entete = lambda md: re.sub(r"\A<!--.*?-->\s*", "", md, flags=re.S)
+    titre, reste = sans_entete((R / "docs/guide_powerbi.md").read_text(encoding="utf-8")).split("\n", 1)
+    modele = R / "powerbi/SecteurBancaireTunisien.SemanticModel/definition/model.tmdl"
+    ordre = re.search(r"PBI_QueryOrder = \[(.*?)\]", modele.read_text(encoding="utf-8")) if modele.exists() else None
+    noms = re.findall(r'"([^"]+)"', ordre.group(1)) if ordre else []
+    noms += sorted(p.stem for p in (R / "powerquery").glob("*.pq") if p.stem not in noms)
+    annexe = "".join(f"<h3>{e(n)}</h3><pre><code>{e((R / 'powerquery' / (n + '.pq')).read_text(encoding='utf-8'))}"
+                     f"</code></pre>" for n in noms if (R / "powerquery" / (n + ".pq")).exists())
+    feuille = sans_entete((R / "docs/feuille_de_route.md").read_text(encoding="utf-8")).split("\n", 1)[1]
+    corps = (f'<div class="titre"><h1>{e(titre.lstrip("# ").strip())}</h1>'
+             f'<div class="soustitre">Chaque transformation Power Query et chaque mesure DAX, expliquées '
+             f'étape par étape</div><div class="meta">{AUTEUR} · version du {DATE} (générée à partir de '
+             f'docs/guide_powerbi.md, powerquery/*.pq et docs/feuille_de_route.md)</div></div>{rendre(reste)}'
+             f'<h2>Annexe A — Code M de chaque requête</h2><p>Texte exact des fichiers <code>powerquery/*.pq</code>, '
+             f'identique au code du projet <code>.pbip</code>, dans l\'ordre de Power Query.</p>{annexe}'
+             f'<h2>Annexe B — Feuille de route et décisions</h2>{rendre(feuille)}')
+    vers_pdf(page_html("Guide Power BI", corps), R / "docs/Guide_PowerBI.pdf",
+             "Guide Power BI — Analyse du secteur bancaire tunisien", "Transformations Power Query et mesures DAX",
+             f"Analyse du secteur bancaire tunisien — Guide Power BI ({DATE})")
 
 
 # --------------------------------------------------------------------------- rapport
@@ -658,5 +703,10 @@ def rapport():
 
 
 if __name__ == "__main__":
-    specification()
-    rapport()
+    # sans argument : les trois documents ; sinon seulement ceux nommés (ex. « guide », plus rapide)
+    choix = sys.argv[1:] or ["specification", "guide", "rapport"]
+    inconnus = set(choix) - {"specification", "guide", "rapport"}
+    if inconnus:
+        sys.exit(f"documents inconnus : {sorted(inconnus)} (specification, guide, rapport)")
+    for nom in choix:
+        {"specification": specification, "guide": guide, "rapport": rapport}[nom]()

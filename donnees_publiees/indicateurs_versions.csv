@@ -13092,7 +13092,10 @@ BT;2026T3;2026-09-30;2026;3;PROD_EXPL;cumul;initiale;704.26;BT_2026T3.pdf;1;704.
 BT;2026T3;2026-09-30;2026;3;PROD_EXPL;trim;initiale;227.398;BT_2026T3.pdf;1;227.398;initiale;0.0;retenue;;(*) Les chiffres de Septembre 2025 ont été retraités pour les besoins de comparabilité;;
 BT;2026T3;2026-09-30;2026;3;REV_PORTEF;cumul;initiale;116.366;BT_2026T3.pdf;1;116.366;initiale;0.0;retenue;;(*) Les chiffres de Septembre 2025 ont été retraités pour les besoins de comparabilité;;
 BT;2026T3;2026-09-30;2026;3;REV_PORTEF;trim;initiale;29.729;BT_2026T3.pdf;1;29.729;initiale;0.0;retenue;;(*) Les chiffres de Septembre 2025 ont été retraités pour les besoins de comparabilité;;
-BTE;2019T4;2019-12-31;2019;4;AUTRES_PROD;cumul;initiale;0.097;BTE_2019T4.pdf;1;0.097;initiale;0.0;retenue;;;;
+BTE;2019T4;2019-12-31;2019;4;AUTRES_PROD;cumul;revisee_31-12_T3_N+1;0.0;BTE_2020T3.pdf;1;0.0;revisee_31-12_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de -100.0 % sur le cumul (0.097 publié, 0.000 dans le document 2020T3)
+BTE;2019T4;2019-12-31;2019;4;AUTRES_PROD;cumul;revisee_31-12_T2_N+1;0.0;BTE_2020T2.pdf;1;0.0;revisee_31-12_T3_N+1;0.0;revision_importante;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de -100.0 % sur le cumul (0.097 publié, 0.000 dans le document 2020T3)
+BTE;2019T4;2019-12-31;2019;4;AUTRES_PROD;cumul;revisee_31-12_T1_N+1;0.0;BTE_2020T1.pdf;1;0.0;revisee_31-12_T3_N+1;0.0;revision_importante;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de -100.0 % sur le cumul (0.097 publié, 0.000 dans le document 2020T3)
+BTE;2019T4;2019-12-31;2019;4;AUTRES_PROD;cumul;initiale;0.097;BTE_2019T4.pdf;1;0.0;revisee_31-12_T3_N+1;0.097;revision_importante;;;oui;2019T4 révisé de -100.0 % sur le cumul (0.097 publié, 0.000 dans le document 2020T3)
 BTE;2019T4;2019-12-31;2019;4;AUTRES_PROD;trim;initiale;0.097;BTE_2019T4.pdf;1;0.097;initiale;0.0;retenue;;;;
 BTE;2019T4;2019-12-31;2019;4;CAP_PROPRES;cumul;initiale;139.982;BTE_2019T4.pdf;1;139.982;initiale;0.0;retenue;;;;
 BTE;2019T4;2019-12-31;2019;4;CHG_EXPL;cumul;revisee_T4_N+1;57.352;BTE_2020T4.pdf;1;57.352;revisee_T4_N+1;0.0;retenue;;;;
@@ -13116,10 +13119,20 @@ BTE;2019T4;2019-12-31;2019;4;CHG_OPER;cumul;revisee_31-12_T1_N+1;39.302;BTE_2020
 BTE;2019T4;2019-12-31;2019;4;CHG_OPER;cumul;initiale;38.284;BTE_2019T4.pdf;1;39.302;revisee_T4_N+1;-1.018;revision_importante;;;oui;2019T4 révisé de +2.7 % sur le cumul (38.284 publié, 39.302 dans le document 2020T4)
 BTE;2019T4;2019-12-31;2019;4;CHG_OPER;trim;revisee_T4_N+1;13.798;BTE_2020T4.pdf;1;13.798;revisee_T4_N+1;0.0;retenue;;;oui;2019T4 révisé de +2.7 % sur le cumul (38.284 publié, 39.302 dans le document 2020T4)
 BTE;2019T4;2019-12-31;2019;4;CHG_OPER;trim;initiale;12.78;BTE_2019T4.pdf;1;13.798;revisee_T4_N+1;-1.018;revision_importante;;;oui;2019T4 révisé de +2.7 % sur le cumul (38.284 publié, 39.302 dans le document 2020T4)
-BTE;2019T4;2019-12-31;2019;4;COMM_CHG;cumul;initiale;0.733;BTE_2019T4.pdf;1;0.733;initiale;0.0;retenue;;;;
-BTE;2019T4;2019-12-31;2019;4;COMM_CHG;trim;initiale;0.264;BTE_2019T4.pdf;1;0.264;initiale;0.0;retenue;;;;
-BTE;2019T4;2019-12-31;2019;4;COMM_PROD;cumul;initiale;19.845;BTE_2019T4.pdf;1;19.845;initiale;0.0;retenue;;;;
-BTE;2019T4;2019-12-31;2019;4;COMM_PROD;trim;initiale;5.498;BTE_2019T4.pdf;1;5.498;initiale;0.0;retenue;;;;
+BTE;2019T4;2019-12-31;2019;4;COMM_CHG;cumul;revisee_T4_N+1;0.733;BTE_2020T4.pdf;1;0.733;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2019T4;2019-12-31;2019;4;COMM_CHG;cumul;revisee_31-12_T3_N+1;0.733;BTE_2020T3.pdf;1;0.733;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2019T4;2019-12-31;2019;4;COMM_CHG;cumul;revisee_31-12_T2_N+1;0.733;BTE_2020T2.pdf;1;0.733;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2019T4;2019-12-31;2019;4;COMM_CHG;cumul;revisee_31-12_T1_N+1;0.733;BTE_2020T1.pdf;1;0.733;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2019T4;2019-12-31;2019;4;COMM_CHG;cumul;initiale;0.733;BTE_2019T4.pdf;1;0.733;revisee_T4_N+1;0.0;retraitement_mineur;;;;
+BTE;2019T4;2019-12-31;2019;4;COMM_CHG;trim;revisee_T4_N+1;0.264;BTE_2020T4.pdf;1;0.264;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2019T4;2019-12-31;2019;4;COMM_CHG;trim;initiale;0.264;BTE_2019T4.pdf;1;0.264;revisee_T4_N+1;0.0;retraitement_mineur;;;;
+BTE;2019T4;2019-12-31;2019;4;COMM_PROD;cumul;revisee_T4_N+1;19.845;BTE_2020T4.pdf;1;19.845;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de +0.0 % sur le cumul (19.845 publié, 19.845 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;COMM_PROD;cumul;revisee_31-12_T3_N+1;19.845;BTE_2020T3.pdf;1;19.845;revisee_T4_N+1;0.0;revision_importante;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de +0.0 % sur le cumul (19.845 publié, 19.845 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;COMM_PROD;cumul;revisee_31-12_T2_N+1;19.845;BTE_2020T2.pdf;1;19.845;revisee_T4_N+1;0.0;revision_importante;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de +0.0 % sur le cumul (19.845 publié, 19.845 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;COMM_PROD;cumul;revisee_31-12_T1_N+1;19.845;BTE_2020T1.pdf;1;19.845;revisee_T4_N+1;0.0;revision_importante;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de +0.0 % sur le cumul (19.845 publié, 19.845 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;COMM_PROD;cumul;initiale;19.845;BTE_2019T4.pdf;1;19.845;revisee_T4_N+1;0.0;revision_importante;;;oui;2019T4 révisé de +0.0 % sur le cumul (19.845 publié, 19.845 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;COMM_PROD;trim;revisee_T4_N+1;5.498;BTE_2020T4.pdf;1;5.498;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de +0.0 % sur le cumul (19.845 publié, 19.845 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;COMM_PROD;trim;initiale;5.498;BTE_2019T4.pdf;1;5.498;revisee_T4_N+1;0.0;revision_importante;;;oui;2019T4 révisé de +0.0 % sur le cumul (19.845 publié, 19.845 dans le document 2020T4)
 BTE;2019T4;2019-12-31;2019;4;CREDITS;cumul;revisee_T4_N+1;744.425;BTE_2020T4.pdf;1;744.425;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2019T4;2019-12-31;2019;4;CREDITS;cumul;revisee_31-12_T3_N+1;744.425;BTE_2020T3.pdf;1;744.425;revisee_T4_N+1;0.0;retraitement_mineur;;;;
 BTE;2019T4;2019-12-31;2019;4;CREDITS;cumul;revisee_31-12_T2_N+1;744.425;BTE_2020T2.pdf;1;744.425;revisee_T4_N+1;0.0;retraitement_mineur;;;;
@@ -13142,10 +13155,20 @@ BTE;2019T4;2019-12-31;2019;4;FRAIS_PERS;cumul;revisee_31-12_T1_N+1;27.254;BTE_20
 BTE;2019T4;2019-12-31;2019;4;FRAIS_PERS;cumul;initiale;27.838;BTE_2019T4.pdf;1;27.254;revisee_T4_N+1;0.584;revision_importante;;;oui;2019T4 révisé de -2.1 % sur le cumul (27.838 publié, 27.254 dans le document 2020T4)
 BTE;2019T4;2019-12-31;2019;4;FRAIS_PERS;trim;revisee_T4_N+1;8.596;BTE_2020T4.pdf;1;8.596;revisee_T4_N+1;0.0;retenue;;;oui;2019T4 révisé de -2.1 % sur le cumul (27.838 publié, 27.254 dans le document 2020T4)
 BTE;2019T4;2019-12-31;2019;4;FRAIS_PERS;trim;initiale;9.18;BTE_2019T4.pdf;1;8.596;revisee_T4_N+1;0.584;revision_importante;;;oui;2019T4 révisé de -2.1 % sur le cumul (27.838 publié, 27.254 dans le document 2020T4)
-BTE;2019T4;2019-12-31;2019;4;INT_ENCOURUS;cumul;initiale;56.936;BTE_2019T4.pdf;1;56.936;initiale;0.0;retenue;;;;
-BTE;2019T4;2019-12-31;2019;4;INT_ENCOURUS;trim;initiale;16.182;BTE_2019T4.pdf;1;16.182;initiale;0.0;retenue;;;;
-BTE;2019T4;2019-12-31;2019;4;INT_PERCUS;cumul;initiale;81.18;BTE_2019T4.pdf;1;81.18;initiale;0.0;retenue;;;;
-BTE;2019T4;2019-12-31;2019;4;INT_PERCUS;trim;initiale;23.757;BTE_2019T4.pdf;1;23.757;initiale;0.0;retenue;;;;
+BTE;2019T4;2019-12-31;2019;4;INT_ENCOURUS;cumul;revisee_T4_N+1;56.619;BTE_2020T4.pdf;1;56.619;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2019T4;2019-12-31;2019;4;INT_ENCOURUS;cumul;revisee_31-12_T3_N+1;56.619;BTE_2020T3.pdf;1;56.619;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2019T4;2019-12-31;2019;4;INT_ENCOURUS;cumul;revisee_31-12_T2_N+1;56.619;BTE_2020T2.pdf;1;56.619;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2019T4;2019-12-31;2019;4;INT_ENCOURUS;cumul;revisee_31-12_T1_N+1;56.619;BTE_2020T1.pdf;1;56.619;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2019T4;2019-12-31;2019;4;INT_ENCOURUS;cumul;initiale;56.936;BTE_2019T4.pdf;1;56.619;revisee_T4_N+1;0.317;retraitement_mineur;;;;
+BTE;2019T4;2019-12-31;2019;4;INT_ENCOURUS;trim;revisee_T4_N+1;15.865;BTE_2020T4.pdf;1;15.865;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2019T4;2019-12-31;2019;4;INT_ENCOURUS;trim;initiale;16.182;BTE_2019T4.pdf;1;15.865;revisee_T4_N+1;0.317;retraitement_mineur;;;;
+BTE;2019T4;2019-12-31;2019;4;INT_PERCUS;cumul;revisee_T4_N+1;81.227;BTE_2020T4.pdf;1;81.227;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de +0.1 % sur le cumul (81.180 publié, 81.227 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;INT_PERCUS;cumul;revisee_31-12_T3_N+1;81.227;BTE_2020T3.pdf;1;81.227;revisee_T4_N+1;0.0;revision_importante;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de +0.1 % sur le cumul (81.180 publié, 81.227 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;INT_PERCUS;cumul;revisee_31-12_T2_N+1;81.227;BTE_2020T2.pdf;1;81.227;revisee_T4_N+1;0.0;revision_importante;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de +0.1 % sur le cumul (81.180 publié, 81.227 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;INT_PERCUS;cumul;revisee_31-12_T1_N+1;81.227;BTE_2020T1.pdf;1;81.227;revisee_T4_N+1;0.0;revision_importante;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de +0.1 % sur le cumul (81.180 publié, 81.227 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;INT_PERCUS;cumul;initiale;81.18;BTE_2019T4.pdf;1;81.227;revisee_T4_N+1;-0.047;revision_importante;;;oui;2019T4 révisé de +0.1 % sur le cumul (81.180 publié, 81.227 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;INT_PERCUS;trim;revisee_T4_N+1;23.804;BTE_2020T4.pdf;1;23.804;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de +0.1 % sur le cumul (81.180 publié, 81.227 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;INT_PERCUS;trim;initiale;23.757;BTE_2019T4.pdf;1;23.804;revisee_T4_N+1;-0.047;revision_importante;;;oui;2019T4 révisé de +0.1 % sur le cumul (81.180 publié, 81.227 dans le document 2020T4)
 BTE;2019T4;2019-12-31;2019;4;PNB;cumul;revisee_T4_N+1;53.269;BTE_2020T4.pdf;1;53.269;revisee_T4_N+1;0.0;retenue;;;oui;2019T4 révisé de -7.5 % sur le cumul (57.589 publié, 53.269 dans le document 2020T4)
 BTE;2019T4;2019-12-31;2019;4;PNB;cumul;revisee_31-12_T3_N+1;53.269;BTE_2020T3.pdf;1;53.269;revisee_T4_N+1;0.0;revision_importante;;;oui;2019T4 révisé de -7.5 % sur le cumul (57.589 publié, 53.269 dans le document 2020T4)
 BTE;2019T4;2019-12-31;2019;4;PNB;cumul;revisee_31-12_T2_N+1;53.269;BTE_2020T2.pdf;1;53.269;revisee_T4_N+1;0.0;revision_importante;;;oui;2019T4 révisé de -7.5 % sur le cumul (57.589 publié, 53.269 dans le document 2020T4)
@@ -13163,8 +13186,17 @@ BTE;2019T4;2019-12-31;2019;4;PROD_EXPL;cumul;revisee_31-12_T1_N+1;110.621;BTE_20
 BTE;2019T4;2019-12-31;2019;4;PROD_EXPL;cumul;initiale;115.258;BTE_2019T4.pdf;1;110.621;revisee_T4_N+1;4.637;revision_importante;;;oui;2019T4 révisé de -4.0 % sur le cumul (115.258 publié, 110.621 dans le document 2020T4)
 BTE;2019T4;2019-12-31;2019;4;PROD_EXPL;trim;revisee_T4_N+1;32.604;BTE_2020T4.pdf;1;32.604;revisee_T4_N+1;0.0;retenue;;;oui;2019T4 révisé de -4.0 % sur le cumul (115.258 publié, 110.621 dans le document 2020T4)
 BTE;2019T4;2019-12-31;2019;4;PROD_EXPL;trim;initiale;37.241;BTE_2019T4.pdf;1;32.604;revisee_T4_N+1;4.637;revision_importante;;;oui;2019T4 révisé de -4.0 % sur le cumul (115.258 publié, 110.621 dans le document 2020T4)
-BTE;2019T4;2019-12-31;2019;4;REV_PORTEF;cumul;initiale;11.639;BTE_2019T4.pdf;1;11.639;initiale;0.0;retenue;;;;
-BTE;2019T4;2019-12-31;2019;4;REV_PORTEF;trim;initiale;7.452;BTE_2019T4.pdf;1;7.452;initiale;0.0;retenue;;;;
+BTE;2019T4;2019-12-31;2019;4;REV_PORTEF;cumul;revisee_T4_N+1;6.974;BTE_2020T4.pdf;1;6.974;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de -40.1 % sur le cumul (11.639 publié, 6.974 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;REV_PORTEF;cumul;revisee_31-12_T3_N+1;6.974;BTE_2020T3.pdf;1;6.974;revisee_T4_N+1;0.0;revision_importante;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de -40.1 % sur le cumul (11.639 publié, 6.974 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;REV_PORTEF;cumul;revisee_31-12_T2_N+1;6.974;BTE_2020T2.pdf;1;6.974;revisee_T4_N+1;0.0;revision_importante;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de -40.1 % sur le cumul (11.639 publié, 6.974 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;REV_PORTEF;cumul;revisee_31-12_T1_N+1;6.974;BTE_2020T1.pdf;1;6.974;revisee_T4_N+1;0.0;revision_importante;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de -40.1 % sur le cumul (11.639 publié, 6.974 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;REV_PORTEF;cumul;initiale;11.639;BTE_2019T4.pdf;1;6.974;revisee_T4_N+1;4.665;revision_importante;;;oui;2019T4 révisé de -40.1 % sur le cumul (11.639 publié, 6.974 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;REV_PORTEF;trim;revisee_T4_N+1;2.787;BTE_2020T4.pdf;1;2.787;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;oui;2019T4 révisé de -40.1 % sur le cumul (11.639 publié, 6.974 dans le document 2020T4)
+BTE;2019T4;2019-12-31;2019;4;REV_PORTEF;trim;initiale;7.452;BTE_2019T4.pdf;1;2.787;revisee_T4_N+1;4.665;revision_importante;;;oui;2019T4 révisé de -40.1 % sur le cumul (11.639 publié, 6.974 dans le document 2020T4)
+BTE;2020T1;2020-03-31;2020;1;AUTRES_PROD;cumul;revisee_T1_N+1;0.0;BTE_2021T1.pdf;1;0.0;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;AUTRES_PROD;cumul;initiale;0.0;BTE_2020T1.pdf;1;0.0;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;AUTRES_PROD;trim;revisee_T1_N+1;0.0;BTE_2021T1.pdf;1;0.0;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;AUTRES_PROD;trim;initiale;0.0;BTE_2020T1.pdf;1;0.0;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2020T1;2020-03-31;2020;1;CHG_EXPL;cumul;revisee_T1_N+1;15.915;BTE_2021T1.pdf;1;15.915;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2020T1;2020-03-31;2020;1;CHG_EXPL;cumul;initiale;15.915;BTE_2020T1.pdf;1;15.915;revisee_T1_N+1;0.0;;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2020T1;2020-03-31;2020;1;CHG_EXPL;trim;revisee_T1_N+1;15.915;BTE_2021T1.pdf;1;15.915;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
@@ -13177,6 +13209,14 @@ BTE;2020T1;2020-03-31;2020;1;CHG_OPER;cumul;revisee_T1_N+1;8.284;BTE_2021T1.pdf;
 BTE;2020T1;2020-03-31;2020;1;CHG_OPER;cumul;initiale;8.265;BTE_2020T1.pdf;1;8.284;revisee_T1_N+1;-0.019;retraitement_mineur;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2020T1;2020-03-31;2020;1;CHG_OPER;trim;revisee_T1_N+1;8.284;BTE_2021T1.pdf;1;8.284;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2020T1;2020-03-31;2020;1;CHG_OPER;trim;initiale;8.265;BTE_2020T1.pdf;1;8.284;revisee_T1_N+1;-0.019;retraitement_mineur;T1 : une seule colonne par année (trimestre = cumul);;;
+BTE;2020T1;2020-03-31;2020;1;COMM_CHG;cumul;revisee_T1_N+1;0.224;BTE_2021T1.pdf;1;0.224;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;COMM_CHG;cumul;initiale;0.224;BTE_2020T1.pdf;1;0.224;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;COMM_CHG;trim;revisee_T1_N+1;0.224;BTE_2021T1.pdf;1;0.224;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;COMM_CHG;trim;initiale;0.224;BTE_2020T1.pdf;1;0.224;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;COMM_PROD;cumul;revisee_T1_N+1;4.714;BTE_2021T1.pdf;1;4.714;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;COMM_PROD;cumul;initiale;4.714;BTE_2020T1.pdf;1;4.714;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;COMM_PROD;trim;revisee_T1_N+1;4.714;BTE_2021T1.pdf;1;4.714;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;COMM_PROD;trim;initiale;4.714;BTE_2020T1.pdf;1;4.714;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2020T1;2020-03-31;2020;1;CREDITS;cumul;revisee_T1_N+1;740.451;BTE_2021T1.pdf;1;740.451;revisee_T1_N+1;0.0;retenue;;;;
 BTE;2020T1;2020-03-31;2020;1;CREDITS;cumul;initiale;740.391;BTE_2020T1.pdf;1;740.451;revisee_T1_N+1;-0.06;retraitement_mineur;;;;
 BTE;2020T1;2020-03-31;2020;1;DEPOTS;cumul;revisee_T1_N+1;676.192;BTE_2021T1.pdf;1;676.192;revisee_T1_N+1;0.0;retenue;;;;
@@ -13185,6 +13225,14 @@ BTE;2020T1;2020-03-31;2020;1;FRAIS_PERS;cumul;revisee_T1_N+1;5.951;BTE_2021T1.pd
 BTE;2020T1;2020-03-31;2020;1;FRAIS_PERS;cumul;initiale;5.951;BTE_2020T1.pdf;1;5.951;revisee_T1_N+1;0.0;retraitement_mineur;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2020T1;2020-03-31;2020;1;FRAIS_PERS;trim;revisee_T1_N+1;5.951;BTE_2021T1.pdf;1;5.951;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2020T1;2020-03-31;2020;1;FRAIS_PERS;trim;initiale;5.951;BTE_2020T1.pdf;1;5.951;revisee_T1_N+1;0.0;retraitement_mineur;T1 : une seule colonne par année (trimestre = cumul);;;
+BTE;2020T1;2020-03-31;2020;1;INT_ENCOURUS;cumul;revisee_T1_N+1;15.691;BTE_2021T1.pdf;1;15.691;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;INT_ENCOURUS;cumul;initiale;15.691;BTE_2020T1.pdf;1;15.691;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;INT_ENCOURUS;trim;revisee_T1_N+1;15.691;BTE_2021T1.pdf;1;15.691;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;INT_ENCOURUS;trim;initiale;15.691;BTE_2020T1.pdf;1;15.691;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;INT_PERCUS;cumul;revisee_T1_N+1;16.723;BTE_2021T1.pdf;1;16.723;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;INT_PERCUS;cumul;initiale;16.723;BTE_2020T1.pdf;1;16.723;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;INT_PERCUS;trim;revisee_T1_N+1;16.723;BTE_2021T1.pdf;1;16.723;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;INT_PERCUS;trim;initiale;16.723;BTE_2020T1.pdf;1;16.723;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2020T1;2020-03-31;2020;1;PNB;cumul;revisee_T1_N+1;7.627;BTE_2021T1.pdf;1;7.627;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2020T1;2020-03-31;2020;1;PNB;cumul;initiale;7.627;BTE_2020T1.pdf;1;7.627;revisee_T1_N+1;0.0;;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2020T1;2020-03-31;2020;1;PNB;trim;revisee_T1_N+1;7.627;BTE_2021T1.pdf;1;7.627;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
@@ -13193,6 +13241,12 @@ BTE;2020T1;2020-03-31;2020;1;PROD_EXPL;cumul;revisee_T1_N+1;23.542;BTE_2021T1.pd
 BTE;2020T1;2020-03-31;2020;1;PROD_EXPL;cumul;initiale;23.542;BTE_2020T1.pdf;1;23.542;revisee_T1_N+1;0.0;;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2020T1;2020-03-31;2020;1;PROD_EXPL;trim;revisee_T1_N+1;23.542;BTE_2021T1.pdf;1;23.542;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2020T1;2020-03-31;2020;1;PROD_EXPL;trim;initiale;23.542;BTE_2020T1.pdf;1;23.542;revisee_T1_N+1;0.0;;T1 : une seule colonne par année (trimestre = cumul);;;
+BTE;2020T1;2020-03-31;2020;1;REV_PORTEF;cumul;revisee_T1_N+1;1.265;BTE_2021T1.pdf;1;1.265;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;REV_PORTEF;cumul;initiale;1.265;BTE_2020T1.pdf;1;1.265;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;REV_PORTEF;trim;revisee_T1_N+1;1.265;BTE_2021T1.pdf;1;1.265;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T1;2020-03-31;2020;1;REV_PORTEF;trim;initiale;1.265;BTE_2020T1.pdf;1;1.265;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;AUTRES_PROD;cumul;initiale;0.0;BTE_2020T2.pdf;1;0.0;initiale;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;AUTRES_PROD;trim;initiale;0.0;BTE_2020T2.pdf;1;0.0;initiale;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2020T2;2020-06-30;2020;2;CHG_EXPL;cumul;revisee_T2_N+1;30.388;BTE_2021T2.pdf;1;30.388;revisee_T2_N+1;0.0;retenue;;;;
 BTE;2020T2;2020-06-30;2020;2;CHG_EXPL;cumul;initiale;30.355;BTE_2020T2.pdf;1;30.388;revisee_T2_N+1;-0.033;retraitement_mineur;;;;
 BTE;2020T2;2020-06-30;2020;2;CHG_EXPL;trim;revisee_T2_N+1;14.473;BTE_2021T2.pdf;1;14.473;revisee_T2_N+1;0.0;retenue;;;;
@@ -13205,6 +13259,14 @@ BTE;2020T2;2020-06-30;2020;2;CHG_OPER;cumul;revisee_T2_N+1;19.438;BTE_2021T2.pdf
 BTE;2020T2;2020-06-30;2020;2;CHG_OPER;cumul;initiale;18.966;BTE_2020T2.pdf;1;19.438;revisee_T2_N+1;-0.472;revision_importante;;;oui;2020T2 révisé de +2.5 % sur le cumul (18.966 publié, 19.438 dans le document 2021T2)
 BTE;2020T2;2020-06-30;2020;2;CHG_OPER;trim;revisee_T2_N+1;11.173;BTE_2021T2.pdf;1;11.173;revisee_T2_N+1;0.0;retenue;;;oui;2020T2 révisé de +2.5 % sur le cumul (18.966 publié, 19.438 dans le document 2021T2)
 BTE;2020T2;2020-06-30;2020;2;CHG_OPER;trim;initiale;10.701;BTE_2020T2.pdf;1;11.173;revisee_T2_N+1;-0.472;revision_importante;;;oui;2020T2 révisé de +2.5 % sur le cumul (18.966 publié, 19.438 dans le document 2021T2)
+BTE;2020T2;2020-06-30;2020;2;COMM_CHG;cumul;revisee_T2_N+1;0.229;BTE_2021T2.pdf;1;0.229;revisee_T2_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;COMM_CHG;cumul;initiale;5.739;BTE_2020T2.pdf;1;0.229;revisee_T2_N+1;5.51;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;COMM_CHG;trim;revisee_T2_N+1;0.005;BTE_2021T2.pdf;1;0.005;revisee_T2_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;COMM_CHG;trim;initiale;5.515;BTE_2020T2.pdf;1;0.005;revisee_T2_N+1;5.51;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;COMM_PROD;cumul;revisee_T2_N+1;8.373;BTE_2021T2.pdf;1;8.373;revisee_T2_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;COMM_PROD;cumul;initiale;8.304;BTE_2020T2.pdf;1;8.373;revisee_T2_N+1;-0.069;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;COMM_PROD;trim;revisee_T2_N+1;3.659;BTE_2021T2.pdf;1;3.659;revisee_T2_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;COMM_PROD;trim;initiale;3.59;BTE_2020T2.pdf;1;3.659;revisee_T2_N+1;-0.069;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2020T2;2020-06-30;2020;2;CREDITS;cumul;revisee_T2_N+1;747.557;BTE_2021T2.pdf;1;747.557;revisee_T2_N+1;0.0;retenue;;;;
 BTE;2020T2;2020-06-30;2020;2;CREDITS;cumul;initiale;746.304;BTE_2020T2.pdf;1;747.557;revisee_T2_N+1;-1.253;retraitement_mineur;;;;
 BTE;2020T2;2020-06-30;2020;2;DEPOTS;cumul;revisee_T2_N+1;717.192;BTE_2021T2.pdf;1;717.192;revisee_T2_N+1;0.0;retenue;;;oui;2020T2 révisé de +7.8 % sur le cumul (665.197 publié, 717.192 dans le document 2021T2)
@@ -13213,6 +13275,14 @@ BTE;2020T2;2020-06-30;2020;2;FRAIS_PERS;cumul;revisee_T2_N+1;14.06;BTE_2021T2.pd
 BTE;2020T2;2020-06-30;2020;2;FRAIS_PERS;cumul;initiale;14.084;BTE_2020T2.pdf;1;14.06;revisee_T2_N+1;0.024;revision_importante;;;oui;2020T2 révisé de -0.2 % sur le cumul (14.084 publié, 14.060 dans le document 2021T2)
 BTE;2020T2;2020-06-30;2020;2;FRAIS_PERS;trim;revisee_T2_N+1;8.109;BTE_2021T2.pdf;1;8.109;revisee_T2_N+1;0.0;retenue;;;oui;2020T2 révisé de -0.2 % sur le cumul (14.084 publié, 14.060 dans le document 2021T2)
 BTE;2020T2;2020-06-30;2020;2;FRAIS_PERS;trim;initiale;8.133;BTE_2020T2.pdf;1;8.109;revisee_T2_N+1;0.024;revision_importante;;;oui;2020T2 révisé de -0.2 % sur le cumul (14.084 publié, 14.060 dans le document 2021T2)
+BTE;2020T2;2020-06-30;2020;2;INT_ENCOURUS;cumul;revisee_T2_N+1;30.159;BTE_2021T2.pdf;1;30.159;revisee_T2_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;INT_ENCOURUS;cumul;initiale;24.616;BTE_2020T2.pdf;1;30.159;revisee_T2_N+1;-5.543;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;INT_ENCOURUS;trim;revisee_T2_N+1;14.468;BTE_2021T2.pdf;1;14.468;revisee_T2_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;INT_ENCOURUS;trim;initiale;8.925;BTE_2020T2.pdf;1;14.468;revisee_T2_N+1;-5.543;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;INT_PERCUS;cumul;revisee_T2_N+1;37.502;BTE_2021T2.pdf;1;37.502;revisee_T2_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;INT_PERCUS;cumul;initiale;37.826;BTE_2020T2.pdf;1;37.502;revisee_T2_N+1;0.324;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;INT_PERCUS;trim;revisee_T2_N+1;20.779;BTE_2021T2.pdf;1;20.779;revisee_T2_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;INT_PERCUS;trim;initiale;21.103;BTE_2020T2.pdf;1;20.779;revisee_T2_N+1;0.324;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2020T2;2020-06-30;2020;2;PNB;cumul;revisee_T2_N+1;19.805;BTE_2021T2.pdf;1;19.805;revisee_T2_N+1;0.0;retenue;;;;
 BTE;2020T2;2020-06-30;2020;2;PNB;cumul;initiale;19.668;BTE_2020T2.pdf;1;19.805;revisee_T2_N+1;-0.137;retraitement_mineur;;;;
 BTE;2020T2;2020-06-30;2020;2;PNB;trim;revisee_T2_N+1;12.178;BTE_2021T2.pdf;1;12.178;revisee_T2_N+1;0.0;retenue;;;;
@@ -13221,6 +13291,14 @@ BTE;2020T2;2020-06-30;2020;2;PROD_EXPL;cumul;revisee_T2_N+1;50.193;BTE_2021T2.pd
 BTE;2020T2;2020-06-30;2020;2;PROD_EXPL;cumul;initiale;50.023;BTE_2020T2.pdf;1;50.193;revisee_T2_N+1;-0.17;retraitement_mineur;;;;
 BTE;2020T2;2020-06-30;2020;2;PROD_EXPL;trim;revisee_T2_N+1;26.651;BTE_2021T2.pdf;1;26.651;revisee_T2_N+1;0.0;retenue;;;;
 BTE;2020T2;2020-06-30;2020;2;PROD_EXPL;trim;initiale;26.481;BTE_2020T2.pdf;1;26.651;revisee_T2_N+1;-0.17;retraitement_mineur;;;;
+BTE;2020T2;2020-06-30;2020;2;REV_PORTEF;cumul;revisee_T2_N+1;2.903;BTE_2021T2.pdf;1;2.903;revisee_T2_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;REV_PORTEF;cumul;initiale;2.478;BTE_2020T2.pdf;1;2.903;revisee_T2_N+1;-0.425;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;REV_PORTEF;trim;revisee_T2_N+1;1.638;BTE_2021T2.pdf;1;1.638;revisee_T2_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T2;2020-06-30;2020;2;REV_PORTEF;trim;initiale;1.213;BTE_2020T2.pdf;1;1.638;revisee_T2_N+1;-0.425;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;AUTRES_PROD;cumul;revisee_T3_N+1;0.0;BTE_2021T3.pdf;1;0.0;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;AUTRES_PROD;cumul;initiale;0.0;BTE_2020T3.pdf;1;0.0;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;AUTRES_PROD;trim;revisee_T3_N+1;0.0;BTE_2021T3.pdf;1;0.0;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;AUTRES_PROD;trim;initiale;0.0;BTE_2020T3.pdf;1;0.0;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2020T3;2020-09-30;2020;3;CHG_EXPL;cumul;revisee_T3_N+1;45.225;BTE_2021T3.pdf;1;45.225;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2020T3;2020-09-30;2020;3;CHG_EXPL;cumul;initiale;45.225;BTE_2020T3.pdf;1;45.225;revisee_T3_N+1;0.0;;;;;
 BTE;2020T3;2020-09-30;2020;3;CHG_EXPL;trim;revisee_T3_N+1;14.837;BTE_2021T3.pdf;1;14.837;revisee_T3_N+1;0.0;retenue;;;;
@@ -13233,6 +13311,14 @@ BTE;2020T3;2020-09-30;2020;3;CHG_OPER;cumul;revisee_T3_N+1;29.177;BTE_2021T3.pdf
 BTE;2020T3;2020-09-30;2020;3;CHG_OPER;cumul;initiale;29.177;BTE_2020T3.pdf;1;29.177;revisee_T3_N+1;0.0;;;;;
 BTE;2020T3;2020-09-30;2020;3;CHG_OPER;trim;revisee_T3_N+1;9.739;BTE_2021T3.pdf;1;9.739;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2020T3;2020-09-30;2020;3;CHG_OPER;trim;initiale;9.739;BTE_2020T3.pdf;1;9.739;revisee_T3_N+1;0.0;;;;;
+BTE;2020T3;2020-09-30;2020;3;COMM_CHG;cumul;revisee_T3_N+1;0.556;BTE_2021T3.pdf;1;0.556;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;COMM_CHG;cumul;initiale;0.556;BTE_2020T3.pdf;1;0.556;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;COMM_CHG;trim;revisee_T3_N+1;0.327;BTE_2021T3.pdf;1;0.327;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;COMM_CHG;trim;initiale;0.327;BTE_2020T3.pdf;1;0.327;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;COMM_PROD;cumul;revisee_T3_N+1;13.388;BTE_2021T3.pdf;1;13.388;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;COMM_PROD;cumul;initiale;13.388;BTE_2020T3.pdf;1;13.388;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;COMM_PROD;trim;revisee_T3_N+1;5.015;BTE_2021T3.pdf;1;5.015;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;COMM_PROD;trim;initiale;5.015;BTE_2020T3.pdf;1;5.015;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2020T3;2020-09-30;2020;3;CREDITS;cumul;revisee_T3_N+1;787.448;BTE_2021T3.pdf;1;787.448;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2020T3;2020-09-30;2020;3;CREDITS;cumul;initiale;787.448;BTE_2020T3.pdf;1;787.448;revisee_T3_N+1;0.0;;;;;
 BTE;2020T3;2020-09-30;2020;3;DEPOTS;cumul;revisee_T3_N+1;751.183;BTE_2021T3.pdf;1;751.183;revisee_T3_N+1;0.0;retenue;;;;
@@ -13241,6 +13327,14 @@ BTE;2020T3;2020-09-30;2020;3;FRAIS_PERS;cumul;revisee_T3_N+1;21.992;BTE_2021T3.p
 BTE;2020T3;2020-09-30;2020;3;FRAIS_PERS;cumul;initiale;21.992;BTE_2020T3.pdf;1;21.992;revisee_T3_N+1;0.0;;;;;
 BTE;2020T3;2020-09-30;2020;3;FRAIS_PERS;trim;revisee_T3_N+1;7.932;BTE_2021T3.pdf;1;7.932;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2020T3;2020-09-30;2020;3;FRAIS_PERS;trim;initiale;7.932;BTE_2020T3.pdf;1;7.932;revisee_T3_N+1;0.0;;;;;
+BTE;2020T3;2020-09-30;2020;3;INT_ENCOURUS;cumul;revisee_T3_N+1;44.669;BTE_2021T3.pdf;1;44.669;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;INT_ENCOURUS;cumul;initiale;44.669;BTE_2020T3.pdf;1;44.669;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;INT_ENCOURUS;trim;revisee_T3_N+1;14.51;BTE_2021T3.pdf;1;14.51;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;INT_ENCOURUS;trim;initiale;14.51;BTE_2020T3.pdf;1;14.51;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;INT_PERCUS;cumul;revisee_T3_N+1;55.967;BTE_2021T3.pdf;1;55.967;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;INT_PERCUS;cumul;initiale;55.967;BTE_2020T3.pdf;1;55.967;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;INT_PERCUS;trim;revisee_T3_N+1;18.465;BTE_2021T3.pdf;1;18.465;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;INT_PERCUS;trim;initiale;18.465;BTE_2020T3.pdf;1;18.465;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2020T3;2020-09-30;2020;3;PNB;cumul;revisee_T3_N+1;30.56;BTE_2021T3.pdf;1;30.56;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2020T3;2020-09-30;2020;3;PNB;cumul;initiale;30.56;BTE_2020T3.pdf;1;30.56;revisee_T3_N+1;0.0;;;;;
 BTE;2020T3;2020-09-30;2020;3;PNB;trim;revisee_T3_N+1;10.755;BTE_2021T3.pdf;1;10.755;revisee_T3_N+1;0.0;retenue;;;;
@@ -13249,6 +13343,14 @@ BTE;2020T3;2020-09-30;2020;3;PROD_EXPL;cumul;revisee_T3_N+1;75.785;BTE_2021T3.pd
 BTE;2020T3;2020-09-30;2020;3;PROD_EXPL;cumul;initiale;75.785;BTE_2020T3.pdf;1;75.785;revisee_T3_N+1;0.0;;;;;
 BTE;2020T3;2020-09-30;2020;3;PROD_EXPL;trim;revisee_T3_N+1;25.592;BTE_2021T3.pdf;1;25.592;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2020T3;2020-09-30;2020;3;PROD_EXPL;trim;initiale;25.592;BTE_2020T3.pdf;1;25.592;revisee_T3_N+1;0.0;;;;;
+BTE;2020T3;2020-09-30;2020;3;REV_PORTEF;cumul;revisee_T3_N+1;4.18;BTE_2021T3.pdf;1;4.18;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;REV_PORTEF;cumul;initiale;4.18;BTE_2020T3.pdf;1;4.18;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;REV_PORTEF;trim;revisee_T3_N+1;1.277;BTE_2021T3.pdf;1;1.277;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T3;2020-09-30;2020;3;REV_PORTEF;trim;initiale;1.277;BTE_2020T3.pdf;1;1.277;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;AUTRES_PROD;cumul;revisee_T4_N+1;0.0;BTE_2021T4.pdf;1;0.0;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;AUTRES_PROD;cumul;revisee_31-12_T3_N+1;0.0;BTE_2021T3.pdf;1;0.0;revisee_T4_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;AUTRES_PROD;cumul;revisee_31-12_T1_N+1;0.0;BTE_2021T1.pdf;1;0.0;revisee_T4_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;AUTRES_PROD;trim;revisee_T4_N+1;0.0;BTE_2021T4.pdf;1;0.0;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2020T4;2020-12-31;2020;4;CHG_EXPL;cumul;revisee_T4_N+1;58.06;BTE_2021T4.pdf;1;58.06;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2020T4;2020-12-31;2020;4;CHG_EXPL;cumul;revisee_31-12_T3_N+1;58.06;BTE_2021T3.pdf;1;58.06;revisee_T4_N+1;0.0;retraitement_mineur;;;;
 BTE;2020T4;2020-12-31;2020;4;CHG_EXPL;cumul;revisee_31-12_T2_N+1;58.06;BTE_2021T2.pdf;1;58.06;revisee_T4_N+1;0.0;retraitement_mineur;;;;
@@ -13270,6 +13372,18 @@ BTE;2020T4;2020-12-31;2020;4;CHG_OPER;cumul;revisee_31-12_T1_N+1;40.885;BTE_2021
 BTE;2020T4;2020-12-31;2020;4;CHG_OPER;cumul;initiale;40.623;BTE_2020T4.pdf;1;40.885;revisee_T4_N+1;-0.262;retraitement_mineur;;;;
 BTE;2020T4;2020-12-31;2020;4;CHG_OPER;trim;revisee_T4_N+1;11.708;BTE_2021T4.pdf;1;11.708;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2020T4;2020-12-31;2020;4;CHG_OPER;trim;initiale;11.446;BTE_2020T4.pdf;1;11.708;revisee_T4_N+1;-0.262;retraitement_mineur;;;;
+BTE;2020T4;2020-12-31;2020;4;COMM_CHG;cumul;revisee_T4_N+1;0.434;BTE_2021T4.pdf;1;0.434;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;COMM_CHG;cumul;revisee_31-12_T3_N+1;0.434;BTE_2021T3.pdf;1;0.434;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;COMM_CHG;cumul;revisee_31-12_T1_N+1;0.434;BTE_2021T1.pdf;1;0.434;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;COMM_CHG;cumul;initiale;0.341;BTE_2020T4.pdf;1;0.434;revisee_T4_N+1;-0.093;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;COMM_CHG;trim;revisee_T4_N+1;-0.122;BTE_2021T4.pdf;1;-0.122;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;COMM_CHG;trim;initiale;-0.215;BTE_2020T4.pdf;1;-0.122;revisee_T4_N+1;-0.093;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;COMM_PROD;cumul;revisee_T4_N+1;19.917;BTE_2021T4.pdf;1;19.917;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;COMM_PROD;cumul;revisee_31-12_T3_N+1;19.917;BTE_2021T3.pdf;1;19.917;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;COMM_PROD;cumul;revisee_31-12_T1_N+1;19.917;BTE_2021T1.pdf;1;19.917;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;COMM_PROD;cumul;initiale;19.917;BTE_2020T4.pdf;1;19.917;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;COMM_PROD;trim;revisee_T4_N+1;6.529;BTE_2021T4.pdf;1;6.529;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;COMM_PROD;trim;initiale;6.529;BTE_2020T4.pdf;1;6.529;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2020T4;2020-12-31;2020;4;CREDITS;cumul;revisee_T4_N+1;796.188;BTE_2021T4.pdf;1;796.188;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2020T4;2020-12-31;2020;4;CREDITS;cumul;revisee_31-12_T3_N+1;796.188;BTE_2021T3.pdf;1;796.188;revisee_T4_N+1;0.0;retraitement_mineur;;;;
 BTE;2020T4;2020-12-31;2020;4;CREDITS;cumul;revisee_31-12_T2_N+1;796.188;BTE_2021T2.pdf;1;796.188;revisee_T4_N+1;0.0;retraitement_mineur;;;;
@@ -13287,6 +13401,18 @@ BTE;2020T4;2020-12-31;2020;4;FRAIS_PERS;cumul;revisee_31-12_T1_N+1;29.4;BTE_2021
 BTE;2020T4;2020-12-31;2020;4;FRAIS_PERS;cumul;initiale;29.386;BTE_2020T4.pdf;1;29.4;revisee_T4_N+1;-0.014;retraitement_mineur;;;;
 BTE;2020T4;2020-12-31;2020;4;FRAIS_PERS;trim;revisee_T4_N+1;7.408;BTE_2021T4.pdf;1;7.408;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2020T4;2020-12-31;2020;4;FRAIS_PERS;trim;initiale;7.394;BTE_2020T4.pdf;1;7.408;revisee_T4_N+1;-0.014;retraitement_mineur;;;;
+BTE;2020T4;2020-12-31;2020;4;INT_ENCOURUS;cumul;revisee_T4_N+1;57.626;BTE_2021T4.pdf;1;57.626;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;INT_ENCOURUS;cumul;revisee_31-12_T3_N+1;57.626;BTE_2021T3.pdf;1;57.626;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;INT_ENCOURUS;cumul;revisee_31-12_T1_N+1;57.626;BTE_2021T1.pdf;1;57.626;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;INT_ENCOURUS;cumul;initiale;57.765;BTE_2020T4.pdf;1;57.626;revisee_T4_N+1;0.139;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;INT_ENCOURUS;trim;revisee_T4_N+1;12.957;BTE_2021T4.pdf;1;12.957;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;INT_ENCOURUS;trim;initiale;13.096;BTE_2020T4.pdf;1;12.957;revisee_T4_N+1;0.139;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;INT_PERCUS;cumul;revisee_T4_N+1;78.382;BTE_2021T4.pdf;1;78.382;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;INT_PERCUS;cumul;revisee_31-12_T3_N+1;78.382;BTE_2021T3.pdf;1;78.382;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;INT_PERCUS;cumul;revisee_31-12_T1_N+1;78.382;BTE_2021T1.pdf;1;78.382;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;INT_PERCUS;cumul;initiale;80.11;BTE_2020T4.pdf;1;78.382;revisee_T4_N+1;1.728;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;INT_PERCUS;trim;revisee_T4_N+1;22.415;BTE_2021T4.pdf;1;22.415;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;INT_PERCUS;trim;initiale;24.143;BTE_2020T4.pdf;1;22.415;revisee_T4_N+1;1.728;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2020T4;2020-12-31;2020;4;PNB;cumul;revisee_T4_N+1;48.869;BTE_2021T4.pdf;1;48.869;revisee_T4_N+1;0.0;retenue;;;oui;2020T4 révisé de -2.8 % sur le cumul (50.298 publié, 48.869 dans le document 2021T4)
 BTE;2020T4;2020-12-31;2020;4;PNB;cumul;revisee_31-12_T3_N+1;48.869;BTE_2021T3.pdf;1;48.869;revisee_T4_N+1;0.0;revision_importante;;;oui;2020T4 révisé de -2.8 % sur le cumul (50.298 publié, 48.869 dans le document 2021T4)
 BTE;2020T4;2020-12-31;2020;4;PNB;cumul;revisee_31-12_T2_N+1;48.869;BTE_2021T2.pdf;1;48.869;revisee_T4_N+1;0.0;revision_importante;;;oui;2020T4 révisé de -2.8 % sur le cumul (50.298 publié, 48.869 dans le document 2021T4)
@@ -13301,6 +13427,16 @@ BTE;2020T4;2020-12-31;2020;4;PROD_EXPL;cumul;revisee_31-12_T1_N+1;106.929;BTE_20
 BTE;2020T4;2020-12-31;2020;4;PROD_EXPL;cumul;initiale;108.404;BTE_2020T4.pdf;1;106.929;revisee_T4_N+1;1.475;retraitement_mineur;;;;
 BTE;2020T4;2020-12-31;2020;4;PROD_EXPL;trim;revisee_T4_N+1;31.144;BTE_2021T4.pdf;1;31.144;revisee_T4_N+1;0.0;retenue;;;;
 BTE;2020T4;2020-12-31;2020;4;PROD_EXPL;trim;initiale;32.619;BTE_2020T4.pdf;1;31.144;revisee_T4_N+1;1.475;retraitement_mineur;;;;
+BTE;2020T4;2020-12-31;2020;4;REV_PORTEF;cumul;revisee_T4_N+1;5.823;BTE_2021T4.pdf;1;5.823;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;REV_PORTEF;cumul;revisee_31-12_T3_N+1;5.823;BTE_2021T3.pdf;1;5.823;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;REV_PORTEF;cumul;revisee_31-12_T1_N+1;5.823;BTE_2021T1.pdf;1;5.823;revisee_T4_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;REV_PORTEF;cumul;initiale;5.57;BTE_2020T4.pdf;1;5.823;revisee_T4_N+1;-0.253;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;REV_PORTEF;trim;revisee_T4_N+1;1.643;BTE_2021T4.pdf;1;1.643;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2020T4;2020-12-31;2020;4;REV_PORTEF;trim;initiale;1.39;BTE_2020T4.pdf;1;1.643;revisee_T4_N+1;-0.253;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;AUTRES_PROD;cumul;revisee_T1_N+1;0.0;BTE_2022T1.pdf;1;0.0;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;AUTRES_PROD;cumul;initiale;0.0;BTE_2021T1.pdf;1;0.0;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;AUTRES_PROD;trim;revisee_T1_N+1;0.0;BTE_2022T1.pdf;1;0.0;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;AUTRES_PROD;trim;initiale;0.0;BTE_2021T1.pdf;1;0.0;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T1;2021-03-31;2021;1;CHG_EXPL;cumul;revisee_T1_N+1;14.085;BTE_2022T1.pdf;1;14.085;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2021T1;2021-03-31;2021;1;CHG_EXPL;cumul;initiale;14.085;BTE_2021T1.pdf;1;14.085;revisee_T1_N+1;0.0;;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2021T1;2021-03-31;2021;1;CHG_EXPL;trim;revisee_T1_N+1;14.085;BTE_2022T1.pdf;1;14.085;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
@@ -13313,6 +13449,14 @@ BTE;2021T1;2021-03-31;2021;1;CHG_OPER;cumul;revisee_T1_N+1;8.12;BTE_2022T1.pdf;1
 BTE;2021T1;2021-03-31;2021;1;CHG_OPER;cumul;initiale;10.906;BTE_2021T1.pdf;1;8.12;revisee_T1_N+1;2.786;revision_importante;T1 : une seule colonne par année (trimestre = cumul);;oui;2021T1 révisé de -25.5 % sur le cumul (10.906 publié, 8.120 dans le document 2022T1)
 BTE;2021T1;2021-03-31;2021;1;CHG_OPER;trim;revisee_T1_N+1;8.12;BTE_2022T1.pdf;1;8.12;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;oui;2021T1 révisé de -25.5 % sur le cumul (10.906 publié, 8.120 dans le document 2022T1)
 BTE;2021T1;2021-03-31;2021;1;CHG_OPER;trim;initiale;10.906;BTE_2021T1.pdf;1;8.12;revisee_T1_N+1;2.786;revision_importante;T1 : une seule colonne par année (trimestre = cumul);;oui;2021T1 révisé de -25.5 % sur le cumul (10.906 publié, 8.120 dans le document 2022T1)
+BTE;2021T1;2021-03-31;2021;1;COMM_CHG;cumul;revisee_T1_N+1;0.298;BTE_2022T1.pdf;1;0.298;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;COMM_CHG;cumul;initiale;0.298;BTE_2021T1.pdf;1;0.298;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;COMM_CHG;trim;revisee_T1_N+1;0.298;BTE_2022T1.pdf;1;0.298;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;COMM_CHG;trim;initiale;0.298;BTE_2021T1.pdf;1;0.298;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;COMM_PROD;cumul;revisee_T1_N+1;5.951;BTE_2022T1.pdf;1;5.951;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;COMM_PROD;cumul;initiale;5.951;BTE_2021T1.pdf;1;5.951;revisee_T1_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;COMM_PROD;trim;revisee_T1_N+1;5.951;BTE_2022T1.pdf;1;5.951;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;COMM_PROD;trim;initiale;5.951;BTE_2021T1.pdf;1;5.951;revisee_T1_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T1;2021-03-31;2021;1;CREDITS;cumul;revisee_T1_N+1;821.278;BTE_2022T1.pdf;1;821.278;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2021T1;2021-03-31;2021;1;CREDITS;cumul;initiale;826.164;BTE_2021T1.pdf;1;821.278;revisee_T1_N+1;4.886;retraitement_mineur;;;;
 BTE;2021T1;2021-03-31;2021;1;DEPOTS;cumul;revisee_T1_N+1;814.065;BTE_2022T1.pdf;1;814.065;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
@@ -13321,6 +13465,14 @@ BTE;2021T1;2021-03-31;2021;1;FRAIS_PERS;cumul;revisee_T1_N+1;5.825;BTE_2022T1.pd
 BTE;2021T1;2021-03-31;2021;1;FRAIS_PERS;cumul;initiale;8.786;BTE_2021T1.pdf;1;5.825;revisee_T1_N+1;2.961;revision_importante;T1 : une seule colonne par année (trimestre = cumul);;oui;2021T1 révisé de -33.7 % sur le cumul (8.786 publié, 5.825 dans le document 2022T1)
 BTE;2021T1;2021-03-31;2021;1;FRAIS_PERS;trim;revisee_T1_N+1;5.825;BTE_2022T1.pdf;1;5.825;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;oui;2021T1 révisé de -33.7 % sur le cumul (8.786 publié, 5.825 dans le document 2022T1)
 BTE;2021T1;2021-03-31;2021;1;FRAIS_PERS;trim;initiale;8.786;BTE_2021T1.pdf;1;5.825;revisee_T1_N+1;2.961;revision_importante;T1 : une seule colonne par année (trimestre = cumul);;oui;2021T1 révisé de -33.7 % sur le cumul (8.786 publié, 5.825 dans le document 2022T1)
+BTE;2021T1;2021-03-31;2021;1;INT_ENCOURUS;cumul;revisee_T1_N+1;13.787;BTE_2022T1.pdf;1;13.787;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;INT_ENCOURUS;cumul;initiale;13.787;BTE_2021T1.pdf;1;13.787;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;INT_ENCOURUS;trim;revisee_T1_N+1;13.787;BTE_2022T1.pdf;1;13.787;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;INT_ENCOURUS;trim;initiale;13.787;BTE_2021T1.pdf;1;13.787;revisee_T1_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;INT_PERCUS;cumul;revisee_T1_N+1;19.984;BTE_2022T1.pdf;1;19.984;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;INT_PERCUS;cumul;initiale;19.897;BTE_2021T1.pdf;1;19.984;revisee_T1_N+1;-0.087;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;INT_PERCUS;trim;revisee_T1_N+1;19.984;BTE_2022T1.pdf;1;19.984;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;INT_PERCUS;trim;initiale;19.897;BTE_2021T1.pdf;1;19.984;revisee_T1_N+1;-0.087;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T1;2021-03-31;2021;1;PNB;cumul;revisee_T1_N+1;14.688;BTE_2022T1.pdf;1;14.688;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2021T1;2021-03-31;2021;1;PNB;cumul;initiale;14.601;BTE_2021T1.pdf;1;14.688;revisee_T1_N+1;-0.087;retraitement_mineur;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2021T1;2021-03-31;2021;1;PNB;trim;revisee_T1_N+1;14.688;BTE_2022T1.pdf;1;14.688;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
@@ -13329,6 +13481,10 @@ BTE;2021T1;2021-03-31;2021;1;PROD_EXPL;cumul;revisee_T1_N+1;28.773;BTE_2022T1.pd
 BTE;2021T1;2021-03-31;2021;1;PROD_EXPL;cumul;initiale;28.686;BTE_2021T1.pdf;1;28.773;revisee_T1_N+1;-0.087;retraitement_mineur;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2021T1;2021-03-31;2021;1;PROD_EXPL;trim;revisee_T1_N+1;28.773;BTE_2022T1.pdf;1;28.773;revisee_T1_N+1;0.0;retenue;T1 : une seule colonne par année (trimestre = cumul);;;
 BTE;2021T1;2021-03-31;2021;1;PROD_EXPL;trim;initiale;28.686;BTE_2021T1.pdf;1;28.773;revisee_T1_N+1;-0.087;retraitement_mineur;T1 : une seule colonne par année (trimestre = cumul);;;
+BTE;2021T1;2021-03-31;2021;1;REV_PORTEF;cumul;revisee_T1_N+1;1.467;BTE_2022T1.pdf;1;1.467;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;REV_PORTEF;cumul;initiale;1.467;BTE_2021T1.pdf;1;1.467;revisee_T1_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;REV_PORTEF;trim;revisee_T1_N+1;1.467;BTE_2022T1.pdf;1;1.467;revisee_T1_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T1;2021-03-31;2021;1;REV_PORTEF;trim;initiale;1.467;BTE_2021T1.pdf;1;1.467;revisee_T1_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T2;2021-06-30;2021;2;AUTRES_PROD;cumul;revisee_T2_N+1;0.0;BTE_2022T2.pdf;1;0.0;revisee_T2_N+1;0.0;retenue;;;;
 BTE;2021T2;2021-06-30;2021;2;AUTRES_PROD;trim;revisee_T2_N+1;0.0;BTE_2022T2.pdf;1;0.0;revisee_T2_N+1;0.0;retenue;;;;
 BTE;2021T2;2021-06-30;2021;2;CAP_PROPRES;cumul;revisee_T2_N+1;114.89;BTE_2022T2.pdf;1;114.89;revisee_T2_N+1;0.0;retenue;;;;
@@ -13378,6 +13534,10 @@ BTE;2021T2;2021-06-30;2021;2;PROD_EXPL;trim;revisee_T2_N+1;33.627;BTE_2022T2.pdf
 BTE;2021T2;2021-06-30;2021;2;PROD_EXPL;trim;initiale;29.706;BTE_2021T2.pdf;1;33.627;revisee_T2_N+1;-3.921;revision_importante;;;oui;2021T2 révisé de +6.7 % sur le cumul (58.479 publié, 62.400 dans le document 2022T2)
 BTE;2021T2;2021-06-30;2021;2;REV_PORTEF;cumul;revisee_T2_N+1;3.789;BTE_2022T2.pdf;1;3.789;revisee_T2_N+1;0.0;retenue;;;;
 BTE;2021T2;2021-06-30;2021;2;REV_PORTEF;trim;revisee_T2_N+1;2.322;BTE_2022T2.pdf;1;2.322;revisee_T2_N+1;0.0;retenue;;;;
+BTE;2021T3;2021-09-30;2021;3;AUTRES_PROD;cumul;revisee_T3_N+1;0.0;BTE_2022T3.pdf;1;0.0;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;AUTRES_PROD;cumul;initiale;0.0;BTE_2021T3.pdf;1;0.0;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;AUTRES_PROD;trim;revisee_T3_N+1;0.0;BTE_2022T3.pdf;1;0.0;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;AUTRES_PROD;trim;initiale;0.0;BTE_2021T3.pdf;1;0.0;revisee_T3_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T3;2021-09-30;2021;3;CHG_EXPL;cumul;revisee_T3_N+1;43.254;BTE_2022T3.pdf;1;43.254;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2021T3;2021-09-30;2021;3;CHG_EXPL;cumul;initiale;43.259;BTE_2021T3.pdf;1;43.254;revisee_T3_N+1;0.005;retraitement_mineur;;;;
 BTE;2021T3;2021-09-30;2021;3;CHG_EXPL;trim;revisee_T3_N+1;15.208;BTE_2022T3.pdf;1;15.208;revisee_T3_N+1;0.0;retenue;;;;
@@ -13390,6 +13550,14 @@ BTE;2021T3;2021-09-30;2021;3;CHG_OPER;cumul;revisee_T3_N+1;35.855;BTE_2022T3.pdf
 BTE;2021T3;2021-09-30;2021;3;CHG_OPER;cumul;initiale;35.834;BTE_2021T3.pdf;1;35.855;revisee_T3_N+1;-0.021;retraitement_mineur;;;;
 BTE;2021T3;2021-09-30;2021;3;CHG_OPER;trim;revisee_T3_N+1;13.275;BTE_2022T3.pdf;1;13.275;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2021T3;2021-09-30;2021;3;CHG_OPER;trim;initiale;13.254;BTE_2021T3.pdf;1;13.275;revisee_T3_N+1;-0.021;retraitement_mineur;;;;
+BTE;2021T3;2021-09-30;2021;3;COMM_CHG;cumul;revisee_T3_N+1;0.504;BTE_2022T3.pdf;1;0.504;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;COMM_CHG;cumul;initiale;0.504;BTE_2021T3.pdf;1;0.504;revisee_T3_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;COMM_CHG;trim;revisee_T3_N+1;0.325;BTE_2022T3.pdf;1;0.325;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;COMM_CHG;trim;initiale;0.325;BTE_2021T3.pdf;1;0.325;revisee_T3_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;COMM_PROD;cumul;revisee_T3_N+1;18.331;BTE_2022T3.pdf;1;18.331;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;COMM_PROD;cumul;initiale;18.331;BTE_2021T3.pdf;1;18.331;revisee_T3_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;COMM_PROD;trim;revisee_T3_N+1;6.189;BTE_2022T3.pdf;1;6.189;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;COMM_PROD;trim;initiale;6.189;BTE_2021T3.pdf;1;6.189;revisee_T3_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T3;2021-09-30;2021;3;CREDITS;cumul;revisee_T3_N+1;845.372;BTE_2022T3.pdf;1;845.372;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2021T3;2021-09-30;2021;3;CREDITS;cumul;initiale;849.578;BTE_2021T3.pdf;1;845.372;revisee_T3_N+1;4.206;retraitement_mineur;;;;
 BTE;2021T3;2021-09-30;2021;3;DEPOTS;cumul;revisee_T3_N+1;850.988;BTE_2022T3.pdf;1;850.988;revisee_T3_N+1;0.0;retenue;;;;
@@ -13398,6 +13566,14 @@ BTE;2021T3;2021-09-30;2021;3;FRAIS_PERS;cumul;revisee_T3_N+1;25.446;BTE_2022T3.p
 BTE;2021T3;2021-09-30;2021;3;FRAIS_PERS;cumul;initiale;26.022;BTE_2021T3.pdf;1;25.446;revisee_T3_N+1;0.576;retraitement_mineur;;;;
 BTE;2021T3;2021-09-30;2021;3;FRAIS_PERS;trim;revisee_T3_N+1;8.425;BTE_2022T3.pdf;1;8.425;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2021T3;2021-09-30;2021;3;FRAIS_PERS;trim;initiale;9.001;BTE_2021T3.pdf;1;8.425;revisee_T3_N+1;0.576;retraitement_mineur;;;;
+BTE;2021T3;2021-09-30;2021;3;INT_ENCOURUS;cumul;revisee_T3_N+1;42.75;BTE_2022T3.pdf;1;42.75;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;INT_ENCOURUS;cumul;initiale;42.755;BTE_2021T3.pdf;1;42.75;revisee_T3_N+1;0.005;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;INT_ENCOURUS;trim;revisee_T3_N+1;14.883;BTE_2022T3.pdf;1;14.883;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;INT_ENCOURUS;trim;initiale;14.888;BTE_2021T3.pdf;1;14.883;revisee_T3_N+1;0.005;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;INT_PERCUS;cumul;revisee_T3_N+1;63.146;BTE_2022T3.pdf;1;63.146;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;INT_PERCUS;cumul;initiale;63.137;BTE_2021T3.pdf;1;63.146;revisee_T3_N+1;-0.009;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;INT_PERCUS;trim;revisee_T3_N+1;19.685;BTE_2022T3.pdf;1;19.685;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;INT_PERCUS;trim;initiale;19.676;BTE_2021T3.pdf;1;19.685;revisee_T3_N+1;-0.009;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T3;2021-09-30;2021;3;PNB;cumul;revisee_T3_N+1;47.513;BTE_2022T3.pdf;1;47.513;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2021T3;2021-09-30;2021;3;PNB;cumul;initiale;47.499;BTE_2021T3.pdf;1;47.513;revisee_T3_N+1;-0.014;retraitement_mineur;;;;
 BTE;2021T3;2021-09-30;2021;3;PNB;trim;revisee_T3_N+1;13.159;BTE_2022T3.pdf;1;13.159;revisee_T3_N+1;0.0;retenue;;;;
@@ -13406,6 +13582,10 @@ BTE;2021T3;2021-09-30;2021;3;PROD_EXPL;cumul;revisee_T3_N+1;90.767;BTE_2022T3.pd
 BTE;2021T3;2021-09-30;2021;3;PROD_EXPL;cumul;initiale;90.758;BTE_2021T3.pdf;1;90.767;revisee_T3_N+1;-0.009;retraitement_mineur;;;;
 BTE;2021T3;2021-09-30;2021;3;PROD_EXPL;trim;revisee_T3_N+1;28.367;BTE_2022T3.pdf;1;28.367;revisee_T3_N+1;0.0;retenue;;;;
 BTE;2021T3;2021-09-30;2021;3;PROD_EXPL;trim;initiale;28.358;BTE_2021T3.pdf;1;28.367;revisee_T3_N+1;-0.009;retraitement_mineur;;;;
+BTE;2021T3;2021-09-30;2021;3;REV_PORTEF;cumul;revisee_T3_N+1;5.347;BTE_2022T3.pdf;1;5.347;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;REV_PORTEF;cumul;initiale;5.347;BTE_2021T3.pdf;1;5.347;revisee_T3_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;REV_PORTEF;trim;revisee_T3_N+1;1.558;BTE_2022T3.pdf;1;1.558;revisee_T3_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
+BTE;2021T3;2021-09-30;2021;3;REV_PORTEF;trim;initiale;1.558;BTE_2021T3.pdf;1;1.558;revisee_T3_N+1;0.0;retraitement_mineur;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T4;2021-12-31;2021;4;AUTRES_PROD;cumul;revisee_31-12_T2_N+1;0.0;BTE_2022T2.pdf;1;0.0;revisee_31-12_T2_N+1;0.0;retenue;;;;
 BTE;2021T4;2021-12-31;2021;4;AUTRES_PROD;trim;revisee_T4_N+1;0.0;BTE_2022T4.pdf;1;0.0;revisee_T4_N+1;0.0;retenue;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;
 BTE;2021T4;2021-12-31;2021;4;AUTRES_PROD;trim;initiale;0.0;BTE_2021T4.pdf;1;0.0;revisee_T4_N+1;0.0;;composantes, gains nets sur opérations de change publiés sur une ligne à part (non codés);;;

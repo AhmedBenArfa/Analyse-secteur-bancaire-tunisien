@@ -18,20 +18,20 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4 | Cours boursiers 2019–2026 | Fait : 1 955 séances par banque, 63 opérations sur titres sourcées |
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
-| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Fait_Indicateurs` écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop (7 137 lignes) ; `Dim_Indicateur` et la fusion dans `Fait_Indicateurs` écrites, à vérifier |
+| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Fait_Indicateurs` écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop (7 137 lignes) ; `Dim_Indicateur` et la fusion dans `Fait_Indicateurs` chargées dans Power BI Desktop (projet réenregistré), contrôles chiffrés à confirmer |
 | 6 | Modèle en étoile et mesures DAX | À faire |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit ; captures du rapport à faire |
 
 ## En cours
 
-- Étape 5, à vérifier dans Power BI Desktop : `Dim_Indicateur` (27 lignes : 24 indicateurs
-  trimestriels et 3 codes des états financiers ajoutés dans la requête) ; dans `Fait_Indicateurs`,
-  fusion avec `Dim_Indicateur` (nature), colonne conditionnelle qui écarte le « trimestre seul » des
-  stocks (320 lignes : copie du solde au T1, mouvement du trimestre chez STB et UBCI), « non » au lieu
-  d'une case vide pour les ruptures de série. Contrôles attendus : guide Power BI, section 1.
-- Décision attendue : saisir ou non les composantes BTE de 2020T1 à 2021T3 (sauf 2021T2), pour
-  compléter la marge d'intérêts et la marge sur commissions du secteur à ces 6 trimestres.
+- Étape 5 : `Dim_Indicateur` (27 lignes : 24 indicateurs trimestriels et 3 codes des états
+  financiers ajoutés dans la requête) ; dans `Fait_Indicateurs`, fusion avec `Dim_Indicateur`
+  (nature), colonne conditionnelle qui écarte le « trimestre seul » des stocks (320 lignes : copie du
+  solde au T1, mouvement du trimestre chez STB et UBCI), « non » au lieu d'une case vide pour les
+  ruptures de série. Chargées par Power BI Desktop ; contrôles chiffrés à confirmer après
+  actualisation (guide Power BI, section 1 : 7 173 lignes depuis la saisie des composantes BTE).
+- Requête suivante : `Revisions` (versions non retenues, page « qualité des données »).
 
 ## Prochaines actions
 
@@ -48,10 +48,10 @@ Vérifié le 23/10/2026 sur les valeurs retenues (28 trimestres, de 2019T4 à 20
 
 - **complets (28/28)** : PNB, produits et charges d'exploitation bancaire, charges opératoires,
   frais de personnel, charges générales (trimestre seul et cumul), crédits, dépôts ;
-- **22/28** : intérêts perçus et encourus, commissions en produits et encourues, revenus du
-  portefeuille (donc marge d'intérêts et marge sur commissions), portefeuille-titres, dépôts à vue
-  et d'épargne, emprunts : il manque BTE de 2020T1 à 2020T4, 2021T1 et 2021T3 (documents publiés
-  en image, seuls les indicateurs principaux saisis) ;
+- **complets (28/28) depuis le 23/10/2026** : intérêts perçus et encourus, commissions en produits
+  et encourues, revenus du portefeuille (donc marge d'intérêts et marge sur commissions) ;
+- **22/28** : portefeuille-titres, dépôts à vue et d'épargne, emprunts : il manque BTE de 2020T1 à
+  2020T4, 2021T1 et 2021T3 (documents publiés en image, détail du bilan non saisi) ;
 - capitaux propres trimestriels : 20/28 (BTE), affichés seulement dans la fiche banque ;
 - jamais complets, publiés par une partie des banques seulement : dotations aux amortissements,
   dépôts à terme, autres dépôts, portefeuille commercial, autres produits d'exploitation (hors
@@ -82,3 +82,5 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 23/10/2026 | Projet Power BI | Enregistré en projet `.pbip` (modèle en texte TMDL, versionné) ; cache des données et réglages du poste non versionnés |
 | 23/10/2026 | Valeurs vides de `Fait_Indicateurs` | Vides gardés (jamais zéro) ; `Valeur_Trim` vidé pour les stocks par une colonne conditionnelle après fusion avec `Dim_Indicateur` ; « non » pour les ruptures absentes |
 | 23/10/2026 | BTE T4 2021 et T4 2022 | Saisie des composantes du trimestre seul (intérêts, commissions, portefeuille, autres produits) avec les versions révisées des documents suivants ; autres produits de 2023T4 vérifiés sur l'image (0) |
+| 23/10/2026 | BTE 2020T1 à 2021T3 | Saisie des composantes (intérêts, commissions, portefeuille, autres produits) de 2020T1–T4, 2021T1 et 2021T3, avec les colonnes N-1 des documents suivants : 216 valeurs ; intérêts, commissions et portefeuille complets pour le secteur à 28/28 trimestres |
+| 23/10/2026 | Documentation des transformations | `docs/Guide_PowerBI.pdf` : chaque transformation expliquée, code M de chaque requête et feuille de route en annexe, régénéré après chaque requête ou groupe de mesures |

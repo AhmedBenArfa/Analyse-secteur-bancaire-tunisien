@@ -2,7 +2,9 @@
 # Guide Power BI — Analyse du secteur bancaire tunisien
 
 Ce guide explique, étape par étape, chaque requête Power Query et chaque mesure DAX du rapport :
-ce qu'elle calcule et pourquoi. Il se lit à côté du projet Power BI (`powerbi/`) et des fichiers
+ce qu'elle calcule et pourquoi. Il est aussi publié en PDF, régénéré après chaque requête ou mesure :
+`docs/Guide_PowerBI.pdf` (`python scripts/generer_pdf.py guide`), avec en annexe le code M exact de
+chaque requête et la feuille de route (décisions). Il se lit à côté du projet Power BI (`powerbi/`) et des fichiers
 `powerquery/*.pq` (le texte exact de chaque requête). La spécification complète est dans
 `docs/SPECIFICATION.md`.
 
@@ -51,11 +53,12 @@ données** : les requêtes apparaissent dans l'ordre de la section 2, les interm
 | Table | Contrôle | Attendu |
 |---|---|---|
 | `Dim_Indicateur` | nombre de lignes | 27 (24 indicateurs trimestriels + 3 des états financiers) |
-| `Fait_Indicateurs` | nombre de lignes | 7 137 |
+| `Fait_Indicateurs` | nombre de lignes | 7 173 (7 137 avant la saisie des composantes BTE 2020–2021) |
 | `Fait_Indicateurs` | AB 2026T3, PNB | `Valeur_Trim` = 150,021 ; `Valeur_Cumul` = 512,448 (relevés sur l'image, `tests/valeurs_reference.csv`) |
 | `Fait_Indicateurs` | AB 2020T1, CREDITS (stock) | `Valeur_Trim`, `Source_Trim`, `Fichier_Trim` vides ; `Valeur_Cumul` = 5 670,677 |
 | `Fait_Indicateurs` | BTE 2021T4, INT_PERCUS | `Valeur_Trim` = 22,367, `Source_Trim` = `revisee_T4_N+1`, `Fichier_Trim` = `BTE_2022T4.pdf` (22,069 publié à l'origine) |
-| `Fait_Indicateurs` | `Rupture_Cumul` | 6 691 « non », 446 « oui », aucune case vide |
+| `Fait_Indicateurs` | BTE 2020T2, COMM_CHG | `Valeur_Trim` = 0,005 (5 515 publiés à l'origine, révisés dans BTE 2021T2) |
+| `Fait_Indicateurs` | `Rupture_Cumul` | 6 723 « non », 450 « oui », aucune case vide |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -140,12 +143,12 @@ dans le modèle (ordre d'affichage des indicateurs, pas l'ordre alphabétique).
 ### 2.5 `Fait_Indicateurs` (chargée)
 
 Table de faits des indicateurs trimestriels : une ligne par banque × trimestre × indicateur
-(7 137 lignes au 23/10/2026), avec le trimestre seul et le cumul côte à côte.
+(7 173 lignes au 23/10/2026), avec le trimestre seul et le cumul côte à côte.
 
 | Étape | Ce qu'elle fait |
 |---|---|
 | `Source` | part de `Versions` (référence, pas de nouvelle lecture du fichier) |
-| `VersionRetenue` | **filtre sur la version retenue** : `version = source_valeur`, une seule version par banque × trimestre × indicateur × mesure (11 473 lignes) |
+| `VersionRetenue` | **filtre sur la version retenue** : `version = source_valeur`, une seule version par banque × trimestre × indicateur × mesure (11 545 lignes) |
 | `Colonnes` | garde les clés, la mesure (`trim` / `cumul`), la valeur retenue, la version, le fichier, la page et la rupture de série |
 | `Fusion`, `Nature` | **fusion avec `Dim_Indicateur`** sur `code_indicateur` (jointure externe gauche) : nature de l'indicateur |
 | `Retenir`, `SansTrimDesStocks` | **colonne conditionnelle** : faux pour la mesure `trim` d'un stock, puis filtre ; écarte 320 lignes (au T1, copie du solde chez AB, BTE, STB, Attijari, UBCI ; STB 2019T4 et UBCI 2024–2026 : mouvement imprimé dans la colonne du trimestre, qui n'est pas un solde) |
@@ -165,8 +168,8 @@ restent consultables dans la requête `Revisions`.
 pour l'analyse trimestrielle, cumul pour l'année et pour les soldes) sans filtre sur une colonne
 `mesure`. `Valeur_Cumul` est toujours rempli ; `Valeur_Trim` est vide pour les soldes (crédits,
 dépôts, capitaux propres : la valeur à la date est dans `Valeur_Cumul`) et pour un flux dont le
-trimestre seul n'est publié nulle part (BTE : composantes de 2020T1 à 2021T3 sauf 2021T2, autres
-produits à quelques dates) : jamais remplacé par zéro. `Fichier_*` et `Page_*`
+trimestre seul n'est publié nulle part (BTE : autres produits d'exploitation à quelques dates) :
+jamais remplacé par zéro. `Fichier_*` et `Page_*`
 gardent la source de chaque valeur ; `Rupture_*` (« oui ») et `Detail_Rupture_*` alimentent les
 marqueurs et les info-bulles des graphiques.
 

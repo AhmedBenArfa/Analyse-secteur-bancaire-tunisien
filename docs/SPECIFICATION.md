@@ -266,8 +266,14 @@ Fiche émetteur, états financiers, rapports annuels ─> donnees_reference/banq
   Contrôle strict ajouté : intérêts encourus + commissions encourues = charges d'exploitation ;
   intérêts + commissions + portefeuille au plus égal aux produits pour BTE, qui publie ses gains
   nets sur opérations de change sur une ligne à part sans code (reste vérifié sur l'image : égal
-  aux gains de change à 1 kDT près). Les composantes de 2020T1 à 2021T3 (sauf 2021T2) ne sont pas
-  saisies : voir « Trimestres incomplets » ci-dessous.
+  aux gains de change à 1 kDT près). Puis (23/10/2026, décision de l'utilisateur) les mêmes
+  composantes pour 2020T1 à 2020T4, 2021T1 et 2021T3 (toutes les colonnes du tableau) et les colonnes
+  N-1 de 2021T2, 2021T4, 2022T1 et 2022T3 (versions révisées) : 216 valeurs, mêmes contrôles (37
+  colonnes, reste des produits = gains de change à 1 kDT près, charges exactes). Avec les versions
+  retenues, la somme des 4 trimestres égale le cumul annuel en 2020 et 2021 pour chaque composante.
+  BTE 2021T2 révise le T2 2020 : commissions encourues 5 515 → 5 kDT, intérêts encourus 8 925 →
+  14 468 kDT (reclassement d'environ 5,5 MDT, charges totales presque inchangées). BTE 2020T4 et
+  2021T2 ne publient pas de ligne « autres produits » (case vide, non saisie).
   Contrôles faits pendant la saisie BTE (13 documents, 436 valeurs, aucune erreur) :
   produits − charges = PNB, charges opératoires = frais de personnel + charges générales,
   colonne « Variation montant » du PDF = cumul N − cumul N-1, dépôts = somme des quatre
@@ -303,10 +309,12 @@ Fiche émetteur, états financiers, rapports annuels ─> donnees_reference/banq
   2026T3) :
   - **complets (28/28)**, trimestre seul et cumul : PNB, produits et charges d'exploitation
     bancaire, charges opératoires, frais de personnel, charges générales ; crédits et dépôts ;
-  - **22/28** : intérêts perçus et encourus, commissions en produits et encourues, revenus du
-    portefeuille (donc marge d'intérêts et marge sur commissions), portefeuille-titres et
-    portefeuille d'investissement, dépôts à vue et d'épargne, emprunts : il manque **BTE 2020T1 à
-    2020T4, 2021T1 et 2021T3** (documents en image, seuls les indicateurs principaux saisis) ;
+  - **complets (28/28) depuis la saisie des composantes BTE** : intérêts perçus et encourus,
+    commissions en produits et encourues, revenus du portefeuille (donc marge d'intérêts et marge
+    sur commissions) ;
+  - **22/28** : portefeuille-titres et portefeuille d'investissement, dépôts à vue et d'épargne,
+    emprunts : il manque **BTE 2020T1 à 2020T4, 2021T1 et 2021T3** (documents en image, détail du
+    bilan non saisi) ;
   - capitaux propres trimestriels : 20/28 (BTE, mêmes trimestres plus 2021T4 et 2022T4), fiche
     banque seulement (les comparaisons utilisent les capitaux propres du bilan) ;
   - jamais complets, publiés par une partie des banques seulement : dotations aux amortissements

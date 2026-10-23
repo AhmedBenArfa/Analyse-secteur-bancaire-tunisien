@@ -13,9 +13,8 @@ annotation PBI_ProTooling = ["DevMode"]
 
 annotation PBI_QueryOrder = ["CheminDonnees","Fichiers_Donnees","Versions","Dim_Indicateur","Fait_Indicateurs"]
 
-ref table Dim_Indicateur
-
 ref table Fait_Indicateurs
+ref table Dim_Indicateur
 
 ref cultureInfo fr-FR
 
