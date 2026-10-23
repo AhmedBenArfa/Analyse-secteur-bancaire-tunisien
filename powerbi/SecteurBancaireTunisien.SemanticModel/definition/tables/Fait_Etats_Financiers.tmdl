@@ -1,0 +1,150 @@
+/// Table de faits des états financiers (comptes individuels, 30/06 et 31/12) : résultat net, total de l actif, capitaux propres du bilan, valeur retenue, source, facteur d annualisation
+table Fait_Etats_Financiers
+	lineageTag: 8e1c7e62-1a5e-4bad-b92b-0420dfce51d2
+
+	column banque
+		dataType: string
+		lineageTag: b0e44ea7-5796-475c-a202-4301b2e48fec
+		summarizeBy: none
+		sourceColumn: banque
+
+		annotation SummarizationSetBy = User
+
+	column date_arrete
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 7469371e-a048-426d-8204-ea9dab111f0e
+		summarizeBy: none
+		sourceColumn: date_arrete
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column type
+		dataType: string
+		lineageTag: 29745b13-5047-4bd7-9c07-08d90046f2fb
+		summarizeBy: none
+		sourceColumn: type
+
+		annotation SummarizationSetBy = User
+
+	column code
+		dataType: string
+		lineageTag: 79a1bdd0-808e-4d02-9808-ebab69715231
+		summarizeBy: none
+		sourceColumn: code
+
+		annotation SummarizationSetBy = User
+
+	column valeur_mdt
+		dataType: double
+		lineageTag: 272fc0a5-d81e-47ac-96c6-452c8ff656ad
+		summarizeBy: none
+		sourceColumn: valeur_mdt
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column version
+		dataType: string
+		lineageTag: 95f148a8-8024-4785-889d-81e8b47b7ac3
+		summarizeBy: none
+		sourceColumn: version
+
+		annotation SummarizationSetBy = User
+
+	column fichier
+		dataType: string
+		lineageTag: 6d93e766-0ecb-48b7-b6d7-e5a89c7da902
+		summarizeBy: none
+		sourceColumn: fichier
+
+		annotation SummarizationSetBy = User
+
+	column page
+		dataType: int64
+		formatString: 0
+		lineageTag: 68dc53ec-4c25-490e-b74f-46118b1d7788
+		summarizeBy: none
+		sourceColumn: page
+
+		annotation SummarizationSetBy = User
+
+	column statut_valeur
+		dataType: string
+		lineageTag: 1b834863-2020-436d-b80c-0ef94aeb74f3
+		summarizeBy: none
+		sourceColumn: statut_valeur
+
+		annotation SummarizationSetBy = User
+
+	column statut_revision
+		dataType: string
+		lineageTag: 77478eef-cbc8-4544-8b2f-2ccbf84a7ca5
+		summarizeBy: none
+		sourceColumn: statut_revision
+
+		annotation SummarizationSetBy = User
+
+	column remarque
+		dataType: string
+		lineageTag: 67aa7099-d19a-45d9-b476-3c5dfac9e030
+		summarizeBy: none
+		sourceColumn: remarque
+
+		annotation SummarizationSetBy = User
+
+	column facteur_annualisation
+		dataType: int64
+		formatString: 0
+		lineageTag: 24c7eb59-2046-4f72-82d7-dc75b1696970
+		summarizeBy: none
+		sourceColumn: facteur_annualisation
+
+		annotation SummarizationSetBy = User
+
+	partition Fait_Etats_Financiers = m
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Table de faits des états financiers (chargée) : résultat net (avant modifications comptables), total de
+				// l'actif et capitaux propres du bilan des 12 banques, comptes individuels, au 30/06 (2020–2026) et au
+				// 31/12 (2019–2025) ; une ligne par banque × date × code, valeur retenue (révisée par le document suivant
+				// quand elle existe). Sert au ROE et au ROA (spécification 7.7).
+				let
+				    Fichier = Fichiers_Donnees{[fichier = "etats_financiers_versions.csv"]}[contenu],
+				    Source = Csv.Document(Fichier, [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    EnTetes = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Types = Table.TransformColumnTypes(
+				        EnTetes,
+				        {
+				            {"banque", type text}, {"date_arrete", type date}, {"type", type text}, {"code", type text},
+				            {"version", type text}, {"valeur_mdt", type number}, {"fichier", type text}, {"page", Int64.Type},
+				            {"statut_valeur", type text}, {"valeur_retenue", type number}, {"source_valeur", type text},
+				            {"statut_revision", type text}, {"ecart_mdt", type number}, {"remarque", type text}
+				        },
+				        "en-US"
+				    ),
+				    VidesEnNull = Table.ReplaceValue(
+				        Types, "", null, Replacer.ReplaceValue, {"statut_valeur", "statut_revision", "remarque"}
+				    ),
+				    // filtre explicite : seule la version retenue entre dans les faits (même règle que les indicateurs)
+				    VersionRetenue = Table.SelectRows(VidesEnNull, each [version] = [source_valeur]),
+				    Colonnes = Table.SelectColumns(
+				        VersionRetenue,
+				        {"banque", "date_arrete", "type", "code", "valeur_retenue", "version", "fichier", "page",
+				         "statut_valeur", "statut_revision", "remarque"}
+				    ),
+				    Renommees = Table.RenameColumns(Colonnes, {{"valeur_retenue", "valeur_mdt"}}),
+				    // colonne conditionnelle : annualisation du résultat net (un semestre × 2, un exercice × 1)
+				    Annualisation = Table.AddColumn(
+				        Renommees, "facteur_annualisation", each if [type] = "semestriel" then 2 else 1, Int64.Type
+				    )
+				in
+				    Annualisation
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table

@@ -92,6 +92,10 @@ données** : les requêtes apparaissent dans l'ordre de la section 2, les interm
 | `Fait_Cours` | `sans_transaction` = Vrai | 3 074 séances (UBCI 52,7 %, Wifak 42,6 %, BTE 37,6 % de leurs séances) |
 | `Variations_Comparables` | nombre de lignes | 10 981 (11 285 du fichier moins 304 lignes « trimestre » de stocks) |
 | `Variations_Comparables` | BH 2025T4, PNB | `cumul` : 681,479 contre 701,188, `Variation_Pct` = −2,8 % ; `trim` : 189,758 contre 177,219, +7,1 % |
+| `Fait_Etats_Financiers` | nombre de lignes | 504 (12 banques × 14 dates × 3 codes) ; `facteur_annualisation` = 2 sur 252 lignes (semestres), 1 sur 252 (exercices) |
+| `Fait_Etats_Financiers` | BNA 30/06/2025, RES_NET | 155,069 ; `version` = initiale ; statut « revisee non retenue (modification comptable incluse) » |
+| `Fait_Etats_Financiers` | UIB 30/06/2020, RES_NET | 17,912 (révisée, moratoire Covid ; −41,182 publié à l'origine) |
+| `Fait_Etats_Financiers` | BIAT 31/12/2024, CAP_PROPRES_EF | 2 226,391 |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -117,6 +121,7 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | 10 | `Evenements` | oui | `evenements.csv` sur GitHub (source URL) | événements qui expliquent une rupture de série |
 | 11 | `Fait_Cours` | oui | `cours_banques.csv` + fusion avec `Operations_Titres` | cours quotidiens, cours ajustés, rendement, séances sans transaction |
 | 12 | `Variations_Comparables` | oui | `variations_comparables.csv` + fusion avec `Dim_Indicateur` | valeur N et N-1 du même document, variation sur un an |
+| 13 | `Fait_Etats_Financiers` | oui | `etats_financiers_versions.csv` | résultat net, total de l'actif, capitaux propres du bilan (ROE, ROA) |
 
 ### 2.1 `CheminDonnees` (paramètre)
 
@@ -351,6 +356,24 @@ documents révisés différents ; leur rapport mélangerait deux méthodes. BH :
 document du T4 2025 (2024 retraité), −11,0 % si l'on rapprochait le PNB 2025 du PNB 2024 publié un
 an plus tôt. Les mesures de croissance (étape DAX) sommeront `valeur_N` et `valeur_N1` puis feront le
 rapport, pour une banque comme pour le secteur.
+
+### 2.12c `Fait_Etats_Financiers` (chargée)
+
+Une ligne par banque × date × code (504 lignes) : résultat net avant modifications comptables
+(`RES_NET`), total de l'actif (`TOTAL_ACTIF`) et capitaux propres du bilan (`CAP_PROPRES_EF`), comptes
+individuels, au 30/06 de 2020 à 2026 et au 31/12 de 2019 à 2025.
+
+| Étape | Ce qu'elle fait |
+|---|---|
+| `Fichier`, `Source`, `EnTetes`, `Types`, `VidesEnNull` | lit `etats_financiers_versions.csv` ; types `en-US` ; textes vides → `null` |
+| `VersionRetenue` | **filtre sur la version retenue** (`version = source_valeur`) : la révisée par le document suivant de même type quand elle existe, sauf exception écrite (BNA 30/06/2025 : résultat avant modifications comptables) |
+| `Colonnes`, `Renommees` | garde la valeur retenue (renommée `valeur_mdt`), la version, le fichier, la page, les statuts et la remarque |
+| `Annualisation` | **colonne conditionnelle** `facteur_annualisation` : 2 pour un semestre, 1 pour un exercice ; le ROE et le ROA multiplieront le résultat par ce facteur |
+
+**Pourquoi la version révisée** : le capital et le total de l'actif d'ouverture (31/12/N-1) viennent
+alors du document de l'exercice N, dans la même méthode que la valeur de fin de période. Les deux
+dates sans document lisible (BH 31/12/2019, STB 30/06/2023) sont reprises de la colonne N-1 du
+document suivant (statut « repris du document suivant »).
 
 ### 2.13 Fonctions et mots-clés M utilisés
 

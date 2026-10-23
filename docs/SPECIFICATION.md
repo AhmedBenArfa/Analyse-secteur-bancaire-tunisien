@@ -1109,7 +1109,9 @@ Sorties : `donnees/etats_financiers_long.csv` (toutes les valeurs lues, colonnes
 
 Table de faits `Fait_Etats_Financiers` : depuis `etats_financiers_versions.csv`, lignes
 `version = source_valeur` (valeur retenue) : banque, date_arrete, type (semestriel / annuel),
-code, valeur_mdt, fichier, page, statut_revision. Les autres lignes (versions initiales
+code, valeur_mdt, version, fichier, page, statut_valeur, statut_revision, remarque, et la colonne
+conditionnelle `facteur_annualisation` (2 pour un semestre, 1 pour un exercice, calculée dans Power
+Query). Les autres lignes (versions initiales
 remplacées) vont dans une table de qualité, comme `Revisions` pour les indicateurs.
 Relations : `Dim_Banque` et `Dim_Date` comme les autres faits.
 
