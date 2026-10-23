@@ -680,6 +680,14 @@ Choix :
   dimension (aucune clé vide ; dates du 02/01/2019 au 20/10/2026). Sinon Power BI ajoute une ligne
   « (vide) » à la dimension, qui regroupe les lignes orphelines.
 
+**Disposition de la vue Modèle** (`diagramLayout.json`, `python scripts/ecrire_tmdl_table.py diagramme`) :
+l'onglet « Toutes les tables » range les tables en trois lignes, faits en haut (indicateurs, variations,
+états financiers, cours, événements), dimensions au milieu (`Dim_Indicateur`, `Dim_Date`, `Dim_Banque`),
+tables de qualité en bas (révisions, contrôles), et à droite les tables propres à chaque banque
+(actionnariat, définitions). Quatre onglets par thème montrent chacun une petite étoile lisible :
+« Indicateurs trimestriels », « États financiers », « Bourse », « Qualité des données » (une table peut
+figurer dans plusieurs onglets ; un onglet ne change que l'affichage, pas le modèle).
+
 Contrôles attendus :
 
 | Contrôle | Attendu |

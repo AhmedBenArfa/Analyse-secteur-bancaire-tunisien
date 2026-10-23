@@ -19,7 +19,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
-| 6 | Modèle en étoile et mesures DAX | **En cours** : table des dates vérifiée ; 28 relations écrites, à vérifier dans Power BI Desktop ; ensuite mesures |
+| 6 | Modèle en étoile et mesures DAX | **En cours** : table des dates et 28 relations chargées dans Power BI Desktop ; vue Modèle rangée (un onglet par thème), à revoir ; ensuite mesures |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 

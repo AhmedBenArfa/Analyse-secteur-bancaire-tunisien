@@ -194,6 +194,7 @@ sinon un enregistrement dans Power BI efface la modification) :
 | `ecrire_table(nom, description, colonnes, apres)` (`scripts/ecrire_tmdl_table.py`, depuis Python) | Ajoute ou remplace une table chargée : colonnes typées, code M de `powerquery/<nom>.pq`, ordre des requêtes |
 | `python scripts/ecrire_tmdl_expression.py NOM "description" APRES` | Ajoute ou remplace une requête intermédiaire non chargée dans `expressions.tmdl` |
 | `ecrire_table_calculee(nom, description, colonnes, tri, cachees, table_de_dates)` (même fichier) ; `python scripts/ecrire_tmdl_table.py Dim_Date` | Ajoute ou remplace une table calculée DAX : colonnes typées, code de `dax/<nom>.dax`, colonnes de tri, colonnes masquées, marquage en table de dates |
+| `python scripts/ecrire_tmdl_table.py diagramme` (`ecrire_diagramme(onglets)` depuis Python) | Réécrit la disposition de la vue Modèle (`diagramLayout.json`) : onglet « Toutes les tables » et un onglet par thème (`DIAGRAMME` dans le script) |
 | `python scripts/ecrire_tmdl_table.py relations` (`ecrire_relations(liste)` depuis Python) | Réécrit `relationships.tmdl` avec les relations du modèle en étoile (`RELATIONS` dans le script) ; chaque colonne doit exister ; une relation déjà présente garde son identifiant |
 | `python scripts/ecrire_tmdl_segment.py` | Ajoute une colonne et remplace le code M d'une table sans toucher au reste du fichier, ajoute une fonction personnalisée ; sans argument, applique le segment d'actionnariat (déjà fait : relancer ne change rien) |
 

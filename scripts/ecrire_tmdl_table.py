@@ -20,6 +20,10 @@ table_de_dates)` ; partition `calculated` = code de dax/<Table>.dax, colonnes do
 l'expression (`sourceColumn: [Nom]`), rien dans PBI_QueryOrder (ce n'est pas une requête) ; cachees :
 colonnes masquées ; table_de_dates : colonne clé d'une table marquée comme table de dates. En ligne de
 commande, `python scripts/ecrire_tmdl_table.py Dim_Date` écrit la table des dates.
+
+Relations et vue Modèle : `ecrire_relations(RELATIONS)` réécrit relationships.tmdl,
+`ecrire_diagramme(DIAGRAMME)` réécrit diagramLayout.json (un onglet par thème) ; en ligne de commande,
+`python scripts/ecrire_tmdl_table.py relations` ou `diagramme`.
 """
 import re, uuid
 from pathlib import Path
@@ -148,13 +152,69 @@ RELATIONS = ([(t, c, "Dim_Date", "Date") for t, c in FAITS_DATES]
              + [(t, c, "Dim_Indicateur", "code_indicateur") for t, c in FAITS_INDICATEURS])
 
 
+def ecrire_diagramme(onglets):
+    """Réécrit diagramLayout.json (vue Modèle) : onglets = [(nom, {table: (x, y)})], le premier étant
+    « Toutes les tables ». Taille de chaque table : celle que Power BI a enregistrée (300 × 234 sinon).
+    JSON indenté de 2 espaces, fins de ligne CRLF, sans fin de ligne finale, comme Power BI."""
+    import json
+    f = DEF.parent / "diagramLayout.json"
+    actuel = json.loads(f.read_bytes().decode("utf-8"))
+    tailles = {n["nodeIndex"]: n["size"] for d in actuel["diagrams"] for n in d["nodes"]}
+    tags = {p.stem: lineage_existants(p)[0] for p in (DEF / "tables").glob("*.tmdl")}
+    diagrammes = []
+    for ordinal, (nom, positions) in enumerate(onglets):
+        assert set(positions) <= set(tags), f"table inconnue dans l'onglet {nom}"
+        noeuds = [{"location": {"x": int(x), "y": int(y)}, "nodeIndex": t, "nodeLineageTag": tags[t],
+                   "size": tailles.get(t, {"height": 300, "width": 234}), "zIndex": 0}
+                  for t, (x, y) in positions.items()]
+        diagrammes.append({"ordinal": ordinal, "scrollPosition": {"x": 0, "y": 0}, "nodes": noeuds, "name": nom,
+                           "zoomValue": 80, "pinKeyFieldsToTop": False, "showExtraHeaderInfo": False,
+                           "hideKeyFieldsWhenCollapsed": False, "tablesLocked": False})
+    assert set(onglets[0][1]) == set(tags), "le premier onglet doit contenir toutes les tables"
+    sortie = {"version": actuel["version"], "diagrams": diagrammes,
+              "selectedDiagram": onglets[0][0], "defaultDiagram": onglets[0][0]}
+    f.write_bytes(json.dumps(sortie, indent=2, ensure_ascii=False).replace("\n", NL).encode("utf-8"))
+    print(len(onglets), "onglets écrits :", [n for n, _ in onglets])
+
+
+# Vue Modèle : faits en haut, dimensions au milieu, qualité en bas ; tables propres aux banques à droite
+P = 284   # pas horizontal : largeur d'une table (234) + 50
+DIAGRAMME = [
+    ("Toutes les tables", {
+        "Fait_Indicateurs": (P, 0), "Variations_Comparables": (2 * P, 0), "Fait_Etats_Financiers": (3 * P, 0),
+        "Fait_Cours": (4 * P, 0), "Evenements": (5 * P, 0),
+        "Dim_Indicateur": (1.5 * P, 420), "Dim_Date": (3 * P, 420), "Dim_Banque": (4.5 * P, 420),
+        "Revisions": (P, 820), "Revisions_Etats_Financiers": (2 * P, 820), "Controle": (3 * P, 820),
+        "Controle_Annuel": (4 * P, 820),
+        "Banques_Actionnariat": (6.5 * P, 220), "Definitions_Charges": (6.5 * P, 560),
+        "Definitions_Capitaux_Propres": (6.5 * P, 800)}),
+    ("Indicateurs trimestriels", {
+        "Fait_Indicateurs": (0, 0), "Variations_Comparables": (P, 0), "Evenements": (2 * P, 0),
+        "Dim_Indicateur": (0, 420), "Dim_Date": (P, 420), "Dim_Banque": (2 * P, 420),
+        "Definitions_Charges": (3.5 * P, 0), "Definitions_Capitaux_Propres": (3.5 * P, 260),
+        "Banques_Actionnariat": (3.5 * P, 460)}),
+    ("États financiers", {
+        "Fait_Etats_Financiers": (0.5 * P, 0), "Revisions_Etats_Financiers": (1.5 * P, 0),
+        "Dim_Indicateur": (0, 420), "Dim_Date": (P, 420), "Dim_Banque": (2 * P, 420)}),
+    ("Bourse", {"Fait_Cours": (P, 0), "Dim_Date": (0.5 * P, 420), "Dim_Banque": (1.5 * P, 420)}),
+    ("Qualité des données", {
+        "Revisions": (0, 0), "Revisions_Etats_Financiers": (P, 0), "Controle": (2 * P, 0),
+        "Controle_Annuel": (3 * P, 0),
+        "Dim_Indicateur": (0.5 * P, 420), "Dim_Date": (1.5 * P, 420), "Dim_Banque": (2.5 * P, 420)}),
+]
+
+
 if __name__ == "__main__":
     import sys
     if sys.argv[1:] == ["relations"]:
         ecrire_relations(RELATIONS)
         sys.exit()
+    if sys.argv[1:] == ["diagramme"]:
+        ecrire_diagramme(DIAGRAMME)
+        sys.exit()
     if sys.argv[1:] != ["Dim_Date"]:
-        sys.exit("utilisation : python scripts/ecrire_tmdl_table.py Dim_Date | relations (autres tables : depuis Python)")
+        sys.exit("utilisation : python scripts/ecrire_tmdl_table.py Dim_Date | relations | diagramme "
+                 "(autres tables : depuis Python)")
     ecrire_table_calculee(
         "Dim_Date",
         "Table des dates (DAX) : un jour par ligne du 01/01/2019 au 31/12/2026, trimestre au format des faits, "

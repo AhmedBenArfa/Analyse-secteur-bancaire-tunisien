@@ -4,143 +4,13 @@
     {
       "ordinal": 0,
       "scrollPosition": {
-        "x": 27.333333969116211,
+        "x": 0,
         "y": 0
       },
       "nodes": [
         {
           "location": {
-            "x": 0,
-            "y": 0
-          },
-          "nodeIndex": "Banques_Actionnariat",
-          "nodeLineageTag": "97d6b0b5-62d1-4c33-8770-a1d35f6dd636",
-          "size": {
-            "height": 300,
-            "width": 234
-          },
-          "zIndex": 0
-        },
-        {
-          "location": {
             "x": 284,
-            "y": 0
-          },
-          "nodeIndex": "Controle",
-          "nodeLineageTag": "5f734385-6486-4c21-8a2e-a500618aadfc",
-          "size": {
-            "height": 300,
-            "width": 234
-          },
-          "zIndex": 0
-        },
-        {
-          "location": {
-            "x": 568,
-            "y": 0
-          },
-          "nodeIndex": "Controle_Annuel",
-          "nodeLineageTag": "fc3fe072-7ffe-45dd-9af7-061b4645c365",
-          "size": {
-            "height": 300,
-            "width": 234
-          },
-          "zIndex": 0
-        },
-        {
-          "location": {
-            "x": 852,
-            "y": 74
-          },
-          "nodeIndex": "Definitions_Capitaux_Propres",
-          "nodeLineageTag": "36ad60d0-9888-4e71-b076-627816a50e06",
-          "size": {
-            "height": 152,
-            "width": 234
-          },
-          "zIndex": 0
-        },
-        {
-          "location": {
-            "x": 1136,
-            "y": 50
-          },
-          "nodeIndex": "Definitions_Charges",
-          "nodeLineageTag": "1eb1191d-4bfa-4abf-adf9-0836d46e2c3b",
-          "size": {
-            "height": 200,
-            "width": 234
-          },
-          "zIndex": 0
-        },
-        {
-          "location": {
-            "x": 1420,
-            "y": 14
-          },
-          "nodeIndex": "Dim_Banque",
-          "nodeLineageTag": "9cbac033-d30f-43db-8c16-bffa769ecce1",
-          "size": {
-            "height": 272,
-            "width": 234
-          },
-          "zIndex": 0
-        },
-        {
-          "location": {
-            "x": 1704,
-            "y": 38
-          },
-          "nodeIndex": "Dim_Indicateur",
-          "nodeLineageTag": "5164b8a6-d755-4d3f-84b7-c8661d6b1b84",
-          "size": {
-            "height": 224,
-            "width": 234
-          },
-          "zIndex": 0
-        },
-        {
-          "location": {
-            "x": 1988,
-            "y": 14
-          },
-          "nodeIndex": "Evenements",
-          "nodeLineageTag": "f02f94d3-9343-4df6-a9bd-83e7dea93c13",
-          "size": {
-            "height": 272,
-            "width": 234
-          },
-          "zIndex": 0
-        },
-        {
-          "location": {
-            "x": 2272,
-            "y": 0
-          },
-          "nodeIndex": "Fait_Cours",
-          "nodeLineageTag": "0213f8c9-40b5-49c8-82c6-2f3beb7beafe",
-          "size": {
-            "height": 300,
-            "width": 234
-          },
-          "zIndex": 0
-        },
-        {
-          "location": {
-            "x": 2556,
-            "y": 0
-          },
-          "nodeIndex": "Fait_Etats_Financiers",
-          "nodeLineageTag": "8e1c7e62-1a5e-4bad-b92b-0420dfce51d2",
-          "size": {
-            "height": 300,
-            "width": 234
-          },
-          "zIndex": 0
-        },
-        {
-          "location": {
-            "x": 2840,
             "y": 0
           },
           "nodeIndex": "Fait_Indicateurs",
@@ -153,8 +23,99 @@
         },
         {
           "location": {
-            "x": 3124,
+            "x": 568,
             "y": 0
+          },
+          "nodeIndex": "Variations_Comparables",
+          "nodeLineageTag": "ef795aaa-c0b4-45f0-baaf-61546e286ddd",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 852,
+            "y": 0
+          },
+          "nodeIndex": "Fait_Etats_Financiers",
+          "nodeLineageTag": "8e1c7e62-1a5e-4bad-b92b-0420dfce51d2",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1136,
+            "y": 0
+          },
+          "nodeIndex": "Fait_Cours",
+          "nodeLineageTag": "0213f8c9-40b5-49c8-82c6-2f3beb7beafe",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1420,
+            "y": 0
+          },
+          "nodeIndex": "Evenements",
+          "nodeLineageTag": "f02f94d3-9343-4df6-a9bd-83e7dea93c13",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 426,
+            "y": 420
+          },
+          "nodeIndex": "Dim_Indicateur",
+          "nodeLineageTag": "5164b8a6-d755-4d3f-84b7-c8661d6b1b84",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 852,
+            "y": 420
+          },
+          "nodeIndex": "Dim_Date",
+          "nodeLineageTag": "cdcee5c1-068a-4867-83ee-b3636d235299",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1278,
+            "y": 420
+          },
+          "nodeIndex": "Dim_Banque",
+          "nodeLineageTag": "9cbac033-d30f-43db-8c16-bffa769ecce1",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 284,
+            "y": 820
           },
           "nodeIndex": "Revisions",
           "nodeLineageTag": "d1942967-c5a9-4045-afb0-ba90b241a717",
@@ -166,7 +127,245 @@
         },
         {
           "location": {
-            "x": 3408,
+            "x": 568,
+            "y": 820
+          },
+          "nodeIndex": "Revisions_Etats_Financiers",
+          "nodeLineageTag": "cdd201a2-6e3d-42ee-a433-d0aa335fa5e4",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 852,
+            "y": 820
+          },
+          "nodeIndex": "Controle",
+          "nodeLineageTag": "5f734385-6486-4c21-8a2e-a500618aadfc",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1136,
+            "y": 820
+          },
+          "nodeIndex": "Controle_Annuel",
+          "nodeLineageTag": "fc3fe072-7ffe-45dd-9af7-061b4645c365",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1846,
+            "y": 220
+          },
+          "nodeIndex": "Banques_Actionnariat",
+          "nodeLineageTag": "97d6b0b5-62d1-4c33-8770-a1d35f6dd636",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1846,
+            "y": 560
+          },
+          "nodeIndex": "Definitions_Charges",
+          "nodeLineageTag": "1eb1191d-4bfa-4abf-adf9-0836d46e2c3b",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1846,
+            "y": 800
+          },
+          "nodeIndex": "Definitions_Capitaux_Propres",
+          "nodeLineageTag": "36ad60d0-9888-4e71-b076-627816a50e06",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Toutes les tables",
+      "zoomValue": 80,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    },
+    {
+      "ordinal": 1,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 0,
+            "y": 0
+          },
+          "nodeIndex": "Fait_Indicateurs",
+          "nodeLineageTag": "89c53261-d401-4cfe-a457-01501cdddb5b",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 284,
+            "y": 0
+          },
+          "nodeIndex": "Variations_Comparables",
+          "nodeLineageTag": "ef795aaa-c0b4-45f0-baaf-61546e286ddd",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 568,
+            "y": 0
+          },
+          "nodeIndex": "Evenements",
+          "nodeLineageTag": "f02f94d3-9343-4df6-a9bd-83e7dea93c13",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 420
+          },
+          "nodeIndex": "Dim_Indicateur",
+          "nodeLineageTag": "5164b8a6-d755-4d3f-84b7-c8661d6b1b84",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 284,
+            "y": 420
+          },
+          "nodeIndex": "Dim_Date",
+          "nodeLineageTag": "cdcee5c1-068a-4867-83ee-b3636d235299",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 568,
+            "y": 420
+          },
+          "nodeIndex": "Dim_Banque",
+          "nodeLineageTag": "9cbac033-d30f-43db-8c16-bffa769ecce1",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 994,
+            "y": 0
+          },
+          "nodeIndex": "Definitions_Charges",
+          "nodeLineageTag": "1eb1191d-4bfa-4abf-adf9-0836d46e2c3b",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 994,
+            "y": 260
+          },
+          "nodeIndex": "Definitions_Capitaux_Propres",
+          "nodeLineageTag": "36ad60d0-9888-4e71-b076-627816a50e06",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 994,
+            "y": 460
+          },
+          "nodeIndex": "Banques_Actionnariat",
+          "nodeLineageTag": "97d6b0b5-62d1-4c33-8770-a1d35f6dd636",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Indicateurs trimestriels",
+      "zoomValue": 80,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    },
+    {
+      "ordinal": 2,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 142,
+            "y": 0
+          },
+          "nodeIndex": "Fait_Etats_Financiers",
+          "nodeLineageTag": "8e1c7e62-1a5e-4bad-b92b-0420dfce51d2",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 426,
             "y": 0
           },
           "nodeIndex": "Revisions_Etats_Financiers",
@@ -179,19 +378,22 @@
         },
         {
           "location": {
-            "x": 3692,
-            "y": 0
+            "x": 0,
+            "y": 420
           },
-          "nodeIndex": "Variations_Comparables",
-          "nodeLineageTag": "ef795aaa-c0b4-45f0-baaf-61546e286ddd",
+          "nodeIndex": "Dim_Indicateur",
+          "nodeLineageTag": "5164b8a6-d755-4d3f-84b7-c8661d6b1b84",
           "size": {
-            "height": 300,
+            "height": 224,
             "width": 234
           },
           "zIndex": 0
         },
         {
-          "location": {},
+          "location": {
+            "x": 284,
+            "y": 420
+          },
           "nodeIndex": "Dim_Date",
           "nodeLineageTag": "cdcee5c1-068a-4867-83ee-b3636d235299",
           "size": {
@@ -199,10 +401,183 @@
             "width": 234
           },
           "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 568,
+            "y": 420
+          },
+          "nodeIndex": "Dim_Banque",
+          "nodeLineageTag": "9cbac033-d30f-43db-8c16-bffa769ecce1",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
         }
       ],
-      "name": "Toutes les tables",
-      "zoomValue": 100,
+      "name": "États financiers",
+      "zoomValue": 80,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    },
+    {
+      "ordinal": 3,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 284,
+            "y": 0
+          },
+          "nodeIndex": "Fait_Cours",
+          "nodeLineageTag": "0213f8c9-40b5-49c8-82c6-2f3beb7beafe",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 142,
+            "y": 420
+          },
+          "nodeIndex": "Dim_Date",
+          "nodeLineageTag": "cdcee5c1-068a-4867-83ee-b3636d235299",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 426,
+            "y": 420
+          },
+          "nodeIndex": "Dim_Banque",
+          "nodeLineageTag": "9cbac033-d30f-43db-8c16-bffa769ecce1",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Bourse",
+      "zoomValue": 80,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    },
+    {
+      "ordinal": 4,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 0,
+            "y": 0
+          },
+          "nodeIndex": "Revisions",
+          "nodeLineageTag": "d1942967-c5a9-4045-afb0-ba90b241a717",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 284,
+            "y": 0
+          },
+          "nodeIndex": "Revisions_Etats_Financiers",
+          "nodeLineageTag": "cdd201a2-6e3d-42ee-a433-d0aa335fa5e4",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 568,
+            "y": 0
+          },
+          "nodeIndex": "Controle",
+          "nodeLineageTag": "5f734385-6486-4c21-8a2e-a500618aadfc",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 852,
+            "y": 0
+          },
+          "nodeIndex": "Controle_Annuel",
+          "nodeLineageTag": "fc3fe072-7ffe-45dd-9af7-061b4645c365",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 142,
+            "y": 420
+          },
+          "nodeIndex": "Dim_Indicateur",
+          "nodeLineageTag": "5164b8a6-d755-4d3f-84b7-c8661d6b1b84",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 426,
+            "y": 420
+          },
+          "nodeIndex": "Dim_Date",
+          "nodeLineageTag": "cdcee5c1-068a-4867-83ee-b3636d235299",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 710,
+            "y": 420
+          },
+          "nodeIndex": "Dim_Banque",
+          "nodeLineageTag": "9cbac033-d30f-43db-8c16-bffa769ecce1",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Qualité des données",
+      "zoomValue": 80,
       "pinKeyFieldsToTop": false,
       "showExtraHeaderInfo": false,
       "hideKeyFieldsWhenCollapsed": false,
