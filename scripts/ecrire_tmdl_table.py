@@ -101,7 +101,7 @@ def ecrire_table_calculee(nom, description, colonnes, tri=None, cachees=(), tabl
         t += ["", "\t\tannotation SummarizationSetBy = User"]
         t += ["", "\t\tannotation UnderlyingDateTimeDataType = Date"] if typ == "date" else []
         t += [""]
-    t += [f"\tpartition {nom} = calculated", "\t\tmode: import", "\t\tsource =", *["\t\t\t\t" + l for l in dax]]
+    t += [f"\tpartition {nom} = calculated", "\t\tmode: import", "\t\tsource =", *["\t\t\t\t" + l for l in dax], ""]
     f.write_bytes((NL.join(t) + NL).encode("utf-8"))
     ajouter_au_modele(nom)
     print(nom, "écrite (table calculée) :", len(colonnes), "colonnes")

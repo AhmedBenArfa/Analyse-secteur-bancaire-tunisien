@@ -19,7 +19,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
-| 6 | Modèle en étoile et mesures DAX | **En cours** : table des dates `Dim_Date` écrite, à vérifier dans Power BI Desktop ; ensuite relations, puis mesures |
+| 6 | Modèle en étoile et mesures DAX | **En cours** : table des dates `Dim_Date` vérifiée dans Power BI Desktop ; prochaine action : relations, puis mesures |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
@@ -42,12 +42,12 @@ types avec paramètres régionaux, colonnes conditionnelles, regroupements, fonc
 
 Un groupe à la fois, vérifié dans Power BI Desktop avant le suivant :
 
-1. **Table des dates** (écrite le 23/10/2026, `dax/Dim_Date.dax`, à vérifier : 2 922 jours, 32 fins de
-   trimestre, Avant Covid 425 / Covid 671 / Après Covid 1 826 jours) : du 01/01/2019 au 31/12/2026, année, trimestre, libellé du trimestre trié
+1. **Table des dates** (faite le 23/10/2026, `dax/Dim_Date.dax`, vérifiée dans Power BI Desktop ; attendu :
+   2 922 jours, 32 fins de trimestre, Avant Covid 425 / Covid 671 / Après Covid 1 826 jours) : du 01/01/2019 au 31/12/2026, année, trimestre, libellé du trimestre trié
    chronologiquement, fin de trimestre, **période Covid** (avant le 01/03/2020, jusqu'au 31/12/2021,
    après) triée par une colonne d'ordre ; libellé du trimestre au format des faits (« 2024T3 ») ;
    marquée comme table de dates.
-2. **Relations du modèle en étoile** (une dimension vers plusieurs lignes, filtre simple) : dates, banques
+2. **Relations du modèle en étoile** (prochaine action) (une dimension vers plusieurs lignes, filtre simple) : dates, banques
    et indicateurs vers les tables de faits, de qualité et d'événements.
 3. **Mesures DAX par groupes** : bases ; totaux du secteur, nombre de banques présentes et dernier
    trimestre complet ; ratios ; croissances ; ROE et ROA ; Bourse ; qualité des données.
