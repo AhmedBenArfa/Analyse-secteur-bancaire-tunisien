@@ -693,6 +693,12 @@ d'une banque à l'autre (colonne `definition_charges_operatoires` de `gabarits.c
   confirme (BT 2020T3 : charges opératoires du trimestre 12 076 kDT, composantes 15 702 + 7 724 ;
   BNA 2023T2 : 86 209 kDT pour des composantes de 69 096 + 17 219). Aucun chiffre n'est corrigé.
 
+Code exact : `dax/mesures.dax`, groupe 3 (23/10/2026). Le coefficient harmonisé se calcule sur une ligne
+par banque (`VALUES ( Dim_Banque[code_banque] )`), le trimestre étant unique (garde-fou de 7.1) ; ajout du
+`Coef exploitation harmonise annuel` (cumuls publiés au 31/12, jamais la somme des trimestres) et de
+`Banques presentes coef`. `Coef secteur`, `Coef mediane` et `Rang coef` (7.4) sont vides si une des 12 banques
+manque ; `Ecart coef / mediane` et `Rang coef` vides hors d'une ligne de banque.
+
 ```dax
 -- Publié : définition propre à chaque banque (Definitions_Charges), pour information
 Coef exploitation publie = DIVIDE ( [Charges operatoires], [PNB] )

@@ -335,6 +335,151 @@ table Mesures
 		displayFolder: 2. Secteur\Dernier trimestre complet
 		lineageTag: d7148d63-af80-4826-8fe9-4a917b45d5ba
 
+	/// Coefficient publié = charges opératoires publiées / PNB du trimestre ; POUR INFORMATION (le contenu des charges opératoires varie d'une banque à l'autre : Definitions_Charges), jamais classé
+	measure 'Coef exploitation publie' = DIVIDE ( [Charges operatoires], [PNB] )
+		formatString: 0.0 %
+		displayFolder: 3. Ratios\Coefficient d'exploitation
+		lineageTag: 32e55846-9677-4dbc-9c0c-46e30edc413f
+
+	/// Coefficient harmonisé = (frais de personnel + charges générales) / PNB du trimestre, sur les banques qui publient les trois montants ; sert à toutes les comparaisons et classements
+	measure 'Coef exploitation harmonise' =
+			VAR Lignes =
+			    ADDCOLUMNS (
+			        VALUES ( Dim_Banque[code_banque] ),
+			        "@Pers", [Frais personnel],
+			        "@Gen", [Charges generales],
+			        "@PNB", [PNB]
+			    )
+			VAR Completes =
+			    FILTER ( Lignes, NOT ISBLANK ( [@Pers] ) && NOT ISBLANK ( [@Gen] ) && NOT ISBLANK ( [@PNB] ) )
+			RETURN
+			    DIVIDE ( SUMX ( Completes, [@Pers] + [@Gen] ), SUMX ( Completes, [@PNB] ) )
+		formatString: 0.0 %
+		displayFolder: 3. Ratios\Coefficient d'exploitation
+		lineageTag: 5972de1e-013f-452d-89dd-c3dd192cb679
+
+	/// Frais de personnel de l'année : cumul publié au 31/12
+	measure 'Frais personnel annuel' = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "FRAIS_PERS", Dim_Date[Trimestre] = "T4" )
+		formatString: #,0.000
+		displayFolder: 3. Ratios\Intermédiaires
+		lineageTag: e3621bf7-8ca9-441a-be6d-e66b503ef63f
+
+	/// Charges générales d'exploitation de l'année : cumul publié au 31/12
+	measure 'Charges generales annuel' = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "CHG_GEN", Dim_Date[Trimestre] = "T4" )
+		formatString: #,0.000
+		displayFolder: 3. Ratios\Intermédiaires
+		lineageTag: 8e86718d-773e-4a67-8439-3f18d5d97e7e
+
+	/// Coefficient harmonisé de l'année, à partir des cumuls publiés au 31/12 (jamais la somme des trimestres) ; vide pour une année sans T4 publié
+	measure 'Coef exploitation harmonise annuel' =
+			VAR Lignes =
+			    ADDCOLUMNS (
+			        VALUES ( Dim_Banque[code_banque] ),
+			        "@Pers", [Frais personnel annuel],
+			        "@Gen", [Charges generales annuel],
+			        "@PNB", [PNB annuel]
+			    )
+			VAR Completes =
+			    FILTER ( Lignes, NOT ISBLANK ( [@Pers] ) && NOT ISBLANK ( [@Gen] ) && NOT ISBLANK ( [@PNB] ) )
+			RETURN
+			    DIVIDE ( SUMX ( Completes, [@Pers] + [@Gen] ), SUMX ( Completes, [@PNB] ) )
+		formatString: 0.0 %
+		displayFolder: 3. Ratios\Coefficient d'exploitation
+		lineageTag: 4e9f9ab5-f5df-4f96-b5ed-2b36733a3a57
+
+	/// Nombre de banques qui publient frais de personnel, charges générales et PNB pour le trimestre sélectionné
+	measure 'Banques presentes coef' =
+			COUNTROWS (
+			    FILTER (
+			        ALL ( Dim_Banque ),
+			        NOT ISBLANK ( [Frais personnel] ) && NOT ISBLANK ( [Charges generales] ) && NOT ISBLANK ( [PNB] )
+			    )
+			)
+		formatString: 0
+		displayFolder: 3. Ratios\Comparaison au secteur
+		lineageTag: 2a10b6a0-a3a7-44b2-97fa-29b5f8980f19
+
+	/// Coefficient harmonisé du secteur (moyenne pondérée par le PNB : somme des charges / somme des PNB des 12 banques) ; vide si une banque manque
+	measure 'Coef secteur' =
+			IF (
+			    [Banques presentes coef] = [Nombre de banques],
+			    CALCULATE ( [Coef exploitation harmonise], REMOVEFILTERS ( Dim_Banque ) )
+			)
+		formatString: 0.0 %
+		displayFolder: 3. Ratios\Comparaison au secteur
+		lineageTag: e1129c7a-09ce-47e9-8e14-8037ea0e1d8e
+
+	/// Médiane des coefficients harmonisés des 12 banques (banque « du milieu », insensible aux extrêmes) ; vide si une banque manque
+	measure 'Coef mediane' =
+			IF (
+			    [Banques presentes coef] = [Nombre de banques],
+			    MEDIANX ( ALL ( Dim_Banque ), [Coef exploitation harmonise] )
+			)
+		formatString: 0.0 %
+		displayFolder: 3. Ratios\Comparaison au secteur
+		lineageTag: 66d81358-c661-43e8-a333-25d00a3248e4
+
+	/// Écart du coefficient harmonisé de la banque à la médiane (négatif = plus efficace que la banque médiane) ; vide hors d'une ligne de banque
+	measure 'Ecart coef / mediane' =
+			VAR Coef = [Coef exploitation harmonise]
+			VAR Mediane = [Coef mediane]
+			RETURN
+			    IF (
+			        HASONEVALUE ( Dim_Banque[code_banque] ) && NOT ISBLANK ( Coef ) && NOT ISBLANK ( Mediane ),
+			        Coef - Mediane
+			    )
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 3. Ratios\Comparaison au secteur
+		lineageTag: ddbc5e6f-ba4a-40c7-b1f7-a924f7558441
+
+	/// Rang du coefficient harmonisé (1 = le plus bas, donc la banque la plus efficace) ; vide hors d'une ligne de banque ou si une banque manque
+	measure 'Rang coef' =
+			IF (
+			    HASONEVALUE ( Dim_Banque[code_banque] )
+			        && NOT ISBLANK ( [Coef exploitation harmonise] )
+			        && [Banques presentes coef] = [Nombre de banques],
+			    RANKX ( ALL ( Dim_Banque ), [Coef exploitation harmonise], , ASC, DENSE )
+			)
+		formatString: 0
+		displayFolder: 3. Ratios\Comparaison au secteur
+		lineageTag: aa68b87e-45c9-4e25-be43-0233f33c9c54
+
+	/// Marge d'intérêts / PNB du trimestre
+	measure 'Part marge interets' = DIVIDE ( [Marge interets], [PNB] )
+		formatString: 0.0 %
+		displayFolder: 3. Ratios\Structure du PNB
+		lineageTag: 11e8fe2e-9e02-4d3a-9f50-78bc6362a75a
+
+	/// Marge sur commissions / PNB du trimestre
+	measure 'Part commissions' = DIVIDE ( [Marge commissions], [PNB] )
+		formatString: 0.0 %
+		displayFolder: 3. Ratios\Structure du PNB
+		lineageTag: fadca509-b188-466e-a03e-66c8c87507e7
+
+	/// Revenus du portefeuille-titres / PNB du trimestre
+	measure 'Part portefeuille' = DIVIDE ( [Revenus portefeuille], [PNB] )
+		formatString: 0.0 %
+		displayFolder: 3. Ratios\Structure du PNB
+		lineageTag: a2c62407-cf52-4a79-a6c3-27f97640c418
+
+	/// Frais de personnel / PNB du trimestre
+	measure 'Frais personnel / PNB' = DIVIDE ( [Frais personnel], [PNB] )
+		formatString: 0.0 %
+		displayFolder: 3. Ratios\Structure du PNB
+		lineageTag: 2f4cd4a1-36e9-4779-871b-72b1c2ca3d26
+
+	/// Encours des crédits / encours des dépôts en fin de période (plus de 100 % : la banque prête plus qu'elle ne collecte de dépôts)
+	measure 'Credits / Depots' = DIVIDE ( [Credits], [Depots] )
+		formatString: 0.0 %
+		displayFolder: 3. Ratios\Bilan
+		lineageTag: 59af4594-1963-4699-81fe-9f1e69917edf
+
+	/// Dépôts à vue / total des dépôts en fin de période (ressources peu coûteuses)
+	measure 'Part depots a vue' = DIVIDE ( [Depots a vue], [Depots] )
+		formatString: 0.0 %
+		displayFolder: 3. Ratios\Bilan
+		lineageTag: 19e949ba-3af9-42a9-8a24-00117e43994f
+
 	column Colonne_Masquee
 		dataType: int64
 		isHidden

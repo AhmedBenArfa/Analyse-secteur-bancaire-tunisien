@@ -828,6 +828,74 @@ en image, détail du bilan non saisi), 12 en 2024T3 ; `DEP_TERME` 3 en 2020T1, 4
 Dans Power BI (vue **Données**, `Dim_Date`) : `Choix_Trimestre` contient « Dernier trimestre complet » pour
 les jours du T3 2026 et plus de « 2026T3 » ; dans un segment, « Dernier trimestre complet » vient en premier.
 
+### 3.5 Ratios et comparaison du coefficient (groupe 3, spécification 7.2 et 7.4)
+
+**Deux coefficients d'exploitation.** Les charges opératoires publiées n'ont pas le même contenu d'une
+banque à l'autre : BT, BH, BTE, STB les publient sans dotations aux amortissements, WIB et UIB avec les
+dotations, BNA, ATB, AB, BIAT avec un reste non détaillé (`Definitions_Charges`). Comparer « charges
+opératoires / PNB » entre banques comparerait donc des contenus différents.
+
+- `Coef exploitation harmonise` = (frais de personnel + charges générales d'exploitation) / PNB : même
+  définition pour toutes les banques ; **sert à toutes les comparaisons et à tous les classements**. Il se
+  calcule sur une table d'une ligne par banque (`ADDCOLUMNS ( VALUES ( Dim_Banque[code_banque] ), … )`) qui
+  garde les trois montants, puis ne retient que les banques qui ont les trois (`FILTER`) : une banque sans
+  composantes ne fausse pas le coefficient d'un groupe de banques, et le PNB du dénominateur est pris sur les
+  mêmes banques que les charges du numérateur. Pour plusieurs banques, c'est une moyenne pondérée par le PNB
+  (somme des charges / somme des PNB), pas une moyenne des coefficients.
+- `Coef exploitation publie` = charges opératoires publiées / PNB : **pour information** (fiche banque, avec
+  la définition de la banque), jamais classé.
+- `Coef exploitation harmonise annuel` : même calcul avec les **cumuls publiés au 31/12** (`Frais personnel
+  annuel`, `Charges generales annuel`, `PNB annuel`), jamais la somme des quatre trimestres. Le coefficient du
+  trimestre reste vide sur une année entière (garde-fou de 3.3).
+
+**Comparaison au secteur** (même règle que 3.4 : vide si une des 12 banques manque) :
+
+| Mesure | Calcul |
+|---|---|
+| `Banques presentes coef` | banques qui publient frais de personnel, charges générales et PNB |
+| `Coef secteur` | coefficient harmonisé des 12 banques ensemble (moyenne pondérée par le PNB) |
+| `Coef mediane` | médiane des 12 coefficients (`MEDIANX`) : la banque « du milieu », que les extrêmes (BTE, BT) ne déplacent pas, contrairement à la moyenne |
+| `Ecart coef / mediane` | coefficient de la banque − médiane, en points (négatif : plus efficace que la banque médiane) |
+| `Rang coef` | `RANKX … ASC` : 1 = coefficient le plus bas, donc la banque la plus efficace |
+
+**Autres ratios** (trimestre, `DIVIDE` : vide si le dénominateur manque) : `Part marge interets`, `Part
+commissions`, `Part portefeuille` (structure du PNB), `Frais personnel / PNB`, `Credits / Depots` (plus de
+100 % : la banque prête plus qu'elle ne collecte de dépôts, le reste vient des emprunts et des fonds
+propres), `Part depots a vue` (ressources peu coûteuses). Les trois parts du PNB ne font pas 100 % : le PNB
+comprend aussi les gains de change et d'autres produits.
+
+**Contrôle** : vider la vue Requête DAX (**Ctrl+A**, **Suppr**), coller `dax/controle_ratios.dax`, **Exécuter** ;
+trois résultats. Valeurs attendues (calculées à part depuis `donnees_publiees/`) :
+
+Résultat 1, T3 2024, du rang 1 au rang 12 (écart en points) :
+
+| Banque | Coef harmonisé | Rang | Écart / médiane | Coef publié | Part marge intérêts | Part commissions | Part portefeuille | Frais pers. / PNB | Crédits / Dépôts | Part dépôts à vue |
+|---|---|---|---|---|---|---|---|---|---|---|
+| BT | 29,5 % | 1 | −16,1 | 29,5 % | 64,1 % | 15,7 % | 20,2 % | 20,9 % | 94,8 % | 32,8 % |
+| BH | 36,2 % | 2 | −9,4 | 36,2 % | 47,7 % | 20,5 % | 31,7 % | 26,1 % | 117,7 % | 33,1 % |
+| BNA | 39,1 % | 3 | −6,5 | 40,7 % | 28,2 % | 16,3 % | 55,5 % | 28,0 % | 109,6 % | 25,9 % |
+| BIAT | 41,4 % | 4 | −4,2 | 44,9 % | 46,1 % | 19,1 % | 34,7 % | 23,3 % | 63,0 % | 46,6 % |
+| AB | 45,0 % | 5 | −0,6 | 46,8 % | 36,2 % | 24,2 % | 39,6 % | 33,5 % | 85,7 % | 28,4 % |
+| TJARI | 45,0 % | 6 | −0,6 | 47,7 % | 54,3 % | 19,5 % | 26,1 % | 33,2 % | 69,1 % | 45,3 % |
+| UIB | 46,2 % | 7 | +0,6 | 48,5 % | 60,1 % | 27,5 % | 12,5 % | 35,1 % | 94,7 % | 27,2 % |
+| STB | 48,1 % | 8 | +2,5 | 48,1 % | 41,5 % | 17,9 % | 40,6 % | 31,9 % | 89,6 % | 37,4 % |
+| WIB | 53,2 % | 9 | +7,6 | 58,2 % | 67,2 % | 30,3 % | 2,4 % | 36,4 % | 104,8 % | 28,9 % |
+| ATB | 57,8 % | 10 | +12,2 | 62,2 % | 57,2 % | 22,4 % | 20,3 % | 36,9 % | 86,1 % | 31,1 % |
+| UBCI | 65,5 % | 11 | +19,9 | 68,1 % | 55,9 % | 20,8 % | 23,4 % | 41,6 % | 82,6 % | 52,9 % |
+| BTE | 79,1 % | 12 | +33,5 | 79,1 % | 35,4 % | 37,5 % | 23,9 % | 57,3 % | 90,5 % | 26,7 % |
+
+AB et TJARI sont à 45,0 % à l'arrondi, mais pas exactement égaux (rangs 5 et 6). Le coefficient publié est
+égal au coefficient harmonisé pour les banques qui publient leurs charges opératoires sans dotations (BT, BH,
+STB, BTE), plus élevé pour les autres.
+
+Résultat 2 : 12 banques ; coefficient du secteur 43,93 % ; médiane 45,6 % ; coefficient du trimestre sur
+l'année 2024 vide ; coefficient annuel 2024 des 12 banques 44,09 %.
+
+Résultat 3, coefficient harmonisé annuel 2024 : AB 38,4 % ; ATB 59,1 % ; BH 37,2 % ; BIAT 41,7 % ; BNA
+38,3 % ; BT 30,6 % ; BTE 93,4 % ; STB 50,1 % ; TJARI 45,3 % ; UBCI 65,6 % ; UIB 48,0 % ; WIB 60,7 %.
+
+La vue Requête DAX affiche les pourcentages en décimales (0.295 pour 29,5 %).
+
 ### 3.9 Fonctions DAX utilisées
 
 Chaque fonction DAX employée dans `dax/*.dax`, ce qu'elle fait ici et où elle sert. Le test
@@ -863,9 +931,11 @@ tableau.
 | `SELECTEDVALUE` | la valeur d'une colonne si le filtre n'en laisse qu'une, sinon vide | `mesures` |
 | `DIVIDE` | division qui renvoie vide (et non une erreur) si le dénominateur est vide ou nul | `mesures` |
 | `SUMX` | somme d'une expression calculée sur chaque ligne d'une table (carrés des parts de marché) | `mesures` |
-| `RANKX` | rang d'une valeur parmi celles d'une table ; `DESC` : du plus grand au plus petit, `DENSE` : pas de rang sauté après des ex aequo | `mesures` |
+| `RANKX` | rang d'une valeur parmi celles d'une table ; `DESC` : du plus grand au plus petit, `ASC` : du plus petit au plus grand, `DENSE` : pas de rang sauté après des ex aequo | `mesures` |
 | `GROUPBY`, `CURRENTGROUP`, `COUNTX` | regroupe des lignes par colonne ; `COUNTX ( CURRENTGROUP (), 1 )` compte les lignes de chaque groupe | `Dim_Date` |
 | `IN { … }` | vrai si la valeur est dans la liste | `Dim_Date` |
+| `VALUES` | valeurs distinctes d'une colonne dans le filtre courant (les banques de la sélection) | `mesures` |
+| `MEDIANX` | médiane d'une expression calculée sur chaque ligne d'une table (coefficient des 12 banques) | `mesures` |
 
 ## 4. Pages du rapport : visuels, champs et mesures
 

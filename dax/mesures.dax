@@ -244,3 +244,113 @@ MEASURE Mesures[Date dernier trimestre complet] =
         REMOVEFILTERS ( Dim_Date ),
         Dim_Date[Choix_Trimestre] = "Dernier trimestre complet"
     )
+
+// ===== 3. Ratios (spécification 7.2) et comparaison du coefficient au secteur (7.4) =====
+// Toutes les comparaisons entre banques utilisent le coefficient d'exploitation harmonisé ; le coefficient
+// publié (charges opératoires / PNB) n'est qu'une information, avec la définition de chaque banque.
+
+// [3. Ratios\Coefficient d'exploitation | 0.0 %] Coefficient publié = charges opératoires publiées / PNB du trimestre ; POUR INFORMATION (le contenu des charges opératoires varie d'une banque à l'autre : Definitions_Charges), jamais classé
+MEASURE Mesures[Coef exploitation publie] =
+    DIVIDE ( [Charges operatoires], [PNB] )
+
+// [3. Ratios\Coefficient d'exploitation | 0.0 %] Coefficient harmonisé = (frais de personnel + charges générales) / PNB du trimestre, sur les banques qui publient les trois montants ; sert à toutes les comparaisons et classements
+MEASURE Mesures[Coef exploitation harmonise] =
+    VAR Lignes =
+        ADDCOLUMNS (
+            VALUES ( Dim_Banque[code_banque] ),
+            "@Pers", [Frais personnel],
+            "@Gen", [Charges generales],
+            "@PNB", [PNB]
+        )
+    VAR Completes =
+        FILTER ( Lignes, NOT ISBLANK ( [@Pers] ) && NOT ISBLANK ( [@Gen] ) && NOT ISBLANK ( [@PNB] ) )
+    RETURN
+        DIVIDE ( SUMX ( Completes, [@Pers] + [@Gen] ), SUMX ( Completes, [@PNB] ) )
+
+// [3. Ratios\Intermédiaires | #,0.000] Frais de personnel de l'année : cumul publié au 31/12
+MEASURE Mesures[Frais personnel annuel] =
+    CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "FRAIS_PERS", Dim_Date[Trimestre] = "T4" )
+
+// [3. Ratios\Intermédiaires | #,0.000] Charges générales d'exploitation de l'année : cumul publié au 31/12
+MEASURE Mesures[Charges generales annuel] =
+    CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "CHG_GEN", Dim_Date[Trimestre] = "T4" )
+
+// [3. Ratios\Coefficient d'exploitation | 0.0 %] Coefficient harmonisé de l'année, à partir des cumuls publiés au 31/12 (jamais la somme des trimestres) ; vide pour une année sans T4 publié
+MEASURE Mesures[Coef exploitation harmonise annuel] =
+    VAR Lignes =
+        ADDCOLUMNS (
+            VALUES ( Dim_Banque[code_banque] ),
+            "@Pers", [Frais personnel annuel],
+            "@Gen", [Charges generales annuel],
+            "@PNB", [PNB annuel]
+        )
+    VAR Completes =
+        FILTER ( Lignes, NOT ISBLANK ( [@Pers] ) && NOT ISBLANK ( [@Gen] ) && NOT ISBLANK ( [@PNB] ) )
+    RETURN
+        DIVIDE ( SUMX ( Completes, [@Pers] + [@Gen] ), SUMX ( Completes, [@PNB] ) )
+
+// [3. Ratios\Comparaison au secteur | 0] Nombre de banques qui publient frais de personnel, charges générales et PNB pour le trimestre sélectionné
+MEASURE Mesures[Banques presentes coef] =
+    COUNTROWS (
+        FILTER (
+            ALL ( Dim_Banque ),
+            NOT ISBLANK ( [Frais personnel] ) && NOT ISBLANK ( [Charges generales] ) && NOT ISBLANK ( [PNB] )
+        )
+    )
+
+// [3. Ratios\Comparaison au secteur | 0.0 %] Coefficient harmonisé du secteur (moyenne pondérée par le PNB : somme des charges / somme des PNB des 12 banques) ; vide si une banque manque
+MEASURE Mesures[Coef secteur] =
+    IF (
+        [Banques presentes coef] = [Nombre de banques],
+        CALCULATE ( [Coef exploitation harmonise], REMOVEFILTERS ( Dim_Banque ) )
+    )
+
+// [3. Ratios\Comparaison au secteur | 0.0 %] Médiane des coefficients harmonisés des 12 banques (banque « du milieu », insensible aux extrêmes) ; vide si une banque manque
+MEASURE Mesures[Coef mediane] =
+    IF (
+        [Banques presentes coef] = [Nombre de banques],
+        MEDIANX ( ALL ( Dim_Banque ), [Coef exploitation harmonise] )
+    )
+
+// [3. Ratios\Comparaison au secteur | +0.0 %;-0.0 %;0.0 %] Écart du coefficient harmonisé de la banque à la médiane (négatif = plus efficace que la banque médiane) ; vide hors d'une ligne de banque
+MEASURE Mesures[Ecart coef / mediane] =
+    VAR Coef = [Coef exploitation harmonise]
+    VAR Mediane = [Coef mediane]
+    RETURN
+        IF (
+            HASONEVALUE ( Dim_Banque[code_banque] ) && NOT ISBLANK ( Coef ) && NOT ISBLANK ( Mediane ),
+            Coef - Mediane
+        )
+
+// [3. Ratios\Comparaison au secteur | 0] Rang du coefficient harmonisé (1 = le plus bas, donc la banque la plus efficace) ; vide hors d'une ligne de banque ou si une banque manque
+MEASURE Mesures[Rang coef] =
+    IF (
+        HASONEVALUE ( Dim_Banque[code_banque] )
+            && NOT ISBLANK ( [Coef exploitation harmonise] )
+            && [Banques presentes coef] = [Nombre de banques],
+        RANKX ( ALL ( Dim_Banque ), [Coef exploitation harmonise], , ASC, DENSE )
+    )
+
+// [3. Ratios\Structure du PNB | 0.0 %] Marge d'intérêts / PNB du trimestre
+MEASURE Mesures[Part marge interets] =
+    DIVIDE ( [Marge interets], [PNB] )
+
+// [3. Ratios\Structure du PNB | 0.0 %] Marge sur commissions / PNB du trimestre
+MEASURE Mesures[Part commissions] =
+    DIVIDE ( [Marge commissions], [PNB] )
+
+// [3. Ratios\Structure du PNB | 0.0 %] Revenus du portefeuille-titres / PNB du trimestre
+MEASURE Mesures[Part portefeuille] =
+    DIVIDE ( [Revenus portefeuille], [PNB] )
+
+// [3. Ratios\Structure du PNB | 0.0 %] Frais de personnel / PNB du trimestre
+MEASURE Mesures[Frais personnel / PNB] =
+    DIVIDE ( [Frais personnel], [PNB] )
+
+// [3. Ratios\Bilan | 0.0 %] Encours des crédits / encours des dépôts en fin de période (plus de 100 % : la banque prête plus qu'elle ne collecte de dépôts)
+MEASURE Mesures[Credits / Depots] =
+    DIVIDE ( [Credits], [Depots] )
+
+// [3. Ratios\Bilan | 0.0 %] Dépôts à vue / total des dépôts en fin de période (ressources peu coûteuses)
+MEASURE Mesures[Part depots a vue] =
+    DIVIDE ( [Depots a vue], [Depots] )

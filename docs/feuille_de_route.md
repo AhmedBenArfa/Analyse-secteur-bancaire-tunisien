@@ -19,7 +19,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
-| 6 | Modèle en étoile et mesures DAX | **En cours** : table des dates et 28 relations vérifiées dans Power BI Desktop ; vue Modèle rangée (un onglet par thème) ; mesures de base (26) vérifiées ; secteur (17 mesures, colonne `Choix_Trimestre`) vérifié ; prochaine action : ratios |
+| 6 | Modèle en étoile et mesures DAX | **En cours** : table des dates et 28 relations vérifiées dans Power BI Desktop ; vue Modèle rangée (un onglet par thème) ; mesures de base (26) vérifiées ; secteur (17 mesures, colonne `Choix_Trimestre`) vérifié ; ratios (16 mesures) écrits, à vérifier ; ensuite croissances |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
@@ -52,7 +52,8 @@ Un groupe à la fois, vérifié dans Power BI Desktop avant le suivant :
    et indicateurs vers les tables de faits, de qualité et d'événements.
 3. **Mesures DAX par groupes** : bases (26 mesures dans la table `Mesures`, vérifiées le 23/10/2026 avec
    `dax/controle_bases.dax`) ; secteur (17 mesures, vérifiées le 23/10/2026 avec
-   `dax/controle_secteur.dax`) ; totaux du secteur, nombre de banques présentes et dernier
+   `dax/controle_secteur.dax`) ; ratios (16 mesures écrites le 23/10/2026, à vérifier avec
+   `dax/controle_ratios.dax`) ; totaux du secteur, nombre de banques présentes et dernier
    trimestre complet ; ratios ; croissances ; ROE et ROA ; Bourse ; qualité des données.
 
 Ensuite : pages du rapport (étape 7), `docs/validation.md` (étape 3), captures et publication sur le web
@@ -123,6 +124,7 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 23/10/2026 | Ouverture du projet par un tiers | Cache des données Power BI versionné (données publiques) : le projet s'ouvre avec ses données sans réglage ; section « Ouvrir le rapport » du README ; publication sur le web à la fin |
 | 23/10/2026 | Documentation des fonctions M | Tableau de chaque fonction M utilisée (ce qu'elle fait, requêtes) dans le guide et son PDF, contrôlé par un test |
 | 23/10/2026 | Étape 5 terminée | Les 22 requêtes Power Query sont vérifiées ; passage à l'étape 6 (table des dates, relations, mesures DAX) |
+| 23/10/2026 | Ratios | Coefficient harmonisé calculé banque par banque au trimestre, et en version annuelle depuis les cumuls au 31/12 ; coefficient du secteur, médiane et rang vides si une banque manque ; coefficient publié pour information seulement |
 | 23/10/2026 | Secteur et dernier trimestre complet | Totaux, parts de marché, HHI et rangs vides si une banque manque ; encours du secteur comptés à la dernière date de la sélection ; colonne `Dim_Date[Choix_Trimestre]` : « Dernier trimestre complet » (PNB, crédits, dépôts des 12 banques) pour le filtre par défaut des pages |
 | 23/10/2026 | Mesures de base | Table `Mesures` dédiée, dossiers d'affichage, format `#,0.000` ; `Valeur Trim` et `Valeur Cumul` vides si la sélection couvre plusieurs dates d'arrêté (jamais de somme de trimestres ni d'encours dans le temps) ; marges vides si un terme manque |
 | 23/10/2026 | Relations | 28 relations 1 → plusieurs, filtre simple : dates, banques, indicateurs vers les faits, la qualité et les événements ; `Fait_Cours` relié par le code de la banque (pas le ticker) ; actionnariat et définitions reliés aux banques |
