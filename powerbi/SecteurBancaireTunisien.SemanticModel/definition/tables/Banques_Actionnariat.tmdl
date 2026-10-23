@@ -28,7 +28,7 @@ table Banques_Actionnariat
 
 	column part_capital_pct
 		dataType: double
-		formatString: 0.00
+		formatString: 0.00#
 		lineageTag: 51cf6d85-8cb0-4f41-81c9-fb8d2293980e
 		summarizeBy: none
 		sourceColumn: part_capital_pct
@@ -143,3 +143,4 @@ table Banques_Actionnariat
 	annotation PBI_NavigationStepName = Navigation
 
 	annotation PBI_ResultType = Table
+

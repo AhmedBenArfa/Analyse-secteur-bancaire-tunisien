@@ -110,11 +110,11 @@ Fiche émetteur, états financiers, rapports annuels ─> donnees_reference/banq
 | `Banques_Actionnariat` | `donnees_reference/banques.xlsx` (table Excel `Banques`, connecteur Excel) | types ; catégorie contrôlée (une valeur hors des quatre catégories de 5.3 = erreur visible) ; une ligne par banque et par période (`date_debut` – `date_fin`) : l'actionnariat d'une période est celui de la ligne qui la couvre (5.3) |
 | `Dim_Banque` | `dim_banque.csv` + `Banques_Actionnariat` | colonnes vides `actionnariat` et `groupe` du CSV retirées ; fusion avec la ligne en cours de `Banques_Actionnariat` (sans `date_fin`) : actionnaire de référence, part du capital, catégorie, groupe, `date_actionnariat` |
 | `Dim_Indicateur` | `dim_indicateur.csv` | types ; colonne ajoutée `source` (« indicateurs trimestriels ») ; ajout de 3 lignes écrites dans la requête pour les codes des états financiers (`RES_NET` flux, `TOTAL_ACTIF` et `CAP_PROPRES_EF` stocks, source « états financiers », ordre 25 à 27) ; `libelle` trié par `ordre` dans le modèle |
-| `Operations_Titres` (intermédiaire) | `operations_titres.csv` (versionné : lien *raw* GitHub, source URL) | types ; facteur = `cours_reference_publie / cloture_veille` (une valeur par banque et date d'effet) ; colonne conditionnelle `capital` (vrai sauf dividende seul) ; facteurs cumulés par banque (produit des facteurs des dates postérieures), un pour le prix (opérations sur le capital) et un pour le rendement total (toutes) |
+| `Operations_Titres` (intermédiaire) | `operations_titres.csv` (versionné : lien *raw* GitHub, source URL, paramètre `AdresseDepot` + `RelativePath`) | types ; facteur = `cours_reference_publie / cloture_veille` (une valeur par banque et date d'effet) ; colonne conditionnelle `capital` (vrai sauf dividende seul) ; `facteur_prix` = 1 pour un dividende seul, et dividende retiré de la clôture de la veille quand il est détaché le même jour qu'une attribution (BT 10/05/2022 : 4,930 / (6,190 − 0,280)) ; facteurs cumulés par banque (produit des facteurs des dates postérieures), un pour le prix (opérations sur le capital) et un pour le rendement total (toutes) |
 | `Fait_Cours` | `cours_banques.csv` | types (paramètres régionaux en-US), fusion avec `Operations_Titres` (facteur cumulé de la séance), colonnes `cloture_ajustee_prix` et `cloture_ajustee_rendement` = clôture × facteur cumulé, `Rendement` (variation de la clôture ajustée d'une séance à l'autre ; dernière clôture connue quand elle est vide) ; colonne conditionnelle `sans_transaction` (statut contenant « sans transaction », mesure de liquidité 7.5) ; `statut` gardé pour la page qualité |
 | `Controle` | `controle_extraction.csv` | pour la page « qualité des données » |
 | `Corrections` | `corrections_manuelles.csv` | remplacement des valeurs corrigées dans `Fait_Indicateurs` |
-| `Evenements` | `evenements.csv` (versionné, à la racine) | types ; une ligne par événement et par banque concernée : `id_evenement`, `date` (fin du trimestre concerné), `banque`, `indicateur`, `description`, `montant_mdt` (montant cité par le document), `fichier`, `page` ; annotations des graphiques (7.3, pages 3 et 9) |
+| `Evenements` | `evenements.csv` (versionné, à la racine ; lien *raw* GitHub, source URL) | types ; une ligne par événement et par banque concernée : `id_evenement`, `date` (fin du trimestre concerné), `banque`, `indicateur`, `description`, `montant_mdt` (montant cité par le document), `fichier`, `page` ; annotations des graphiques (7.3, pages 3 et 9) |
 | `Definitions_Charges` | `gabarits.csv` | colonnes `banque`, `premier_trimestre`, `dernier_trimestre`, `definition_charges_operatoires` (lignes distinctes) ; info-bulle du coefficient publié et page « qualité des données » |
 | `Definitions_Capitaux_Propres` | `gabarits.csv` | colonnes `banque`, `definition_capitaux_propres` (une ligne par banque, lignes distinctes) ; colonne conditionnelle avec le libellé en clair ; affichée dans la fiche banque à côté des capitaux propres trimestriels (5.2) |
 
@@ -879,8 +879,10 @@ de référence publié ce jour-là par la Bourse et la clôture de la séance pr
   d'opération, même réunis. Cours ajusté d'une séance = cours × produit des facteurs des
   opérations postérieures. Deux séries : ajustée des opérations sur le capital (attributions,
   divisions, souscriptions : performance du prix) et ajustée de toutes les opérations, dividendes
-  compris (rendement total). Une opération sans cours de référence publié reste sans facteur et
-  est signalée.
+  compris (rendement total). Pour la série « prix », un dividende détaché le même jour qu'une
+  attribution est retiré de la clôture de la veille avant la parité (BT 10/05/2022 : facteur prix
+  4,930 / (6,190 − 0,280) = 0,834 au lieu de 4,930 / 6,190 = 0,796 ; Power Query, 23/10/2026). Une
+  opération sans cours de référence publié reste sans facteur et est signalée.
 - Règles : une date de dividende hors séance prend la première séance suivante (UIB : samedi
   01/06/2019 → 03/06/2019) ; le dividende revient aux actions anciennes, il est retiré avant la
   parité dans le contrôle théorique (BT 10/05/2022 : (6,190 − 0,280) × 5/6 = 4,925, publié 4,930).

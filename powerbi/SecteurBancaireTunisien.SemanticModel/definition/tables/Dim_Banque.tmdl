@@ -36,7 +36,7 @@ table Dim_Banque
 
 	column part_capital_pct
 		dataType: double
-		formatString: 0.00
+		formatString: 0.00#
 		lineageTag: 8d266cf9-3d94-4c0b-b137-af4bbe0a3ebd
 		summarizeBy: none
 		sourceColumn: part_capital_pct
@@ -103,3 +103,4 @@ table Dim_Banque
 	annotation PBI_NavigationStepName = Navigation
 
 	annotation PBI_ResultType = Table
+

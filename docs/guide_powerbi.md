@@ -43,6 +43,13 @@ copie lisible : une modification faite dans Power Query doit être reportée dan
 inversement). Les requêtes sont écrites directement dans ces fichiers, Power BI Desktop fermé ;
 à la réouverture, Power BI les lit et les affiche dans Power Query.
 
+**Niveaux de confidentialité.** À la première actualisation, Power BI demande le niveau de chaque
+source (dossier du projet, fichier Excel, adresse GitHub) : choisir le dossier du projet (pas tout le
+disque) et le même niveau pour toutes, **Professionnel** (« Organisationnel » dans certaines
+versions), sinon les fusions entre sources peuvent être bloquées. Pour l'adresse GitHub, accès
+**Anonyme** (dépôt public). Ces réglages sont enregistrés sur le poste, pas dans le projet : une
+personne qui clone le dépôt les donne une fois.
+
 Ne sont pas versionnés (`.gitignore`) : `.pbi/cache.abf` (données importées), `.pbi/localSettings.json`
 (réglages et signature de sécurité propres au poste) et l'ancien `SecteurBancaireTunisien.pbix`.
 
@@ -67,6 +74,12 @@ données** : les requêtes apparaissent dans l'ordre de la section 2, les interm
 | `Dim_Banque` | UBCI | `actionnaire_reference` = Groupe Carte ; `part_capital_pct` = 39,86 ; `actionnariat` = privé sans contrôle étranger |
 | `Dim_Banque` | BTE | Abou Dhabi Investment Authority (ADIA) ; 40,80 ; mixte ; `date_actionnariat` = 31/12/2024 |
 | `Dim_Banque` | WIB | `ticker_bvmt` = WIFAK ; groupe = Groupe Ben Ayed |
+| `Operations_Titres` (Power Query, requête intermédiaire) | nombre de lignes (barre d'état en bas) | 63 |
+| `Operations_Titres` | BIAT 04/05/2021 (division du nominal) | `facteur` = 0,5 |
+| `Operations_Titres` | BIAT 10/05/2019 | `facteur_cumule_prix` = 0,416667 (produit des 3 opérations sur le capital qui suivent) |
+| `Operations_Titres` | BT 10/05/2022 (attribution + dividende) | `facteur` = 0,796446 ; `facteur_prix` = 0,834179 |
+| `Evenements` | nombre de lignes | 11 |
+| `Evenements` | BH_RETRAITEMENT_2024 | `date` = 31/12/2024 ; `montant_mdt` = −64,744 |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -80,6 +93,7 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | # | Requête | Chargée | Source | Rôle |
 |---|---|---|---|---|
 | 1 | `CheminDonnees` | paramètre | — | dossier du projet sur ce poste |
+| 1b | `AdresseDepot` | paramètre | — | adresse des fichiers bruts du dépôt GitHub |
 | 2 | `Fichiers_Donnees` | non | connecteur Dossier | liste des CSV de `donnees_publiees\` |
 | 3 | `Versions` | non | `indicateurs_versions.csv` | toutes les versions des indicateurs, typées |
 | 4 | `Dim_Indicateur` | oui | `dim_indicateur.csv` + 3 lignes ajoutées | libellé, catégorie, nature (flux / stock), ordre |
@@ -87,6 +101,8 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | 6 | `Revisions` | oui | `Versions` | versions non retenues et écart à la valeur retenue (page qualité) |
 | 7 | `Banques_Actionnariat` | oui | `donnees_referenceanques.xlsx` (connecteur Excel) | actionnariat par période, avec source et page |
 | 8 | `Dim_Banque` | oui | `dim_banque.csv` + fusion avec `Banques_Actionnariat` | code, nom, ticker, actionnariat actuel |
+| 9 | `Operations_Titres` | non | `operations_titres.csv` sur GitHub (source URL) | facteurs d'ajustement des cours |
+| 10 | `Evenements` | oui | `evenements.csv` sur GitHub (source URL) | événements qui expliquent une rupture de série |
 
 ### 2.1 `CheminDonnees` (paramètre)
 
@@ -236,6 +252,44 @@ du second semestre 2024 n'est pas connue : aucune ligne ne couvre du 01/07/2024 
 
 **Pourquoi l'actionnariat actuel seulement** : la dimension a une ligne par banque (relation 1 →
 plusieurs vers les faits) ; l'historique reste dans `Banques_Actionnariat`.
+
+### 2.9 `AdresseDepot` (paramètre) et lecture par URL
+
+Texte : `https://raw.githubusercontent.com/AhmedBenArfa/Analyse-secteur-bancaire-tunisien/main`,
+l'adresse des fichiers bruts (« raw ») du dépôt public. Les fichiers versionnés à la racine
+(`operations_titres.csv`, `evenements.csv`) sont lus par `Web.Contents(AdresseDepot,
+[RelativePath = "…"])` : l'adresse de base reste fixe, ce qui permet aussi l'actualisation dans le
+service Power BI. **Pourquoi une URL** : c'est la troisième source demandée (dossier, Excel, URL) ;
+le rapport lit la version publiée de ces fichiers, la même pour tout le monde.
+
+### 2.10 `Operations_Titres` (intermédiaire, non chargée)
+
+63 opérations sur titres (dividendes, attributions gratuites, division du nominal, souscription), une
+ligne par banque et par date d'effet, avec le cours de référence publié par la Bourse ce jour-là et la
+clôture de la veille (spécification 7.5).
+
+| Étape | Ce qu'elle fait |
+|---|---|
+| `Source`, `EnTetes`, `Types` | lit le CSV sur GitHub ; types avec les paramètres régionaux `en-US` |
+| `Facteur` | **colonne calculée** `facteur` = cours de référence publié / clôture de la veille (vide si l'un manque) : l'ajustement fait par la Bourse elle-même, valable pour tous les types d'opération |
+| `Capital` | **colonne conditionnelle** `capital` : vrai pour tout sauf un dividende seul |
+| `FacteurPrix` | facteur de la série « prix » : 1 pour un dividende seul ; pour une attribution le même jour qu'un dividende (BT 10/05/2022), le dividende est retiré de la clôture de la veille avant la parité (4,930 / (6,190 − 0,280) = 0,834, proche de la parité 5/6) |
+| `EnMemoire` | garde la table en mémoire (`Table.Buffer`) : les cumuls la parcourent pour chaque ligne sans relire le fichier en ligne |
+| `CumulPrix`, `CumulRendement` | **facteurs cumulés** par banque : produit des facteurs de cette opération et des suivantes ; série « prix » (opérations sur le capital) et série « rendement total » (dividendes compris) |
+| `Triees` | tri par banque et date |
+
+**Comment ils serviront** : dans `Fait_Cours`, une séance prend le facteur cumulé de la première
+opération qui la suit ; cours ajusté = clôture × ce facteur. Exemple BIAT : clôture 118,000 le
+02/01/2019 et 111,000 le 31/12/2025, soit −5,9 % en brut et +125,8 % ajusté des opérations sur le
+capital (attributions de 2020 et 2024, division du nominal de 2021).
+
+### 2.11 `Evenements` (chargée)
+
+11 lignes : une par événement et par banque concernée (don au Fonds 1818, accord salarial
+APTBEF–FGBEF, moratoire Covid de l'UIB, retraitement BH 2024, déchéance fiscale BNA 2025), avec la
+date (fin du trimestre concerné), l'indicateur, la description, le montant cité par le document, le
+fichier et la page. Étapes : lecture du CSV sur GitHub, types (`en-US`). Elles annoteront les
+graphiques (marqueurs et info-bulles) une fois les relations créées (étape du modèle).
 
 ## 3. Mesures DAX
 

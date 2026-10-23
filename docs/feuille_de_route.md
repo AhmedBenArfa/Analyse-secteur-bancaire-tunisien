@@ -18,16 +18,19 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4 | Cours boursiers 2019–2026 | Fait : 1 955 séances par banque, 63 opérations sur titres sourcées |
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
-| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Dim_Indicateur` (27 lignes), `Fait_Indicateurs` (7 173 lignes), `Revisions` (14 884 lignes) écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop le 23/10/2026 ; `Banques_Actionnariat` (fichier Excel) et `Dim_Banque` écrites, à vérifier |
+| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Dim_Indicateur` (27 lignes), `Fait_Indicateurs` (7 173 lignes), `Revisions` (14 884 lignes) écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop le 23/10/2026 , `Banques_Actionnariat` (fichier Excel, 15 lignes) et `Dim_Banque` (12 lignes) vérifiées ; `AdresseDepot`, `Operations_Titres` et `Evenements` (source URL) écrites, à vérifier |
 | 6 | Modèle en étoile et mesures DAX | À faire |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit ; captures du rapport à faire |
 
 ## En cours
 
-- Étape 5, à vérifier dans Power BI Desktop : `Banques_Actionnariat` (connecteur Excel sur
-  `donnees_reference/banques.xlsx`, table `Banques`, 15 lignes, catégorie contrôlée) et `Dim_Banque`
-  (12 banques, fusion avec l'actionnariat en cours). Point à régler avec le segment d'actionnariat :
+- Étape 5, à vérifier dans Power BI Desktop : paramètre `AdresseDepot` (fichiers bruts du dépôt
+  GitHub), `Operations_Titres` (intermédiaire : facteurs d'ajustement de la Bourse, colonne
+  conditionnelle « capital », facteurs cumulés prix et rendement total ; 63 lignes) et `Evenements`
+  (11 lignes), lues par URL. Vérifiées le 23/10/2026 : `Banques_Actionnariat` (connecteur Excel,
+  15 lignes) et `Dim_Banque` (12 banques, fusion avec l'actionnariat en cours) ; part du capital
+  affichée avec trois décimales (UBCI 2019 : 50,085 %). Point à régler avec le segment d'actionnariat :
   pour BTE, aucune période ne couvre du 01/07/2024 au 30/12/2024 (date de l'augmentation de capital
   inconnue ; catégorie « mixte » avant et après). Vérifiées le 23/10/2026 dans Power BI Desktop : `Dim_Indicateur`,
   `Fait_Indicateurs` (fusion avec `Dim_Indicateur`, colonne conditionnelle sur les stocks, « non »
@@ -36,8 +39,9 @@ projet est dans le [README](../README.md), le détail des règles dans la
 
 ## Prochaines actions
 
-1. Requêtes suivantes, une à la fois, vérifiées dans Power BI Desktop : `Operations_Titres` et `Evenements` par
-   leur lien *raw* GitHub, colonnes conditionnelles (période Covid, segment d'actionnariat).
+1. Requêtes suivantes, une à la fois, vérifiées dans Power BI Desktop : `Fait_Cours` (cours
+   ajustés avec `Operations_Titres`), `Variations_Comparables`, états financiers, contrôles,
+   colonnes conditionnelles (période Covid, segment d'actionnariat).
 2. Mesures DAX (totaux du secteur seulement quand les 12 banques sont présentes, nombre de banques
    présentes, dernier trimestre complet).
 3. `docs/validation.md`, pages du rapport, captures.
@@ -84,3 +88,5 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 23/10/2026 | BTE T4 2021 et T4 2022 | Saisie des composantes du trimestre seul (intérêts, commissions, portefeuille, autres produits) avec les versions révisées des documents suivants ; autres produits de 2023T4 vérifiés sur l'image (0) |
 | 23/10/2026 | BTE 2020T1 à 2021T3 | Saisie des composantes (intérêts, commissions, portefeuille, autres produits) de 2020T1–T4, 2021T1 et 2021T3, avec les colonnes N-1 des documents suivants : 216 valeurs ; intérêts, commissions et portefeuille complets pour le secteur à 28/28 trimestres |
 | 23/10/2026 | Documentation des transformations | `docs/Guide_PowerBI.pdf` : chaque transformation expliquée, code M de chaque requête et feuille de route en annexe, régénéré après chaque requête ou groupe de mesures |
+| 23/10/2026 | Niveaux de confidentialité | Même niveau pour toutes les sources (Professionnel), dossier du projet plutôt que tout le disque, accès anonyme à GitHub |
+| 23/10/2026 | Facteur d'ajustement « prix » | Dividende détaché le même jour qu'une attribution retiré de la clôture de la veille avant la parité (BT 10/05/2022 : 0,834 au lieu de 0,796) |

@@ -1,0 +1,101 @@
+/// Événements qui expliquent une rupture de série (GitHub) : date, banque, indicateur, description, montant cité, fichier et page
+table Evenements
+	lineageTag: f02f94d3-9343-4df6-a9bd-83e7dea93c13
+
+	column id_evenement
+		dataType: string
+		lineageTag: ea64e9c0-6106-4bed-a529-41fd6b604bee
+		summarizeBy: none
+		sourceColumn: id_evenement
+
+		annotation SummarizationSetBy = User
+
+	column date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 7a68271f-bfb4-41c8-8b20-2af45bc74118
+		summarizeBy: none
+		sourceColumn: date
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column banque
+		dataType: string
+		lineageTag: 783a4b4b-7842-4a5f-a08d-5150d5cdabd8
+		summarizeBy: none
+		sourceColumn: banque
+
+		annotation SummarizationSetBy = User
+
+	column indicateur
+		dataType: string
+		lineageTag: ddc30115-7723-4185-a162-ac9a9677e7f4
+		summarizeBy: none
+		sourceColumn: indicateur
+
+		annotation SummarizationSetBy = User
+
+	column description
+		dataType: string
+		lineageTag: 4becec86-9ae2-4791-bcbd-420dd429584f
+		summarizeBy: none
+		sourceColumn: description
+
+		annotation SummarizationSetBy = User
+
+	column montant_mdt
+		dataType: double
+		formatString: 0.00#
+		lineageTag: 031dab4a-1b80-4dfe-b3a5-0895bc75c7b7
+		summarizeBy: none
+		sourceColumn: montant_mdt
+
+		annotation SummarizationSetBy = User
+
+	column fichier
+		dataType: string
+		lineageTag: c553ec11-d1f5-4604-8f1d-94b5f0727cac
+		summarizeBy: none
+		sourceColumn: fichier
+
+		annotation SummarizationSetBy = User
+
+	column page
+		dataType: int64
+		formatString: 0
+		lineageTag: 70ec67c5-97cf-4d8b-ab42-388b55764bcd
+		summarizeBy: none
+		sourceColumn: page
+
+		annotation SummarizationSetBy = User
+
+	partition Evenements = m
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Événements qui expliquent une rupture de série (chargée) : don au Fonds 1818, accord salarial
+				// APTBEF–FGBEF, moratoire Covid de l'UIB, retraitement BH 2024, déchéance fiscale BNA 2025 ; une ligne par
+				// événement et par banque, avec le montant cité, le fichier et la page. Lus sur GitHub (source URL) ;
+				// annotations des graphiques (spécification 5.1, 7.3, pages 3 et 9).
+				let
+				    Source = Csv.Document(
+				        Web.Contents(AdresseDepot, [RelativePath = "evenements.csv"]),
+				        [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+				    ),
+				    EnTetes = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Types = Table.TransformColumnTypes(
+				        EnTetes,
+				        {
+				            {"id_evenement", type text}, {"date", type date}, {"banque", type text}, {"indicateur", type text},
+				            {"description", type text}, {"montant_mdt", type number}, {"fichier", type text}, {"page", Int64.Type}
+				        },
+				        "en-US"
+				    )
+				in
+				    Types
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
