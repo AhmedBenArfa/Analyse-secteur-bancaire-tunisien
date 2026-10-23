@@ -75,7 +75,7 @@ un fichier Excel et une URL.
 | Valeurs saisies à la main | 680 (13 documents BTE publiés en image, deux valeurs illisibles STB), toutes passées aux contrôles de cohérence ; un document relu une seconde fois en entier (BTE 2020T2) |
 | États financiers | 168 arrêtés, 504 valeurs retenues (résultat net, total de l'actif, capitaux propres), aucune vide |
 | Cours boursiers | 1 955 séances par banque, du 02/01/2019 au 20/10/2026 ; 63 opérations sur titres, chacune avec le cours de référence publié |
-| Tests automatiques | 41, tous réussis |
+| Tests automatiques | 42, tous réussis |
 
 ## Démarche qualité
 

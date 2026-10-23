@@ -18,16 +18,16 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4 | Cours boursiers 2019–2026 | Fait : 1 955 séances par banque, 63 opérations sur titres sourcées |
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
-| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Dim_Indicateur` (27 lignes), `Fait_Indicateurs` (7 173 lignes), `Revisions` (14 884 lignes) écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop le 23/10/2026 , `Banques_Actionnariat` (fichier Excel, 15 lignes) et `Dim_Banque` (12 lignes) vérifiées ; `AdresseDepot`, `Evenements` (11 lignes, vérifiée) et `Operations_Titres` (évaluée sans erreur), lues par URL ; cache des données versionné ; `Fait_Cours` (cours ajustés) écrite, à vérifier |
+| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Dim_Indicateur` (27 lignes), `Fait_Indicateurs` (7 173 lignes), `Revisions` (14 884 lignes) écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop le 23/10/2026 , `Banques_Actionnariat` (fichier Excel, 15 lignes) et `Dim_Banque` (12 lignes) vérifiées ; `AdresseDepot`, `Evenements` (11 lignes, vérifiée) et `Operations_Titres` (évaluée sans erreur), lues par URL ; cache des données versionné ; `Fait_Cours` (23 460 séances, cours ajustés) vérifiée ; guide : tableau des 38 fonctions M utilisées |
 | 6 | Modèle en étoile et mesures DAX | À faire |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
 ## En cours
 
-- Étape 5, à vérifier dans Power BI Desktop : `Fait_Cours` (23 460 séances ; fusion avec
-  `Operations_Titres`, cours ajustés prix et rendement total, rendement quotidien calculé banque par
-  banque, colonne conditionnelle « sans transaction »). Vérifiées : paramètre `AdresseDepot`,
+- Étape 5 : requête suivante `Variations_Comparables`. Vérifiées : `Fait_Cours` (23 460 séances ;
+  fusion avec `Operations_Titres`, cours ajustés, rendement quotidien, « sans transaction »),
+  paramètre `AdresseDepot`,
   `Operations_Titres` et `Evenements` (lues par URL). Vérifiées le 23/10/2026 : `Banques_Actionnariat` (connecteur Excel,
   15 lignes) et `Dim_Banque` (12 banques, fusion avec l'actionnariat en cours) ; part du capital
   affichée avec trois décimales (UBCI 2019 : 50,085 %). BTE : seconde période d'actionnariat à partir
@@ -93,3 +93,4 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 23/10/2026 | Facteur d'ajustement « prix » | Dividende détaché le même jour qu'une attribution retiré de la clôture de la veille avant la parité (BT 10/05/2022 : 0,834 au lieu de 0,796) |
 | 23/10/2026 | BTE, actionnariat 2024 | Date de l'augmentation de capital introuvable dans les états financiers : seconde période à partir du 01/07/2024, « date exacte inconnue, entre le 30/06 et le 31/12/2024 » ; périodes continues contrôlées par un test |
 | 23/10/2026 | Ouverture du projet par un tiers | Cache des données Power BI versionné (données publiques) : le projet s'ouvre avec ses données sans réglage ; section « Ouvrir le rapport » du README ; publication sur le web à la fin |
+| 23/10/2026 | Documentation des fonctions M | Tableau de chaque fonction M utilisée (ce qu'elle fait, requêtes) dans le guide et son PDF, contrôlé par un test |

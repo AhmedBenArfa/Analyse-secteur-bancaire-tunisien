@@ -329,6 +329,84 @@ du détachement d'un dividende, le cours baisse du montant versé ; ce n'est pas
 pour l'actionnaire, la volatilité ne doit pas la compter. Après ajustement, la plus forte variation
 d'une séance à l'autre est de 10,7 % (BTE, 24/12/2020) : aucune opération ne crée de saut.
 
+### 2.13 Fonctions et mots-clés M utilisés
+
+Chaque fonction du langage M (Power Query) employée dans les requêtes, ce qu'elle fait ici et où elle
+sert. Le test `tests/test_guide_powerbi.py` vérifie qu'aucune fonction d'un fichier `powerquery/*.pq`
+ne manque à ce tableau.
+
+**Lire les sources**
+
+| Fonction | Ce qu'elle fait | Requêtes |
+|---|---|---|
+| `Folder.Files` | liste les fichiers d'un dossier (nom, contenu binaire, extension, dossier, dates) : connecteur Dossier | `Fichiers_Donnees` |
+| `File.Contents` | lit un fichier du disque en binaire | `Banques_Actionnariat` |
+| `Excel.Workbook` | ouvre un classeur Excel et liste ses feuilles et ses tables nommées : connecteur Excel | `Banques_Actionnariat` |
+| `Web.Contents` | télécharge une adresse web ; avec `RelativePath`, l'adresse de base reste fixe : source URL | `Operations_Titres`, `Evenements` |
+| `Csv.Document` | lit un contenu CSV (séparateur `;`, encodage 65001 = UTF-8) en table de textes | `Versions`, `Dim_Indicateur`, `Dim_Banque`, `Operations_Titres`, `Evenements`, `Fait_Cours` |
+| `QuoteStyle.Csv` | option de `Csv.Document` : un texte entre guillemets peut contenir un `;` | mêmes requêtes |
+| `Table.PromoteHeaders` | la première ligne devient les noms de colonnes | mêmes requêtes |
+
+**Typer et nettoyer**
+
+| Fonction | Ce qu'elle fait | Requêtes |
+|---|---|---|
+| `Table.TransformColumnTypes` | donne un type à chaque colonne ; avec la culture `"en-US"`, `29.585` est lu 29,585 (et pas 29 585) | toutes les requêtes qui lisent un fichier |
+| `Table.TransformColumns` | applique une fonction à chaque valeur d'une colonne (ici : contrôle de la catégorie d'actionnariat, erreur sinon) | `Banques_Actionnariat` |
+| `Table.ReplaceValue` | remplace une valeur dans des colonnes (texte vide → `null`, `null` → « non », `null` → 1) | `Versions`, `Fait_Indicateurs`, `Fait_Cours` |
+| `Replacer.ReplaceValue` | option de `Table.ReplaceValue` : remplace la valeur entière (pas un morceau de texte) | mêmes requêtes |
+| `Table.SelectColumns` | garde les colonnes nommées, dans cet ordre | `Fichiers_Donnees`, `Fait_Indicateurs`, `Revisions`, `Fait_Cours` |
+| `Table.RemoveColumns` | retire des colonnes | `Dim_Banque`, `Fait_Indicateurs`, `Fait_Cours` |
+| `Table.RenameColumns` | renomme des colonnes | `Fichiers_Donnees`, `Fait_Indicateurs` |
+| `Table.Sort` | trie les lignes | `Operations_Titres`, `Fait_Cours` |
+| `Order.Ascending` | option de `Table.Sort` : ordre croissant | mêmes requêtes |
+
+**Filtrer et calculer**
+
+| Fonction | Ce qu'elle fait | Requêtes |
+|---|---|---|
+| `Table.SelectRows` | garde les lignes qui vérifient une condition (version retenue, versions écartées, ligne en cours, opérations postérieures) | `Fichiers_Donnees`, `Fait_Indicateurs`, `Revisions`, `Dim_Banque`, `Operations_Titres`, `Fait_Cours` |
+| `Table.AddColumn` | ajoute une colonne calculée ligne par ligne : colonne conditionnelle (`if … then … else`) ou calcul | `Dim_Indicateur`, `Fait_Indicateurs`, `Revisions`, `Operations_Titres`, `Fait_Cours` |
+| `Table.AddIndexColumn` | numérote les lignes (0, 1, 2…) pour retrouver la séance précédente | `Fait_Cours` |
+| `Table.FillDown` | recopie vers le bas la dernière valeur non vide (dernière clôture connue) | `Fait_Cours` |
+| `Table.First` | première ligne d'une table, ou une valeur par défaut si elle est vide (première opération postérieure) | `Fait_Cours` |
+| `Text.Contains` | le texte contient-il ce mot (« sans transaction ») ? | `Fait_Cours` |
+| `Text.StartsWith` | le texte commence-t-il par ce préfixe (« revisee_31-12 », « exclue ») ? | `Revisions` |
+| `Text.Proper` | met une majuscule au début du mot (« trim » → « Trim ») | `Fait_Indicateurs` |
+| `Number.Abs` | valeur absolue (écart en % rapporté à la valeur absolue) | `Revisions` |
+| `List.Contains` | la liste contient-elle cette valeur (les quatre catégories d'actionnariat) ? | `Banques_Actionnariat` |
+| `List.Product` | produit des nombres d'une liste (facteurs d'ajustement cumulés) | `Operations_Titres` |
+| `List.RemoveNulls` | retire les valeurs vides d'une liste (un facteur absent n'annule pas le produit) | `Operations_Titres` |
+
+**Combiner et restructurer**
+
+| Fonction | Ce qu'elle fait | Requêtes |
+|---|---|---|
+| `Table.NestedJoin` | **fusion** de deux requêtes sur une clé : chaque ligne reçoit une table des lignes correspondantes | `Fait_Indicateurs`, `Dim_Banque`, `Fait_Cours` |
+| `JoinKind.LeftOuter` | jointure externe gauche : toutes les lignes de la première table sont gardées | mêmes requêtes |
+| `Table.ExpandTableColumn` | développe la table de la fusion en colonnes (nature, actionnariat) | `Fait_Indicateurs`, `Dim_Banque` |
+| `Table.ExpandRecordColumn` | développe un enregistrement en colonnes (facteurs de l'opération suivante) | `Fait_Cours` |
+| `Table.Combine` | **ajoute** des tables les unes sous les autres (codes des états financiers, séances des 12 banques) | `Dim_Indicateur`, `Fait_Cours` |
+| `Table.UnpivotOtherColumns` | **dépivotage** : une colonne par attribut devient une ligne par attribut | `Fait_Indicateurs` |
+| `Table.Pivot` | **pivot** : une ligne par attribut devient une colonne par attribut | `Fait_Indicateurs` |
+| `Table.Group` | **regroupement** : une table par banque, traitée à part (rendement séance par séance) | `Fait_Cours` |
+| `Table.Buffer` | garde une table en mémoire : elle n'est pas relue (ni retéléchargée) à chaque utilisation | `Operations_Titres`, `Fait_Cours` |
+| `List.Buffer` | même chose pour une liste (clôtures connues d'une banque) | `Fait_Cours` |
+
+**Mots-clés du langage**
+
+| Mot-clé | Ce qu'il fait |
+|---|---|
+| `let … in` | suite d'étapes nommées ; la requête renvoie l'étape écrite après `in` (chaque nom est une ligne de « Étapes appliquées ») |
+| `each [colonne]` | fonction appliquée à chaque ligne ; `[colonne]` est la valeur de la ligne en cours |
+| `(op) => …` | fonction avec un paramètre nommé, quand deux lignes sont comparées (une opération et les autres, une séance et les opérations) |
+| `if … then … else` | condition : c'est le code d'une colonne conditionnelle |
+| `error "…"` | provoque une erreur visible à l'actualisation (catégorie d'actionnariat inconnue) |
+| `#table(type table […], {…})` | table écrite dans la requête (3 codes des états financiers) |
+| `meta [IsParameterQuery = true …]` | fait d'une valeur un paramètre (`CheminDonnees`, `AdresseDepot`) |
+| `type number`, `type text`, `type date`, `Int64.Type`, `type logical` | types des colonnes : nombre décimal, texte, date, entier, vrai ou faux |
+| `null` | valeur absente ; un calcul avec `null` donne `null` (jamais zéro) |
+
 ## 3. Mesures DAX
 
 À écrire après les requêtes (`dax/mesures.dax`).
