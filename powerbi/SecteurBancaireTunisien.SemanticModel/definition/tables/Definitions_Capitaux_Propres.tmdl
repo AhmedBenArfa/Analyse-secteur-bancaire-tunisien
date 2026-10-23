@@ -58,3 +58,4 @@ table Definitions_Capitaux_Propres
 	annotation PBI_NavigationStepName = Navigation
 
 	annotation PBI_ResultType = Table
+
