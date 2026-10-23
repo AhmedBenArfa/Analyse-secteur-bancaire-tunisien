@@ -611,7 +611,9 @@ ADDCOLUMNS (
 À marquer comme table de dates ; trier `Annee_Trimestre` par `Cle_Trimestre` et `Periode` par
 `Ordre_Periode` (sinon « Après Covid » viendrait en premier) ; masquer les deux colonnes de tri.
 Code du modèle : `dax/Dim_Date.dax` (23/10/2026 : libellé « 2024T3 » au format des faits, au lieu de
-« 2024-T3 »).
+« 2024-T3 »). Colonne `Choix_Trimestre` (au lieu de `EstDernierTrimestre`) : « Dernier trimestre complet »
+pour le dernier trimestre où les 12 banques ont publié PNB, crédits et dépôts, sinon le libellé du trimestre ;
+triée par `Ordre_Choix_Trimestre` (masquée). Sert de filtre par défaut des pages (7.4).
 Colonne calculée utile : `EstDernierTrimestre` (le dernier trimestre présent dans les faits).
 
 ## 7. Mesures DAX
@@ -782,6 +784,14 @@ Rupture PNB cumul =
 ```
 
 ### 7.4 Comparaison au secteur
+
+Code exact : `dax/mesures.dax`, groupe 2 (23/10/2026). Ajouts à ce qui suit : `Nombre de banques`,
+`Banques presentes PNB` / `credits` / `depots` / (indicateur choisi), totaux `PNB secteur`, `Credits secteur`,
+`Depots secteur` **vides si une banque manque** ; encours du secteur et banques présentes comptés à la
+dernière date d'arrêté de la sélection (`Date fin credits`, `Date fin depots`) ; parts de marché des crédits ;
+`Rang PNB` vide hors d'une ligne de banque ; `Dernier trimestre complet` (libellé et date, depuis
+`Dim_Date[Choix_Trimestre]`). Les mesures du coefficient (secteur, médiane, rang) sont écrites avec les
+ratios (7.2).
 
 ```dax
 PNB secteur          = CALCULATE ( [PNB], REMOVEFILTERS ( Dim_Banque ) )

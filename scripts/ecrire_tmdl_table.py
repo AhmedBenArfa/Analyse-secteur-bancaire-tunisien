@@ -153,7 +153,8 @@ def ecrire_mesures():
             t += [f"\tmeasure {cite(mesure)} = {corps[0].strip()}"]
         else:
             t += [f"\tmeasure {cite(mesure)} ="] + ["\t\t\t" + x for x in corps]
-        t += [f"\t\tformatString: {fmt}", f"\t\tdisplayFolder: {dossier}",
+        t += [f"\t\tformatString: {fmt}"] if fmt != "texte" else []   # « texte » : mesure qui renvoie du texte
+        t += [f"\t\tdisplayFolder: {dossier}",
               f"\t\tlineageTag: {anciens.get(cite(mesure), uuid.uuid4())}", ""]
     t += ["\tcolumn Colonne_Masquee", "\t\tdataType: int64", "\t\tisHidden", "\t\tformatString: 0",
           f"\t\tlineageTag: {anciens.get('Colonne_Masquee', uuid.uuid4())}", "\t\tsummarizeBy: none",
@@ -278,8 +279,10 @@ if __name__ == "__main__":
     ecrire_table_calculee(
         "Dim_Date",
         "Table des dates (DAX) : un jour par ligne du 01/01/2019 au 31/12/2026, trimestre au format des faits, "
-        "période Covid ; marquée comme table de dates",
+        "période Covid, choix du dernier trimestre complet ; marquée comme table de dates",
         [("Date", "date"), ("Annee", "int64"), ("Trimestre", "string"), ("Annee_Trimestre", "string"),
-         ("Cle_Trimestre", "int64"), ("Fin_Trimestre", "boolean"), ("Periode", "string"), ("Ordre_Periode", "int64")],
-        tri={"Annee_Trimestre": "Cle_Trimestre", "Periode": "Ordre_Periode"},
-        cachees=["Cle_Trimestre", "Ordre_Periode"], table_de_dates="Date")
+         ("Cle_Trimestre", "int64"), ("Fin_Trimestre", "boolean"), ("Periode", "string"), ("Ordre_Periode", "int64"),
+         ("Choix_Trimestre", "string"), ("Ordre_Choix_Trimestre", "int64")],
+        tri={"Annee_Trimestre": "Cle_Trimestre", "Periode": "Ordre_Periode",
+             "Choix_Trimestre": "Ordre_Choix_Trimestre"},
+        cachees=["Cle_Trimestre", "Ordre_Periode", "Ordre_Choix_Trimestre"], table_de_dates="Date")

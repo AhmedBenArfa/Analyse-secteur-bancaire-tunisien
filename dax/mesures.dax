@@ -1,7 +1,8 @@
 // Auteur : Ahmed Ben Arfa
 // Mesures DAX du rapport (spécification 7), dans la table Mesures du modèle : écrites dans le TMDL par
-// python scripts/ecrire_tmdl_table.py mesures. Chaque mesure : une ligne « // [dossier | format] description »,
-// puis « MEASURE Mesures[Nom] = » et son expression, jusqu'à la ligne vide suivante.
+// python scripts/ecrire_tmdl_table.py mesures. Chaque mesure : une ligne « // [dossier | format] description »
+// (format « texte » : mesure qui renvoie du texte), puis « MEASURE Mesures[Nom] = » et son expression,
+// jusqu'à la ligne vide suivante.
 // Règles : aucune valeur absente remplacée par zéro ; un flux annuel vient du cumul publié, jamais de la
 // somme des trimestres ; un encours (stock) se lit à une date, jamais additionné dans le temps.
 
@@ -118,4 +119,128 @@ MEASURE Mesures[Capitaux propres hors resultat de la periode] =
     CALCULATE (
         [Capitaux propres hors resultat brut],
         LASTNONBLANK ( Dim_Date[Date], [Capitaux propres hors resultat brut] )
+    )
+
+// ===== 2. Secteur : banques présentes, totaux, parts de marché, rangs (spécification 7.4) =====
+// Un total du secteur, une part de marché, un rang ou un indice de concentration n'est calculé que si les
+// 12 banques sont présentes ; sinon il reste vide, et le nombre de banques présentes s'affiche à côté.
+
+// [2. Secteur\Banques présentes | 0] Nombre de banques du modèle (12)
+MEASURE Mesures[Nombre de banques] =
+    COUNTROWS ( ALL ( Dim_Banque ) )
+
+// [2. Secteur\Banques présentes | 0] Nombre de banques qui ont un PNB du trimestre pour la sélection (toutes banques confondues, filtre de banque ignoré)
+MEASURE Mesures[Banques presentes PNB] =
+    COUNTROWS ( FILTER ( ALL ( Dim_Banque ), NOT ISBLANK ( [PNB] ) ) )
+
+// [2. Secteur\Intermédiaires | Short Date] Dernière date d'arrêté de la sélection où au moins une banque a un encours de crédits
+MEASURE Mesures[Date fin credits] =
+    CALCULATE (
+        MAX ( Fait_Indicateurs[date_arrete] ),
+        REMOVEFILTERS ( Dim_Banque ),
+        Dim_Indicateur[code_indicateur] = "CREDITS",
+        NOT ISBLANK ( Fait_Indicateurs[Valeur_Cumul] )
+    )
+
+// [2. Secteur\Banques présentes | 0] Nombre de banques qui ont un encours de crédits à la dernière date de la sélection
+MEASURE Mesures[Banques presentes credits] =
+    VAR DateFin = [Date fin credits]
+    RETURN
+        CALCULATE (
+            COUNTROWS ( FILTER ( ALL ( Dim_Banque ), NOT ISBLANK ( [Credits brut] ) ) ),
+            REMOVEFILTERS ( Dim_Date ),
+            Dim_Date[Date] = DateFin
+        )
+
+// [2. Secteur\Intermédiaires | Short Date] Dernière date d'arrêté de la sélection où au moins une banque a un encours de dépôts
+MEASURE Mesures[Date fin depots] =
+    CALCULATE (
+        MAX ( Fait_Indicateurs[date_arrete] ),
+        REMOVEFILTERS ( Dim_Banque ),
+        Dim_Indicateur[code_indicateur] = "DEPOTS",
+        NOT ISBLANK ( Fait_Indicateurs[Valeur_Cumul] )
+    )
+
+// [2. Secteur\Banques présentes | 0] Nombre de banques qui ont un encours de dépôts à la dernière date de la sélection
+MEASURE Mesures[Banques presentes depots] =
+    VAR DateFin = [Date fin depots]
+    RETURN
+        CALCULATE (
+            COUNTROWS ( FILTER ( ALL ( Dim_Banque ), NOT ISBLANK ( [Depots brut] ) ) ),
+            REMOVEFILTERS ( Dim_Date ),
+            Dim_Date[Date] = DateFin
+        )
+
+// [2. Secteur\Banques présentes | 0] Nombre de banques qui ont une valeur (cumul ou solde) pour l'indicateur choisi à la date sélectionnée ; vide si aucun ou plusieurs indicateurs sont choisis
+MEASURE Mesures[Banques presentes] =
+    IF (
+        HASONEVALUE ( Dim_Indicateur[code_indicateur] ),
+        COUNTROWS ( FILTER ( ALL ( Dim_Banque ), NOT ISBLANK ( [Valeur Cumul] ) ) )
+    )
+
+// [2. Secteur\Totaux | #,0.000] PNB du trimestre des 12 banques ; vide si une banque manque
+MEASURE Mesures[PNB secteur] =
+    IF (
+        [Banques presentes PNB] = [Nombre de banques],
+        CALCULATE ( [PNB], REMOVEFILTERS ( Dim_Banque ) )
+    )
+
+// [2. Secteur\Totaux | #,0.000] Encours de crédits des 12 banques à la dernière date de la sélection ; vide si une banque manque à cette date
+MEASURE Mesures[Credits secteur] =
+    VAR DateFin = [Date fin credits]
+    RETURN
+        IF (
+            [Banques presentes credits] = [Nombre de banques],
+            CALCULATE ( [Credits brut], REMOVEFILTERS ( Dim_Banque ), REMOVEFILTERS ( Dim_Date ), Dim_Date[Date] = DateFin )
+        )
+
+// [2. Secteur\Totaux | #,0.000] Encours de dépôts des 12 banques à la dernière date de la sélection ; vide si une banque manque à cette date
+MEASURE Mesures[Depots secteur] =
+    VAR DateFin = [Date fin depots]
+    RETURN
+        IF (
+            [Banques presentes depots] = [Nombre de banques],
+            CALCULATE ( [Depots brut], REMOVEFILTERS ( Dim_Banque ), REMOVEFILTERS ( Dim_Date ), Dim_Date[Date] = DateFin )
+        )
+
+// [2. Secteur\Parts de marché | 0.00 %] Part de la banque dans le PNB du trimestre des 12 banques
+MEASURE Mesures[Part de marche PNB] =
+    DIVIDE ( [PNB], [PNB secteur] )
+
+// [2. Secteur\Parts de marché | 0.00 %] Part de la banque dans l'encours de crédits des 12 banques
+MEASURE Mesures[Part de marche credits] =
+    DIVIDE ( [Credits], [Credits secteur] )
+
+// [2. Secteur\Parts de marché | 0.00 %] Part de la banque dans l'encours de dépôts des 12 banques
+MEASURE Mesures[Part de marche depots] =
+    DIVIDE ( [Depots], [Depots secteur] )
+
+// [2. Secteur\Concentration | #,0] Indice de Herfindahl-Hirschman du PNB : somme des carrés des parts de marché × 10 000 (de 833 si les 12 banques étaient égales à 10 000 pour une seule banque) ; vide si une banque manque
+MEASURE Mesures[HHI PNB] =
+    IF (
+        NOT ISBLANK ( [PNB secteur] ),
+        SUMX ( ALL ( Dim_Banque ), [Part de marche PNB] ^ 2 ) * 10000
+    )
+
+// [2. Secteur\Rangs | 0] Rang de la banque par PNB du trimestre (1 = le plus élevé) ; vide hors d'une ligne de banque ou si une banque manque
+MEASURE Mesures[Rang PNB] =
+    IF (
+        HASONEVALUE ( Dim_Banque[code_banque] ) && NOT ISBLANK ( [PNB] ) && NOT ISBLANK ( [PNB secteur] ),
+        RANKX ( ALL ( Dim_Banque ), [PNB], , DESC, DENSE )
+    )
+
+// [2. Secteur\Dernier trimestre complet | texte] Dernier trimestre où les 12 banques ont publié PNB, crédits et dépôts (colonne Choix_Trimestre de Dim_Date), par exemple « 2026T3 »
+MEASURE Mesures[Dernier trimestre complet] =
+    CALCULATE (
+        SELECTEDVALUE ( Dim_Date[Annee_Trimestre] ),
+        REMOVEFILTERS ( Dim_Date ),
+        Dim_Date[Choix_Trimestre] = "Dernier trimestre complet"
+    )
+
+// [2. Secteur\Dernier trimestre complet | Short Date] Date d'arrêté du dernier trimestre complet
+MEASURE Mesures[Date dernier trimestre complet] =
+    CALCULATE (
+        MAX ( Dim_Date[Date] ),
+        REMOVEFILTERS ( Dim_Date ),
+        Dim_Date[Choix_Trimestre] = "Dernier trimestre complet"
     )

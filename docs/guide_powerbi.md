@@ -630,10 +630,22 @@ trimestre au format des faits et la colonne de tri de la période.
      2021T4 Covid (8 trimestres), 2022T1 à 2026T3 après Covid (19 trimestres) ;
    - `Ordre_Periode` (1, 2, 3) : `Periode` est triée par cette colonne, sinon l'ordre alphabétique
      mettrait « Après Covid » en premier dans les segments et les axes.
+   - `Choix_Trimestre` (ajoutée avec le groupe 2 des mesures, 3.4) : « Dernier trimestre complet » pour
+     tous les jours du dernier trimestre où **les 12 banques** ont publié le PNB du trimestre, les crédits
+     et les dépôts (valeurs retenues), sinon le libellé « 2024T3 » ; triée par `Ordre_Choix_Trimestre`
+     (0 pour le dernier trimestre complet, donc en tête des segments ; `Cle_Trimestre` sinon). Le calcul
+     se fait une fois, avant `ADDCOLUMNS` (variables `VAR`) : `FILTER` garde les lignes de
+     `Fait_Indicateurs` qui ont une valeur pour ces trois indicateurs, `GROUPBY` les compte par date
+     d'arrêté (`COUNTX ( CURRENTGROUP (), 1 )`), une date est complète quand elle a 3 × 12 = 36 valeurs,
+     `MAXX` garde la plus récente. Un segment réglé sur « Dernier trimestre complet » reste juste après
+     chaque actualisation : quand le T4 2026 sera publié par les 12 banques, il prendra ce libellé tout
+     seul, sans toucher au rapport (règle « filtre par défaut sur le dernier trimestre complet », pas sur
+     le dernier trimestre qui contient une donnée : au début d'un trimestre, seules quelques banques ont
+     publié) ;
 3. **Réglages du modèle** (dans le TMDL) : table **marquée comme table de dates** sur la colonne `Date`
    (`dataCategory: Time`, `isKey` ; dans Power BI : **Outils de table › Marquer comme table de
    dates**) ; colonnes de tri `Cle_Trimestre` et `Ordre_Periode` **masquées** (elles ne servent qu'au
-   tri) ; synthèse « Ne pas résumer » partout (une année ne s'additionne pas).
+   tri, comme `Ordre_Choix_Trimestre`) ; synthèse « Ne pas résumer » partout (une année ne s'additionne pas).
 
 Contrôles attendus (vue **Données**, table `Dim_Date`) :
 
@@ -757,6 +769,65 @@ filtre vides. Deuxième résultat : la colonne « PNB sur l'annee » vide pour c
 2024 : 701,188 et non 765,932, car la valeur retenue est la version révisée du document 2025T4 (retraitement
 « pour des raisons de comparabilité », événement `BH_RETRAITEMENT_2024`).
 
+### 3.4 Secteur : banques présentes, totaux, parts de marché, rangs (groupe 2, spécification 7.4)
+
+Règle du projet : **un total du secteur, une part de marché, un rang ou un indice de concentration n'existe
+que si les 12 banques sont présentes** ; sinon la mesure reste vide et le nombre de banques présentes
+s'affiche à côté. Un total de 11 banques comparé à un total de 12 ferait croire à une baisse du secteur.
+
+| Dossier | Mesures | Calcul |
+|---|---|---|
+| Banques présentes | `Nombre de banques` | `COUNTROWS ( ALL ( Dim_Banque ) )` : 12, sans écrire le nombre en dur |
+| Banques présentes | `Banques presentes PNB` | banques dont `PNB` n'est pas vide (`FILTER ( ALL ( Dim_Banque ), … )` : le filtre de banque du visuel est ignoré, on compte toujours sur les 12) |
+| Banques présentes | `Banques presentes credits`, `Banques presentes depots` | même calcul, **à la dernière date d'arrêté de la sélection** (`Date fin credits`, `Date fin depots`) |
+| Banques présentes | `Banques presentes` | pour l'indicateur choisi dans un segment de `Dim_Indicateur` (cumul ou solde) ; vide si aucun ou plusieurs indicateurs sont choisis |
+| Totaux | `PNB secteur`, `Credits secteur`, `Depots secteur` | somme des 12 banques (`REMOVEFILTERS ( Dim_Banque )`) si les 12 sont présentes, sinon vide |
+| Parts de marché | `Part de marche PNB`, `… credits`, `… depots` | valeur de la banque / total du secteur (`DIVIDE` : vide si le total est vide) |
+| Concentration | `HHI PNB` | indice de Herfindahl-Hirschman : somme des carrés des parts × 10 000 ; 833 si les 12 banques étaient égales, 10 000 pour une seule banque ; en dessous de 1 500, marché considéré comme peu concentré (seuil usuel des autorités de la concurrence) |
+| Rangs | `Rang PNB` | `RANKX` sur les 12 banques, du plus grand PNB (1) au plus petit ; vide hors d'une ligne de banque ou si une banque manque |
+| Dernier trimestre complet | `Dernier trimestre complet`, `Date dernier trimestre complet` | libellé (« 2026T3 ») et date du trimestre marqué dans `Dim_Date[Choix_Trimestre]` |
+
+**Pourquoi les encours se comptent à la dernière date.** Sur une sélection de plusieurs trimestres (l'année
+2026, par exemple), chaque banque a son dernier encours ; si une banque n'avait pas encore publié le dernier
+trimestre, l'addition mélangerait des dates. Le total du secteur se lit donc à **la dernière date où au moins
+une banque a publié** (`MAX ( Fait_Indicateurs[date_arrete] )` sans filtre de banque), et les banques sont
+comptées **à cette même date** : au début d'un trimestre (quelques banques publiées), le total reste vide au
+lieu d'additionner des banques à des dates différentes.
+
+Ce qui viendra avec les ratios (groupe 3) : coefficient d'exploitation du secteur, médiane et rang du
+coefficient (spécification 7.4), qui reposent sur le coefficient harmonisé (7.2).
+
+**Contrôle** : vider la vue Requête DAX (**Ctrl+A**, **Suppr**), coller `dax/controle_secteur.dax`,
+**Exécuter** ; trois résultats. Valeurs attendues (calculées à part depuis `donnees_publiees/`) :
+
+Résultat 1, T3 2024, du rang 1 au rang 12 :
+
+| Banque | Part de marché PNB | Rang PNB | Part de marché crédits | Part de marché dépôts |
+|---|---|---|---|---|
+| BIAT | 21,06 % | 1 | 14,72 % | 20,39 % |
+| BNA | 13,97 % | 2 | 16,96 % | 13,52 % |
+| BH | 10,80 % | 3 | 12,65 % | 9,39 % |
+| TJARI | 10,18 % | 4 | 8,57 % | 10,83 % |
+| STB | 9,98 % | 5 | 11,80 % | 11,50 % |
+| UIB | 7,65 % | 6 | 7,44 % | 6,86 % |
+| AB | 7,24 % | 7 | 8,49 % | 8,65 % |
+| BT | 6,72 % | 8 | 6,92 % | 6,37 % |
+| ATB | 5,34 % | 9 | 6,39 % | 6,48 % |
+| UBCI | 4,71 % | 10 | 3,62 % | 3,83 % |
+| WIB | 1,34 % | 11 | 1,31 % | 1,09 % |
+| BTE | 0,99 % | 12 | 1,12 % | 1,09 % |
+
+Résultat 2 : banques présentes PNB 2024T3 = 12 ; PNB secteur 1 744,522 ; HHI PNB 1 168,5 (peu concentré) ;
+crédits secteur 84 479,057 ; dépôts secteur 96 751,366 ; crédits secteur sur 2026 = 86 880,036 au
+30/09/2026 (date fin crédits) ; dernier trimestre complet « 2026T3 », au 30/09/2026 (les 28 trimestres de
+2019T4 à 2026T3 sont complets pour ces trois indicateurs).
+
+Résultat 3 (indicateurs publiés par une partie des banques) : `PORTEF` 11 banques en 2020T1 (BTE : document
+en image, détail du bilan non saisi), 12 en 2024T3 ; `DEP_TERME` 3 en 2020T1, 4 en 2024T3.
+
+Dans Power BI (vue **Données**, `Dim_Date`) : `Choix_Trimestre` contient « Dernier trimestre complet » pour
+les jours du T3 2026 et plus de « 2026T3 » ; dans un segment, « Dernier trimestre complet » vient en premier.
+
 ### 3.9 Fonctions DAX utilisées
 
 Chaque fonction DAX employée dans `dax/*.dax`, ce qu'elle fait ici et où elle sert. Le test
@@ -782,7 +853,19 @@ tableau.
 | `VAR` … `RETURN` | mots-clés : valeurs intermédiaires nommées, calculées une fois, puis résultat | `mesures` |
 | `SUMMARIZECOLUMNS` | requête : une ligne par valeur des colonnes de regroupement, avec les mesures demandées | `controle_bases` |
 | `TREATAS` | applique une liste de valeurs comme filtre sur une colonne (ici : « 2024T3 », 2024) | `controle_bases` |
-| `ROW` | table d'une ligne aux colonnes nommées (table `Mesures`, troisième résultat du contrôle) | `mesures`, `controle_bases` |
+| `ROW` | table d'une ligne aux colonnes nommées (table `Mesures`, résultats d'une ligne des contrôles) | `mesures`, `controle_bases`, `controle_secteur` |
+| `COUNTROWS` | nombre de lignes d'une table (banques du modèle, banques présentes) | `Dim_Date`, `mesures` |
+| `ALL` | toute la table, sans aucun filtre (les 12 banques, quel que soit le filtre du visuel) | `mesures` |
+| `FILTER` | lignes d'une table qui remplissent une condition | `Dim_Date`, `mesures` |
+| `REMOVEFILTERS` | dans `CALCULATE`, retire les filtres d'une table (banque, date) | `mesures` |
+| `MAX`, `MAXX` | plus grande valeur d'une colonne ; d'une expression sur chaque ligne d'une table | `Dim_Date`, `mesures` |
+| `HASONEVALUE` | vrai si le filtre ne laisse qu'une valeur (une banque, un indicateur) | `mesures` |
+| `SELECTEDVALUE` | la valeur d'une colonne si le filtre n'en laisse qu'une, sinon vide | `mesures` |
+| `DIVIDE` | division qui renvoie vide (et non une erreur) si le dénominateur est vide ou nul | `mesures` |
+| `SUMX` | somme d'une expression calculée sur chaque ligne d'une table (carrés des parts de marché) | `mesures` |
+| `RANKX` | rang d'une valeur parmi celles d'une table ; `DESC` : du plus grand au plus petit, `DENSE` : pas de rang sauté après des ex aequo | `mesures` |
+| `GROUPBY`, `CURRENTGROUP`, `COUNTX` | regroupe des lignes par colonne ; `COUNTX ( CURRENTGROUP (), 1 )` compte les lignes de chaque groupe | `Dim_Date` |
+| `IN { … }` | vrai si la valeur est dans la liste | `Dim_Date` |
 
 ## 4. Pages du rapport : visuels, champs et mesures
 

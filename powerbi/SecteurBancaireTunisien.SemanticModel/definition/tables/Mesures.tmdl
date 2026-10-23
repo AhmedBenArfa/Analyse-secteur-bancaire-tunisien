@@ -170,6 +170,171 @@ table Mesures
 		displayFolder: 1. Bases\Fiche banque
 		lineageTag: 4377c99a-f0e9-434b-bbbb-37b03a1b7212
 
+	/// Nombre de banques du modèle (12)
+	measure 'Nombre de banques' = COUNTROWS ( ALL ( Dim_Banque ) )
+		formatString: 0
+		displayFolder: 2. Secteur\Banques présentes
+		lineageTag: 4d950711-a56b-4a23-be7e-f54244785df7
+
+	/// Nombre de banques qui ont un PNB du trimestre pour la sélection (toutes banques confondues, filtre de banque ignoré)
+	measure 'Banques presentes PNB' = COUNTROWS ( FILTER ( ALL ( Dim_Banque ), NOT ISBLANK ( [PNB] ) ) )
+		formatString: 0
+		displayFolder: 2. Secteur\Banques présentes
+		lineageTag: d015e47e-90fa-40ae-9aba-a34a7c3d2969
+
+	/// Dernière date d'arrêté de la sélection où au moins une banque a un encours de crédits
+	measure 'Date fin credits' =
+			CALCULATE (
+			    MAX ( Fait_Indicateurs[date_arrete] ),
+			    REMOVEFILTERS ( Dim_Banque ),
+			    Dim_Indicateur[code_indicateur] = "CREDITS",
+			    NOT ISBLANK ( Fait_Indicateurs[Valeur_Cumul] )
+			)
+		formatString: Short Date
+		displayFolder: 2. Secteur\Intermédiaires
+		lineageTag: f9987cb8-f7e9-42e0-95db-ad3b0aae8dcb
+
+	/// Nombre de banques qui ont un encours de crédits à la dernière date de la sélection
+	measure 'Banques presentes credits' =
+			VAR DateFin = [Date fin credits]
+			RETURN
+			    CALCULATE (
+			        COUNTROWS ( FILTER ( ALL ( Dim_Banque ), NOT ISBLANK ( [Credits brut] ) ) ),
+			        REMOVEFILTERS ( Dim_Date ),
+			        Dim_Date[Date] = DateFin
+			    )
+		formatString: 0
+		displayFolder: 2. Secteur\Banques présentes
+		lineageTag: 0ee13b6a-eaf9-40af-9310-ae80bb19cc0e
+
+	/// Dernière date d'arrêté de la sélection où au moins une banque a un encours de dépôts
+	measure 'Date fin depots' =
+			CALCULATE (
+			    MAX ( Fait_Indicateurs[date_arrete] ),
+			    REMOVEFILTERS ( Dim_Banque ),
+			    Dim_Indicateur[code_indicateur] = "DEPOTS",
+			    NOT ISBLANK ( Fait_Indicateurs[Valeur_Cumul] )
+			)
+		formatString: Short Date
+		displayFolder: 2. Secteur\Intermédiaires
+		lineageTag: 9fa8a5d8-52ea-4bfd-a41e-366a10b735c4
+
+	/// Nombre de banques qui ont un encours de dépôts à la dernière date de la sélection
+	measure 'Banques presentes depots' =
+			VAR DateFin = [Date fin depots]
+			RETURN
+			    CALCULATE (
+			        COUNTROWS ( FILTER ( ALL ( Dim_Banque ), NOT ISBLANK ( [Depots brut] ) ) ),
+			        REMOVEFILTERS ( Dim_Date ),
+			        Dim_Date[Date] = DateFin
+			    )
+		formatString: 0
+		displayFolder: 2. Secteur\Banques présentes
+		lineageTag: 95e9668e-e389-4ef1-a189-7a7e3e08a969
+
+	/// Nombre de banques qui ont une valeur (cumul ou solde) pour l'indicateur choisi à la date sélectionnée ; vide si aucun ou plusieurs indicateurs sont choisis
+	measure 'Banques presentes' =
+			IF (
+			    HASONEVALUE ( Dim_Indicateur[code_indicateur] ),
+			    COUNTROWS ( FILTER ( ALL ( Dim_Banque ), NOT ISBLANK ( [Valeur Cumul] ) ) )
+			)
+		formatString: 0
+		displayFolder: 2. Secteur\Banques présentes
+		lineageTag: 87eb6a28-4df8-4528-a306-f43e85b6ff69
+
+	/// PNB du trimestre des 12 banques ; vide si une banque manque
+	measure 'PNB secteur' =
+			IF (
+			    [Banques presentes PNB] = [Nombre de banques],
+			    CALCULATE ( [PNB], REMOVEFILTERS ( Dim_Banque ) )
+			)
+		formatString: #,0.000
+		displayFolder: 2. Secteur\Totaux
+		lineageTag: e538ba6b-082d-44ad-819c-a548b1ac7162
+
+	/// Encours de crédits des 12 banques à la dernière date de la sélection ; vide si une banque manque à cette date
+	measure 'Credits secteur' =
+			VAR DateFin = [Date fin credits]
+			RETURN
+			    IF (
+			        [Banques presentes credits] = [Nombre de banques],
+			        CALCULATE ( [Credits brut], REMOVEFILTERS ( Dim_Banque ), REMOVEFILTERS ( Dim_Date ), Dim_Date[Date] = DateFin )
+			    )
+		formatString: #,0.000
+		displayFolder: 2. Secteur\Totaux
+		lineageTag: 8548e2a0-5eb4-4c3d-b1eb-fa70dfe9d368
+
+	/// Encours de dépôts des 12 banques à la dernière date de la sélection ; vide si une banque manque à cette date
+	measure 'Depots secteur' =
+			VAR DateFin = [Date fin depots]
+			RETURN
+			    IF (
+			        [Banques presentes depots] = [Nombre de banques],
+			        CALCULATE ( [Depots brut], REMOVEFILTERS ( Dim_Banque ), REMOVEFILTERS ( Dim_Date ), Dim_Date[Date] = DateFin )
+			    )
+		formatString: #,0.000
+		displayFolder: 2. Secteur\Totaux
+		lineageTag: 79b5301f-435b-4c51-8a53-01720e06ea80
+
+	/// Part de la banque dans le PNB du trimestre des 12 banques
+	measure 'Part de marche PNB' = DIVIDE ( [PNB], [PNB secteur] )
+		formatString: 0.00 %
+		displayFolder: 2. Secteur\Parts de marché
+		lineageTag: 66e17236-908e-4f1f-9f5d-6083c83b74b9
+
+	/// Part de la banque dans l'encours de crédits des 12 banques
+	measure 'Part de marche credits' = DIVIDE ( [Credits], [Credits secteur] )
+		formatString: 0.00 %
+		displayFolder: 2. Secteur\Parts de marché
+		lineageTag: f5e0e093-aa82-4782-a85e-3923ca6b0109
+
+	/// Part de la banque dans l'encours de dépôts des 12 banques
+	measure 'Part de marche depots' = DIVIDE ( [Depots], [Depots secteur] )
+		formatString: 0.00 %
+		displayFolder: 2. Secteur\Parts de marché
+		lineageTag: 61e9d957-6a3a-48cb-af22-f667d5c26594
+
+	/// Indice de Herfindahl-Hirschman du PNB : somme des carrés des parts de marché × 10 000 (de 833 si les 12 banques étaient égales à 10 000 pour une seule banque) ; vide si une banque manque
+	measure 'HHI PNB' =
+			IF (
+			    NOT ISBLANK ( [PNB secteur] ),
+			    SUMX ( ALL ( Dim_Banque ), [Part de marche PNB] ^ 2 ) * 10000
+			)
+		formatString: #,0
+		displayFolder: 2. Secteur\Concentration
+		lineageTag: 584dc97c-6650-463b-a79e-570ceb8a3bb3
+
+	/// Rang de la banque par PNB du trimestre (1 = le plus élevé) ; vide hors d'une ligne de banque ou si une banque manque
+	measure 'Rang PNB' =
+			IF (
+			    HASONEVALUE ( Dim_Banque[code_banque] ) && NOT ISBLANK ( [PNB] ) && NOT ISBLANK ( [PNB secteur] ),
+			    RANKX ( ALL ( Dim_Banque ), [PNB], , DESC, DENSE )
+			)
+		formatString: 0
+		displayFolder: 2. Secteur\Rangs
+		lineageTag: 76443ff9-961f-461a-9060-55231054c44d
+
+	/// Dernier trimestre où les 12 banques ont publié PNB, crédits et dépôts (colonne Choix_Trimestre de Dim_Date), par exemple « 2026T3 »
+	measure 'Dernier trimestre complet' =
+			CALCULATE (
+			    SELECTEDVALUE ( Dim_Date[Annee_Trimestre] ),
+			    REMOVEFILTERS ( Dim_Date ),
+			    Dim_Date[Choix_Trimestre] = "Dernier trimestre complet"
+			)
+		displayFolder: 2. Secteur\Dernier trimestre complet
+		lineageTag: e1072f8e-30f4-4927-a267-2c879f6468ef
+
+	/// Date d'arrêté du dernier trimestre complet
+	measure 'Date dernier trimestre complet' =
+			CALCULATE (
+			    MAX ( Dim_Date[Date] ),
+			    REMOVEFILTERS ( Dim_Date ),
+			    Dim_Date[Choix_Trimestre] = "Dernier trimestre complet"
+			)
+		formatString: Short Date
+		displayFolder: 2. Secteur\Dernier trimestre complet
+		lineageTag: d7148d63-af80-4826-8fe9-4a917b45d5ba
+
 	column Colonne_Masquee
 		dataType: int64
 		isHidden

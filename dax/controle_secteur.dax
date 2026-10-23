@@ -1,0 +1,35 @@
+// Auteur : Ahmed Ben Arfa
+// Contrôle des mesures du secteur (guide, section 3.4) : vider la vue Requête DAX (Ctrl+A, Suppr), coller ce
+// texte, Exécuter ; trois résultats, à comparer aux valeurs attendues du guide.
+// 1. Une ligne par banque au T3 2024 : part de marché, rang, et à côté les valeurs du secteur.
+EVALUATE
+SUMMARIZECOLUMNS (
+    Dim_Banque[code_banque],
+    TREATAS ( { "2024T3" }, Dim_Date[Annee_Trimestre] ),
+    "Part de marche PNB", [Part de marche PNB],
+    "Rang PNB", [Rang PNB],
+    "Part de marche credits", [Part de marche credits],
+    "Part de marche depots", [Part de marche depots]
+)
+ORDER BY [Rang PNB]
+// 2. Secteur au T3 2024, sur l'année 2026 entière (encours au dernier arrêté publié) et dernier trimestre complet
+EVALUATE
+ROW (
+    "Banques presentes PNB 2024T3", CALCULATE ( [Banques presentes PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "PNB secteur 2024T3", CALCULATE ( [PNB secteur], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "HHI PNB 2024T3", CALCULATE ( [HHI PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Credits secteur 2024T3", CALCULATE ( [Credits secteur], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Depots secteur 2024T3", CALCULATE ( [Depots secteur], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Credits secteur 2026", CALCULATE ( [Credits secteur], Dim_Date[Annee] = 2026 ),
+    "Date fin credits 2026", CALCULATE ( [Date fin credits], Dim_Date[Annee] = 2026 ),
+    "Dernier trimestre complet", [Dernier trimestre complet],
+    "Date dernier trimestre complet", [Date dernier trimestre complet]
+)
+// 3. Indicateur publié par une partie des banques : nombre de banques présentes (portefeuille-titres, dépôts à terme)
+EVALUATE
+SUMMARIZECOLUMNS (
+    Dim_Indicateur[code_indicateur],
+    TREATAS ( { "PORTEF", "DEP_TERME" }, Dim_Indicateur[code_indicateur] ),
+    "Banques presentes 2020T1", CALCULATE ( [Banques presentes], Dim_Date[Annee_Trimestre] = "2020T1" ),
+    "Banques presentes 2024T3", CALCULATE ( [Banques presentes], Dim_Date[Annee_Trimestre] = "2024T3" )
+)
