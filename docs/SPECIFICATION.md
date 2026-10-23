@@ -530,8 +530,9 @@ d'UIB et l'actionnaire de référence de BIAT en 2019 ne sont pas relevés (cont
 par d'autres sources, voir la colonne `remarque`).
 
 Dans Power Query, l'actionnariat d'une banque à une date est celui de la ligne dont la période couvre
-cette date (colonne conditionnelle « segment d'actionnariat » sur les faits) ; `Dim_Banque` porte
-l'actionnariat actuel.
+cette date : fonction personnalisée `Actionnariat_A_La_Date` (périodes, banque, date), appelée par
+`Fait_Indicateurs`, `Variations_Comparables` et `Fait_Etats_Financiers` pour remplir leur colonne
+`Segment_Actionnariat` ; `Dim_Banque` porte l'actionnariat actuel.
 
 ## 6. Modèle en étoile
 

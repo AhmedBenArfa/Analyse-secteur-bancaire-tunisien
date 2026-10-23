@@ -139,6 +139,14 @@ table Fait_Indicateurs
 
 		annotation SummarizationSetBy = User
 
+	column Segment_Actionnariat
+		dataType: string
+		lineageTag: ba779ee1-a10e-4141-b5f9-452820b5f346
+		summarizeBy: none
+		sourceColumn: Segment_Actionnariat
+
+		annotation SummarizationSetBy = User
+
 	partition Fait_Indicateurs = m
 		mode: import
 		source =
@@ -202,9 +210,17 @@ table Fait_Indicateurs
 				            {"Rupture_Trim", type text}, {"Rupture_Cumul", type text},
 				            {"Detail_Rupture_Trim", type text}, {"Detail_Rupture_Cumul", type text}
 				        }
+				    ),
+				    // segment d'actionnariat : catégorie de la banque à la date d'arrêté, selon les périodes de
+				    // Banques_Actionnariat (fonction Actionnariat_A_La_Date ; UBCI : groupe étranger jusqu'au 15/03/2021)
+				    Periodes = Table.Buffer(
+				        Table.SelectColumns(Banques_Actionnariat, {"code_banque", "date_debut", "date_fin", "actionnariat"})
+				    ),
+				    Segment = Table.AddColumn(
+				        Types, "Segment_Actionnariat", each Actionnariat_A_La_Date(Periodes, [banque], [date_arrete]), type text
 				    )
 				in
-				    Types
+				    Segment
 
 	annotation PBI_NavigationStepName = Navigation
 

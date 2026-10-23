@@ -37,6 +37,14 @@ let
         type nullable number
     ),
     // colonnes du CSV inutiles dans le modèle (année et rang du trimestre viendront de la table de dates)
-    SansColonnes = Table.RemoveColumns(VariationPct, {"variation_pct", "annee", "num_trimestre", "nature", "retenir"})
+    SansColonnes = Table.RemoveColumns(VariationPct, {"variation_pct", "annee", "num_trimestre", "nature", "retenir"}),
+    // segment d'actionnariat : catégorie de la banque à la date d'arrêté, selon les périodes de
+    // Banques_Actionnariat (fonction Actionnariat_A_La_Date ; UBCI : groupe étranger jusqu'au 15/03/2021)
+    Periodes = Table.Buffer(
+        Table.SelectColumns(Banques_Actionnariat, {"code_banque", "date_debut", "date_fin", "actionnariat"})
+    ),
+    Segment = Table.AddColumn(
+        SansColonnes, "Segment_Actionnariat", each Actionnariat_A_La_Date(Periodes, [banque], [date_arrete]), type text
+    )
 in
-    SansColonnes
+    Segment

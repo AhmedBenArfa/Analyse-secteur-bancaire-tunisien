@@ -121,6 +121,9 @@ données** : les requêtes apparaissent dans l'ordre de la section 2, les interm
 | `Definitions_Charges` | nombre de lignes | 13 (une par banque, deux pour Attijari) |
 | `Definitions_Charges` | TJARI | « sans dotations » de 2019T4 à 2021T3 ; « avec reste non detaille » de 2021T4 à 2026T3 |
 | `Definitions_Capitaux_Propres` | nombre de lignes | 12 ; « resultat inclus » pour ATB et BTE ; « hors resultat, apres affectation au 31/12 » pour AB et BIAT |
+| `Fait_Indicateurs`, `Variations_Comparables`, `Fait_Etats_Financiers` | `Segment_Actionnariat` | jamais vide ; nombres de lignes inchangés (7 173, 10 981, 504) |
+| `Fait_Indicateurs` | UBCI 2020T4 / 2021T1 | « groupe étranger » / « privé sans contrôle étranger » (cession du 16/03/2021) |
+| `Fait_Indicateurs` | BTE 2024T3 | « mixte » (seconde période, à partir du 01/07/2024) |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -142,6 +145,7 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | 6 | `Revisions` | oui | `Versions` | versions non retenues et écart à la valeur retenue (page qualité) |
 | 7 | `Banques_Actionnariat` | oui | `donnees_referenceanques.xlsx` (connecteur Excel) | actionnariat par période, avec source et page |
 | 8 | `Dim_Banque` | oui | `dim_banque.csv` + fusion avec `Banques_Actionnariat` | code, nom, ticker, actionnariat actuel |
+| 8b | `Actionnariat_A_La_Date` | fonction | `Banques_Actionnariat` | catégorie d'actionnariat d'une banque à une date (segment des faits) |
 | 9 | `Operations_Titres` | non | `operations_titres.csv` sur GitHub (source URL) | facteurs d'ajustement des cours |
 | 10 | `Evenements` | oui | `evenements.csv` sur GitHub (source URL) | événements qui expliquent une rupture de série |
 | 11 | `Fait_Cours` | oui | `cours_banques.csv` + fusion avec `Operations_Titres` | cours quotidiens, cours ajustés, rendement, séances sans transaction |
@@ -238,6 +242,7 @@ Table de faits des indicateurs trimestriels : une ligne par banque × trimestre 
 | `SansMesure` | retire `mesure` et `attribut`, devenus inutiles |
 | `Pivotees` | **pivot** sans agrégation sur cette liste fixe de 12 colonnes (une seule valeur par case : une erreur ici signalerait un doublon dans les versions) |
 | `Types` | nombres pour les valeurs, entiers pour les pages, texte pour le reste |
+| `Periodes`, `Segment` | **segment d'actionnariat** : périodes de `Banques_Actionnariat` gardées en mémoire, puis colonne `Segment_Actionnariat` = fonction `Actionnariat_A_La_Date` (catégorie de la banque à la date d'arrêté, section 2.12h) |
 
 **Pourquoi un filtre explicite** : la règle des versions (spécification 5.2) se voit dans Power Query :
 les niveaux affichés sont toujours la version révisée quand elle existe ; les versions écartées
@@ -382,6 +387,7 @@ période un an plus tôt) **lues dans le même document**, donc dans la même m�
 | `Retenir`, `SansTrimDesStocks` | **colonne conditionnelle** et filtre : même règle que `Fait_Indicateurs`, un stock n'a pas de trimestre seul (304 lignes écartées) |
 | `VariationPct` | **colonne calculée** `Variation_Pct` = (N − N-1) / \|N-1\| (vide si N-1 = 0) ; la valeur absolue garde une hausse positive quand N-1 est négatif (commissions encourues de BTE, autres produits) ; calculée ici, la colonne du CSV n'est pas reprise |
 | `SansColonnes` | retire la variation du CSV, l'année et le rang du trimestre (ils viendront de la table de dates), `nature` et `retenir` |
+| `Periodes`, `Segment` | **segment d'actionnariat** : périodes de `Banques_Actionnariat` gardées en mémoire, puis colonne `Segment_Actionnariat` = fonction `Actionnariat_A_La_Date` (catégorie de la banque à la date d'arrêté, section 2.12h) |
 
 **Pourquoi une table à part** : les niveaux de `Fait_Indicateurs` de deux années viennent de deux
 documents révisés différents ; leur rapport mélangerait deux méthodes. BH : PNB 2025 −2,8 % dans le
@@ -401,6 +407,7 @@ individuels, au 30/06 de 2020 à 2026 et au 31/12 de 2019 à 2025.
 | `VersionRetenue` | **filtre sur la version retenue** (`version = source_valeur`) : la révisée par le document suivant de même type quand elle existe, sauf exception écrite (BNA 30/06/2025 : résultat avant modifications comptables) |
 | `Colonnes`, `Renommees` | garde la valeur retenue (renommée `valeur_mdt`), la version, le fichier, la page, les statuts et la remarque |
 | `Annualisation` | **colonne conditionnelle** `facteur_annualisation` : 2 pour un semestre, 1 pour un exercice ; le ROE et le ROA multiplieront le résultat par ce facteur |
+| `Periodes`, `Segment` | **segment d'actionnariat** : périodes de `Banques_Actionnariat` gardées en mémoire, puis colonne `Segment_Actionnariat` = fonction `Actionnariat_A_La_Date` (catégorie de la banque à la date d'arrêté, section 2.12h) |
 
 **Pourquoi la version révisée** : le capital et le total de l'actif d'ouverture (31/12/N-1) viennent
 alors du document de l'exercice N, dans la même méthode que la valeur de fin de période. Les deux
@@ -473,6 +480,24 @@ le rapport classe les banques avec le coefficient harmonisé et affiche la défi
 en info-bulle. De même, les capitaux propres trimestriels ne servent qu'à la fiche banque, avec leur
 définition ; les comparaisons utilisent ceux du bilan.
 
+### 2.12h Segment d'actionnariat : fonction `Actionnariat_A_La_Date`
+
+L'actionnariat d'une banque peut changer (UBCI : BNP Paribas jusqu'au 15/03/2021, groupe Carte ensuite).
+Un trimestre doit donc être classé selon l'actionnariat **à sa date**, pas selon l'actionnariat
+d'aujourd'hui (`Dim_Banque`).
+
+`Actionnariat_A_La_Date` est une **fonction personnalisée** (requête non chargée) : elle reçoit la table
+des périodes, une banque et une date, garde la ligne de `Banques_Actionnariat` dont la période couvre la
+date (début vide ou antérieur, fin vide ou postérieure) et renvoie sa catégorie ; vide si aucune ou
+plusieurs lignes la couvrent (`tests/test_actionnariat.py` vérifie que les périodes se suivent sans trou
+ni chevauchement). `Fait_Indicateurs`, `Variations_Comparables` et `Fait_Etats_Financiers` l'appellent
+pour chaque ligne (étapes `Periodes` et `Segment`) : la table des périodes est gardée en mémoire une
+fois par requête, le fichier Excel n'est pas relu à chaque ligne.
+
+**Pourquoi une fonction** : la même règle sert à trois tables de faits ; écrite une fois, elle ne peut pas
+diverger d'une table à l'autre. Résultat : au T4 2020, 4 banques sous contrôle étranger (ATB, Attijari,
+UBCI, UIB), 3 au T3 2026 ; 3 publiques (BNA, BH, STB) ; 1 mixte (BTE).
+
 ### 2.13 Fonctions et mots-clés M utilisés
 
 Chaque fonction du langage M (Power Query) employée dans les requêtes, ce qu'elle fait ici et où elle
@@ -514,6 +539,7 @@ ne manque à ce tableau.
 | `Table.AddIndexColumn` | numérote les lignes (0, 1, 2…) pour retrouver la séance précédente | `Fait_Cours` |
 | `Table.FillDown` | recopie vers le bas la dernière valeur non vide (dernière clôture connue) | `Fait_Cours` |
 | `Table.First` | première ligne d'une table, ou une valeur par défaut si elle est vide (première opération postérieure) | `Fait_Cours` |
+| `Table.RowCount` | nombre de lignes d'une table (une seule période d'actionnariat doit couvrir la date) | `Actionnariat_A_La_Date` |
 | `Text.Contains` | le texte contient-il ce mot (« sans transaction ») ? | `Fait_Cours` |
 | `Text.StartsWith` | le texte commence-t-il par ce préfixe (« revisee_31-12 », « exclue ») ? | `Revisions` |
 | `Text.Proper` | met une majuscule au début du mot (« trim » → « Trim ») | `Fait_Indicateurs` |
@@ -553,6 +579,8 @@ ne manque à ce tableau.
 | `let … in` | suite d'étapes nommées ; la requête renvoie l'étape écrite après `in` (chaque nom est une ligne de « Étapes appliquées ») |
 | `each [colonne]` | fonction appliquée à chaque ligne ; `[colonne]` est la valeur de la ligne en cours |
 | `(op) => …` | fonction avec un paramètre nommé, quand deux lignes sont comparées (une opération et les autres, une séance et les opérations) |
+| `(periodes as table, banque as text, jour as date) as nullable text => …` | **fonction personnalisée** enregistrée comme requête : paramètres typés, résultat typé ; appelée ligne par ligne par d'autres requêtes |
+| `table{0}[colonne]` | valeur d'une colonne dans la première ligne d'une table |
 | `if … then … else` | condition : c'est le code d'une colonne conditionnelle |
 | `error "…"` | provoque une erreur visible à l'actualisation (catégorie d'actionnariat inconnue) |
 | `#table(type table […], {…})` | table écrite dans la requête (3 codes des états financiers) |
