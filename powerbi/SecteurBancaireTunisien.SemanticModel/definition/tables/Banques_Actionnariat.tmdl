@@ -1,0 +1,145 @@
+/// Actionnariat des banques par période (fichier Excel donnees_reference/banques.xlsx) : actionnaire de référence, part du capital, catégorie, groupe, source et page
+table Banques_Actionnariat
+	lineageTag: 97d6b0b5-62d1-4c33-8770-a1d35f6dd636
+
+	column code_banque
+		dataType: string
+		lineageTag: aabb0e7e-09d4-403e-8207-e1c2fef81fa1
+		summarizeBy: none
+		sourceColumn: code_banque
+
+		annotation SummarizationSetBy = User
+
+	column nom
+		dataType: string
+		lineageTag: 982d43f6-c490-4107-ab05-cdb1ee35db01
+		summarizeBy: none
+		sourceColumn: nom
+
+		annotation SummarizationSetBy = User
+
+	column actionnaire_reference
+		dataType: string
+		lineageTag: d3d5958f-b556-42eb-8e99-4bd6ccbc9be8
+		summarizeBy: none
+		sourceColumn: actionnaire_reference
+
+		annotation SummarizationSetBy = User
+
+	column part_capital_pct
+		dataType: double
+		formatString: 0.00
+		lineageTag: 51cf6d85-8cb0-4f41-81c9-fb8d2293980e
+		summarizeBy: none
+		sourceColumn: part_capital_pct
+
+		annotation SummarizationSetBy = User
+
+	column actionnariat
+		dataType: string
+		lineageTag: 2ecb8866-2bc9-4626-a179-4c20ec6696c7
+		summarizeBy: none
+		sourceColumn: actionnariat
+
+		annotation SummarizationSetBy = User
+
+	column groupe
+		dataType: string
+		lineageTag: a71e9cb2-8022-4c6a-8b31-8a34f30e70c6
+		summarizeBy: none
+		sourceColumn: groupe
+
+		annotation SummarizationSetBy = User
+
+	column date_reference
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 1cd8c4bb-be6a-4d1a-98e0-20e497e708f1
+		summarizeBy: none
+		sourceColumn: date_reference
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column source
+		dataType: string
+		lineageTag: 3f3a59c4-9383-4c00-b2e8-556cea7a88a0
+		summarizeBy: none
+		sourceColumn: source
+
+		annotation SummarizationSetBy = User
+
+	column page
+		dataType: string
+		lineageTag: 744d2e21-8502-469c-93bb-66b6df84feda
+		summarizeBy: none
+		sourceColumn: page
+
+		annotation SummarizationSetBy = User
+
+	column date_debut
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 1725ff5e-dc90-47d5-b7c9-5838cde94c7d
+		summarizeBy: none
+		sourceColumn: date_debut
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column date_fin
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: df5b9787-ba5c-4c04-99f3-55b003447c0f
+		summarizeBy: none
+		sourceColumn: date_fin
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column remarque
+		dataType: string
+		lineageTag: 5161f2fc-4755-4379-b1ef-2e36d11e56a4
+		summarizeBy: none
+		sourceColumn: remarque
+
+		annotation SummarizationSetBy = User
+
+	partition Banques_Actionnariat = m
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Actionnariat des banques (chargée) : table Excel « Banques » de donnees_reference\banques.xlsx
+				// (connecteur Excel), une ligne par banque et par période d'actionnaire de référence (date_debut,
+				// date_fin vides quand l'actionnaire n'a pas changé de 2019 à 2026), avec la source et la page de
+				// chaque valeur. Règle de classement par le contrôle : spécification 5.3. Dim_Banque en prend la ligne
+				// en cours ; la fiche banque affiche l'historique et ses sources.
+				let
+				    Classeur = Excel.Workbook(File.Contents(CheminDonnees & "\donnees_reference\banques.xlsx"), true),
+				    // la table Excel nommée (pas la feuille) : ses limites suivent les lignes ajoutées dans Excel
+				    Banques = Classeur{[Item = "Banques", Kind = "Table"]}[Data],
+				    Types = Table.TransformColumnTypes(
+				        Banques,
+				        {
+				            {"code_banque", type text}, {"nom", type text}, {"actionnaire_reference", type text},
+				            {"part_capital_pct", type number}, {"actionnariat", type text}, {"groupe", type text},
+				            {"date_reference", type date}, {"source", type text}, {"page", type text},
+				            {"date_debut", type date}, {"date_fin", type date}, {"remarque", type text}
+				        }
+				    ),
+				    // une catégorie hors de la règle (faute de frappe dans Excel) se verrait ici comme une erreur
+				    CategorieValide = Table.TransformColumns(
+				        Types,
+				        {{"actionnariat", each if List.Contains(
+				            {"public", "groupe étranger", "mixte", "privé sans contrôle étranger"}, _) then _
+				            else error "catégorie d'actionnariat inconnue : " & (if _ = null then "(vide)" else _), type text}}
+				    )
+				in
+				    CategorieValide
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table

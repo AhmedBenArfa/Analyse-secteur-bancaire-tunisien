@@ -62,6 +62,11 @@ données** : les requêtes apparaissent dans l'ordre de la section 2, les interm
 | `Revisions` | nombre de lignes | 14 884 (avec `Fait_Indicateurs` : les 26 429 lignes de `indicateurs_versions.csv`) |
 | `Revisions` | BH 2024T4, PNB, cumul, version `initiale` | `valeur_mdt` = 765,932 ; `valeur_retenue` = 701,188 ; `Ecart_MDT` = −64,744 ; « révision importante (plus de 2 %) » |
 | `Revisions` | `Type_Revision` | 7 639 retraitements mineurs, 5 677 identiques, 1 133 révisions importantes, 241 « 31/12 provisoire écarté », 99 reclassements, 70 documents en image, 25 colonnes fausses |
+| `Banques_Actionnariat` | nombre de lignes | 15 (12 banques ; 2 périodes pour BTE, UBCI et Wifak) ; aucune erreur dans `actionnariat` |
+| `Dim_Banque` | nombre de lignes | 12 |
+| `Dim_Banque` | UBCI | `actionnaire_reference` = Groupe Carte ; `part_capital_pct` = 39,86 ; `actionnariat` = privé sans contrôle étranger |
+| `Dim_Banque` | BTE | Abou Dhabi Investment Authority (ADIA) ; 40,80 ; mixte ; `date_actionnariat` = 31/12/2024 |
+| `Dim_Banque` | WIB | `ticker_bvmt` = WIFAK ; groupe = Groupe Ben Ayed |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -80,6 +85,8 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | 4 | `Dim_Indicateur` | oui | `dim_indicateur.csv` + 3 lignes ajoutées | libellé, catégorie, nature (flux / stock), ordre |
 | 5 | `Fait_Indicateurs` | oui | `Versions` + fusion avec `Dim_Indicateur` | valeur retenue, trimestre seul et cumul côte à côte |
 | 6 | `Revisions` | oui | `Versions` | versions non retenues et écart à la valeur retenue (page qualité) |
+| 7 | `Banques_Actionnariat` | oui | `donnees_referenceanques.xlsx` (connecteur Excel) | actionnariat par période, avec source et page |
+| 8 | `Dim_Banque` | oui | `dim_banque.csv` + fusion avec `Banques_Actionnariat` | code, nom, ticker, actionnariat actuel |
 
 ### 2.1 `CheminDonnees` (paramètre)
 
@@ -196,6 +203,39 @@ version écartée (14 884 lignes au 23/10/2026). Page « qualité des données �
 la banque avait publié avant, et de combien elle a révisé (ex. PNB 2024 de BH : 765,932 publié dans
 BH_2024T4, 701,188 retenu, « retraité pour des raisons de comparabilité »). Les 3 lignes sans valeur
 retenue sont les capitaux propres BTE au 31/12 provisoire (2021 et 2022), écartés par la règle.
+
+### 2.7 `Banques_Actionnariat` (chargée)
+
+Actionnariat des 12 banques lu dans le fichier Excel `donnees_referenceanques.xlsx` (table Excel
+nommée `Banques`, 15 lignes) : une ligne par banque et par période d'actionnaire de référence.
+
+| Étape | Ce qu'elle fait |
+|---|---|
+| `Classeur` | **connecteur Excel** : `Excel.Workbook` sur le fichier, première ligne = en-têtes |
+| `Banques` | prend la **table Excel** `Banques` (pas la feuille) : ses limites suivent les lignes ajoutées dans Excel |
+| `Types` | texte, nombre (`part_capital_pct`, en % du capital), dates (`date_reference`, `date_debut`, `date_fin`) |
+| `CategorieValide` | une catégorie hors des quatre de la règle (public, groupe étranger, mixte, privé sans contrôle étranger) devient une **erreur visible** à l'actualisation |
+
+**Pourquoi un fichier Excel** : l'actionnariat ne vient pas des PDF d'indicateurs ; il est relevé à la
+main dans des sources officielles (fiche émetteur de la Bourse, états financiers, rapports annuels),
+avec la source et la page de chaque ligne, dans un fichier qu'on peut relire et corriger dans Excel
+(`python scripts/ecrire_banques_xlsx.py` le régénère). Règle de classement par le contrôle :
+spécification 5.3. Les périodes (`date_debut`, `date_fin`) servent au segment d'actionnariat des
+faits : UBCI change de catégorie le 16/03/2021 (BNP Paribas → groupe Carte) ; Wifak et BTE changent
+d'actionnaire de référence sans changer de catégorie. Pour BTE, la date de l'augmentation de capital
+du second semestre 2024 n'est pas connue : aucune ligne ne couvre du 01/07/2024 au 30/12/2024.
+
+### 2.8 `Dim_Banque` (chargée)
+
+| Étape | Ce qu'elle fait |
+|---|---|
+| `Fichier`, `Source`, `EnTetes`, `Types` | lit `dim_banque.csv` (code, nom, ticker de la Bourse) |
+| `SansColonnesVides` | retire `actionnariat` et `groupe`, vides dans le CSV |
+| `ActionnariatActuel` | filtre de `Banques_Actionnariat` : la ligne sans `date_fin` (une par banque) |
+| `Fusion`, `Developpee` | **fusion** sur `code_banque` (jointure externe gauche) : actionnaire de référence, part du capital, catégorie, groupe, date de la source (`date_actionnariat`) |
+
+**Pourquoi l'actionnariat actuel seulement** : la dimension a une ligne par banque (relation 1 →
+plusieurs vers les faits) ; l'historique reste dans `Banques_Actionnariat`.
 
 ## 3. Mesures DAX
 

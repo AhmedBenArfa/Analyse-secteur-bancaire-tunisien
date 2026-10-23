@@ -1,0 +1,105 @@
+/// Dimension des banques : code, nom, ticker de la Bourse et actionnariat actuel (fusion avec Banques_Actionnariat)
+table Dim_Banque
+	lineageTag: 9cbac033-d30f-43db-8c16-bffa769ecce1
+
+	column code_banque
+		dataType: string
+		lineageTag: ab2ebe3a-91f0-49f1-af81-f389f3f97a96
+		summarizeBy: none
+		sourceColumn: code_banque
+
+		annotation SummarizationSetBy = User
+
+	column nom
+		dataType: string
+		lineageTag: 5850e784-d5f4-471c-9299-4138bb88cd91
+		summarizeBy: none
+		sourceColumn: nom
+
+		annotation SummarizationSetBy = User
+
+	column ticker_bvmt
+		dataType: string
+		lineageTag: be827c4c-0771-43bd-99b1-b980c4c91fde
+		summarizeBy: none
+		sourceColumn: ticker_bvmt
+
+		annotation SummarizationSetBy = User
+
+	column actionnaire_reference
+		dataType: string
+		lineageTag: e9abbeaa-4dd4-4c15-8f7a-bff8d20e5093
+		summarizeBy: none
+		sourceColumn: actionnaire_reference
+
+		annotation SummarizationSetBy = User
+
+	column part_capital_pct
+		dataType: double
+		formatString: 0.00
+		lineageTag: 8d266cf9-3d94-4c0b-b137-af4bbe0a3ebd
+		summarizeBy: none
+		sourceColumn: part_capital_pct
+
+		annotation SummarizationSetBy = User
+
+	column actionnariat
+		dataType: string
+		lineageTag: 15fb62f6-23e2-44f9-bf03-ca6df435a906
+		summarizeBy: none
+		sourceColumn: actionnariat
+
+		annotation SummarizationSetBy = User
+
+	column groupe
+		dataType: string
+		lineageTag: d1c80288-61ed-425f-8da3-0b2a30c424cd
+		summarizeBy: none
+		sourceColumn: groupe
+
+		annotation SummarizationSetBy = User
+
+	column date_actionnariat
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 81daa64e-7af2-4989-8d54-a5f9d06dd7e0
+		summarizeBy: none
+		sourceColumn: date_actionnariat
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition Dim_Banque = m
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Dimension des banques (chargée) : code, nom, ticker de la Bourse (dim_banque.csv), et actionnariat
+				// actuel (Banques_Actionnariat, depuis le fichier Excel) : actionnaire de référence, part du capital,
+				// catégorie (public, groupe étranger, mixte, privé sans contrôle étranger), groupe, date de la source.
+				let
+				    Fichier = Fichiers_Donnees{[fichier = "dim_banque.csv"]}[contenu],
+				    Source = Csv.Document(Fichier, [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    EnTetes = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Types = Table.TransformColumnTypes(
+				        EnTetes, {{"code_banque", type text}, {"nom", type text}, {"ticker_bvmt", type text}}, "en-US"
+				    ),
+				    // les colonnes actionnariat et groupe du CSV sont vides : elles viennent du fichier Excel
+				    SansColonnesVides = Table.RemoveColumns(Types, {"actionnariat", "groupe"}),
+				    // ligne en cours de chaque banque : celle dont la période n'a pas de fin
+				    ActionnariatActuel = Table.SelectRows(Banques_Actionnariat, each [date_fin] = null),
+				    // fusion avec l'actionnariat actuel (une ligne par banque : sinon la fusion dupliquerait la banque)
+				    Fusion = Table.NestedJoin(
+				        SansColonnesVides, {"code_banque"}, ActionnariatActuel, {"code_banque"}, "Actionnariat", JoinKind.LeftOuter
+				    ),
+				    Developpee = Table.ExpandTableColumn(
+				        Fusion, "Actionnariat",
+				        {"actionnaire_reference", "part_capital_pct", "actionnariat", "groupe", "date_reference"},
+				        {"actionnaire_reference", "part_capital_pct", "actionnariat", "groupe", "date_actionnariat"}
+				    )
+				in
+				    Developpee
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table

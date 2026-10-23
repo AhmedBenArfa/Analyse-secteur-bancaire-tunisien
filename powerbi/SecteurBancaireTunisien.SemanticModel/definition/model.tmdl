@@ -11,11 +11,13 @@ annotation __PBI_TimeIntelligenceEnabled = 1
 
 annotation PBI_ProTooling = ["DevMode"]
 
-annotation PBI_QueryOrder = ["CheminDonnees","Fichiers_Donnees","Versions","Dim_Indicateur","Fait_Indicateurs","Revisions"]
+annotation PBI_QueryOrder = ["CheminDonnees","Fichiers_Donnees","Versions","Dim_Indicateur","Fait_Indicateurs","Revisions","Banques_Actionnariat","Dim_Banque"]
 
 ref table Fait_Indicateurs
 ref table Dim_Indicateur
 ref table Revisions
+ref table Banques_Actionnariat
+ref table Dim_Banque
 
 ref cultureInfo fr-FR
 

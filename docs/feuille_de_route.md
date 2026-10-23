@@ -18,23 +18,25 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4 | Cours boursiers 2019–2026 | Fait : 1 955 séances par banque, 63 opérations sur titres sourcées |
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
-| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Dim_Indicateur` (27 lignes), `Fait_Indicateurs` (7 173 lignes), `Revisions` (14 884 lignes) écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop le 23/10/2026 |
+| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Dim_Indicateur` (27 lignes), `Fait_Indicateurs` (7 173 lignes), `Revisions` (14 884 lignes) écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop le 23/10/2026 ; `Banques_Actionnariat` (fichier Excel) et `Dim_Banque` écrites, à vérifier |
 | 6 | Modèle en étoile et mesures DAX | À faire |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit ; captures du rapport à faire |
 
 ## En cours
 
-- Étape 5 : `Dim_Banque`, avec l'actionnariat de `donnees_reference/banques.xlsx` (connecteur
-  Excel, fusion). Vérifiées le 23/10/2026 dans Power BI Desktop : `Dim_Indicateur`,
+- Étape 5, à vérifier dans Power BI Desktop : `Banques_Actionnariat` (connecteur Excel sur
+  `donnees_reference/banques.xlsx`, table `Banques`, 15 lignes, catégorie contrôlée) et `Dim_Banque`
+  (12 banques, fusion avec l'actionnariat en cours). Point à régler avec le segment d'actionnariat :
+  pour BTE, aucune période ne couvre du 01/07/2024 au 30/12/2024 (date de l'augmentation de capital
+  inconnue ; catégorie « mixte » avant et après). Vérifiées le 23/10/2026 dans Power BI Desktop : `Dim_Indicateur`,
   `Fait_Indicateurs` (fusion avec `Dim_Indicateur`, colonne conditionnelle sur les stocks, « non »
   pour les ruptures) et `Revisions` (filtre inverse, écart calculé, colonnes conditionnelles) ; tous
   les contrôles du guide (section 1) conformes.
 
 ## Prochaines actions
 
-1. Requêtes suivantes, une à la fois, vérifiées dans Power BI Desktop : `Dim_Banque`
-   avec l'actionnariat (`donnees_reference/banques.xlsx`), `Operations_Titres` et `Evenements` par
+1. Requêtes suivantes, une à la fois, vérifiées dans Power BI Desktop : `Operations_Titres` et `Evenements` par
    leur lien *raw* GitHub, colonnes conditionnelles (période Covid, segment d'actionnariat).
 2. Mesures DAX (totaux du secteur seulement quand les 12 banques sont présentes, nombre de banques
    présentes, dernier trimestre complet).
