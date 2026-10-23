@@ -13,45 +13,62 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | # | Étape | État |
 |---|---|---|
 | 1 | Script de collecte et d'extraction des indicateurs trimestriels | Fait |
-| 2 | Collecte réelle T4 2019 → T3 2026 et corrections | Fait : 336/336 documents, 12 gabarits de mise en page |
+| 2 | Collecte réelle T4 2019 → T3 2026 et corrections | Fait : 336/336 documents, 12 gabarits de mise en page ; 13 documents publiés en image saisis à la main ; 11 545 valeurs retenues |
 | 3 | Validation sur l'image des PDF | Valeurs de référence relevées à la main (438 sur 41 documents) ; `docs/validation.md` à écrire |
 | 4 | Cours boursiers 2019–2026 | Fait : 1 955 séances par banque, 63 opérations sur titres sourcées |
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
-| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Dim_Indicateur` (27 lignes), `Fait_Indicateurs` (7 173 lignes), `Revisions` (14 884 lignes) écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop le 23/10/2026 , `Banques_Actionnariat` (fichier Excel, 15 lignes) et `Dim_Banque` (12 lignes) vérifiées ; `AdresseDepot`, `Evenements` (11 lignes, vérifiée) et `Operations_Titres` (évaluée sans erreur), lues par URL ; cache des données versionné ; `Fait_Cours` (23 460 séances, cours ajustés) vérifiée ; guide : tableau des 38 fonctions M utilisées ; `Variations_Comparables` (10 981 lignes) vérifiée ; `Fait_Etats_Financiers` (504 lignes) vérifiée ; `Revisions_Etats_Financiers` (423 lignes) vérifiée ; `Controle` chargée (336 lignes attendues) ; `Ecarts_Annuels` et `Controle_Annuel` (288 lignes) vérifiées ; `Gabarits`, `Definitions_Charges` (13 lignes) et `Definitions_Capitaux_Propres` (12 lignes) vérifiées ; segment d'actionnariat (fonction `Actionnariat_A_La_Date`, colonne des trois faits) écrit, à vérifier : **dernière transformation de l'étape** |
-| 6 | Modèle en étoile et mesures DAX | À faire |
+| 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
+| 6 | Modèle en étoile et mesures DAX | **Prochaine étape** |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
-## En cours
+## Étape 5 : requêtes Power Query (terminée)
 
-- Étape 5, à vérifier dans Power BI Desktop : segment d'actionnariat (fonction personnalisée
-  `Actionnariat_A_La_Date`, colonne `Segment_Actionnariat` de `Fait_Indicateurs`,
-  `Variations_Comparables` et `Fait_Etats_Financiers`). Ensuite, étape 6. Vérifiées :
-  `Gabarits`, `Definitions_Charges`, `Definitions_Capitaux_Propres`, `Ecarts_Annuels` et `Controle_Annuel` (288 contrôles, écarts
-  affichés avec trois décimales) ; la période Covid sera une colonne de la table des dates (étape 6).
-  Vérifiées : `Revisions_Etats_Financiers` (423 versions écartées), `Fait_Etats_Financiers` (504 lignes, version retenue, annualisation), `Variations_Comparables` (10 981 lignes : valeur N et
-  N-1 du même document, variation recalculée), `Fait_Cours` (23 460 séances ;
-  fusion avec `Operations_Titres`, cours ajustés, rendement quotidien, « sans transaction »),
-  paramètre `AdresseDepot`,
-  `Operations_Titres` et `Evenements` (lues par URL). Vérifiées le 23/10/2026 : `Banques_Actionnariat` (connecteur Excel,
-  15 lignes) et `Dim_Banque` (12 banques, fusion avec l'actionnariat en cours) ; part du capital
-  affichée avec trois décimales (UBCI 2019 : 50,085 %). BTE : seconde période d'actionnariat à partir
-  du 01/07/2024 (date de l'augmentation de capital inconnue, entre le 30/06 et le 31/12/2024) ; test
-  de continuité des périodes de 2019 à aujourd'hui pour les 12 banques. Vérifiées le 23/10/2026 dans Power BI Desktop : `Dim_Indicateur`,
-  `Fait_Indicateurs` (fusion avec `Dim_Indicateur`, colonne conditionnelle sur les stocks, « non »
-  pour les ruptures) et `Revisions` (filtre inverse, écart calculé, colonnes conditionnelles) ; tous
-  les contrôles du guide (section 1) conformes.
+| Rôle | Requêtes (nombre de lignes) |
+|---|---|
+| Paramètres | `CheminDonnees` (dossier du projet), `AdresseDepot` (fichiers bruts du dépôt GitHub) |
+| Intermédiaires, non chargées | `Fichiers_Donnees`, `Versions`, `Operations_Titres`, `Ecarts_Annuels`, `Gabarits` ; fonction personnalisée `Actionnariat_A_La_Date` |
+| Dimensions | `Dim_Indicateur` (27), `Dim_Banque` (12), `Banques_Actionnariat` (15) |
+| Faits | `Fait_Indicateurs` (7 173), `Variations_Comparables` (10 981), `Fait_Etats_Financiers` (504), `Fait_Cours` (23 460), `Evenements` (11) |
+| Qualité et définitions | `Revisions` (14 884), `Revisions_Etats_Financiers` (423), `Controle` (336), `Controle_Annuel` (288), `Definitions_Charges` (13), `Definitions_Capitaux_Propres` (12) |
 
-## Prochaines actions
+Trois types de sources (dossier de CSV, fichier Excel, adresse GitHub) ; dépivotage et pivot, fusions,
+types avec paramètres régionaux, colonnes conditionnelles, regroupements, fonction personnalisée
+(segment d'actionnariat à la date de chaque valeur). Chaque étape est expliquée dans
+[`guide_powerbi.md`](guide_powerbi.md) et dans `Guide_PowerBI.pdf`.
 
-1. Étape 6 : table des dates (DAX, avec la période Covid), relations du modèle en étoile, mesures DAX
-   par groupes (bases, totaux du secteur, ratios, croissances, ROE et ROA, Bourse, qualité),
-   colonnes conditionnelles (période Covid, segment d'actionnariat).
-2. Mesures DAX (totaux du secteur seulement quand les 12 banques sont présentes, nombre de banques
-   présentes, dernier trimestre complet).
-3. `docs/validation.md`, pages du rapport, captures.
-4. Publication du rapport terminé sur le web (« Publier sur le web ») et lien en tête du README.
+## Prochaine étape : étape 6, modèle et mesures DAX
+
+Un groupe à la fois, vérifié dans Power BI Desktop avant le suivant :
+
+1. **Table des dates** (DAX) : du 01/01/2019 au 31/12/2026, année, trimestre, libellé du trimestre trié
+   chronologiquement, fin de trimestre, **période Covid** (avant le 01/03/2020, jusqu'au 31/12/2021,
+   après) ; marquée comme table de dates.
+2. **Relations du modèle en étoile** (une dimension vers plusieurs lignes, filtre simple) : dates, banques
+   et indicateurs vers les tables de faits, de qualité et d'événements.
+3. **Mesures DAX par groupes** : bases ; totaux du secteur, nombre de banques présentes et dernier
+   trimestre complet ; ratios ; croissances ; ROE et ROA ; Bourse ; qualité des données.
+
+Ensuite : pages du rapport (étape 7), `docs/validation.md` (étape 3), captures et publication sur le web
+avec le lien en tête du README (étape 8).
+
+### Règles pour les mesures DAX
+
+- Totaux du secteur, parts de marché, rangs et indice de concentration **seulement quand les 12 banques
+  sont présentes** ; sinon vides ou marqués « incomplet », avec le nombre de banques présentes affiché.
+- Filtre par défaut sur le **dernier trimestre complet** (12 banques présentes), pas sur le dernier
+  trimestre qui contient une donnée.
+- **Croissances sur un an** calculées avec `Variations_Comparables` (valeur N et N-1 du même document),
+  jamais en rapprochant deux documents.
+- **Chiffres annuels** pris dans le cumul de l'année, jamais en additionnant les quatre trimestres.
+- Soldes (crédits, dépôts, capitaux propres) pris à la date, jamais additionnés dans le temps.
+- **Coefficient d'exploitation harmonisé** (frais de personnel + charges générales) / PNB pour toutes les
+  comparaisons ; le coefficient publié reste une information, avec la définition de chaque banque.
+- **Aucune valeur absente remplacée par zéro.**
+- **ROE et ROA** avec les capitaux propres et le total de l'actif du bilan (états financiers), le résultat
+  net avant modifications comptables annualisé, et la moyenne entre l'ouverture de l'exercice et la date ;
+  les capitaux propres trimestriels ne servent qu'à la fiche banque.
 
 ## Trimestres incomplets pour le secteur
 
@@ -100,3 +117,4 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 23/10/2026 | BTE, actionnariat 2024 | Date de l'augmentation de capital introuvable dans les états financiers : seconde période à partir du 01/07/2024, « date exacte inconnue, entre le 30/06 et le 31/12/2024 » ; périodes continues contrôlées par un test |
 | 23/10/2026 | Ouverture du projet par un tiers | Cache des données Power BI versionné (données publiques) : le projet s'ouvre avec ses données sans réglage ; section « Ouvrir le rapport » du README ; publication sur le web à la fin |
 | 23/10/2026 | Documentation des fonctions M | Tableau de chaque fonction M utilisée (ce qu'elle fait, requêtes) dans le guide et son PDF, contrôlé par un test |
+| 23/10/2026 | Étape 5 terminée | Les 22 requêtes Power Query sont vérifiées ; passage à l'étape 6 (table des dates, relations, mesures DAX) |

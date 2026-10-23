@@ -232,3 +232,4 @@ expression Actionnariat_A_La_Date =
 	lineageTag: e36d88a0-5fc3-4628-869f-6267b54cb3a3
 
 	annotation PBI_ResultType = Function
+

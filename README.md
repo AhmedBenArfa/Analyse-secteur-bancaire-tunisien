@@ -5,8 +5,9 @@
 > Exchange, quarter by quarter from Q4 2019 to Q3 2026. Data come from the banks' public quarterly
 > activity reports (PDF, published through the CMF and the BVMT), their financial statements and
 > daily stock prices. A Python pipeline extracts every figure with its source file and page; revised
-> figures, consistency checks and manual entries are tracked. The data layer is complete; the Power
-> BI report (Power Query, star schema, DAX) is in progress. Figures are provisional and unaudited.
+> figures, consistency checks and manual entries are tracked. The data layer and the Power Query
+> layer are complete; the star schema, DAX measures and report pages are in progress. Figures are
+> provisional and unaudited.
 > Documentation is in French.
 
 Ce projet construit un rapport Power BI qui compare l'activité, l'efficacité et la structure des
@@ -139,8 +140,9 @@ puisse s'ouvrir après un simple clonage du dépôt. Pour reproduire les donnée
 | Collecte et extraction des indicateurs trimestriels (T4 2019 → T3 2026) | Terminé |
 | États financiers (ROE, ROA), cours boursiers, opérations sur titres | Terminé |
 | Examen des écarts du contrôle annuel, actionnariat des banques | Terminé |
-| Requêtes Power Query | En cours : paramètre du dossier, lecture des CSV, versions et table de faits des indicateurs (détail et décisions : [docs/feuille_de_route.md](docs/feuille_de_route.md)) |
-| Modèle en étoile, mesures DAX, pages du rapport | À faire |
+| Requêtes Power Query (22 requêtes : dossier, Excel et URL ; dépivotage, fusions, colonnes conditionnelles, fonction personnalisée) | Terminé (détail et décisions : [docs/feuille_de_route.md](docs/feuille_de_route.md)) |
+| Modèle en étoile, mesures DAX | Prochaine étape |
+| Pages du rapport | À faire |
 | Note de validation par échantillon (`docs/validation.md`), captures du rapport | À faire |
 
 ## Limites
