@@ -50,6 +50,15 @@ versions), sinon les fusions entre sources peuvent être bloquées. Pour l'adres
 **Anonyme** (dépôt public). Ces réglages sont enregistrés sur le poste, pas dans le projet : une
 personne qui clone le dépôt les donne une fois.
 
+**Aperçu annulé.** Power Query ne calcule l'aperçu que d'une requête à la fois : en passant d'une
+requête à l'autre, ou pendant un chargement, l'aperçu en cours est annulé (« L'actualisation d'aperçu a
+été annulée… aucun impact sur vos données chargées ») ; **Réessayer** ou **Accueil › Actualiser
+l'aperçu** le relance. Power BI enregistre alors `PBI_ResultType = Exception` pour cette requête dans le
+TMDL (icône « ? » dans Power Query), sans effet sur les données chargées ; c'est fréquent pour
+`Banques_Actionnariat` (lecture d'un fichier Excel). Pour le limiter : **Fichier › Options et
+paramètres › Options › Fichier actif › Chargement des données**, cocher « Autoriser le téléchargement
+des aperçus de données en arrière-plan ».
+
 Ne sont pas versionnés (`.gitignore`) : `.pbi/localSettings.json` (réglages et signature de sécurité
 propres au poste) et l'ancien `SecteurBancaireTunisien.pbix`. **Le cache des données
 (`.pbi/cache.abf`) est versionné** (décision du 23/10/2026) : le projet s'ouvre avec ses données sans

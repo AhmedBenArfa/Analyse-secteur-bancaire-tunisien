@@ -18,16 +18,15 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4 | Cours boursiers 2019–2026 | Fait : 1 955 séances par banque, 63 opérations sur titres sourcées |
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
-| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Dim_Indicateur` (27 lignes), `Fait_Indicateurs` (7 173 lignes), `Revisions` (14 884 lignes) écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop le 23/10/2026 , `Banques_Actionnariat` (fichier Excel, 15 lignes) et `Dim_Banque` (12 lignes) vérifiées ; `AdresseDepot`, `Evenements` (11 lignes, vérifiée) et `Operations_Titres` (évaluée sans erreur), lues par URL ; cache des données versionné ; `Fait_Cours` (23 460 séances, cours ajustés) vérifiée ; guide : tableau des 38 fonctions M utilisées ; `Variations_Comparables` (10 981 lignes) vérifiée ; `Fait_Etats_Financiers` écrite, à vérifier |
+| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Dim_Indicateur` (27 lignes), `Fait_Indicateurs` (7 173 lignes), `Revisions` (14 884 lignes) écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop le 23/10/2026 , `Banques_Actionnariat` (fichier Excel, 15 lignes) et `Dim_Banque` (12 lignes) vérifiées ; `AdresseDepot`, `Evenements` (11 lignes, vérifiée) et `Operations_Titres` (évaluée sans erreur), lues par URL ; cache des données versionné ; `Fait_Cours` (23 460 séances, cours ajustés) vérifiée ; guide : tableau des 38 fonctions M utilisées ; `Variations_Comparables` (10 981 lignes) vérifiée ; `Fait_Etats_Financiers` (504 lignes) vérifiée |
 | 6 | Modèle en étoile et mesures DAX | À faire |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
 ## En cours
 
-- Étape 5, à vérifier dans Power BI Desktop : `Fait_Etats_Financiers` (504 lignes : résultat net,
-  total de l'actif, capitaux propres du bilan, version retenue, colonne conditionnelle d'annualisation).
-  Vérifiées : `Variations_Comparables` (10 981 lignes : valeur N et
+- Étape 5 : requête suivante `Revisions_Etats_Financiers` (versions écartées des états financiers,
+  page qualité). Vérifiées : `Fait_Etats_Financiers` (504 lignes, version retenue, annualisation), `Variations_Comparables` (10 981 lignes : valeur N et
   N-1 du même document, variation recalculée), `Fait_Cours` (23 460 séances ;
   fusion avec `Operations_Titres`, cours ajustés, rendement quotidien, « sans transaction »),
   paramètre `AdresseDepot`,
