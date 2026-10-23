@@ -90,6 +90,8 @@ données** : les requêtes apparaissent dans l'ordre de la section 2, les interm
 | `Fait_Cours` | BIAT 31/12/2025 | `cloture` = 111 ; `facteur_prix` = 1 ; `facteur_rendement` = 0,9625 (dividende de mai 2026) |
 | `Fait_Cours` | BT 10/05/2022 (jour de l'attribution) | `cloture` = 5,05 ; `facteur_prix` = 1 ; `facteur_rendement` = 0,795311 |
 | `Fait_Cours` | `sans_transaction` = Vrai | 3 074 séances (UBCI 52,7 %, Wifak 42,6 %, BTE 37,6 % de leurs séances) |
+| `Variations_Comparables` | nombre de lignes | 10 981 (11 285 du fichier moins 304 lignes « trimestre » de stocks) |
+| `Variations_Comparables` | BH 2025T4, PNB | `cumul` : 681,479 contre 701,188, `Variation_Pct` = −2,8 % ; `trim` : 189,758 contre 177,219, +7,1 % |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -114,6 +116,7 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | 9 | `Operations_Titres` | non | `operations_titres.csv` sur GitHub (source URL) | facteurs d'ajustement des cours |
 | 10 | `Evenements` | oui | `evenements.csv` sur GitHub (source URL) | événements qui expliquent une rupture de série |
 | 11 | `Fait_Cours` | oui | `cours_banques.csv` + fusion avec `Operations_Titres` | cours quotidiens, cours ajustés, rendement, séances sans transaction |
+| 12 | `Variations_Comparables` | oui | `variations_comparables.csv` + fusion avec `Dim_Indicateur` | valeur N et N-1 du même document, variation sur un an |
 
 ### 2.1 `CheminDonnees` (paramètre)
 
@@ -328,6 +331,26 @@ une chute du cours. BIAT : 118,000 le 02/01/2019, 111,000 le 31/12/2025, soit �
 du détachement d'un dividende, le cours baisse du montant versé ; ce n'est pas une variation de valeur
 pour l'actionnaire, la volatilité ne doit pas la compter. Après ajustement, la plus forte variation
 d'une séance à l'autre est de 10,7 % (BTE, 24/12/2020) : aucune opération ne crée de saut.
+
+### 2.12b `Variations_Comparables` (chargée)
+
+Une ligne par banque × trimestre × indicateur × mesure : `valeur_N` (la période) et `valeur_N1` (la même
+période un an plus tôt) **lues dans le même document**, donc dans la même méthode (10 981 lignes).
+
+| Étape | Ce qu'elle fait |
+|---|---|
+| `Fichier`, `Source`, `EnTetes`, `Types` | lit `variations_comparables.csv` ; types `en-US` |
+| `VidesEnNull` | mention de retraitement vide → `null` |
+| `Fusion`, `Nature` | **fusion avec `Dim_Indicateur`** : nature de l'indicateur |
+| `Retenir`, `SansTrimDesStocks` | **colonne conditionnelle** et filtre : même règle que `Fait_Indicateurs`, un stock n'a pas de trimestre seul (304 lignes écartées) |
+| `VariationPct` | **colonne calculée** `Variation_Pct` = (N − N-1) / \|N-1\| (vide si N-1 = 0) ; la valeur absolue garde une hausse positive quand N-1 est négatif (commissions encourues de BTE, autres produits) ; calculée ici, la colonne du CSV n'est pas reprise |
+| `SansColonnes` | retire la variation du CSV, l'année et le rang du trimestre (ils viendront de la table de dates), `nature` et `retenir` |
+
+**Pourquoi une table à part** : les niveaux de `Fait_Indicateurs` de deux années viennent de deux
+documents révisés différents ; leur rapport mélangerait deux méthodes. BH : PNB 2025 −2,8 % dans le
+document du T4 2025 (2024 retraité), −11,0 % si l'on rapprochait le PNB 2025 du PNB 2024 publié un
+an plus tôt. Les mesures de croissance (étape DAX) sommeront `valeur_N` et `valeur_N1` puis feront le
+rapport, pour une banque comme pour le secteur.
 
 ### 2.13 Fonctions et mots-clés M utilisés
 

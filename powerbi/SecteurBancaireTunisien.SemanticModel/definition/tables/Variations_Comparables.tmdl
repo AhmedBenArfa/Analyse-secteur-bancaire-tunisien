@@ -1,0 +1,150 @@
+/// Variations sur un an : valeur N et valeur N-1 du même document (même méthode), variation recalculée ; source de toutes les croissances du rapport
+table Variations_Comparables
+	lineageTag: ef795aaa-c0b4-45f0-baaf-61546e286ddd
+
+	column banque
+		dataType: string
+		lineageTag: b2232690-c4a6-4478-a0e0-82162745ce1f
+		summarizeBy: none
+		sourceColumn: banque
+
+		annotation SummarizationSetBy = User
+
+	column trimestre
+		dataType: string
+		lineageTag: 698fa16b-bbbb-47b5-baef-85b1dca274c6
+		summarizeBy: none
+		sourceColumn: trimestre
+
+		annotation SummarizationSetBy = User
+
+	column date_arrete
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6b90f269-c170-47c0-ad04-334f448990c3
+		summarizeBy: none
+		sourceColumn: date_arrete
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column code_indicateur
+		dataType: string
+		lineageTag: 5b34c4f8-1daa-441f-b639-dd89230d6aae
+		summarizeBy: none
+		sourceColumn: code_indicateur
+
+		annotation SummarizationSetBy = User
+
+	column mesure
+		dataType: string
+		lineageTag: d27a3e57-ad11-4533-a942-f440970455b3
+		summarizeBy: none
+		sourceColumn: mesure
+
+		annotation SummarizationSetBy = User
+
+	column valeur_N
+		dataType: double
+		lineageTag: 46fbd185-26cc-4841-8316-d22db02281f7
+		summarizeBy: none
+		sourceColumn: valeur_N
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column valeur_N1
+		dataType: double
+		lineageTag: 7a1eaf52-91f2-45d1-a732-bf4f495efffe
+		summarizeBy: none
+		sourceColumn: valeur_N1
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column fichier
+		dataType: string
+		lineageTag: 6c40e1eb-6694-477a-82ff-f358f43c7c33
+		summarizeBy: none
+		sourceColumn: fichier
+
+		annotation SummarizationSetBy = User
+
+	column page
+		dataType: int64
+		formatString: 0
+		lineageTag: 66db790f-8f2e-486d-b4b0-cfc0b7aad17c
+		summarizeBy: none
+		sourceColumn: page
+
+		annotation SummarizationSetBy = User
+
+	column mention_retraitement
+		dataType: string
+		lineageTag: 7898b969-3e8a-45f2-9bde-8f1b02627c1d
+		summarizeBy: none
+		sourceColumn: mention_retraitement
+
+		annotation SummarizationSetBy = User
+
+	column Variation_Pct
+		dataType: double
+		formatString: 0.0 %
+		lineageTag: db7059e6-7689-4195-868b-789a9a86e636
+		summarizeBy: none
+		sourceColumn: Variation_Pct
+
+		annotation SummarizationSetBy = User
+
+	partition Variations_Comparables = m
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Variations sur un an (chargée) : pour chaque document, la valeur de la période (valeur_N) et celle
+				// de la même période un an plus tôt publiée dans le MÊME document (valeur_N1), donc dans la même
+				// méthode ; une ligne par banque × trimestre × indicateur × mesure (trim / cumul). Source de toutes les
+				// croissances du rapport : jamais deux documents rapprochés (spécification 5.2 et 7.3).
+				let
+				    Fichier = Fichiers_Donnees{[fichier = "variations_comparables.csv"]}[contenu],
+				    Source = Csv.Document(Fichier, [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    EnTetes = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Types = Table.TransformColumnTypes(
+				        EnTetes,
+				        {
+				            {"banque", type text}, {"trimestre", type text}, {"date_arrete", type date}, {"annee", Int64.Type},
+				            {"num_trimestre", Int64.Type}, {"code_indicateur", type text}, {"mesure", type text},
+				            {"valeur_N", type number}, {"valeur_N1", type number}, {"variation_pct", type number},
+				            {"fichier", type text}, {"page", Int64.Type}, {"mention_retraitement", type text}
+				        },
+				        "en-US"
+				    ),
+				    VidesEnNull = Table.ReplaceValue(Types, "", null, Replacer.ReplaceValue, {"mention_retraitement"}),
+				    // fusion avec Dim_Indicateur : nature de chaque indicateur (flux ou stock)
+				    Fusion = Table.NestedJoin(
+				        VidesEnNull, {"code_indicateur"}, Dim_Indicateur, {"code_indicateur"}, "Dim_Indicateur", JoinKind.LeftOuter
+				    ),
+				    Nature = Table.ExpandTableColumn(Fusion, "Dim_Indicateur", {"nature"}),
+				    // même règle que Fait_Indicateurs : un stock n'a pas de trimestre seul (colonne conditionnelle + filtre)
+				    Retenir = Table.AddColumn(
+				        Nature, "retenir", each if [nature] = "stock" and [mesure] = "trim" then false else true, type logical
+				    ),
+				    SansTrimDesStocks = Table.SelectRows(Retenir, each [retenir]),
+				    // variation recalculée ici (la colonne du CSV n'est pas reprise) : (N − N-1) / |N-1|, pour qu'une hausse
+				    // reste positive quand la valeur N-1 est négative ; vide si N-1 est nul
+				    VariationPct = Table.AddColumn(
+				        SansTrimDesStocks, "Variation_Pct",
+				        each if [valeur_N1] = null or [valeur_N1] = 0 then null
+				            else ([valeur_N] - [valeur_N1]) / Number.Abs([valeur_N1]),
+				        type nullable number
+				    ),
+				    // colonnes du CSV inutiles dans le modèle (année et rang du trimestre viendront de la table de dates)
+				    SansColonnes = Table.RemoveColumns(VariationPct, {"variation_pct", "annee", "num_trimestre", "nature", "retenir"})
+				in
+				    SansColonnes
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
