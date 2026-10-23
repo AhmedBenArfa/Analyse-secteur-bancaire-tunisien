@@ -18,16 +18,20 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4 | Cours boursiers 2019–2026 | Fait : 1 955 séances par banque, 63 opérations sur titres sourcées |
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
-| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Fait_Indicateurs` écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop (7 137 lignes) |
+| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Fait_Indicateurs` écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop (7 137 lignes) ; `Dim_Indicateur` et la fusion dans `Fait_Indicateurs` écrites, à vérifier |
 | 6 | Modèle en étoile et mesures DAX | À faire |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit ; captures du rapport à faire |
 
 ## En cours
 
-- Étape 5 : requête `Dim_Indicateur`, puis fusion de `Fait_Indicateurs` avec `Dim_Indicateur`
-  (nature flux / stock), colonne conditionnelle qui vide `Valeur_Trim` pour les stocks, « non » au
-  lieu d'une case vide pour les ruptures de série.
+- Étape 5, à vérifier dans Power BI Desktop : `Dim_Indicateur` (27 lignes : 24 indicateurs
+  trimestriels et 3 codes des états financiers ajoutés dans la requête) ; dans `Fait_Indicateurs`,
+  fusion avec `Dim_Indicateur` (nature), colonne conditionnelle qui écarte le « trimestre seul » des
+  stocks (320 lignes : copie du solde au T1, mouvement du trimestre chez STB et UBCI), « non » au lieu
+  d'une case vide pour les ruptures de série. Contrôles attendus : guide Power BI, section 1.
+- Décision attendue : saisir ou non les composantes BTE de 2020T1 à 2021T3 (sauf 2021T2), pour
+  compléter la marge d'intérêts et la marge sur commissions du secteur à ces 6 trimestres.
 
 ## Prochaines actions
 

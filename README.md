@@ -68,7 +68,7 @@ un fichier Excel et une URL.
 | Élément | Valeur |
 |---|---|
 | Documents d'indicateurs trimestriels trouvés | **336 / 336** (12 banques × 28 trimestres) |
-| Valeurs retenues des indicateurs trimestriels | 11 460 (24 indicateurs, aucune vide) |
+| Valeurs retenues des indicateurs trimestriels | 11 473 (24 indicateurs, aucune vide) |
 | Valeurs relevées à la main sur l'image des PDF pour les tests | 438 sur 41 documents d'indicateurs, 169 sur 24 états financiers |
 | Contrôle annuel (somme des 4 trimestres contre cumul annuel) | 288 contrôles : 205 ok, 41 en attente de révision, 20 ruptures de série, **22 écarts, tous expliqués** (11 retraitements de la banque, 7 erreurs dans le document de la banque, 3 reclassements, 1 arrondi, 0 erreur d'extraction) |
 | Révisions de plus de 2 % d'un total (cumul) | 137, chacune avec le document d'origine et le document révisé |

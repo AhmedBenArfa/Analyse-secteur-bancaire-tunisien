@@ -12,13 +12,28 @@ let
         {"banque", "trimestre", "date_arrete", "code_indicateur", "mesure",
          "valeur_retenue", "source_valeur", "fichier", "page", "rupture_serie", "detail_rupture"}
     ),
+    // fusion avec Dim_Indicateur : nature de chaque indicateur (flux ou stock)
+    Fusion = Table.NestedJoin(
+        Colonnes, {"code_indicateur"}, Dim_Indicateur, {"code_indicateur"}, "Dim_Indicateur", JoinKind.LeftOuter
+    ),
+    Nature = Table.ExpandTableColumn(Fusion, "Dim_Indicateur", {"nature"}),
+    // colonne conditionnelle : un stock est un solde à une date, sans trimestre seul ; la ligne « trim »
+    // de certains documents (T1 : copie du solde ; STB 2019T4 et UBCI 2024-2026 : mouvement imprimé dans
+    // la colonne du trimestre) est écartée : Valeur_Trim et ses colonnes de source restent vides
+    Retenir = Table.AddColumn(
+        Nature, "retenir", each if [nature] = "stock" and [mesure] = "trim" then false else true, type logical
+    ),
+    SansTrimDesStocks = Table.SelectRows(Retenir, each [retenir]),
+    // pas de rupture de série : « non » au lieu d'une case vide (segment lisible) ; le détail reste vide
+    RuptureNon = Table.ReplaceValue(SansTrimDesStocks, null, "non", Replacer.ReplaceValue, {"rupture_serie"}),
+    SansColonnesAjoutees = Table.RemoveColumns(RuptureNon, {"nature", "retenir"}),
     // noms des attributs tels qu'ils seront préfixés après le pivot (Valeur_Trim, Source_Cumul…)
     Renommees = Table.RenameColumns(
-        Colonnes,
+        SansColonnesAjoutees,
         {{"valeur_retenue", "Valeur"}, {"source_valeur", "Source"}, {"fichier", "Fichier"},
          {"page", "Page"}, {"rupture_serie", "Rupture"}, {"detail_rupture", "Detail_Rupture"}}
     ),
-    // dépivotage : une ligne par attribut ; une case vide (pas de rupture) ne donne pas de ligne
+    // dépivotage : une ligne par attribut ; une case vide (pas de détail de rupture) ne donne pas de ligne
     Depivotees = Table.UnpivotOtherColumns(
         Renommees, {"banque", "trimestre", "date_arrete", "code_indicateur", "mesure"}, "attribut", "contenu"
     ),

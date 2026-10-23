@@ -23,9 +23,9 @@ faire dans Power Query s'y fait, pour que la préparation des données reste vis
    seul le type `.pbip` produit les fichiers texte du modèle que l'on peut lire et versionner.
 4. Power BI crée `SecteurBancaireTunisien.pbip`, le dossier `SecteurBancaireTunisien.Report\`
    (pages et visuels) et le dossier `SecteurBancaireTunisien.SemanticModel\` (modèle : requêtes,
-   tables, relations, mesures, au format texte TMDL dans `definition\`). Le fichier `.gitignore` qu'il
-   ajoute exclut le cache des données (`cache.abf`) et les réglages locaux : seules les définitions
-   sont versionnées, jamais les données.
+   tables, relations, mesures, au format texte TMDL dans `definition\`). Power BI n'a pas créé de
+   `.gitignore` dans ce projet : c'est celui de la racine du dépôt qui exclut le cache des données
+   (`cache.abf`) et les réglages locaux ; seules les définitions sont versionnées, jamais les données.
 
 **Où sont les requêtes dans le projet.** Le modèle est stocké en texte (TMDL) dans
 `powerbi/SecteurBancaireTunisien.SemanticModel/definition/` :
@@ -33,7 +33,7 @@ faire dans Power Query s'y fait, pour que la préparation des données reste vis
 | Fichier | Contenu |
 |---|---|
 | `expressions.tmdl` | le paramètre `CheminDonnees` et les requêtes intermédiaires non chargées (`Fichiers_Donnees`, `Versions`) |
-| `tables/<Table>.tmdl` | une table chargée : ses colonnes (type, synthèse) et sa requête (partition `m`) |
+| `tables/<Table>.tmdl` | une table chargée (`Dim_Indicateur`, `Fait_Indicateurs`…) : ses colonnes (type, synthèse, colonne de tri) et sa requête (partition `m`) |
 | `model.tmdl` | options du modèle, ordre des requêtes dans Power Query (`PBI_QueryOrder`), liste des tables |
 
 Le code M de chaque requête est le même que celui du fichier `powerquery/<Requête>.pq`, gardé comme
@@ -46,9 +46,16 @@ Ne sont pas versionnés (`.gitignore`) : `.pbi/cache.abf` (données importées),
 
 **Vérifier après une réouverture.** Ouvrir `SecteurBancaireTunisien.pbip`, **Accueil › Transformer les
 données** : les requêtes apparaissent dans l'ordre de la section 2, les intermédiaires en italique
-(chargement désactivé). Revenir au rapport et **Actualiser**. Contrôles sur `Fait_Indicateurs` :
-7 137 lignes ; AB 2026T3, PNB : `Valeur_Trim` = 150,021 et `Valeur_Cumul` = 512,448 (valeurs relevées
-sur l'image du document, `tests/valeurs_reference.csv`).
+(chargement désactivé). Revenir au rapport et **Actualiser**. Contrôles (calculés sur les CSV) :
+
+| Table | Contrôle | Attendu |
+|---|---|---|
+| `Dim_Indicateur` | nombre de lignes | 27 (24 indicateurs trimestriels + 3 des états financiers) |
+| `Fait_Indicateurs` | nombre de lignes | 7 137 |
+| `Fait_Indicateurs` | AB 2026T3, PNB | `Valeur_Trim` = 150,021 ; `Valeur_Cumul` = 512,448 (relevés sur l'image, `tests/valeurs_reference.csv`) |
+| `Fait_Indicateurs` | AB 2020T1, CREDITS (stock) | `Valeur_Trim`, `Source_Trim`, `Fichier_Trim` vides ; `Valeur_Cumul` = 5 670,677 |
+| `Fait_Indicateurs` | BTE 2021T4, INT_PERCUS | `Valeur_Trim` = 22,367, `Source_Trim` = `revisee_T4_N+1`, `Fichier_Trim` = `BTE_2022T4.pdf` (22,069 publié à l'origine) |
+| `Fait_Indicateurs` | `Rupture_Cumul` | 6 691 « non », 446 « oui », aucune case vide |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -64,7 +71,8 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | 1 | `CheminDonnees` | paramètre | — | dossier du projet sur ce poste |
 | 2 | `Fichiers_Donnees` | non | connecteur Dossier | liste des CSV de `donnees_publiees\` |
 | 3 | `Versions` | non | `indicateurs_versions.csv` | toutes les versions des indicateurs, typées |
-| 4 | `Fait_Indicateurs` | oui | `Versions` | valeur retenue, trimestre seul et cumul côte à côte |
+| 4 | `Dim_Indicateur` | oui | `dim_indicateur.csv` + 3 lignes ajoutées | libellé, catégorie, nature (flux / stock), ordre |
+| 5 | `Fait_Indicateurs` | oui | `Versions` + fusion avec `Dim_Indicateur` | valeur retenue, trimestre seul et cumul côte à côte |
 
 ### 2.1 `CheminDonnees` (paramètre)
 
@@ -112,7 +120,24 @@ requêtes chargées en partent avec un filtre explicite : `Fait_Indicateurs` (ve
 seulement) et `Revisions` (versions non retenues, page qualité). Une valeur manquante reste `null`,
 jamais zéro.
 
-### 2.4 `Fait_Indicateurs` (chargée)
+### 2.4 `Dim_Indicateur` (chargée)
+
+Une ligne par code d'indicateur (27 lignes).
+
+| Étape | Ce qu'elle fait |
+|---|---|
+| `Fichier`, `Source`, `EnTetes` | lit `dim_indicateur.csv` dans `Fichiers_Donnees` |
+| `Types` | types de données (paramètres régionaux `en-US`) ; `ordre` en entier |
+| `SourceIndicateurs` | **colonne ajoutée** `source` = « indicateurs trimestriels » |
+| `EtatsFinanciers` | table de 3 lignes écrite dans la requête : `RES_NET` (flux), `TOTAL_ACTIF` et `CAP_PROPRES_EF` (stocks), source « états financiers » |
+| `Ajoutees` | **ajout** des 3 lignes à la suite des 24 codes |
+
+**Pourquoi ajouter les codes des états financiers** : un événement peut porter sur le résultat net
+(ex. moratoire Covid de l'UIB au 30/06/2020) ; avec son code dans la dimension, la relation garde
+l'annotation sur la page « Rentabilité » (spécification 6). La colonne `libelle` est triée par `ordre`
+dans le modèle (ordre d'affichage des indicateurs, pas l'ordre alphabétique).
+
+### 2.5 `Fait_Indicateurs` (chargée)
 
 Table de faits des indicateurs trimestriels : une ligne par banque × trimestre × indicateur
 (7 137 lignes au 23/10/2026), avec le trimestre seul et le cumul côte à côte.
@@ -120,8 +145,12 @@ Table de faits des indicateurs trimestriels : une ligne par banque × trimestre 
 | Étape | Ce qu'elle fait |
 |---|---|
 | `Source` | part de `Versions` (référence, pas de nouvelle lecture du fichier) |
-| `VersionRetenue` | **filtre sur la version retenue** : `version = source_valeur`, une seule version par banque × trimestre × indicateur × mesure (11 460 lignes) |
+| `VersionRetenue` | **filtre sur la version retenue** : `version = source_valeur`, une seule version par banque × trimestre × indicateur × mesure (11 473 lignes) |
 | `Colonnes` | garde les clés, la mesure (`trim` / `cumul`), la valeur retenue, la version, le fichier, la page et la rupture de série |
+| `Fusion`, `Nature` | **fusion avec `Dim_Indicateur`** sur `code_indicateur` (jointure externe gauche) : nature de l'indicateur |
+| `Retenir`, `SansTrimDesStocks` | **colonne conditionnelle** : faux pour la mesure `trim` d'un stock, puis filtre ; écarte 320 lignes (au T1, copie du solde chez AB, BTE, STB, Attijari, UBCI ; STB 2019T4 et UBCI 2024–2026 : mouvement imprimé dans la colonne du trimestre, qui n'est pas un solde) |
+| `RuptureNon` | « non » au lieu d'une case vide dans `rupture_serie` (le détail de la rupture reste vide) |
+| `SansColonnesAjoutees` | retire `nature` et `retenir` |
 | `Renommees` | noms courts des attributs (`Valeur`, `Source`, `Fichier`, `Page`, `Rupture`, `Detail_Rupture`) |
 | `Depivotees` | **dépivotage** : une ligne par attribut ; une case vide (pas de rupture) ne donne pas de ligne |
 | `NomColonne` | colonne conditionnelle du nom final : attribut + mesure (`Valeur_Trim`, `Source_Cumul`…) |
@@ -135,7 +164,9 @@ restent consultables dans la requête `Revisions`.
 **Pourquoi trimestre et cumul côte à côte** : les mesures DAX choisissent la colonne (trimestre seul
 pour l'analyse trimestrielle, cumul pour l'année et pour les soldes) sans filtre sur une colonne
 `mesure`. `Valeur_Cumul` est toujours rempli ; `Valeur_Trim` est vide pour les soldes (crédits,
-dépôts, capitaux propres : la valeur à la date est dans `Valeur_Cumul`). `Fichier_*` et `Page_*`
+dépôts, capitaux propres : la valeur à la date est dans `Valeur_Cumul`) et pour un flux dont le
+trimestre seul n'est publié nulle part (BTE : composantes de 2020T1 à 2021T3 sauf 2021T2, autres
+produits à quelques dates) : jamais remplacé par zéro. `Fichier_*` et `Page_*`
 gardent la source de chaque valeur ; `Rupture_*` (« oui ») et `Detail_Rupture_*` alimentent les
 marqueurs et les info-bulles des graphiques.
 
