@@ -1,0 +1,191 @@
+/// Versions écartées des états financiers (page qualité des données) : valeur publiée, valeur retenue, écart et type de révision
+table Revisions_Etats_Financiers
+	lineageTag: cdd201a2-6e3d-42ee-a433-d0aa335fa5e4
+
+	column banque
+		dataType: string
+		lineageTag: a83647e4-57d7-4530-9c24-02ea3ebbaf97
+		summarizeBy: none
+		sourceColumn: banque
+
+		annotation SummarizationSetBy = User
+
+	column date_arrete
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: f61a6b78-9983-4189-bc70-7a65a8fd8f09
+		summarizeBy: none
+		sourceColumn: date_arrete
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column type
+		dataType: string
+		lineageTag: 6f493cd2-4061-49c5-9738-39b3740d248f
+		summarizeBy: none
+		sourceColumn: type
+
+		annotation SummarizationSetBy = User
+
+	column code
+		dataType: string
+		lineageTag: 3a09cfdf-4b12-421f-ad72-07b522dd6459
+		summarizeBy: none
+		sourceColumn: code
+
+		annotation SummarizationSetBy = User
+
+	column version
+		dataType: string
+		lineageTag: 731d8d12-c900-4f09-8e86-2d3e23800487
+		summarizeBy: none
+		sourceColumn: version
+
+		annotation SummarizationSetBy = User
+
+	column valeur_mdt
+		dataType: double
+		lineageTag: 2cb6f03a-bcee-4560-a054-fba98cb0569a
+		summarizeBy: none
+		sourceColumn: valeur_mdt
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column fichier
+		dataType: string
+		lineageTag: 5317ccc1-5c85-401e-8e98-8ed5fe03fab6
+		summarizeBy: none
+		sourceColumn: fichier
+
+		annotation SummarizationSetBy = User
+
+	column page
+		dataType: int64
+		formatString: 0
+		lineageTag: 15e7af72-f2e4-4f82-aa4e-e90dca8679de
+		summarizeBy: none
+		sourceColumn: page
+
+		annotation SummarizationSetBy = User
+
+	column valeur_retenue
+		dataType: double
+		lineageTag: f6cfa4ad-0619-46bb-afae-6d2c56c03484
+		summarizeBy: none
+		sourceColumn: valeur_retenue
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column source_valeur
+		dataType: string
+		lineageTag: 00e8ba50-e028-4775-8990-9fce78a94337
+		summarizeBy: none
+		sourceColumn: source_valeur
+
+		annotation SummarizationSetBy = User
+
+	column statut_revision
+		dataType: string
+		lineageTag: 70bb5381-7fac-4b84-a0e6-d4eae506b547
+		summarizeBy: none
+		sourceColumn: statut_revision
+
+		annotation SummarizationSetBy = User
+
+	column remarque
+		dataType: string
+		lineageTag: ac71af10-c275-4816-9a63-ba4227e0ab3f
+		summarizeBy: none
+		sourceColumn: remarque
+
+		annotation SummarizationSetBy = User
+
+	column Ecart_MDT
+		dataType: double
+		lineageTag: 27e3f96b-d78a-4a5a-a70c-4054273da6dd
+		summarizeBy: none
+		sourceColumn: Ecart_MDT
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Ecart_Pct
+		dataType: double
+		formatString: 0.0 %
+		lineageTag: f3bb8622-96a1-4766-9b08-c3dd28d099f7
+		summarizeBy: none
+		sourceColumn: Ecart_Pct
+
+		annotation SummarizationSetBy = User
+
+	column Type_Revision
+		dataType: string
+		lineageTag: 4c30006b-1b0b-4a63-8dce-e9fd3f3617d8
+		summarizeBy: none
+		sourceColumn: Type_Revision
+
+		annotation SummarizationSetBy = User
+
+	partition Revisions_Etats_Financiers = m
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Versions écartées des états financiers (chargée) : chaque valeur publiée puis remplacée par la colonne
+				// N-1 du document suivant de même type (ou révisée non retenue : BNA 30/06/2025), avec l'écart à la valeur
+				// retenue. Page « qualité des données » (spécification 7.7). Complément exact de Fait_Etats_Financiers :
+				// même fichier, filtre inverse.
+				let
+				    Fichier = Fichiers_Donnees{[fichier = "etats_financiers_versions.csv"]}[contenu],
+				    Source = Csv.Document(Fichier, [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    EnTetes = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Types = Table.TransformColumnTypes(
+				        EnTetes,
+				        {
+				            {"banque", type text}, {"date_arrete", type date}, {"type", type text}, {"code", type text},
+				            {"version", type text}, {"valeur_mdt", type number}, {"fichier", type text}, {"page", Int64.Type},
+				            {"statut_valeur", type text}, {"valeur_retenue", type number}, {"source_valeur", type text},
+				            {"statut_revision", type text}, {"ecart_mdt", type number}, {"remarque", type text}
+				        },
+				        "en-US"
+				    ),
+				    VidesEnNull = Table.ReplaceValue(
+				        Types, "", null, Replacer.ReplaceValue, {"statut_valeur", "statut_revision", "remarque"}
+				    ),
+				    // filtre explicite, inverse de celui de Fait_Etats_Financiers : toutes les versions écartées
+				    VersionsNonRetenues = Table.SelectRows(VidesEnNull, each [version] <> [source_valeur]),
+				    Colonnes = Table.SelectColumns(
+				        VersionsNonRetenues,
+				        {"banque", "date_arrete", "type", "code", "version", "valeur_mdt", "fichier", "page",
+				         "valeur_retenue", "source_valeur", "statut_revision", "remarque"}
+				    ),
+				    // écart calculé ici (la colonne ecart_mdt du CSV n'est pas reprise) : de combien la valeur retenue
+				    // s'écarte de cette version
+				    EcartMDT = Table.AddColumn(Colonnes, "Ecart_MDT", each [valeur_retenue] - [valeur_mdt], type nullable number),
+				    EcartPct = Table.AddColumn(
+				        EcartMDT, "Ecart_Pct",
+				        each if [valeur_mdt] = null or [valeur_mdt] = 0 then null else [Ecart_MDT] / Number.Abs([valeur_mdt]),
+				        type nullable number
+				    ),
+				    // colonne conditionnelle : statut de la révision en clair, pour la page qualité
+				    TypeRevision = Table.AddColumn(
+				        EcartPct, "Type_Revision",
+				        each if [statut_revision] = null then "identique à la valeur retenue (arrondi)"
+				            else if [statut_revision] = "retraitement_mineur" then "retraitement mineur (2 % au plus)"
+				            else if [statut_revision] = "revision_importante" then "révision importante (plus de 2 %)"
+				            else if Text.StartsWith([statut_revision], "revisee non retenue") then "révisée non retenue (modification comptable incluse)"
+				            else [statut_revision],
+				        type text
+				    )
+				in
+				    TypeRevision
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table

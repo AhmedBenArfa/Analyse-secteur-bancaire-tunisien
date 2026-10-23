@@ -1111,8 +1111,9 @@ Table de faits `Fait_Etats_Financiers` : depuis `etats_financiers_versions.csv`,
 `version = source_valeur` (valeur retenue) : banque, date_arrete, type (semestriel / annuel),
 code, valeur_mdt, version, fichier, page, statut_valeur, statut_revision, remarque, et la colonne
 conditionnelle `facteur_annualisation` (2 pour un semestre, 1 pour un exercice, calculée dans Power
-Query). Les autres lignes (versions initiales
-remplacées) vont dans une table de qualité, comme `Revisions` pour les indicateurs.
+Query). Les autres lignes (versions initiales remplacées, révisée non retenue de BNA au 30/06/2025)
+vont dans `Revisions_Etats_Financiers` (page qualité), comme `Revisions` pour les indicateurs : filtre
+inverse, `Ecart_MDT` et `Ecart_Pct` calculés dans Power Query, colonne conditionnelle `Type_Revision`.
 Relations : `Dim_Banque` et `Dim_Date` comme les autres faits.
 
 **Définitions retenues :**

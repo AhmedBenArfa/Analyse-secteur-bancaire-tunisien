@@ -105,6 +105,10 @@ données** : les requêtes apparaissent dans l'ordre de la section 2, les interm
 | `Fait_Etats_Financiers` | BNA 30/06/2025, RES_NET | 155,069 ; `version` = initiale ; statut « revisee non retenue (modification comptable incluse) » |
 | `Fait_Etats_Financiers` | UIB 30/06/2020, RES_NET | 17,912 (révisée, moratoire Covid ; −41,182 publié à l'origine) |
 | `Fait_Etats_Financiers` | BIAT 31/12/2024, CAP_PROPRES_EF | 2 226,391 |
+| `Revisions_Etats_Financiers` | nombre de lignes | 423 (avec `Fait_Etats_Financiers` : les 927 lignes du fichier) |
+| `Revisions_Etats_Financiers` | UIB 30/06/2020, RES_NET, version `initiale` | −41,182 publié ; 17,912 retenu ; `Ecart_MDT` = 59,094 ; « révision importante (plus de 2 %) » |
+| `Revisions_Etats_Financiers` | BNA 30/06/2025, RES_NET, version `revisee` | 137,318 ; 155,069 retenu ; « révisée non retenue (modification comptable incluse) » |
+| `Revisions_Etats_Financiers` | `Type_Revision` | 390 identiques, 24 retraitements mineurs, 8 révisions importantes, 1 révisée non retenue |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -131,6 +135,7 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | 11 | `Fait_Cours` | oui | `cours_banques.csv` + fusion avec `Operations_Titres` | cours quotidiens, cours ajustés, rendement, séances sans transaction |
 | 12 | `Variations_Comparables` | oui | `variations_comparables.csv` + fusion avec `Dim_Indicateur` | valeur N et N-1 du même document, variation sur un an |
 | 13 | `Fait_Etats_Financiers` | oui | `etats_financiers_versions.csv` | résultat net, total de l'actif, capitaux propres du bilan (ROE, ROA) |
+| 14 | `Revisions_Etats_Financiers` | oui | `etats_financiers_versions.csv` | versions écartées des états financiers (page qualité) |
 
 ### 2.1 `CheminDonnees` (paramètre)
 
@@ -383,6 +388,16 @@ individuels, au 30/06 de 2020 à 2026 et au 31/12 de 2019 à 2025.
 alors du document de l'exercice N, dans la même méthode que la valeur de fin de période. Les deux
 dates sans document lisible (BH 31/12/2019, STB 30/06/2023) sont reprises de la colonne N-1 du
 document suivant (statut « repris du document suivant »).
+
+### 2.12d `Revisions_Etats_Financiers` (chargée)
+
+Les 423 versions écartées des états financiers : la valeur publiée dans le document de la date
+(version initiale) quand le document suivant de même type la redonne autrement, et la version révisée
+non retenue de BNA au 30/06/2025. Mêmes étapes que `Revisions` : lecture du même fichier que
+`Fait_Etats_Financiers`, **filtre inverse** (`version <> source_valeur`), `Ecart_MDT` = valeur
+retenue − valeur de la version et `Ecart_Pct` calculés dans Power Query (la colonne du CSV n'est pas
+reprise), **colonne conditionnelle** `Type_Revision` (statut en clair). Exemple : résultat net de l'UIB au
+30/06/2020, −41,182 MDT publié, 17,912 retenu (+59,094 : intérêts du moratoire Covid réintégrés).
 
 ### 2.13 Fonctions et mots-clés M utilisés
 
