@@ -1,0 +1,214 @@
+/// Versions non retenues des indicateurs trimestriels (page qualité des données) : valeur publiée, valeur retenue, écart, origine de la version et type de révision
+table Revisions
+	lineageTag: d1942967-c5a9-4045-afb0-ba90b241a717
+
+	column banque
+		dataType: string
+		lineageTag: 3eec800c-1e84-4238-b98d-21e7efd4e726
+		summarizeBy: none
+		sourceColumn: banque
+
+		annotation SummarizationSetBy = User
+
+	column trimestre
+		dataType: string
+		lineageTag: 1867f7c8-1c0a-4328-aaed-deb127d3135e
+		summarizeBy: none
+		sourceColumn: trimestre
+
+		annotation SummarizationSetBy = User
+
+	column date_arrete
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 65331f93-7ac2-445e-aa9c-5a0a54196fd7
+		summarizeBy: none
+		sourceColumn: date_arrete
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column code_indicateur
+		dataType: string
+		lineageTag: 5f32344d-9118-4945-a2f8-bda5fe7168d4
+		summarizeBy: none
+		sourceColumn: code_indicateur
+
+		annotation SummarizationSetBy = User
+
+	column mesure
+		dataType: string
+		lineageTag: 9aa7fb8e-1105-4022-aa08-fb3c8afedb64
+		summarizeBy: none
+		sourceColumn: mesure
+
+		annotation SummarizationSetBy = User
+
+	column version
+		dataType: string
+		lineageTag: afcebe94-74c3-4dc1-9523-992f3ab523de
+		summarizeBy: none
+		sourceColumn: version
+
+		annotation SummarizationSetBy = User
+
+	column valeur_mdt
+		dataType: double
+		lineageTag: 660696aa-0eca-475f-aac3-2520aaf3c481
+		summarizeBy: none
+		sourceColumn: valeur_mdt
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column fichier
+		dataType: string
+		lineageTag: e635d001-f720-467b-aa27-b1d47d28f7c1
+		summarizeBy: none
+		sourceColumn: fichier
+
+		annotation SummarizationSetBy = User
+
+	column page
+		dataType: int64
+		formatString: 0
+		lineageTag: 53f97843-9ff2-4ca8-848d-b2c741b97c7e
+		summarizeBy: none
+		sourceColumn: page
+
+		annotation SummarizationSetBy = User
+
+	column valeur_retenue
+		dataType: double
+		lineageTag: 0a183dd4-fb24-427a-9788-8e678bc668e1
+		summarizeBy: none
+		sourceColumn: valeur_retenue
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column source_valeur
+		dataType: string
+		lineageTag: 89d5dfb7-f290-4b22-b630-e1d836deb541
+		summarizeBy: none
+		sourceColumn: source_valeur
+
+		annotation SummarizationSetBy = User
+
+	column statut_revision
+		dataType: string
+		lineageTag: 7fd0718c-2863-4bba-b007-4972896661cd
+		summarizeBy: none
+		sourceColumn: statut_revision
+
+		annotation SummarizationSetBy = User
+
+	column note_definition
+		dataType: string
+		lineageTag: 07e85678-6b2c-45d9-b1ca-83f3ea69ef54
+		summarizeBy: none
+		sourceColumn: note_definition
+
+		annotation SummarizationSetBy = User
+
+	column mention_retraitement
+		dataType: string
+		lineageTag: f3d3e242-5dab-4d85-b3b1-f4925f7d03a8
+		summarizeBy: none
+		sourceColumn: mention_retraitement
+
+		annotation SummarizationSetBy = User
+
+	column Ecart_MDT
+		dataType: double
+		lineageTag: 1928730d-9856-4a75-b360-65c40824a534
+		summarizeBy: none
+		sourceColumn: Ecart_MDT
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Ecart_Pct
+		dataType: double
+		formatString: 0.0 %
+		lineageTag: d9f141af-d0fa-4eff-a86b-7877df00b657
+		summarizeBy: none
+		sourceColumn: Ecart_Pct
+
+		annotation SummarizationSetBy = User
+
+	column Origine_Version
+		dataType: string
+		lineageTag: 6240c1d8-6ac2-49de-989b-9cf05d92b647
+		summarizeBy: none
+		sourceColumn: Origine_Version
+
+		annotation SummarizationSetBy = User
+
+	column Type_Revision
+		dataType: string
+		lineageTag: 0f493592-22fd-4a5d-871a-9a92c41f18b2
+		summarizeBy: none
+		sourceColumn: Type_Revision
+
+		annotation SummarizationSetBy = User
+
+	partition Revisions = m
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Versions non retenues des indicateurs trimestriels (chargée) : chaque valeur publiée puis remplacée
+				// (initiale révisée par le document suivant, 31/12 provisoire remplacé par le T4 de l'année suivante,
+				// colonne fausse écartée, document en image), avec l'écart à la valeur retenue. Page « qualité des
+				// données » (spécification 5.1 et 5.2). Complément exact de Fait_Indicateurs : même source, filtre inverse.
+				let
+				    Source = Versions,
+				    // filtre explicite, inverse de celui de Fait_Indicateurs : toutes les versions écartées
+				    VersionsNonRetenues = Table.SelectRows(Source, each [version] <> [source_valeur]),
+				    Colonnes = Table.SelectColumns(
+				        VersionsNonRetenues,
+				        {"banque", "trimestre", "date_arrete", "code_indicateur", "mesure", "version", "valeur_mdt",
+				         "fichier", "page", "valeur_retenue", "source_valeur", "statut_revision", "note_definition",
+				         "mention_retraitement"}
+				    ),
+				    // écart calculé ici (la colonne ecart_vs_retenue du CSV n'est pas reprise) : de combien la valeur
+				    // retenue s'écarte de cette version ; vide si l'une des deux manque (document en image, capitaux
+				    // propres au 31/12 provisoire sans autre version), jamais zéro
+				    EcartMDT = Table.AddColumn(Colonnes, "Ecart_MDT", each [valeur_retenue] - [valeur_mdt], type nullable number),
+				    EcartPct = Table.AddColumn(
+				        EcartMDT, "Ecart_Pct",
+				        each if [valeur_mdt] = null or [valeur_mdt] = 0 then null else [Ecart_MDT] / Number.Abs([valeur_mdt]),
+				        type nullable number
+				    ),
+				    // colonne conditionnelle : d'où vient la version écartée
+				    OrigineVersion = Table.AddColumn(
+				        EcartPct, "Origine_Version",
+				        each if [version] = "initiale" then "document du trimestre"
+				            else if Text.StartsWith([version], "revisee_31-12") then "31/12 provisoire (document T1 à T3 suivant)"
+				            else if Text.StartsWith([version], "revisee_T") then "colonne N-1 du document suivant"
+				            else [version],
+				        type text
+				    ),
+				    // colonne conditionnelle : statut de la révision en clair, pour les segments de la page qualité
+				    TypeRevision = Table.AddColumn(
+				        OrigineVersion, "Type_Revision",
+				        each if [statut_revision] = null then "identique à la valeur retenue (arrondi)"
+				            else if [statut_revision] = "retraitement_mineur" then "retraitement mineur (2 % au plus)"
+				            else if [statut_revision] = "revision_importante" then "révision importante (plus de 2 %)"
+				            else if [statut_revision] = "reclassement" then "reclassement (total inchangé)"
+				            else if [statut_revision] = "illisible (image)" then "document publié en image"
+				            else if Text.StartsWith([statut_revision], "exclue (capitaux propres") then "31/12 provisoire écarté (capitaux propres)"
+				            else if Text.StartsWith([statut_revision], "exclue") then "colonne fausse du document, écartée"
+				            else [statut_revision],
+				        type text
+				    )
+				in
+				    TypeRevision
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table

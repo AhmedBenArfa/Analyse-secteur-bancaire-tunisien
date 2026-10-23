@@ -18,7 +18,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4 | Cours boursiers 2019–2026 | Fait : 1 955 séances par banque, 63 opérations sur titres sourcées |
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
-| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Fait_Indicateurs` écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop (7 137 lignes) ; `Dim_Indicateur` et la fusion dans `Fait_Indicateurs` chargées dans Power BI Desktop (projet réenregistré), contrôles chiffrés à confirmer |
+| 5 | Requêtes Power Query | **En cours** : `CheminDonnees`, `Fichiers_Donnees`, `Versions`, `Fait_Indicateurs` écrites dans le projet `.pbip` et vérifiées dans Power BI Desktop (7 137 lignes) ; `Dim_Indicateur` et la fusion dans `Fait_Indicateurs` chargées dans Power BI Desktop (projet réenregistré), contrôles chiffrés à confirmer ; `Revisions` écrite, à vérifier |
 | 6 | Modèle en étoile et mesures DAX | À faire |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit ; captures du rapport à faire |
@@ -31,11 +31,14 @@ projet est dans le [README](../README.md), le détail des règles dans la
   solde au T1, mouvement du trimestre chez STB et UBCI), « non » au lieu d'une case vide pour les
   ruptures de série. Chargées par Power BI Desktop ; contrôles chiffrés à confirmer après
   actualisation (guide Power BI, section 1 : 7 173 lignes depuis la saisie des composantes BTE).
-- Requête suivante : `Revisions` (versions non retenues, page « qualité des données »).
+- `Revisions` (versions non retenues, page « qualité des données ») : filtre inverse de
+  `Fait_Indicateurs`, écart à la valeur retenue calculé dans Power Query, colonnes conditionnelles
+  « origine de la version » et « type de révision » ; 14 884 lignes attendues, à vérifier dans Power
+  BI Desktop.
 
 ## Prochaines actions
 
-1. Requêtes suivantes, une à la fois, vérifiées dans Power BI Desktop : `Revisions`, `Dim_Banque`
+1. Requêtes suivantes, une à la fois, vérifiées dans Power BI Desktop : `Dim_Banque`
    avec l'actionnariat (`donnees_reference/banques.xlsx`), `Operations_Titres` et `Evenements` par
    leur lien *raw* GitHub, colonnes conditionnelles (période Covid, segment d'actionnariat).
 2. Mesures DAX (totaux du secteur seulement quand les 12 banques sont présentes, nombre de banques

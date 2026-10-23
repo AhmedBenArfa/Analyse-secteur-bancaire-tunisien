@@ -59,6 +59,9 @@ données** : les requêtes apparaissent dans l'ordre de la section 2, les interm
 | `Fait_Indicateurs` | BTE 2021T4, INT_PERCUS | `Valeur_Trim` = 22,367, `Source_Trim` = `revisee_T4_N+1`, `Fichier_Trim` = `BTE_2022T4.pdf` (22,069 publié à l'origine) |
 | `Fait_Indicateurs` | BTE 2020T2, COMM_CHG | `Valeur_Trim` = 0,005 (5 515 publiés à l'origine, révisés dans BTE 2021T2) |
 | `Fait_Indicateurs` | `Rupture_Cumul` | 6 723 « non », 450 « oui », aucune case vide |
+| `Revisions` | nombre de lignes | 14 884 (avec `Fait_Indicateurs` : les 26 429 lignes de `indicateurs_versions.csv`) |
+| `Revisions` | BH 2024T4, PNB, cumul, version `initiale` | `valeur_mdt` = 765,932 ; `valeur_retenue` = 701,188 ; `Ecart_MDT` = −64,744 ; « révision importante (plus de 2 %) » |
+| `Revisions` | `Type_Revision` | 7 639 retraitements mineurs, 5 677 identiques, 1 133 révisions importantes, 241 « 31/12 provisoire écarté », 99 reclassements, 70 documents en image, 25 colonnes fausses |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -76,6 +79,7 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | 3 | `Versions` | non | `indicateurs_versions.csv` | toutes les versions des indicateurs, typées |
 | 4 | `Dim_Indicateur` | oui | `dim_indicateur.csv` + 3 lignes ajoutées | libellé, catégorie, nature (flux / stock), ordre |
 | 5 | `Fait_Indicateurs` | oui | `Versions` + fusion avec `Dim_Indicateur` | valeur retenue, trimestre seul et cumul côte à côte |
+| 6 | `Revisions` | oui | `Versions` | versions non retenues et écart à la valeur retenue (page qualité) |
 
 ### 2.1 `CheminDonnees` (paramètre)
 
@@ -172,6 +176,26 @@ trimestre seul n'est publié nulle part (BTE : autres produits d'exploitation à
 jamais remplacé par zéro. `Fichier_*` et `Page_*`
 gardent la source de chaque valeur ; `Rupture_*` (« oui ») et `Detail_Rupture_*` alimentent les
 marqueurs et les info-bulles des graphiques.
+
+### 2.6 `Revisions` (chargée)
+
+Toutes les versions qui ne sont pas retenues : une ligne par banque × trimestre × indicateur × mesure ×
+version écartée (14 884 lignes au 23/10/2026). Page « qualité des données ».
+
+| Étape | Ce qu'elle fait |
+|---|---|
+| `Source` | part de `Versions` (référence) |
+| `VersionsNonRetenues` | **filtre inverse** de `Fait_Indicateurs` : `version <> source_valeur` ; les deux tables ensemble redonnent toutes les lignes du fichier |
+| `Colonnes` | clés, version, valeur publiée (`valeur_mdt`), fichier et page de cette version, valeur et version retenues, statut, note, mention de retraitement |
+| `EcartMDT` | **colonne calculée** `Ecart_MDT` = valeur retenue − valeur de cette version (vide si l'une manque, jamais zéro) ; calculée ici plutôt que reprise du CSV |
+| `EcartPct` | `Ecart_MDT` rapporté à la valeur de la version (vide si elle est nulle ou absente) |
+| `OrigineVersion` | **colonne conditionnelle** : document du trimestre, 31/12 provisoire (document T1 à T3 suivant) ou colonne N-1 du document suivant |
+| `TypeRevision` | **colonne conditionnelle** : statut en clair (identique à l'arrondi près, retraitement mineur, révision importante, reclassement, document en image, 31/12 provisoire écarté pour les capitaux propres, colonne fausse écartée) |
+
+**Pourquoi** : chaque valeur affichée dans le rapport est la version retenue ; cette table montre ce que
+la banque avait publié avant, et de combien elle a révisé (ex. PNB 2024 de BH : 765,932 publié dans
+BH_2024T4, 701,188 retenu, « retraité pour des raisons de comparabilité »). Les 3 lignes sans valeur
+retenue sont les capitaux propres BTE au 31/12 provisoire (2021 et 2022), écartés par la règle.
 
 ## 3. Mesures DAX
 
