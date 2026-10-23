@@ -1,0 +1,278 @@
+/// Table de faits des cours : une ligne par banque et par séance, cours non ajustés, facteurs et cours ajustés des opérations sur titres (prix, rendement total), rendement quotidien, séance sans transaction
+table Fait_Cours
+	lineageTag: 0213f8c9-40b5-49c8-82c6-2f3beb7beafe
+
+	column ticker
+		dataType: string
+		lineageTag: d1c0fe56-3f28-4941-af88-4d1c9884fd92
+		summarizeBy: none
+		sourceColumn: ticker
+
+		annotation SummarizationSetBy = User
+
+	column banque
+		dataType: string
+		lineageTag: 9a4bd627-decd-4a04-89b9-75a253897092
+		summarizeBy: none
+		sourceColumn: banque
+
+		annotation SummarizationSetBy = User
+
+	column date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 8b6c9edf-7c19-4943-8a00-fa3d3b558daf
+		summarizeBy: none
+		sourceColumn: date
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ouverture
+		dataType: double
+		lineageTag: e8fd7282-865a-46e4-a483-fb89ad798489
+		summarizeBy: none
+		sourceColumn: ouverture
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column haut
+		dataType: double
+		lineageTag: 4873bfcc-ecc4-48e9-b627-fd3d939a2b6a
+		summarizeBy: none
+		sourceColumn: haut
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column bas
+		dataType: double
+		lineageTag: c67c2b1c-8c65-4683-8943-569c869a1f28
+		summarizeBy: none
+		sourceColumn: bas
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column cloture
+		dataType: double
+		lineageTag: f818a912-8508-44b0-8830-179137a65db9
+		summarizeBy: none
+		sourceColumn: cloture
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column volume
+		dataType: int64
+		formatString: 0
+		lineageTag: 4ac67f5e-4f50-487d-98a1-de28d775f489
+		summarizeBy: none
+		sourceColumn: volume
+
+		annotation SummarizationSetBy = User
+
+	column nb_transactions
+		dataType: int64
+		formatString: 0
+		lineageTag: 62c30d93-2c2f-497e-ad6c-6c598f704ada
+		summarizeBy: none
+		sourceColumn: nb_transactions
+
+		annotation SummarizationSetBy = User
+
+	column capitaux
+		dataType: double
+		lineageTag: 9457c0f2-c86b-478d-8241-7bab29fe04fb
+		summarizeBy: none
+		sourceColumn: capitaux
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column statut
+		dataType: string
+		lineageTag: 8a94181b-3edb-44f8-b84a-e3353368b2f8
+		summarizeBy: none
+		sourceColumn: statut
+
+		annotation SummarizationSetBy = User
+
+	column source
+		dataType: string
+		lineageTag: a0d5e77d-2e34-422d-8d39-4439998cac24
+		summarizeBy: none
+		sourceColumn: source
+
+		annotation SummarizationSetBy = User
+
+	column fichier
+		dataType: string
+		lineageTag: cdbf8303-f54d-44ae-a42f-f6282669e078
+		summarizeBy: none
+		sourceColumn: fichier
+
+		annotation SummarizationSetBy = User
+
+	column facteur_prix
+		dataType: double
+		lineageTag: 607466c1-412d-4d38-a3eb-ef246fa7d695
+		summarizeBy: none
+		sourceColumn: facteur_prix
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column facteur_rendement
+		dataType: double
+		lineageTag: ef4ffe2b-3ee3-4846-8a1b-819f4c8a57fc
+		summarizeBy: none
+		sourceColumn: facteur_rendement
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column cloture_ajustee_prix
+		dataType: double
+		lineageTag: d5990cc6-e2d0-473e-bd5b-9b00442b54de
+		summarizeBy: none
+		sourceColumn: cloture_ajustee_prix
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column cloture_ajustee_rendement
+		dataType: double
+		lineageTag: e6511351-1c6a-4b11-9d5f-e93453cec8e6
+		summarizeBy: none
+		sourceColumn: cloture_ajustee_rendement
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column sans_transaction
+		dataType: boolean
+		lineageTag: 2055235c-66c0-443e-aa9d-dfc37beac591
+		summarizeBy: none
+		sourceColumn: sans_transaction
+
+		annotation SummarizationSetBy = User
+
+	column rendement
+		dataType: double
+		formatString: 0.0 %
+		lineageTag: c267eeb7-6bd5-4854-ab07-c6da0bb90819
+		summarizeBy: none
+		sourceColumn: rendement
+
+		annotation SummarizationSetBy = User
+
+	partition Fait_Cours = m
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Table de faits des cours (chargée) : une ligne par banque et par séance du 02/01/2019 à la dernière
+				// séance collectée, cours non ajustés de la Bourse, cours ajustés des opérations sur titres
+				// (Operations_Titres), rendement d'une séance à l'autre et marqueur de séance sans transaction
+				// (spécification 7.5).
+				let
+				    Fichier = Fichiers_Donnees{[fichier = "cours_banques.csv"]}[contenu],
+				    Source = Csv.Document(Fichier, [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    EnTetes = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Types = Table.TransformColumnTypes(
+				        EnTetes,
+				        {
+				            {"ticker", type text}, {"banque", type text}, {"isin", type text}, {"date", type date},
+				            {"ouverture", type number}, {"haut", type number}, {"bas", type number}, {"cloture", type number},
+				            {"volume", Int64.Type}, {"nb_transactions", Int64.Type}, {"capitaux", type number},
+				            {"statut", type text}, {"source", type text}, {"fichier", type text}
+				        },
+				        "en-US"
+				    ),
+				    // une case vide du CSV (cours absent, pas de statut) reste vide, jamais zéro
+				    VidesEnNull = Table.ReplaceValue(Types, "", null, Replacer.ReplaceValue, {"statut"}),
+				    SansIsin = Table.RemoveColumns(VidesEnNull, {"isin"}),
+				    // opérations de la banque, gardées en mémoire (lues une fois sur GitHub)
+				    Operations = Table.Buffer(
+				        Table.SelectColumns(Operations_Titres, {"banque", "date_effet", "facteur_cumule_prix", "facteur_cumule_rendement"})
+				    ),
+				    // fusion avec Operations_Titres sur la banque : chaque séance reçoit les opérations de sa banque
+				    Fusion = Table.NestedJoin(SansIsin, {"banque"}, Operations, {"banque"}, "operations", JoinKind.LeftOuter),
+				    // première opération postérieure à la séance (les opérations sont triées par date) : ses facteurs
+				    // cumulés sont le produit des facteurs de toutes les opérations qui suivent la séance
+				    Suivante = Table.AddColumn(
+				        Fusion, "operation_suivante",
+				        (s) => Table.First(Table.SelectRows(s[operations], (o) => o[date_effet] > s[date]), null)
+				    ),
+				    Developpee = Table.ExpandRecordColumn(
+				        Table.RemoveColumns(Suivante, {"operations"}), "operation_suivante",
+				        {"facteur_cumule_prix", "facteur_cumule_rendement"}, {"facteur_prix", "facteur_rendement"}
+				    ),
+				    // aucune opération après la séance : facteur 1 (cours déjà au niveau d'aujourd'hui)
+				    FacteurUn = Table.ReplaceValue(Developpee, null, 1, Replacer.ReplaceValue, {"facteur_prix", "facteur_rendement"}),
+				    // cours ajustés : série « prix » (opérations sur le capital) et série « rendement total » (dividendes compris)
+				    AjustePrix = Table.AddColumn(
+				        FacteurUn, "cloture_ajustee_prix", each [cloture] * [facteur_prix], type nullable number
+				    ),
+				    AjusteRendement = Table.AddColumn(
+				        AjustePrix, "cloture_ajustee_rendement", each [cloture] * [facteur_rendement], type nullable number
+				    ),
+				    // colonne conditionnelle : séance sans transaction (mesure de liquidité, avertissement « titre peu liquide »)
+				    SansTransaction = Table.AddColumn(
+				        AjusteRendement, "sans_transaction",
+				        each if [statut] <> null and Text.Contains([statut], "sans transaction") then true else false, type logical
+				    ),
+				    Triees = Table.Sort(SansTransaction, {{"banque", Order.Ascending}, {"date", Order.Ascending}}),
+				    // rendement d'une séance à l'autre sur la série « rendement total », banque par banque ; une clôture
+				    // vide reprend la dernière clôture connue (rendement nul ce jour-là), la première séance n'a pas de rendement
+				    ParBanque = Table.Group(
+				        Triees, {"banque"},
+				        {{"seances", (t) =>
+				            let
+				                Connue = Table.FillDown(
+				                    Table.AddColumn(t, "cloture_connue", each [cloture_ajustee_rendement], type nullable number),
+				                    {"cloture_connue"}
+				                ),
+				                Valeurs = List.Buffer(Connue[cloture_connue]),
+				                AvecIndex = Table.AddIndexColumn(Connue, "rang", 0, 1, Int64.Type),
+				                AvecRendement = Table.AddColumn(
+				                    AvecIndex, "rendement",
+				                    each if [rang] = 0 or [cloture_connue] = null or Valeurs{[rang] - 1} = null then null
+				                        else [cloture_connue] / Valeurs{[rang] - 1} - 1,
+				                    type nullable number
+				                )
+				            in
+				                Table.RemoveColumns(AvecRendement, {"cloture_connue", "rang"}),
+				          type table}}
+				    ),
+				    Seances = Table.Combine(ParBanque[seances]),
+				    // types rétablis après le regroupement
+				    TypesFinaux = Table.TransformColumnTypes(
+				        Seances,
+				        {
+				            {"ticker", type text}, {"banque", type text}, {"date", type date},
+				            {"ouverture", type number}, {"haut", type number}, {"bas", type number}, {"cloture", type number},
+				            {"volume", Int64.Type}, {"nb_transactions", Int64.Type}, {"capitaux", type number},
+				            {"statut", type text}, {"source", type text}, {"fichier", type text},
+				            {"facteur_prix", type number}, {"facteur_rendement", type number},
+				            {"cloture_ajustee_prix", type number}, {"cloture_ajustee_rendement", type number},
+				            {"sans_transaction", type logical}, {"rendement", type number}
+				        }
+				    )
+				in
+				    TypesFinaux
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table

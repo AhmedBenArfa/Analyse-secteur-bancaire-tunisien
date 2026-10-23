@@ -85,6 +85,11 @@ données** : les requêtes apparaissent dans l'ordre de la section 2, les interm
 | `Operations_Titres` | BT 10/05/2022 (attribution + dividende) | `facteur` = 0,796446 ; `facteur_prix` = 0,834179 |
 | `Evenements` | nombre de lignes | 11 |
 | `Evenements` | BH_RETRAITEMENT_2024 | `date` = 31/12/2024 ; `montant_mdt` = −64,744 |
+| `Fait_Cours` | nombre de lignes | 23 460 (1 955 séances × 12 banques) |
+| `Fait_Cours` | BIAT 02/01/2019 | `cloture` = 118 ; `facteur_prix` = 0,416667 ; `cloture_ajustee_prix` = 49,1667 ; `facteur_rendement` = 0,272016 ; `rendement` vide (première séance) |
+| `Fait_Cours` | BIAT 31/12/2025 | `cloture` = 111 ; `facteur_prix` = 1 ; `facteur_rendement` = 0,9625 (dividende de mai 2026) |
+| `Fait_Cours` | BT 10/05/2022 (jour de l'attribution) | `cloture` = 5,05 ; `facteur_prix` = 1 ; `facteur_rendement` = 0,795311 |
+| `Fait_Cours` | `sans_transaction` = Vrai | 3 074 séances (UBCI 52,7 %, Wifak 42,6 %, BTE 37,6 % de leurs séances) |
 
 Ajout manuel d'une requête (sans passer par les fichiers TMDL) : **Accueil › Transformer les données**,
 puis **Nouvelle source › Requête vide**, **Éditeur avancé**, coller le contenu du fichier `.pq`, renommer
@@ -108,6 +113,7 @@ Ordre de création : chaque requête n'utilise que des requêtes déjà créées
 | 8 | `Dim_Banque` | oui | `dim_banque.csv` + fusion avec `Banques_Actionnariat` | code, nom, ticker, actionnariat actuel |
 | 9 | `Operations_Titres` | non | `operations_titres.csv` sur GitHub (source URL) | facteurs d'ajustement des cours |
 | 10 | `Evenements` | oui | `evenements.csv` sur GitHub (source URL) | événements qui expliquent une rupture de série |
+| 11 | `Fait_Cours` | oui | `cours_banques.csv` + fusion avec `Operations_Titres` | cours quotidiens, cours ajustés, rendement, séances sans transaction |
 
 ### 2.1 `CheminDonnees` (paramètre)
 
@@ -297,6 +303,31 @@ APTBEF–FGBEF, moratoire Covid de l'UIB, retraitement BH 2024, déchéance fisc
 date (fin du trimestre concerné), l'indicateur, la description, le montant cité par le document, le
 fichier et la page. Étapes : lecture du CSV sur GitHub, types (`en-US`). Elles annoteront les
 graphiques (marqueurs et info-bulles) une fois les relations créées (étape du modèle).
+
+### 2.12 `Fait_Cours` (chargée)
+
+Une ligne par banque et par séance (23 460 lignes, du 02/01/2019 au 20/10/2026) : cours non ajustés de
+la Bourse et cours ajustés des opérations sur titres.
+
+| Étape | Ce qu'elle fait |
+|---|---|
+| `Fichier`, `Source`, `EnTetes`, `Types` | lit `cours_banques.csv` ; types avec les paramètres régionaux `en-US` (un cours absent reste vide) |
+| `VidesEnNull`, `SansIsin` | statut vide → `null` ; retire le code ISIN (la banque et le ticker suffisent) |
+| `Operations` | colonnes utiles de `Operations_Titres`, gardées en mémoire (le fichier GitHub est lu une fois) |
+| `Fusion` | **fusion** avec `Operations_Titres` sur la banque : chaque séance reçoit les opérations de sa banque |
+| `Suivante`, `Developpee` | première opération **postérieure** à la séance ; ses facteurs cumulés (produit des facteurs de toutes les opérations qui suivent la séance) deviennent `facteur_prix` et `facteur_rendement` |
+| `FacteurUn` | aucune opération après la séance : facteur 1 |
+| `AjustePrix`, `AjusteRendement` | `cloture_ajustee_prix` = clôture × facteur prix (attributions, division du nominal) ; `cloture_ajustee_rendement` = clôture × facteur rendement (dividendes compris) |
+| `SansTransaction` | **colonne conditionnelle** : vrai si le statut contient « sans transaction » |
+| `Triees`, `ParBanque`, `Seances` | **regroupement par banque** : dans chaque banque, triée par date, une clôture vide reprend la dernière clôture connue, puis `rendement` = clôture ajustée (rendement total) / clôture ajustée de la séance précédente − 1 ; la première séance n'a pas de rendement |
+| `TypesFinaux` | types rétablis après le regroupement |
+
+**Pourquoi ajuster** : sans ajustement, une attribution gratuite ou une division du nominal ressemble à
+une chute du cours. BIAT : 118,000 le 02/01/2019, 111,000 le 31/12/2025, soit −5,9 % en brut et
++125,8 % ajusté (49,167 → 111,000). **Pourquoi le rendement sur la série « rendement total »** : le jour
+du détachement d'un dividende, le cours baisse du montant versé ; ce n'est pas une variation de valeur
+pour l'actionnaire, la volatilité ne doit pas la compter. Après ajustement, la plus forte variation
+d'une séance à l'autre est de 10,7 % (BTE, 24/12/2020) : aucune opération ne crée de saut.
 
 ## 3. Mesures DAX
 
