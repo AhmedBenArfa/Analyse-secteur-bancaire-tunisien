@@ -1,37 +1,27 @@
 EVALUATE
-ROW (
-    "Nb documents", [Nb documents],
-    "Part sans alerte", [Part documents sans alerte],
-    "Nb ecarts signales", [Nb ecarts signales],
-    "Nb ecarts trim cumul", [Nb ecarts trim cumul],
-    "Nb ecarts composantes", [Nb ecarts composantes],
-    "Nb a verifier", [Nb documents a verifier],
-    "Nb illisibles", [Nb documents illisibles],
-    "Nb saisis", [Nb documents saisis],
-    "Titre", [Titre rapport]
+SELECTCOLUMNS (
+    Dim_Banque,
+    "banque", Dim_Banque[code_banque],
+    "liquidite", Dim_Banque[Liquidite_Titre],
+    "charges operatoires", Dim_Banque[Definition_Charges_Operatoires],
+    "capitaux propres", Dim_Banque[Definition_Capitaux_Propres]
 )
+ORDER BY [banque]
+
+EVALUATE
+SUMMARIZECOLUMNS (
+    Journal_Faits_Marquants[type_fait],
+    "Nb faits", [Nb faits marquants]
+)
+ORDER BY Journal_Faits_Marquants[type_fait]
 
 EVALUATE
 ROW (
-    "Part cumuls revises", [Part cumuls revises],
-    "Part 31-12 provisoires", [Part 31-12 provisoires],
-    "Nb revisions", [Nb revisions],
-    "Nb revisions importantes", [Nb revisions importantes],
-    "Nb retraitements mineurs", [Nb retraitements mineurs],
-    "Nb reclassements", [Nb reclassements],
-    "Nb ruptures serie", [Nb ruptures serie],
-    "Nb valeurs non disponibles (vide attendu)", [Nb valeurs non disponibles],
-    "Nb revisions importantes EF", [Nb revisions importantes EF]
-)
-
-EVALUATE
-ROW (
-    "Nb annees conformes", [Nb annees conformes],
-    "Nb annees en attente", [Nb annees en attente],
-    "Nb ecarts annuels", [Nb ecarts annuels],
-    "Nb ecarts expliques", [Nb ecarts expliques],
-    "Nb ruptures annuelles", [Nb ruptures annuelles],
-    "Ecart annuel MDT", [Ecart annuel MDT],
-    "Couleur coef BT 2024T3", CALCULATE ( [Couleur coef], Dim_Banque[code_banque] = "BT", Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Couleur coef BTE 2024T3", CALCULATE ( [Couleur coef], Dim_Banque[code_banque] = "BTE", Dim_Date[Annee_Trimestre] = "2024T3" )
+    "Top 3 PNB 2024T3", CALCULATE ( [Top 3 banques PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Part 3 premieres 2024T3", CALCULATE ( [Part 3 premieres banques PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Changements (tout)", [Changements actionnaire],
+    "Changements 2021", CALCULATE ( [Changements actionnaire], Dim_Date[Annee] = 2021 ),
+    "Changements 2023 (vide attendu)", CALCULATE ( [Changements actionnaire], Dim_Date[Annee] = 2023 ),
+    "Detail 2024", CALCULATE ( [Changements actionnaire detail], Dim_Date[Annee] = 2024 ),
+    "Nb faits marquants 2020", CALCULATE ( [Nb faits marquants], Dim_Date[Annee] = 2020 )
 )

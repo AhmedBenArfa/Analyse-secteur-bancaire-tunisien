@@ -683,6 +683,12 @@ def rapport():
       "individuels, règle des versions comme pour les indicateurs trimestriels.</p>")
 
     # 8. Prochaines étapes ------------------------------------------------------------------
+    # avancement de Power BI lu dans le projet : requêtes, relations, mesures et colonnes calculées
+    nb_requetes = len(list((R / "powerquery").glob("*.pq")))
+    modele = R / "powerbi/SecteurBancaireTunisien.SemanticModel/definition"
+    nb_relations = len(re.findall(r"^relationship ", (modele / "relationships.tmdl").read_text(encoding="utf-8"), re.M))
+    nb_mesures = len(re.findall(r"^MEASURE ", (R / "dax/mesures.dax").read_text(encoding="utf-8"), re.M))
+    nb_colonnes = len(re.findall(r"^COLUMN ", (R / "dax/colonnes_calculees.dax").read_text(encoding="utf-8"), re.M))
     A("<h2>8. Prochaines étapes</h2>")
     A(table(["#", "Étape", "État"], [
         ["1–2", "Collecte et extraction des indicateurs (12 gabarits)",
@@ -694,10 +700,12 @@ def rapport():
          f"Fait ({len(efr)} valeurs retenues)"],
         ["4c", "Examen des écarts du contrôle annuel",
          f"Fait : {len(ec)} écarts, cause et source de chacun"],
-        ["5–6", "Requêtes Power Query, modèle en étoile, mesures DAX",
-         "<b>En cours</b> : " + ", ".join(f"<code>{q.stem}</code>" for q in sorted((R / "powerquery").glob("*.pq")))
-         + " écrites ; guide <code>docs/guide_powerbi.md</code>"],
-        ["7", "Pages du rapport Power BI", "À faire"],
+        ["5", "Requêtes Power Query",
+         f"Fait : {nb_requetes} requêtes (<code>powerquery/*.pq</code>), vérifiées dans Power BI Desktop"],
+        ["6", "Modèle en étoile et mesures DAX",
+         f"Fait : table des dates, {nb_relations} relations, {nb_mesures} mesures, {nb_colonnes} colonnes calculées, "
+         "journal des faits marquants ; chaque transformation expliquée dans <code>docs/Guide_PowerBI.pdf</code>"],
+        ["7", "Pages du rapport Power BI", "Prochaine étape : thème, fonds de page et logos des banques prêts"],
         ["8", "README final et captures pour le portfolio",
          "README réécrit en page d'accueil du dépôt ; captures et mise à jour finale après le rapport"]]))
 

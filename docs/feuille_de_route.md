@@ -58,8 +58,8 @@ Un groupe à la fois, chacun vérifié dans Power BI Desktop (requête de contr�
    `dax/controle_rentabilite.dax`) ; Bourse (15 mesures, vérifiées le 24/10/2026 avec
    `dax/controle_bourse.dax`) ; qualité des données (27 mesures, vérifiées le 24/10/2026 avec
    `dax/controle_qualite.dax`). Total : 142 mesures dans la table `Mesures`, rangées par dossier (147 avec les compléments du 24/10/2026 :
-   `TOPN`, `USERELATIONSHIP`, journal par `UNION`, colonnes calculées par `RELATEDTABLE` et `LOOKUPVALUE`, à vérifier avec
-   `dax/controle_complements.dax`) ; code et
+   `TOPN`, `USERELATIONSHIP`, journal par `UNION`, colonnes calculées par `RELATEDTABLE` et `LOOKUPVALUE`, vérifiés le
+   24/10/2026 avec `dax/controle_complements.dax`) ; code et
    explications dans `dax/mesures.dax` et dans le guide (section 3).
 
 ## Prochaine étape : étape 7, pages du rapport
