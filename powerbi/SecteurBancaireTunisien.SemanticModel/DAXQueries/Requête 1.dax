@@ -1,33 +1,35 @@
 EVALUATE
+ROW (
+    "Var PNB A/A 2024T3", CALCULATE ( [Var PNB A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var PNB cumul A/A 2024T3", CALCULATE ( [Var PNB cumul A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var Credits A/A 2024T3", CALCULATE ( [Var Credits A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var Depots A/A 2024T3", CALCULATE ( [Var Depots A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var Charges operatoires A/A 2024T3", CALCULATE ( [Var Charges operatoires A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var PNB T/T 2024T3", CALCULATE ( [Var PNB T/T %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "PNB 4T glissants 2024T3", CALCULATE ( [PNB 4T glissants], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var PNB annuel A/A 2025", CALCULATE ( [Var PNB annuel A/A %], Dim_Date[Annee] = 2025 ),
+    "Var Credits A/A 2026", CALCULATE ( [Var Credits A/A %], Dim_Date[Annee] = 2026 ),
+    "TCAM PNB 2020-2025", [TCAM PNB 2020-2025]
+)
+
+EVALUATE
 SUMMARIZECOLUMNS (
     Dim_Banque[code_banque],
-    TREATAS ( { "2024T3" }, Dim_Date[Annee_Trimestre] ),
-    "Coef harmonise", [Coef exploitation harmonise],
-    "Rang coef", [Rang coef],
-    "Ecart / mediane", [Ecart coef / mediane],
-    "Coef publie", [Coef exploitation publie],
-    "Part marge interets", [Part marge interets],
-    "Part commissions", [Part commissions],
-    "Part portefeuille", [Part portefeuille],
-    "Frais personnel / PNB", [Frais personnel / PNB],
-    "Credits / Depots", [Credits / Depots],
-    "Part depots a vue", [Part depots a vue]
+    TREATAS ( { "BH", "BIAT" }, Dim_Banque[code_banque] ),
+    "Var PNB annuel A/A 2025", CALCULATE ( [Var PNB annuel A/A %], Dim_Date[Annee] = 2025 ),
+    "Var PNB A/A 2025T4", CALCULATE ( [Var PNB A/A %], Dim_Date[Annee_Trimestre] = "2025T4" ),
+    "Var Credits A/A 2024T3", CALCULATE ( [Var Credits A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var PNB T/T 2024T3", CALCULATE ( [Var PNB T/T %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "PNB 4T glissants 2024T3", CALCULATE ( [PNB 4T glissants], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "TCAM PNB 2020-2025", [TCAM PNB 2020-2025]
 )
-ORDER BY [Rang coef]
+ORDER BY Dim_Banque[code_banque]
 
 EVALUATE
 ROW (
-    "Banques presentes coef 2024T3", CALCULATE ( [Banques presentes coef], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Coef secteur 2024T3", CALCULATE ( [Coef secteur], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Coef mediane 2024T3", CALCULATE ( [Coef mediane], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Coef harmonise 2024 (vide attendu)", CALCULATE ( [Coef exploitation harmonise], Dim_Date[Annee] = 2024 ),
-    "Coef harmonise annuel 2024 secteur", CALCULATE ( [Coef exploitation harmonise annuel], Dim_Date[Annee] = 2024 )
+    "Evenement BH 2024T4 PNB", CALCULATE ( [Evenement texte], Dim_Banque[code_banque] = "BH", Dim_Date[Annee_Trimestre] = "2024T4", Dim_Indicateur[code_indicateur] = "PNB" ),
+    "Montant MDT", CALCULATE ( [Evenement montant MDT], Dim_Banque[code_banque] = "BH", Dim_Date[Annee_Trimestre] = "2024T4", Dim_Indicateur[code_indicateur] = "PNB" ),
+    "Rupture PNB BH 2024T4", CALCULATE ( [Rupture PNB], Dim_Banque[code_banque] = "BH", Dim_Date[Annee_Trimestre] = "2024T4" ),
+    "Rupture PNB BH 2024T3 (vide attendu)", CALCULATE ( [Rupture PNB], Dim_Banque[code_banque] = "BH", Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Nb evenements", [Nb evenements]
 )
-
-EVALUATE
-SUMMARIZECOLUMNS (
-    Dim_Banque[code_banque],
-    TREATAS ( { 2024 }, Dim_Date[Annee] ),
-    "Coef harmonise annuel", [Coef exploitation harmonise annuel]
-)
-ORDER BY Dim_Banque[code_banque]
