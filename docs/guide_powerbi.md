@@ -1011,6 +1011,55 @@ semestre publié montrait −41,182, intérêts du moratoire Covid réintégrés
 résultat net 155,069 (avant modifications comptables, la version révisée 137,318 n'est pas retenue), annualisé
 310,138.
 
+### 3.8 Bourse (groupe 6, spécification 7.5)
+
+**Une banque à la fois.** Additionner les cours de deux banques n'a pas de sens : les mesures de cours, de
+performance, de volatilité et l'avertissement de liquidité sont vides sans une banque unique dans le filtre
+(`HASONEVALUE ( Dim_Banque[code_banque] )`).
+
+**Performance sur les cours ajustés.** Un cours brut baisse mécaniquement le jour d'une attribution gratuite,
+d'une division du nominal ou d'un dividende. BIAT : 118,000 DT le 02/01/2019 et 111,000 DT le 31/12/2025, soit
+−5,9 % en brut ; une attribution 1 pour 20 (2020), la division du nominal par 2 (2021) et une attribution 1 pour
+7 (2024) ont multiplié le nombre d'actions. Les colonnes ajustées de `Fait_Cours` (2.12, facteurs de la Bourse
+elle-même) corrigent ces sauts :
+
+- `Performance prix` = dernière / première clôture **ajustée des opérations sur le capital** − 1 (performance du
+  prix, hors dividendes) : BIAT 2019-2025 **+125,8 %** ;
+- `Rendement total` = même calcul sur la série **ajustée de toutes les opérations, dividendes compris**
+  (dividendes réinvestis) : BIAT 2019-2025 +232,8 % ;
+- `Premier cours`, `Dernier cours` (et leurs dates) : clôtures publiées, non ajustées, pour l'affichage. La
+  version de la spécification calculait la performance sur ces cours bruts : remplacée par les deux mesures
+  ci-dessus.
+
+Une séance sans clôture (481 cas : cours à 0 dans l'archive, journée sans cotation du 17/12/2025) est sautée par
+`FIRSTNONBLANK` et `LASTNONBLANK` ; une performance reste vide si le début ou la fin manque (jamais −100 %).
+
+**Risque et liquidité.** `Volatilite annualisee` = écart-type des rendements quotidiens (`STDEVX.S`, série rendement
+total) × √252 (nombre habituel de séances par an), au moins 20 rendements. `Taux seances sans transaction` = séances
+sans aucun titre échangé / séances ; au-dessus de 20 % (`Seuil titre peu liquide`), `Avertissement liquidite`
+affiche « Titre peu liquide : 53 % des séances sans transaction ; volatilité et performance à lire avec
+prudence » : beaucoup de rendements nuls puis des sauts, la volatilité et la performance reposent sur peu
+d'échanges.
+
+**Contrôle** : vider la vue Requête DAX (**Ctrl+A**, **Suppr**), coller `dax/controle_bourse.dax`, **Exécuter** ;
+trois résultats. Valeurs attendues (calculées à part : `cours_banques.csv` et `operations_titres.csv`, mêmes
+facteurs que Power Query) :
+
+Résultat 1, année 2025 :
+
+| Banque | Premier cours | Dernier cours | Performance prix | Rendement total | Volatilité | Séances | Sans transaction |
+|---|---|---|---|---|---|---|---|
+| BIAT | 93,900 | 111,000 | +18,21 % | +25,49 % | 11,32 % | 249 | 1 |
+| BT | 5,170 | 6,400 | +23,79 % | +32,47 % | 14,69 % | 249 | 2 |
+| UBCI | 20,540 | 33,800 | +64,56 % | +75,53 % | 26,46 % | 249 | 100 |
+
+Résultat 2, du 02/01/2019 au 20/10/2026 (1 955 séances par banque) : UBCI 52,7 %, WIB 42,6 %, BTE 37,6 % (avec
+l'avertissement « Titre peu liquide : 53 % / 43 % / 38 % … »), puis BH 8,6 %, UIB 4,7 %, ATB 4,2 %, AB 3,5 %, STB
+1,5 %, BNA 0,8 %, TJARI 0,5 %, BT 0,4 %, BIAT 0,1 % (sans avertissement) ; date du dernier cours 20/10/2026.
+
+Résultat 3 : BIAT 2019-2025 performance prix +125,76 %, rendement total +232,85 %, premier cours 118,000, dernier
+cours 111,000 ; dernier cours sans banque : vide.
+
 ### 3.9 Fonctions DAX utilisées
 
 Chaque fonction DAX employée dans `dax/*.dax`, ce qu'elle fait ici et où elle sert. Le test
@@ -1059,6 +1108,11 @@ tableau.
 | `PRODUCTX` | produit d'une expression sur chaque ligne d'une table (enchaînement des variations annuelles) | `mesures` |
 | `CONCATENATEX` | met bout à bout les textes d'une table, avec un séparateur | `mesures` |
 | `UNICHAR` | caractère d'après son code (10 = retour à la ligne) | `mesures` |
+| `FIRSTNONBLANK` | première valeur d'une colonne (ici : premier jour) pour laquelle une expression n'est pas vide | `mesures` |
+| `MIN` | plus petite valeur d'une colonne (date du premier cours) | `mesures` |
+| `STDEVX.S` | écart-type (échantillon) d'une expression sur chaque ligne d'une table (rendements quotidiens) | `mesures` |
+| `SQRT` | racine carrée (√252 pour annualiser une volatilité quotidienne) | `mesures` |
+| `FORMAT` | nombre mis en texte selon un format (« 53 % » dans l'avertissement) | `mesures` |
 
 ## 4. Pages du rapport : visuels, champs et mesures
 

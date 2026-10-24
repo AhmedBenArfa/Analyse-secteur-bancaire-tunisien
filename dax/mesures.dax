@@ -642,3 +642,92 @@ MEASURE Mesures[ROE secteur] =
 // [5. Rentabilité\Ratios | 0.00 %] ROA des 12 banques ensemble ; vide si une banque manque
 MEASURE Mesures[ROA secteur] =
     CALCULATE ( [ROA], REMOVEFILTERS ( Dim_Banque ) )
+
+// ===== 6. Bourse (spécification 7.5) =====
+// Cours d'UNE banque à la fois (additionner des cours de banques différentes n'a pas de sens) : vide sinon.
+// Performances calculées sur les clôtures AJUSTÉES des opérations sur titres (Fait_Cours, Power Query) ;
+// une clôture brute ne sert qu'à l'affichage du cours.
+
+// [6. Bourse\Intermédiaires | #,0.000] Clôture publiée d'une séance, pour une banque ; vide si plusieurs banques ou plusieurs séances
+MEASURE Mesures[Cloture brut] =
+    IF (
+        HASONEVALUE ( Dim_Banque[code_banque] ) && DISTINCTCOUNT ( Fait_Cours[date] ) = 1,
+        SUM ( Fait_Cours[cloture] )
+    )
+
+// [6. Bourse\Intermédiaires | #,0.000] Clôture ajustée des opérations sur le capital (attributions, divisions, souscriptions) d'une séance, pour une banque
+MEASURE Mesures[Cloture ajustee prix brut] =
+    IF (
+        HASONEVALUE ( Dim_Banque[code_banque] ) && DISTINCTCOUNT ( Fait_Cours[date] ) = 1,
+        SUM ( Fait_Cours[cloture_ajustee_prix] )
+    )
+
+// [6. Bourse\Intermédiaires | #,0.000] Clôture ajustée de toutes les opérations, dividendes compris, d'une séance, pour une banque
+MEASURE Mesures[Cloture ajustee rendement brut] =
+    IF (
+        HASONEVALUE ( Dim_Banque[code_banque] ) && DISTINCTCOUNT ( Fait_Cours[date] ) = 1,
+        SUM ( Fait_Cours[cloture_ajustee_rendement] )
+    )
+
+// [6. Bourse\Cours | #,0.000] Dernière clôture publiée de la période (DT), pour une banque
+MEASURE Mesures[Dernier cours] =
+    CALCULATE ( [Cloture brut], LASTNONBLANK ( Dim_Date[Date], [Cloture brut] ) )
+
+// [6. Bourse\Cours | #,0.000] Première clôture publiée de la période (DT), pour une banque
+MEASURE Mesures[Premier cours] =
+    CALCULATE ( [Cloture brut], FIRSTNONBLANK ( Dim_Date[Date], [Cloture brut] ) )
+
+// [6. Bourse\Cours | Short Date] Date de la dernière clôture publiée de la période
+MEASURE Mesures[Date dernier cours] =
+    CALCULATE ( MAX ( Dim_Date[Date] ), LASTNONBLANK ( Dim_Date[Date], [Cloture brut] ) )
+
+// [6. Bourse\Cours | Short Date] Date de la première clôture publiée de la période
+MEASURE Mesures[Date premier cours] =
+    CALCULATE ( MIN ( Dim_Date[Date] ), FIRSTNONBLANK ( Dim_Date[Date], [Cloture brut] ) )
+
+// [6. Bourse\Performance | +0.0 %;-0.0 %;0.0 %] Performance du prix sur la période : dernière / première clôture ajustée des opérations sur le capital, − 1 (hors dividendes)
+MEASURE Mesures[Performance prix] =
+    VAR Debut = CALCULATE ( [Cloture ajustee prix brut], FIRSTNONBLANK ( Dim_Date[Date], [Cloture ajustee prix brut] ) )
+    VAR Fin = CALCULATE ( [Cloture ajustee prix brut], LASTNONBLANK ( Dim_Date[Date], [Cloture ajustee prix brut] ) )
+    RETURN
+        IF ( NOT ISBLANK ( Debut ) && NOT ISBLANK ( Fin ), DIVIDE ( Fin, Debut ) - 1 )
+
+// [6. Bourse\Performance | +0.0 %;-0.0 %;0.0 %] Rendement total sur la période, dividendes réinvestis : dernière / première clôture ajustée de toutes les opérations, − 1
+MEASURE Mesures[Rendement total] =
+    VAR Debut = CALCULATE ( [Cloture ajustee rendement brut], FIRSTNONBLANK ( Dim_Date[Date], [Cloture ajustee rendement brut] ) )
+    VAR Fin = CALCULATE ( [Cloture ajustee rendement brut], LASTNONBLANK ( Dim_Date[Date], [Cloture ajustee rendement brut] ) )
+    RETURN
+        IF ( NOT ISBLANK ( Debut ) && NOT ISBLANK ( Fin ), DIVIDE ( Fin, Debut ) - 1 )
+
+// [6. Bourse\Risque et liquidité | 0.0 %] Volatilité annualisée : écart-type des rendements quotidiens (série rendement total) × racine de 252 séances, pour une banque ; vide sous 20 rendements ; à lire avec l'avertissement de liquidité
+MEASURE Mesures[Volatilite annualisee] =
+    VAR Rendements = FILTER ( Fait_Cours, NOT ISBLANK ( Fait_Cours[rendement] ) )
+    RETURN
+        IF (
+            HASONEVALUE ( Dim_Banque[code_banque] ) && COUNTROWS ( Rendements ) >= 20,
+            STDEVX.S ( Rendements, Fait_Cours[rendement] ) * SQRT ( 252 )
+        )
+
+// [6. Bourse\Risque et liquidité | #,0] Nombre de séances de la période
+MEASURE Mesures[Seances] =
+    COUNTROWS ( Fait_Cours )
+
+// [6. Bourse\Risque et liquidité | #,0] Nombre de séances sans transaction (aucun titre échangé ; la clôture est alors le cours de référence)
+MEASURE Mesures[Seances sans transaction] =
+    CALCULATE ( [Seances], Fait_Cours[sans_transaction] = TRUE () )
+
+// [6. Bourse\Risque et liquidité | 0.0 %] Part des séances sans transaction dans la période
+MEASURE Mesures[Taux seances sans transaction] =
+    DIVIDE ( [Seances sans transaction], [Seances] )
+
+// [6. Bourse\Risque et liquidité | 0 %] Seuil au-delà duquel un titre est dit peu liquide (20 % des séances sans transaction)
+MEASURE Mesures[Seuil titre peu liquide] =
+    0.20
+
+// [6. Bourse\Risque et liquidité | texte] Avertissement affiché pour un titre peu liquide (une banque) : sa volatilité et sa performance reposent sur peu d'échanges
+MEASURE Mesures[Avertissement liquidite] =
+    IF (
+        HASONEVALUE ( Dim_Banque[code_banque] ) && [Taux seances sans transaction] > [Seuil titre peu liquide],
+        "Titre peu liquide : " & FORMAT ( [Taux seances sans transaction], "0 %" )
+            & " des séances sans transaction ; volatilité et performance à lire avec prudence"
+    )

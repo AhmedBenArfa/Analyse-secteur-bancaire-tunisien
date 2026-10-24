@@ -1,0 +1,36 @@
+// Auteur : Ahmed Ben Arfa
+// Contrôle des mesures de Bourse (guide, section 3.8) : vider la vue Requête DAX (Ctrl+A, Suppr), coller ce
+// texte, Exécuter ; trois résultats, à comparer aux valeurs attendues du guide.
+// 1. Année 2025, trois banques : cours, performance ajustée, volatilité, liquidité.
+EVALUATE
+SUMMARIZECOLUMNS (
+    Dim_Banque[code_banque],
+    TREATAS ( { "BIAT", "BT", "UBCI" }, Dim_Banque[code_banque] ),
+    TREATAS ( { 2025 }, Dim_Date[Annee] ),
+    "Premier cours", [Premier cours],
+    "Dernier cours", [Dernier cours],
+    "Performance prix", [Performance prix],
+    "Rendement total", [Rendement total],
+    "Volatilite", [Volatilite annualisee],
+    "Seances", [Seances],
+    "Sans transaction", [Seances sans transaction]
+)
+ORDER BY Dim_Banque[code_banque]
+// 2. Toute la période (02/01/2019 au dernier cours), 12 banques : taux de séances sans transaction et avertissement.
+EVALUATE
+SUMMARIZECOLUMNS (
+    Dim_Banque[code_banque],
+    "Taux sans transaction", [Taux seances sans transaction],
+    "Avertissement", [Avertissement liquidite],
+    "Date dernier cours", [Date dernier cours]
+)
+ORDER BY [Taux sans transaction] DESC
+// 3. BIAT du 02/01/2019 au 31/12/2025 (spécification : +125,8 % ajusté, −5,9 % en brut) ; cours sans banque : vide.
+EVALUATE
+ROW (
+    "BIAT 2019-2025 performance prix", CALCULATE ( [Performance prix], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] <= 2025 ),
+    "BIAT 2019-2025 rendement total", CALCULATE ( [Rendement total], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] <= 2025 ),
+    "BIAT premier cours 2019", CALCULATE ( [Premier cours], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] <= 2025 ),
+    "BIAT dernier cours 2025", CALCULATE ( [Dernier cours], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] <= 2025 ),
+    "Dernier cours sans banque (vide attendu)", [Dernier cours]
+)

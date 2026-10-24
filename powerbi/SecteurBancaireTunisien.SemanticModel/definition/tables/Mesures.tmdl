@@ -856,6 +856,126 @@ table Mesures
 		displayFolder: 5. Rentabilité\Ratios
 		lineageTag: 762e469d-f4d5-4627-9b5d-c4845045e238
 
+	/// Clôture publiée d'une séance, pour une banque ; vide si plusieurs banques ou plusieurs séances
+	measure 'Cloture brut' =
+			IF (
+			    HASONEVALUE ( Dim_Banque[code_banque] ) && DISTINCTCOUNT ( Fait_Cours[date] ) = 1,
+			    SUM ( Fait_Cours[cloture] )
+			)
+		formatString: #,0.000
+		displayFolder: 6. Bourse\Intermédiaires
+		lineageTag: 88265629-66d3-4466-a7e4-a622b4cd3ea6
+
+	/// Clôture ajustée des opérations sur le capital (attributions, divisions, souscriptions) d'une séance, pour une banque
+	measure 'Cloture ajustee prix brut' =
+			IF (
+			    HASONEVALUE ( Dim_Banque[code_banque] ) && DISTINCTCOUNT ( Fait_Cours[date] ) = 1,
+			    SUM ( Fait_Cours[cloture_ajustee_prix] )
+			)
+		formatString: #,0.000
+		displayFolder: 6. Bourse\Intermédiaires
+		lineageTag: 7f3a503e-a87e-4df3-b84c-af68b8a6b431
+
+	/// Clôture ajustée de toutes les opérations, dividendes compris, d'une séance, pour une banque
+	measure 'Cloture ajustee rendement brut' =
+			IF (
+			    HASONEVALUE ( Dim_Banque[code_banque] ) && DISTINCTCOUNT ( Fait_Cours[date] ) = 1,
+			    SUM ( Fait_Cours[cloture_ajustee_rendement] )
+			)
+		formatString: #,0.000
+		displayFolder: 6. Bourse\Intermédiaires
+		lineageTag: c8418bdb-2609-45f5-9bc4-c646ab795e01
+
+	/// Dernière clôture publiée de la période (DT), pour une banque
+	measure 'Dernier cours' = CALCULATE ( [Cloture brut], LASTNONBLANK ( Dim_Date[Date], [Cloture brut] ) )
+		formatString: #,0.000
+		displayFolder: 6. Bourse\Cours
+		lineageTag: c65de410-d2e0-4266-b467-d8d787bbafaa
+
+	/// Première clôture publiée de la période (DT), pour une banque
+	measure 'Premier cours' = CALCULATE ( [Cloture brut], FIRSTNONBLANK ( Dim_Date[Date], [Cloture brut] ) )
+		formatString: #,0.000
+		displayFolder: 6. Bourse\Cours
+		lineageTag: 0c0ac398-f646-45b5-9696-524a57c3e6af
+
+	/// Date de la dernière clôture publiée de la période
+	measure 'Date dernier cours' = CALCULATE ( MAX ( Dim_Date[Date] ), LASTNONBLANK ( Dim_Date[Date], [Cloture brut] ) )
+		formatString: Short Date
+		displayFolder: 6. Bourse\Cours
+		lineageTag: eda7d2fb-5763-4444-a262-cae7684a3390
+
+	/// Date de la première clôture publiée de la période
+	measure 'Date premier cours' = CALCULATE ( MIN ( Dim_Date[Date] ), FIRSTNONBLANK ( Dim_Date[Date], [Cloture brut] ) )
+		formatString: Short Date
+		displayFolder: 6. Bourse\Cours
+		lineageTag: d19f8658-ced7-4855-aaeb-1da958d65ebf
+
+	/// Performance du prix sur la période : dernière / première clôture ajustée des opérations sur le capital, − 1 (hors dividendes)
+	measure 'Performance prix' =
+			VAR Debut = CALCULATE ( [Cloture ajustee prix brut], FIRSTNONBLANK ( Dim_Date[Date], [Cloture ajustee prix brut] ) )
+			VAR Fin = CALCULATE ( [Cloture ajustee prix brut], LASTNONBLANK ( Dim_Date[Date], [Cloture ajustee prix brut] ) )
+			RETURN
+			    IF ( NOT ISBLANK ( Debut ) && NOT ISBLANK ( Fin ), DIVIDE ( Fin, Debut ) - 1 )
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 6. Bourse\Performance
+		lineageTag: aeade449-8c1e-49a0-96ec-4eb494de4310
+
+	/// Rendement total sur la période, dividendes réinvestis : dernière / première clôture ajustée de toutes les opérations, − 1
+	measure 'Rendement total' =
+			VAR Debut = CALCULATE ( [Cloture ajustee rendement brut], FIRSTNONBLANK ( Dim_Date[Date], [Cloture ajustee rendement brut] ) )
+			VAR Fin = CALCULATE ( [Cloture ajustee rendement brut], LASTNONBLANK ( Dim_Date[Date], [Cloture ajustee rendement brut] ) )
+			RETURN
+			    IF ( NOT ISBLANK ( Debut ) && NOT ISBLANK ( Fin ), DIVIDE ( Fin, Debut ) - 1 )
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 6. Bourse\Performance
+		lineageTag: c18728bd-c00d-43c3-b00a-a54e7df18f56
+
+	/// Volatilité annualisée : écart-type des rendements quotidiens (série rendement total) × racine de 252 séances, pour une banque ; vide sous 20 rendements ; à lire avec l'avertissement de liquidité
+	measure 'Volatilite annualisee' =
+			VAR Rendements = FILTER ( Fait_Cours, NOT ISBLANK ( Fait_Cours[rendement] ) )
+			RETURN
+			    IF (
+			        HASONEVALUE ( Dim_Banque[code_banque] ) && COUNTROWS ( Rendements ) >= 20,
+			        STDEVX.S ( Rendements, Fait_Cours[rendement] ) * SQRT ( 252 )
+			    )
+		formatString: 0.0 %
+		displayFolder: 6. Bourse\Risque et liquidité
+		lineageTag: 46802d22-ce3d-48fd-88f0-9842825ad94a
+
+	/// Nombre de séances de la période
+	measure Seances = COUNTROWS ( Fait_Cours )
+		formatString: #,0
+		displayFolder: 6. Bourse\Risque et liquidité
+		lineageTag: 4c1067a2-011d-42b2-8e23-364e52e03454
+
+	/// Nombre de séances sans transaction (aucun titre échangé ; la clôture est alors le cours de référence)
+	measure 'Seances sans transaction' = CALCULATE ( [Seances], Fait_Cours[sans_transaction] = TRUE () )
+		formatString: #,0
+		displayFolder: 6. Bourse\Risque et liquidité
+		lineageTag: 620a56b2-b115-4baa-bbb9-8829061da6ab
+
+	/// Part des séances sans transaction dans la période
+	measure 'Taux seances sans transaction' = DIVIDE ( [Seances sans transaction], [Seances] )
+		formatString: 0.0 %
+		displayFolder: 6. Bourse\Risque et liquidité
+		lineageTag: 651f22d3-5cbd-4035-8246-78b8b99390ed
+
+	/// Seuil au-delà duquel un titre est dit peu liquide (20 % des séances sans transaction)
+	measure 'Seuil titre peu liquide' = 0.20
+		formatString: 0 %
+		displayFolder: 6. Bourse\Risque et liquidité
+		lineageTag: 9ce65e5a-628c-454c-9d3f-55d0782283b8
+
+	/// Avertissement affiché pour un titre peu liquide (une banque) : sa volatilité et sa performance reposent sur peu d'échanges
+	measure 'Avertissement liquidite' =
+			IF (
+			    HASONEVALUE ( Dim_Banque[code_banque] ) && [Taux seances sans transaction] > [Seuil titre peu liquide],
+			    "Titre peu liquide : " & FORMAT ( [Taux seances sans transaction], "0 %" )
+			        & " des séances sans transaction ; volatilité et performance à lire avec prudence"
+			)
+		displayFolder: 6. Bourse\Risque et liquidité
+		lineageTag: dbf21edb-d5ef-4ce5-b57b-31978fd89de0
+
 	column Colonne_Masquee
 		dataType: int64
 		isHidden

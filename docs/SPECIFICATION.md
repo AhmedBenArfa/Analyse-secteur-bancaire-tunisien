@@ -947,6 +947,11 @@ de référence publié ce jour-là par la Bourse et la clôture de la séance pr
   12/10/2023 et 28/10/2024, Attijari 30/04/2025 ; aucune en 2026), 1 division du nominal (BIAT
   04/05/2021).
 
+Code exact : `dax/mesures.dax`, groupe 6 (24/10/2026). Différences avec le texte ci-dessous : mesures de cours
+vides sans une banque unique ; **performance calculée sur les clôtures ajustées** (`Performance prix` : opérations
+sur le capital ; `Rendement total` : dividendes compris), au lieu de `Performance periode` sur les cours bruts,
+vide si le début ou la fin manque ; volatilité par `STDEVX.S` sur les rendements non vides, au moins 20.
+
 ```dax
 Cours brut      = SUM ( Fait_Cours[cloture] )
 Dernier cours   = CALCULATE ( [Cours brut], LASTNONBLANK ( Dim_Date[Date], [Cours brut] ) )
