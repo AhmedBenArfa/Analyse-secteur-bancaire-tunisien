@@ -67,8 +67,8 @@ Un groupe à la fois, chacun vérifié dans Power BI Desktop (requête de contr�
 Pages construites dans Power BI Desktop à partir des mesures (liste des pages : spécification, section 9),
 avec le segment « Dernier trimestre complet » par défaut et le paramètre de champ « Indicateur affiché ».
 Présentation commune (demande du 24/10/2026, sans changer les pages ni les visuels prévus) : thème bancaire,
-fonds de page signés, segment par banque avec le logo de chaque banque (colonne `icone`, à vérifier dans
-Power BI Desktop), visuel Play Axis pour faire défiler les
+fonds de page signés, segment par banque avec le logo de chaque banque (colonne `icone`, vérifiée dans
+Power BI Desktop le 24/10/2026), visuel Play Axis pour faire défiler les
 années (guide, section 4.1).
 Ensuite : `docs/validation.md` (étape 3), captures et publication sur le web avec le lien en tête du README
 (étape 8).
