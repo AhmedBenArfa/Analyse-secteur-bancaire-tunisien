@@ -1149,4 +1149,34 @@ tableau.
 
 ## 4. Pages du rapport : visuels, champs et mesures
 
-À préparer quand les mesures seront écrites (liste des pages : spécification, section 9).
+Les 9 pages de la spécification (section 9) se construisent une à une dans Power BI Desktop ; chaque page
+sera décrite ici (visuels, champs, mesures, filtres) avant d'être construite.
+
+### 4.1 Présentation commune à toutes les pages
+
+**Thème** (`powerbi/theme/secteur_bancaire.json`, produit par `python scripts/generer_theme.py`) : couleurs
+d'un rapport bancaire, bleu marine `#0B2545` et `#134074`, or `#C9A227` en filet, fond de page gris très
+clair `#F4F6FA`, visuels sur cartes blanches à coins arrondis et contour léger, titres en Segoe UI Semibold
+bleu marine, en-têtes de tableaux bleus ; vert `#2E7D32` et rouge `#C62828` pour bon et mauvais (mêmes
+couleurs que la mesure `Couleur coef`) ; 12 couleurs de séries assez foncées pour un texte blanc. Import :
+**Affichage › Thèmes › Parcourir les thèmes**, choisir le fichier.
+
+**Fonds de page** (1 920 × 1 080, format 16:9, même script) : `fond_page.png` (bandeau bleu marine en haut
+avec filet or, motif discret d'une façade à colonnes et d'une courbe montante, pied de page « Ahmed Ben Arfa ·
+Analyse du secteur bancaire tunisien » et sources) ; `fond_page_filtres.png` (même fond avec une bande blanche
+sous le titre, pour les segments : banques, années). Le titre de la page est une zone de texte blanche posée
+sur le bandeau (le fond n'en contient pas, pour servir à toutes les pages). Pose : sélectionner la page (clic
+dans le vide), **Format de la page › Arrière-plan du canevas › Image › Parcourir**, ajustement **Ajuster**,
+transparence **0 %** ; **Arrière-plan du papier peint** à la même couleur que le fond (`#E9EEF5`).
+
+**Segment par banque avec une icône.** Pastilles rondes au code de chaque banque, une couleur par banque
+(aperçu : `powerbi/theme/icones_banques.png`) : pas de logo officiel (marques des banques). Elles seront
+construites dans Power Query (colonne `icone` de `Dim_Banque` : texte SVG en adresse `data:image/svg+xml`,
+catégorie de données « URL d'image ») avec la première page qui les utilise, puis affichées dans un segment
+cliquable à images (segment à boutons de Power BI, ou visuel « Chiclet Slicer » d'AppSource s'il faut).
+
+**Défilement des années : Play Axis.** Le visuel personnalisé **Play Axis (Dynamic Slicer)** (AppSource :
+**Visualisations › … › Obtenir d'autres visuels**, rechercher « Play Axis ») ajoute des boutons lecture,
+pause, précédent et suivant qui font défiler les valeurs d'un champ (années, ou `Annee_Trimestre`) et filtrent
+la page à chaque pas : utile pour les pages Vue d'ensemble, Classement et Évolution. Visuel certifié, il reste
+affiché après la publication sur le web.
