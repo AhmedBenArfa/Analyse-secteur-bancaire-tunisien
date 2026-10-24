@@ -6,7 +6,7 @@
 projet est dans le [README](../README.md), le détail des règles dans la
 [spécification](SPECIFICATION.md).
 
-*Dernière mise à jour : 23/10/2026.*
+*Dernière mise à jour : 24/10/2026.*
 
 ## État d'avancement
 
@@ -19,8 +19,8 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
-| 6 | Modèle en étoile et mesures DAX | **En cours** : table des dates et 28 relations vérifiées dans Power BI Desktop ; vue Modèle rangée (un onglet par thème) ; mesures de base (26) vérifiées ; secteur (17 mesures, colonne `Choix_Trimestre`) vérifié ; ratios (16 mesures) vérifiés ; croissances (22 mesures) vérifiées ; ROE et ROA (19 mesures) vérifiés ; Bourse (15 mesures) vérifiée ; qualité des données (27 mesures) écrite, à vérifier : dernier groupe de l'étape 6 |
-| 7 | Pages du rapport | À faire |
+| 6 | Modèle en étoile et mesures DAX | **Terminée le 24/10/2026** : table des dates, 28 relations, 142 mesures en 7 groupes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
+| 7 | Pages du rapport | **Prochaine étape** |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
 ## Étape 5 : requêtes Power Query (terminée)
@@ -38,9 +38,9 @@ types avec paramètres régionaux, colonnes conditionnelles, regroupements, fonc
 (segment d'actionnariat à la date de chaque valeur). Chaque étape est expliquée dans
 [`guide_powerbi.md`](guide_powerbi.md) et dans `Guide_PowerBI.pdf`.
 
-## Étape 6 (en cours) : modèle et mesures DAX
+## Étape 6 (terminée) : modèle et mesures DAX
 
-Un groupe à la fois, vérifié dans Power BI Desktop avant le suivant :
+Un groupe à la fois, chacun vérifié dans Power BI Desktop (requête de contrôle `dax/controle_*.dax`) avant le suivant :
 
 1. **Table des dates** (faite le 23/10/2026, `dax/Dim_Date.dax`, vérifiée dans Power BI Desktop ; attendu :
    2 922 jours, 32 fins de trimestre, Avant Covid 425 / Covid 671 / Après Covid 1 826 jours) : du 01/01/2019 au 31/12/2026, année, trimestre, libellé du trimestre trié
@@ -56,12 +56,16 @@ Un groupe à la fois, vérifié dans Power BI Desktop avant le suivant :
    `dax/controle_ratios.dax`) ; croissances (22 mesures, vérifiées le 24/10/2026 avec
    `dax/controle_croissances.dax`) ; ROE et ROA (19 mesures, vérifiées le 24/10/2026 avec
    `dax/controle_rentabilite.dax`) ; Bourse (15 mesures, vérifiées le 24/10/2026 avec
-   `dax/controle_bourse.dax`) ; qualité des données (27 mesures écrites le 24/10/2026, à vérifier avec
-   `dax/controle_qualite.dax`) ; totaux du secteur, nombre de banques présentes et dernier
-   trimestre complet ; ratios ; croissances ; ROE et ROA ; Bourse ; qualité des données.
+   `dax/controle_bourse.dax`) ; qualité des données (27 mesures, vérifiées le 24/10/2026 avec
+   `dax/controle_qualite.dax`). Total : 142 mesures dans la table `Mesures`, rangées par dossier ; code et
+   explications dans `dax/mesures.dax` et dans le guide (section 3).
 
-Ensuite : pages du rapport (étape 7), `docs/validation.md` (étape 3), captures et publication sur le web
-avec le lien en tête du README (étape 8).
+## Prochaine étape : étape 7, pages du rapport
+
+Pages construites dans Power BI Desktop à partir des mesures (liste des pages : spécification, section 9),
+avec le segment « Dernier trimestre complet » par défaut et le paramètre de champ « Indicateur affiché ».
+Ensuite : `docs/validation.md` (étape 3), captures et publication sur le web avec le lien en tête du README
+(étape 8).
 
 ### Règles pour les mesures DAX
 
@@ -128,6 +132,7 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 23/10/2026 | Ouverture du projet par un tiers | Cache des données Power BI versionné (données publiques) : le projet s'ouvre avec ses données sans réglage ; section « Ouvrir le rapport » du README ; publication sur le web à la fin |
 | 23/10/2026 | Documentation des fonctions M | Tableau de chaque fonction M utilisée (ce qu'elle fait, requêtes) dans le guide et son PDF, contrôlé par un test |
 | 23/10/2026 | Étape 5 terminée | Les 22 requêtes Power Query sont vérifiées ; passage à l'étape 6 (table des dates, relations, mesures DAX) |
+| 24/10/2026 | Étape 6 terminée | Table des dates, relations et 142 mesures vérifiées ; passage à l'étape 7 (pages du rapport) |
 | 24/10/2026 | Qualité des données | « Taux d'extraction » remplacé par la part des documents sans alerte, à côté du nombre d'écarts qui viennent des banques et des documents à vérifier ; paramètre de champ « Indicateur affiché » créé avec les pages du rapport |
 | 24/10/2026 | Bourse | Mesures de cours pour une banque à la fois ; performance sur les clôtures ajustées (prix : opérations sur le capital ; rendement total : dividendes compris) au lieu des cours bruts ; avertissement « titre peu liquide » au-dessus de 20 % de séances sans transaction |
 | 24/10/2026 | ROE et ROA | Moyenne des capitaux propres et du total de l'actif vide si l'ouverture ou la fin manque (pas de moyenne sur une seule valeur) ; annualisation par la colonne de Power Query ; ratios à la dernière date des états financiers de la sélection ; secteur seulement avec les 12 banques |
