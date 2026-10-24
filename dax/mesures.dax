@@ -867,3 +867,45 @@ MEASURE Mesures[Ecart annuel MDT] =
 // [7. Qualité\États financiers | #,0] Valeurs des états financiers remplacées par une révision de plus de 2 %
 MEASURE Mesures[Nb revisions importantes EF] =
     CALCULATE ( COUNTROWS ( Revisions_Etats_Financiers ), Revisions_Etats_Financiers[statut_revision] = "revision_importante" )
+
+// ===== 8. Compléments : TOPN, USERELATIONSHIP, journal des faits marquants (24/10/2026) =====
+
+// [2. Secteur\Concentration | texte] Les 3 banques au plus fort PNB du trimestre, de la première à la troisième (TOPN) ; vide si une banque manque
+MEASURE Mesures[Top 3 banques PNB] =
+    IF (
+        NOT ISBLANK ( [PNB secteur] ),
+        CONCATENATEX ( TOPN ( 3, ALL ( Dim_Banque ), [PNB], DESC ), Dim_Banque[code_banque], ", ", [PNB], DESC )
+    )
+
+// [2. Secteur\Concentration | 0.0 %] Part des 3 premières banques dans le PNB du trimestre (ratio de concentration CR3, à lire avec le HHI) ; vide si une banque manque
+MEASURE Mesures[Part 3 premieres banques PNB] =
+    IF (
+        NOT ISBLANK ( [PNB secteur] ),
+        DIVIDE ( SUMX ( TOPN ( 3, ALL ( Dim_Banque ), [PNB], DESC ), [PNB] ), [PNB secteur] )
+    )
+
+// [2. Secteur\Actionnariat | 0] Nombre de changements d'actionnaire de référence dont la date d'effet est dans la période (relation inactive Banques_Actionnariat[date_debut] → Dim_Date, activée par USERELATIONSHIP ; les premières périodes, sans date de début, ne comptent pas)
+MEASURE Mesures[Changements actionnaire] =
+    CALCULATE (
+        COUNTROWS ( Banques_Actionnariat ),
+        USERELATIONSHIP ( Banques_Actionnariat[date_debut], Dim_Date[Date] ),
+        NOT ISBLANK ( Banques_Actionnariat[date_debut] )
+    )
+
+// [2. Secteur\Actionnariat | texte] Changements d'actionnaire de référence de la période : banque, nouvel actionnaire et date d'effet
+MEASURE Mesures[Changements actionnaire detail] =
+    CALCULATE (
+        CONCATENATEX (
+            Banques_Actionnariat,
+            Banques_Actionnariat[code_banque] & " : " & Banques_Actionnariat[actionnaire_reference]
+                & " (" & FORMAT ( Banques_Actionnariat[date_debut], "dd/mm/yyyy" ) & ")",
+            UNICHAR ( 10 ),
+            Banques_Actionnariat[date_debut], ASC
+        ),
+        USERELATIONSHIP ( Banques_Actionnariat[date_debut], Dim_Date[Date] ),
+        NOT ISBLANK ( Banques_Actionnariat[date_debut] )
+    )
+
+// [7. Qualité\Journal | #,0] Nombre de faits marquants (événements, écarts annuels expliqués, révisions importantes des états financiers) de la sélection
+MEASURE Mesures[Nb faits marquants] =
+    COUNTROWS ( Journal_Faits_Marquants )

@@ -1,0 +1,42 @@
+// Auteur : Ahmed Ben Arfa
+// Journal des faits marquants (table calculée) : UNION de trois tables de même forme, une ligne par fait daté,
+// pour une chronologie unique sur la page « Qualité des données » :
+// - les événements qui expliquent une rupture de série (Evenements) ;
+// - les écarts annuels expliqués (Controle_Annuel, statut « ecart » : somme des trimestres ≠ cumul annuel) ;
+// - les révisions importantes des états financiers (Revisions_Etats_Financiers, plus de 2 %).
+// UNION garde les noms de colonnes du premier tableau ; les trois SELECTCOLUMNS ont les mêmes colonnes, dans le
+// même ordre et du même type.
+UNION (
+    SELECTCOLUMNS (
+        Evenements,
+        "date", Evenements[date],
+        "banque", Evenements[banque],
+        "indicateur", Evenements[indicateur],
+        "type_fait", "Événement",
+        "description", Evenements[description],
+        "montant_mdt", Evenements[montant_mdt],
+        "fichier", Evenements[fichier]
+    ),
+    SELECTCOLUMNS (
+        FILTER ( Controle_Annuel, Controle_Annuel[statut] = "ecart" ),
+        "date", Controle_Annuel[date_arrete],
+        "banque", Controle_Annuel[banque],
+        "indicateur", Controle_Annuel[code_indicateur],
+        "type_fait", "Écart annuel expliqué",
+        "description", Controle_Annuel[categorie_ecart] & " : " & Controle_Annuel[cause_ecart],
+        "montant_mdt", Controle_Annuel[Ecart_MDT],
+        "fichier", Controle_Annuel[fichier_preuve]
+    ),
+    SELECTCOLUMNS (
+        FILTER ( Revisions_Etats_Financiers, Revisions_Etats_Financiers[statut_revision] = "revision_importante" ),
+        "date", Revisions_Etats_Financiers[date_arrete],
+        "banque", Revisions_Etats_Financiers[banque],
+        "indicateur", Revisions_Etats_Financiers[code],
+        "type_fait", "Révision des états financiers",
+        "description",
+            "Valeur publiée " & FORMAT ( Revisions_Etats_Financiers[valeur_mdt], "#,0.000" )
+                & " MDT, retenue " & FORMAT ( Revisions_Etats_Financiers[valeur_retenue], "#,0.000" ) & " MDT",
+        "montant_mdt", Revisions_Etats_Financiers[Ecart_MDT],
+        "fichier", Revisions_Etats_Financiers[fichier]
+    )
+)

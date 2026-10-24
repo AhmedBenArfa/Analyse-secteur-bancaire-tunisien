@@ -110,3 +110,20 @@ relationship 231be60c-c621-461e-93e1-419db70c3722
 	fromColumn: Revisions_Etats_Financiers.code
 	toColumn: Dim_Indicateur.code_indicateur
 
+relationship f096c71e-f271-416c-af70-cbbe3b35ea66
+	fromColumn: Journal_Faits_Marquants.date
+	toColumn: Dim_Date.Date
+
+relationship 32437ecc-1000-4eb0-971e-9488512c2a13
+	fromColumn: Journal_Faits_Marquants.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship 51541629-01f5-4548-9e00-0b48d148f86e
+	fromColumn: Journal_Faits_Marquants.indicateur
+	toColumn: Dim_Indicateur.code_indicateur
+
+relationship 089369ad-449b-4ec1-813b-a1d9dba98f41
+	isActive: false
+	fromColumn: Banques_Actionnariat.date_debut
+	toColumn: Dim_Date.Date
+

@@ -19,7 +19,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 1
+          "zIndex": 0
         },
         {
           "location": {
@@ -32,7 +32,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 2
+          "zIndex": 0
         },
         {
           "location": {
@@ -45,7 +45,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 3
+          "zIndex": 0
         },
         {
           "location": {
@@ -58,7 +58,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 4
+          "zIndex": 0
         },
         {
           "location": {
@@ -71,7 +71,7 @@
             "height": 272,
             "width": 234
           },
-          "zIndex": 5
+          "zIndex": 0
         },
         {
           "location": {
@@ -84,7 +84,7 @@
             "height": 224,
             "width": 234
           },
-          "zIndex": 6
+          "zIndex": 0
         },
         {
           "location": {
@@ -97,7 +97,7 @@
             "height": 272,
             "width": 234
           },
-          "zIndex": 7
+          "zIndex": 0
         },
         {
           "location": {
@@ -110,7 +110,7 @@
             "height": 272,
             "width": 234
           },
-          "zIndex": 8
+          "zIndex": 0
         },
         {
           "location": {
@@ -123,7 +123,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 9
+          "zIndex": 0
         },
         {
           "location": {
@@ -136,7 +136,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 10
+          "zIndex": 0
         },
         {
           "location": {
@@ -149,7 +149,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 11
+          "zIndex": 0
         },
         {
           "location": {
@@ -162,7 +162,20 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 12
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1420,
+            "y": 820
+          },
+          "nodeIndex": "Journal_Faits_Marquants",
+          "nodeLineageTag": "e7279dc3-57be-404d-9ce6-4e8cf6d59e0c",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
         },
         {
           "location": {
@@ -175,33 +188,7 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 13
-        },
-        {
-          "location": {
-            "x": 1853.5,
-            "y": 863.75
-          },
-          "nodeIndex": "Definitions_Charges",
-          "nodeLineageTag": "1eb1191d-4bfa-4abf-adf9-0836d46e2c3b",
-          "size": {
-            "height": 200,
-            "width": 234
-          },
-          "zIndex": 14
-        },
-        {
-          "location": {
-            "x": 1939.75,
-            "y": 1101.25
-          },
-          "nodeIndex": "Definitions_Capitaux_Propres",
-          "nodeLineageTag": "36ad60d0-9888-4e71-b076-627816a50e06",
-          "size": {
-            "height": 152,
-            "width": 234
-          },
-          "zIndex": 15
+          "zIndex": 0
         },
         {
           "location": {
@@ -214,7 +201,33 @@
             "height": 300,
             "width": 234
           },
-          "zIndex": 16
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1853.5,
+            "y": 863.75
+          },
+          "nodeIndex": "Definitions_Charges",
+          "nodeLineageTag": "1eb1191d-4bfa-4abf-adf9-0836d46e2c3b",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1939.75,
+            "y": 1101.25
+          },
+          "nodeIndex": "Definitions_Capitaux_Propres",
+          "nodeLineageTag": "36ad60d0-9888-4e71-b076-627816a50e06",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
         }
       ],
       "name": "Toutes les tables",
@@ -543,6 +556,19 @@
           },
           "nodeIndex": "Controle_Annuel",
           "nodeLineageTag": "fc3fe072-7ffe-45dd-9af7-061b4645c365",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1136,
+            "y": 0
+          },
+          "nodeIndex": "Journal_Faits_Marquants",
+          "nodeLineageTag": "e7279dc3-57be-404d-9ce6-4e8cf6d59e0c",
           "size": {
             "height": 300,
             "width": 234

@@ -195,9 +195,11 @@ sinon un enregistrement dans Power BI efface la modification) :
 | `python scripts/ecrire_tmdl_expression.py NOM "description" APRES` | Ajoute ou remplace une requête intermédiaire non chargée dans `expressions.tmdl` |
 | `ecrire_table_calculee(nom, description, colonnes, tri, cachees, table_de_dates)` (même fichier) ; `python scripts/ecrire_tmdl_table.py Dim_Date` | Ajoute ou remplace une table calculée DAX : colonnes typées, code de `dax/<nom>.dax`, colonnes de tri, colonnes masquées, marquage en table de dates |
 | `python scripts/generer_theme.py` | Thème du rapport (`powerbi/theme/secteur_bancaire.json`), fonds de page signés 1 920 × 1 080 (`fond_page.png`, `fond_page_filtres.png`) et aperçu des icônes des banques (`icones_banques.png`) |
+| `python scripts/ecrire_tmdl_table.py Journal_Faits_Marquants` (ou `Dim_Date`) | Écrit une table calculée de `TABLES_CALCULEES` depuis `dax/<Table>.dax` |
+| `python scripts/ecrire_tmdl_segment.py colonnes` | Écrit les colonnes calculées de `dax/colonnes_calculees.dax` dans leur table (avant la partition) ; une colonne existante est remplacée, son identifiant gardé ; relancer ne change rien |
 | `python scripts/ecrire_tmdl_table.py mesures` (`ecrire_mesures()` depuis Python) | Écrit la table `Mesures` depuis `dax/mesures.dax` (dossier, format et description de chaque mesure dans la ligne qui la précède) ; garde l'identifiant des mesures déjà écrites |
 | `python scripts/ecrire_tmdl_table.py diagramme` (`ecrire_diagramme(onglets)` depuis Python) | Réécrit la disposition de la vue Modèle (`diagramLayout.json`) : onglet « Toutes les tables » et un onglet par thème (`DIAGRAMME` dans le script) |
-| `python scripts/ecrire_tmdl_table.py relations` (`ecrire_relations(liste)` depuis Python) | Réécrit `relationships.tmdl` avec les relations du modèle en étoile (`RELATIONS` dans le script) ; chaque colonne doit exister ; une relation déjà présente garde son identifiant |
+| `python scripts/ecrire_tmdl_table.py relations` (`ecrire_relations(liste)` depuis Python) | Réécrit `relationships.tmdl` avec les relations du modèle en étoile (`RELATIONS` dans le script ; 5e élément `False` : relation inactive) ; chaque colonne doit exister ; une relation déjà présente garde son identifiant |
 | `python scripts/ecrire_tmdl_segment.py` | Ajoute une colonne et remplace le code M d'une table sans toucher au reste du fichier, ajoute une fonction personnalisée ; sans argument, applique le segment d'actionnariat (déjà fait : relancer ne change rien) |
 
 ## 7. Fichiers de référence

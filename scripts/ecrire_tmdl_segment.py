@@ -10,8 +10,11 @@ Fait_Etats_Financiers ; ce qui existe déjà n'est pas réécrit (relancer ne ch
 À lancer seulement quand ce projet est fermé dans Power BI Desktop ; vérifier `git status` avant.
 
 Utilisation : python scripts/ecrire_tmdl_segment.py
-Depuis Python : ajouter_colonne(table, colonne, "string"), remplacer_partition(table),
+Depuis Python : ajouter_colonne(table, colonne, "string", categorie=None), remplacer_partition(table),
 ajouter_fonction(nom, description, apres).
+
+Colonnes calculées DAX : `python scripts/ecrire_tmdl_segment.py colonnes` écrit les colonnes de
+dax/colonnes_calculees.dax (ecrire_colonnes_calculees) dans leur table, avant la partition.
 """
 import re, sys, uuid
 from pathlib import Path
@@ -60,13 +63,55 @@ def ajouter_colonne(table, colonne, type_tmdl="string", categorie=None):
     if f"\tcolumn {colonne}{NL}" in t:
         print(table, colonne, "existe déjà : rien à faire")
         return
-    bloc = [f"\tcolumn {colonne}", f"\t\tdataType: {type_tmdl}"]
-    bloc += [f"\t\tdataCategory: {categorie}"] if categorie else []
-    bloc += [f"\t\tlineageTag: {uuid.uuid4()}",
+    bloc = [f"\tcolumn {colonne}", f"\t\tdataType: {type_tmdl}", f"\t\tlineageTag: {uuid.uuid4()}"]
+    bloc += [f"\t\tdataCategory: {categorie}"] if categorie else []   # après lineageTag, comme Power BI
+    bloc += [
             "\t\tsummarizeBy: none", f"\t\tsourceColumn: {colonne}", "", "\t\tannotation SummarizationSetBy = User", "", ""]
     i = t.index("\tpartition ")
     p.write_bytes((t[:i] + NL.join(bloc) + t[i:]).encode("utf-8"))
     print(table, colonne, "ajoutée")
+
+
+def lire_colonnes_calculees(fichier=None):
+    """Colonnes calculées de dax/colonnes_calculees.dax : [(table, nom, type, format, description, lignes)].
+    Chaque colonne : « // [Table | type | format] description », « COLUMN Table[Nom] = », expression jusqu'à
+    la ligne vide suivante (format « - » : pas de format)."""
+    lignes = (fichier or R / "dax" / "colonnes_calculees.dax").read_text(encoding="utf-8").split("\n")
+    colonnes = []
+    for i, l in enumerate(lignes):
+        m = re.match(r"^COLUMN (\w+)\[(\w+)\] =\s*$", l)
+        if not m:
+            continue
+        entete = re.match(r"^// \[(\w+) \| (\w+) \| (.+?)\] (.+)$", lignes[i - 1])
+        assert entete and entete.group(1) == m.group(1), f"ligne « // [Table | type | format] » manquante : {m.group(2)}"
+        fin = next((j for j in range(i + 1, len(lignes)) if not lignes[j].strip()), len(lignes))
+        corps = [x[4:] if x.startswith("    ") else x for x in lignes[i + 1:fin]]
+        colonnes.append((m.group(1), m.group(2), entete.group(2), entete.group(3), entete.group(4), corps))
+    return colonnes
+
+
+def ecrire_colonnes_calculees():
+    """Colonnes calculées DAX (dax/colonnes_calculees.dax) placées avant la partition de leur table ; une
+    colonne déjà écrite est remplacée en gardant son lineageTag ; le reste du fichier n'est pas touché."""
+    for table, nom, typ, fmt, description, corps in lire_colonnes_calculees():
+        p = DEF / "tables" / f"{table}.tmdl"
+        t = lire(p)
+        ancien = re.search(rf"(?:\t/// [^\r\n]*\r\n)?\tcolumn {nom} =.*?(?=\r\n\t(?:///|column|measure|partition|hierarchy|annotation) )",
+                           t, re.S)
+        tag = re.search(r"\t\tlineageTag: (\S+)", ancien.group(0)).group(1) if ancien else str(uuid.uuid4())
+        bloc = [f"\t/// {description}"]
+        bloc += [f"\tcolumn {nom} = {corps[0].strip()}"] if len(corps) == 1 else \
+                [f"\tcolumn {nom} ="] + ["\t\t\t" + x for x in corps]
+        bloc += [f"\t\tdataType: {typ}"] + ([f"\t\tformatString: {fmt}"] if fmt != "-" else [])
+        bloc += [f"\t\tlineageTag: {tag}", "\t\tsummarizeBy: none", "", "\t\tannotation SummarizationSetBy = User", ""]
+        texte = NL.join(bloc)
+        if ancien:
+            t = t.replace(ancien.group(0), texte, 1)
+        else:
+            i = t.index("\tpartition ")
+            t = t[:i] + texte + NL + t[i:]
+        p.write_bytes(t.encode("utf-8"))
+        print(table, nom, "remplacée" if ancien else "ajoutée")
 
 
 def remplacer_partition(table):
@@ -83,6 +128,9 @@ def remplacer_partition(table):
 
 
 if __name__ == "__main__":
+    if sys.argv[1:] == ["colonnes"]:
+        ecrire_colonnes_calculees()
+        sys.exit()
     ajouter_fonction("Actionnariat_A_La_Date",
                      "Fonction : catégorie d'actionnariat d'une banque à une date (périodes de Banques_Actionnariat)",
                      "Dim_Banque")

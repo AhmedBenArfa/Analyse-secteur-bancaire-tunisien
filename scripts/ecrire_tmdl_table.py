@@ -101,7 +101,8 @@ def ecrire_table_calculee(nom, description, colonnes, tri=None, cachees=(), tabl
         t += [f"\tcolumn {col}", f"\t\tdataType: {'dateTime' if typ == 'date' else typ}"]
         t += ["\t\tisKey"] if col == table_de_dates else []
         t += ["\t\tisHidden"] if col in cachees else []
-        t += {"date": ["\t\tformatString: Short Date"], "int64": ["\t\tformatString: 0"]}.get(typ, [])
+        t += {"date": ["\t\tformatString: Short Date"], "int64": ["\t\tformatString: 0"],
+              "double": ["\t\tformatString: #,0.000"]}.get(typ, [])
         t += [f"\t\tlineageTag: {anciens.get(col, uuid.uuid4())}", "\t\tsummarizeBy: none", "\t\tisNameInferred",
               f"\t\tsourceColumn: [{col}]"]
         t += [f"\t\tsortByColumn: {tri[col]}"] if col in tri else []
@@ -173,21 +174,27 @@ def colonnes_table(table):
 
 
 def ecrire_relations(relations):
-    """Réécrit relationships.tmdl : relations (table du côté plusieurs, colonne, dimension, clé), une
-    dimension vers plusieurs lignes, filtre simple (valeurs par défaut du TMDL). Une relation déjà
+    """Réécrit relationships.tmdl : relations (table du côté plusieurs, colonne, dimension, clé[, active]),
+    une dimension vers plusieurs lignes, filtre simple (valeurs par défaut du TMDL) ; active = False pour
+    une relation inactive, utilisée seulement par USERELATIONSHIP dans une mesure. Une relation déjà
     présente garde son nom (identifiant) ; chaque colonne doit exister."""
     f = DEF / "relationships.tmdl"
     anciens = {}
     if f.exists():
         txt = f.read_bytes().decode("utf-8")
-        for nom, de, vers in re.findall(r"^relationship (\S+)\r\n\tfromColumn: (\S+)\r\n\ttoColumn: (\S+)", txt, re.M):
-            anciens[(de, vers)] = nom
+        for bloc in re.split(r"\r\n(?=relationship )", txt):
+            nom = re.search(r"^relationship (\S+)", bloc)
+            de, vers = re.search(r"\tfromColumn: (\S+)", bloc), re.search(r"\ttoColumn: (\S+)", bloc)
+            if nom and de and vers:
+                anciens[(de.group(1), vers.group(1))] = nom.group(1)
     t = []
-    for table, col, dim, cle in relations:
+    for table, col, dim, cle, *option in relations:
         assert col in colonnes_table(table), f"colonne absente : {table}.{col}"
         assert cle in colonnes_table(dim), f"colonne absente : {dim}.{cle}"
         de, vers = f"{table}.{col}", f"{dim}.{cle}"
-        t += [f"relationship {anciens.get((de, vers), uuid.uuid4())}", f"\tfromColumn: {de}", f"\ttoColumn: {vers}", ""]
+        t += [f"relationship {anciens.get((de, vers), uuid.uuid4())}"]
+        t += ["\tisActive: false"] if option and option[0] is False else []
+        t += [f"\tfromColumn: {de}", f"\ttoColumn: {vers}", ""]
     f.write_bytes((NL.join(t) + NL).encode("utf-8") if t else b"")
     print(len(relations), "relations écrites")
 
@@ -205,7 +212,13 @@ FAITS_INDICATEURS = [("Fait_Indicateurs", "code_indicateur"), ("Variations_Compa
 RELATIONS = ([(t, c, "Dim_Date", "Date") for t, c in FAITS_DATES]
              + [(t, "banque", "Dim_Banque", "code_banque") for t in TABLES_BANQUE]
              + [("Banques_Actionnariat", "code_banque", "Dim_Banque", "code_banque")]
-             + [(t, c, "Dim_Indicateur", "code_indicateur") for t, c in FAITS_INDICATEURS])
+             + [(t, c, "Dim_Indicateur", "code_indicateur") for t, c in FAITS_INDICATEURS]
+             # table calculée par UNION (journal des faits marquants, 24/10/2026)
+             + [("Journal_Faits_Marquants", "date", "Dim_Date", "Date"),
+                ("Journal_Faits_Marquants", "banque", "Dim_Banque", "code_banque"),
+                ("Journal_Faits_Marquants", "indicateur", "Dim_Indicateur", "code_indicateur")]
+             # relation inactive : date d'entrée en fonction d'un actionnaire de référence (USERELATIONSHIP)
+             + [("Banques_Actionnariat", "date_debut", "Dim_Date", "Date", False)])
 
 
 def ecrire_diagramme(onglets):
@@ -242,7 +255,7 @@ DIAGRAMME = [
         "Fait_Cours": (4 * P, 0), "Evenements": (5 * P, 0),
         "Dim_Indicateur": (1.5 * P, 420), "Dim_Date": (3 * P, 420), "Dim_Banque": (4.5 * P, 420),
         "Revisions": (P, 820), "Revisions_Etats_Financiers": (2 * P, 820), "Controle": (3 * P, 820),
-        "Controle_Annuel": (4 * P, 820),
+        "Controle_Annuel": (4 * P, 820), "Journal_Faits_Marquants": (5 * P, 820),
         # colonne de droite : positions ajustées à la main dans Power BI (23/10/2026), reprises telles quelles
         "Banques_Actionnariat": (1843.5, 0), "Mesures": (1876, 418.75), "Definitions_Charges": (1853.5, 863.75),
         "Definitions_Capitaux_Propres": (1939.75, 1101.25)}),
@@ -257,9 +270,28 @@ DIAGRAMME = [
     ("Bourse", {"Fait_Cours": (P, 0), "Dim_Date": (0.5 * P, 420), "Dim_Banque": (1.5 * P, 420)}),
     ("Qualité des données", {
         "Revisions": (0, 0), "Revisions_Etats_Financiers": (P, 0), "Controle": (2 * P, 0),
-        "Controle_Annuel": (3 * P, 0),
+        "Controle_Annuel": (3 * P, 0), "Journal_Faits_Marquants": (4 * P, 0),
         "Dim_Indicateur": (0.5 * P, 420), "Dim_Date": (1.5 * P, 420), "Dim_Banque": (2.5 * P, 420)}),
 ]
+
+
+# Tables calculées DAX (code dans dax/<Table>.dax)
+TABLES_CALCULEES = {
+    "Dim_Date": dict(
+        description="Table des dates (DAX) : un jour par ligne du 01/01/2019 au 31/12/2026, trimestre au format des "
+                    "faits, période Covid, choix du dernier trimestre complet ; marquée comme table de dates",
+        colonnes=[("Date", "date"), ("Annee", "int64"), ("Trimestre", "string"), ("Annee_Trimestre", "string"),
+                  ("Cle_Trimestre", "int64"), ("Fin_Trimestre", "boolean"), ("Periode", "string"),
+                  ("Ordre_Periode", "int64"), ("Choix_Trimestre", "string"), ("Ordre_Choix_Trimestre", "int64")],
+        tri={"Annee_Trimestre": "Cle_Trimestre", "Periode": "Ordre_Periode",
+             "Choix_Trimestre": "Ordre_Choix_Trimestre"},
+        cachees=["Cle_Trimestre", "Ordre_Periode", "Ordre_Choix_Trimestre"], table_de_dates="Date"),
+    "Journal_Faits_Marquants": dict(
+        description="Journal des faits marquants (DAX, UNION) : événements, écarts annuels expliqués et révisions "
+                    "importantes des états financiers, une ligne par fait daté",
+        colonnes=[("date", "date"), ("banque", "string"), ("indicateur", "string"), ("type_fait", "string"),
+                  ("description", "string"), ("montant_mdt", "double"), ("fichier", "string")]),
+}
 
 
 if __name__ == "__main__":
@@ -273,16 +305,7 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["mesures"]:
         ecrire_mesures()
         sys.exit()
-    if sys.argv[1:] != ["Dim_Date"]:
-        sys.exit("utilisation : python scripts/ecrire_tmdl_table.py Dim_Date | relations | diagramme | mesures "
-                 "(autres tables : depuis Python)")
-    ecrire_table_calculee(
-        "Dim_Date",
-        "Table des dates (DAX) : un jour par ligne du 01/01/2019 au 31/12/2026, trimestre au format des faits, "
-        "période Covid, choix du dernier trimestre complet ; marquée comme table de dates",
-        [("Date", "date"), ("Annee", "int64"), ("Trimestre", "string"), ("Annee_Trimestre", "string"),
-         ("Cle_Trimestre", "int64"), ("Fin_Trimestre", "boolean"), ("Periode", "string"), ("Ordre_Periode", "int64"),
-         ("Choix_Trimestre", "string"), ("Ordre_Choix_Trimestre", "int64")],
-        tri={"Annee_Trimestre": "Cle_Trimestre", "Periode": "Ordre_Periode",
-             "Choix_Trimestre": "Ordre_Choix_Trimestre"},
-        cachees=["Cle_Trimestre", "Ordre_Periode", "Ordre_Choix_Trimestre"], table_de_dates="Date")
+    if len(sys.argv) != 2 or sys.argv[1] not in TABLES_CALCULEES:
+        sys.exit("utilisation : python scripts/ecrire_tmdl_table.py " + " | ".join(TABLES_CALCULEES)
+                 + " | relations | diagramme | mesures (autres tables : depuis Python)")
+    ecrire_table_calculee(sys.argv[1], **TABLES_CALCULEES[sys.argv[1]])

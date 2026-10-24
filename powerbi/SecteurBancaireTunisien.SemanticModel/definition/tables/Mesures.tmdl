@@ -1170,6 +1170,58 @@ table Mesures
 		displayFolder: 7. Qualité\États financiers
 		lineageTag: 8f28f0c7-4f3c-4032-a209-c77706bd9f1b
 
+	/// Les 3 banques au plus fort PNB du trimestre, de la première à la troisième (TOPN) ; vide si une banque manque
+	measure 'Top 3 banques PNB' =
+			IF (
+			    NOT ISBLANK ( [PNB secteur] ),
+			    CONCATENATEX ( TOPN ( 3, ALL ( Dim_Banque ), [PNB], DESC ), Dim_Banque[code_banque], ", ", [PNB], DESC )
+			)
+		displayFolder: 2. Secteur\Concentration
+		lineageTag: 535bb36b-147b-4199-b994-b85a6770c8b6
+
+	/// Part des 3 premières banques dans le PNB du trimestre (ratio de concentration CR3, à lire avec le HHI) ; vide si une banque manque
+	measure 'Part 3 premieres banques PNB' =
+			IF (
+			    NOT ISBLANK ( [PNB secteur] ),
+			    DIVIDE ( SUMX ( TOPN ( 3, ALL ( Dim_Banque ), [PNB], DESC ), [PNB] ), [PNB secteur] )
+			)
+		formatString: 0.0 %
+		displayFolder: 2. Secteur\Concentration
+		lineageTag: efd3c772-a5ff-486d-b2e3-e3c00918d572
+
+	/// Nombre de changements d'actionnaire de référence dont la date d'effet est dans la période (relation inactive Banques_Actionnariat[date_debut] → Dim_Date, activée par USERELATIONSHIP ; les premières périodes, sans date de début, ne comptent pas)
+	measure 'Changements actionnaire' =
+			CALCULATE (
+			    COUNTROWS ( Banques_Actionnariat ),
+			    USERELATIONSHIP ( Banques_Actionnariat[date_debut], Dim_Date[Date] ),
+			    NOT ISBLANK ( Banques_Actionnariat[date_debut] )
+			)
+		formatString: 0
+		displayFolder: 2. Secteur\Actionnariat
+		lineageTag: cc14e935-965f-4cde-b73b-c5399df3130d
+
+	/// Changements d'actionnaire de référence de la période : banque, nouvel actionnaire et date d'effet
+	measure 'Changements actionnaire detail' =
+			CALCULATE (
+			    CONCATENATEX (
+			        Banques_Actionnariat,
+			        Banques_Actionnariat[code_banque] & " : " & Banques_Actionnariat[actionnaire_reference]
+			            & " (" & FORMAT ( Banques_Actionnariat[date_debut], "dd/mm/yyyy" ) & ")",
+			        UNICHAR ( 10 ),
+			        Banques_Actionnariat[date_debut], ASC
+			    ),
+			    USERELATIONSHIP ( Banques_Actionnariat[date_debut], Dim_Date[Date] ),
+			    NOT ISBLANK ( Banques_Actionnariat[date_debut] )
+			)
+		displayFolder: 2. Secteur\Actionnariat
+		lineageTag: 6ea7d102-b067-43c5-8767-d328da488f95
+
+	/// Nombre de faits marquants (événements, écarts annuels expliqués, révisions importantes des états financiers) de la sélection
+	measure 'Nb faits marquants' = COUNTROWS ( Journal_Faits_Marquants )
+		formatString: #,0
+		displayFolder: 7. Qualité\Journal
+		lineageTag: 6ed73c23-678a-40ee-9a3a-6fea7efed5c3
+
 	column Colonne_Masquee
 		dataType: int64
 		isHidden

@@ -1,0 +1,117 @@
+/// Journal des faits marquants (DAX, UNION) : événements, écarts annuels expliqués et révisions importantes des états financiers, une ligne par fait daté
+table Journal_Faits_Marquants
+	lineageTag: e7279dc3-57be-404d-9ce6-4e8cf6d59e0c
+
+	column date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: d1d2f8b6-b6b6-4c5f-90f0-47bc4376147e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [date]
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column banque
+		dataType: string
+		lineageTag: ff5da22b-d6b2-49e4-84b0-36b2718e989c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [banque]
+
+		annotation SummarizationSetBy = User
+
+	column indicateur
+		dataType: string
+		lineageTag: 04f97c92-43a7-4d38-8047-c7ba577ac529
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [indicateur]
+
+		annotation SummarizationSetBy = User
+
+	column type_fait
+		dataType: string
+		lineageTag: a9175c2c-b3cc-43a6-946d-d19c7f0db2d9
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [type_fait]
+
+		annotation SummarizationSetBy = User
+
+	column description
+		dataType: string
+		lineageTag: b7cd6fb7-e3ad-49d5-9b23-78e6c56144f4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [description]
+
+		annotation SummarizationSetBy = User
+
+	column montant_mdt
+		dataType: double
+		formatString: #,0.000
+		lineageTag: 78783826-5eea-404f-bb93-3ffa2424854e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [montant_mdt]
+
+		annotation SummarizationSetBy = User
+
+	column fichier
+		dataType: string
+		lineageTag: eeb530fc-9c5b-46af-bf2a-1412bd727c71
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [fichier]
+
+		annotation SummarizationSetBy = User
+
+	partition Journal_Faits_Marquants = calculated
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Journal des faits marquants (table calculée) : UNION de trois tables de même forme, une ligne par fait daté,
+				// pour une chronologie unique sur la page « Qualité des données » :
+				// - les événements qui expliquent une rupture de série (Evenements) ;
+				// - les écarts annuels expliqués (Controle_Annuel, statut « ecart » : somme des trimestres ≠ cumul annuel) ;
+				// - les révisions importantes des états financiers (Revisions_Etats_Financiers, plus de 2 %).
+				// UNION garde les noms de colonnes du premier tableau ; les trois SELECTCOLUMNS ont les mêmes colonnes, dans le
+				// même ordre et du même type.
+				UNION (
+				    SELECTCOLUMNS (
+				        Evenements,
+				        "date", Evenements[date],
+				        "banque", Evenements[banque],
+				        "indicateur", Evenements[indicateur],
+				        "type_fait", "Événement",
+				        "description", Evenements[description],
+				        "montant_mdt", Evenements[montant_mdt],
+				        "fichier", Evenements[fichier]
+				    ),
+				    SELECTCOLUMNS (
+				        FILTER ( Controle_Annuel, Controle_Annuel[statut] = "ecart" ),
+				        "date", Controle_Annuel[date_arrete],
+				        "banque", Controle_Annuel[banque],
+				        "indicateur", Controle_Annuel[code_indicateur],
+				        "type_fait", "Écart annuel expliqué",
+				        "description", Controle_Annuel[categorie_ecart] & " : " & Controle_Annuel[cause_ecart],
+				        "montant_mdt", Controle_Annuel[Ecart_MDT],
+				        "fichier", Controle_Annuel[fichier_preuve]
+				    ),
+				    SELECTCOLUMNS (
+				        FILTER ( Revisions_Etats_Financiers, Revisions_Etats_Financiers[statut_revision] = "revision_importante" ),
+				        "date", Revisions_Etats_Financiers[date_arrete],
+				        "banque", Revisions_Etats_Financiers[banque],
+				        "indicateur", Revisions_Etats_Financiers[code],
+				        "type_fait", "Révision des états financiers",
+				        "description",
+				            "Valeur publiée " & FORMAT ( Revisions_Etats_Financiers[valeur_mdt], "#,0.000" )
+				                & " MDT, retenue " & FORMAT ( Revisions_Etats_Financiers[valeur_retenue], "#,0.000" ) & " MDT",
+				        "montant_mdt", Revisions_Etats_Financiers[Ecart_MDT],
+				        "fichier", Revisions_Etats_Financiers[fichier]
+				    )
+				)
+

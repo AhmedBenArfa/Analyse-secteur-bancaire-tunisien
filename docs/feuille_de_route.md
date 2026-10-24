@@ -57,7 +57,9 @@ Un groupe à la fois, chacun vérifié dans Power BI Desktop (requête de contr�
    `dax/controle_croissances.dax`) ; ROE et ROA (19 mesures, vérifiées le 24/10/2026 avec
    `dax/controle_rentabilite.dax`) ; Bourse (15 mesures, vérifiées le 24/10/2026 avec
    `dax/controle_bourse.dax`) ; qualité des données (27 mesures, vérifiées le 24/10/2026 avec
-   `dax/controle_qualite.dax`). Total : 142 mesures dans la table `Mesures`, rangées par dossier ; code et
+   `dax/controle_qualite.dax`). Total : 142 mesures dans la table `Mesures`, rangées par dossier (147 avec les compléments du 24/10/2026 :
+   `TOPN`, `USERELATIONSHIP`, journal par `UNION`, colonnes calculées par `RELATEDTABLE` et `LOOKUPVALUE`, à vérifier avec
+   `dax/controle_complements.dax`) ; code et
    explications dans `dax/mesures.dax` et dans le guide (section 3).
 
 ## Prochaine étape : étape 7, pages du rapport
@@ -136,6 +138,7 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 23/10/2026 | Ouverture du projet par un tiers | Cache des données Power BI versionné (données publiques) : le projet s'ouvre avec ses données sans réglage ; section « Ouvrir le rapport » du README ; publication sur le web à la fin |
 | 23/10/2026 | Documentation des fonctions M | Tableau de chaque fonction M utilisée (ce qu'elle fait, requêtes) dans le guide et son PDF, contrôlé par un test |
 | 23/10/2026 | Étape 5 terminée | Les 22 requêtes Power Query sont vérifiées ; passage à l'étape 6 (table des dates, relations, mesures DAX) |
+| 24/10/2026 | Fonctions DAX complémentaires | `RELATEDTABLE` et `LOOKUPVALUE` en colonnes calculées de `Dim_Banque` (liquidité du titre, définitions), table `Journal_Faits_Marquants` par `UNION` (41 faits datés), relation inactive vers la date d'entrée d'un actionnaire et mesures `USERELATIONSHIP`, mesures `TOPN` (3 premières banques, CR3) ; mesures déjà vérifiées inchangées |
 | 24/10/2026 | Logos des banques | Logos officiels téléchargés (sites des banques, sinon fiche de la Bourse ou Wikimedia Commons), réduits en vignettes 240 × 120, versionnés dans `donnees_reference/logos/` avec leur source et la mention de propriété ; colonne `icone` de `Dim_Banque` construite en Power Query (image intégrée, catégorie « URL d'image ») ; pastilles au code en secours |
 | 24/10/2026 | Présentation du rapport | Thème bleu marine et or, fonds de page 16:9 signés (`python scripts/generer_theme.py`), pastilles au code de chaque banque pour le segment à images (pas de logo officiel), visuel Play Axis pour faire défiler les années ; pages et visuels de la spécification inchangés |
 | 24/10/2026 | Étape 6 terminée | Table des dates, relations et 142 mesures vérifiées ; passage à l'étape 7 (pages du rapport) |

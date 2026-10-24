@@ -1103,7 +1103,62 @@ trois résultats, sans filtre (toutes les données). Valeurs attendues (calculé
 | 2 | cumuls révisés 88,3 % (6 331 / 7 173) ; 31/12 provisoires 3,8 % (276) ; révisions de plus de 2 kDT 4 311 ; révisions importantes 813 ; retraitements mineurs 3 992 ; reclassements 99 ; ruptures de série 450 ; valeurs non disponibles : vide ; révisions importantes des états financiers 8 |
 | 3 | années conformes 205 ; en attente 41 ; écarts 22 ; écarts expliqués 22 ; ruptures 20 ; somme des écarts −9,953 MDT ; couleur BT T3 2024 « #2E7D32 » (vert, coefficient sous la médiane) ; BTE « #C62828 » (rouge) |
 
-### 3.10 Fonctions DAX utilisées
+### 3.10 Compléments : colonnes calculées, table par UNION, relation inactive, TOPN (24/10/2026)
+
+Cinq fonctions DAX courantes, chacune là où elle sert le rapport, sans changer les mesures déjà vérifiées.
+
+**Colonnes calculées de `Dim_Banque`** (`dax/colonnes_calculees.dax`, écrites par
+`python scripts/ecrire_tmdl_segment.py colonnes`) : une colonne calculée est évaluée une fois par ligne au
+chargement ; elle sert de segment, de légende ou de libellé (une mesure ne le peut pas).
+
+| Colonne | Fonction | Calcul |
+|---|---|---|
+| `Liquidite_Titre` | `RELATEDTABLE` | les séances de la banque dans `Fait_Cours` (la relation `Dim_Banque` → `Fait_Cours` filtre la table liée sur la ligne de la banque) ; « peu liquide » si plus de 20 % sont sans transaction, sinon « liquide » : UBCI, WIB, BTE peu liquides |
+| `Definition_Charges_Operatoires` | `LOOKUPVALUE` | la description de `Definitions_Charges` pour la banque et sa période la plus récente (`MAXX` du dernier trimestre ; Attijari a deux périodes) |
+| `Definition_Capitaux_Propres` | `LOOKUPVALUE` | la description de `Definitions_Capitaux_Propres` pour la banque (une ligne par banque) |
+
+Une seule de ces colonnes passe par `RELATEDTABLE`. `RELATEDTABLE` fait une **transition de contexte** (la ligne
+devient un filtre) ; dans une table sans clé déclarée, deux colonnes de ce genre dépendraient l'une de l'autre
+(erreur « dépendance circulaire »). `LOOKUPVALUE` cherche une valeur sans transition de contexte.
+
+**Table calculée par `UNION` : `Journal_Faits_Marquants`** (`dax/Journal_Faits_Marquants.dax`) : une chronologie
+unique de 41 faits datés pour la page « Qualité des données », au lieu de trois tableaux séparés. Trois
+`SELECTCOLUMNS` donnent la même forme (`date`, `banque`, `indicateur`, `type_fait`, `description`,
+`montant_mdt`, `fichier`) à : les 11 événements (`Evenements`) ; les 22 écarts annuels expliqués
+(`Controle_Annuel`, statut « ecart », cause en description, somme des trimestres − cumul en montant) ; les 8
+révisions importantes des états financiers (`Revisions_Etats_Financiers`, valeur publiée et valeur retenue en
+description, écart en montant). `UNION` les met bout à bout (mêmes colonnes, même ordre, mêmes types). La table
+est reliée à `Dim_Date`, `Dim_Banque` et `Dim_Indicateur` (3 relations de plus) : les segments de la page la
+filtrent ; mesure `Nb faits marquants`.
+
+**Relation inactive et `USERELATIONSHIP`.** `Banques_Actionnariat` a déjà une relation active vers `Dim_Banque`.
+Une seconde relation, **inactive** (`isActive: false`), relie `Banques_Actionnariat[date_debut]` (date d'entrée en
+fonction d'un nouvel actionnaire de référence) à `Dim_Date[Date]`. Inactive, elle ne filtre rien d'elle-même ;
+une mesure l'active pour son seul calcul avec `CALCULATE ( …, USERELATIONSHIP ( Banques_Actionnariat[date_debut],
+Dim_Date[Date] ) )` :
+- `Changements actionnaire` : nombre de changements dont la date d'effet est dans la période (les premières
+  périodes, sans date de début, ne comptent pas) : 3 en tout (UBCI 16/03/2021, Wifak 01/01/2022, BTE
+  01/07/2024) ;
+- `Changements actionnaire detail` : banque, nouvel actionnaire et date (`CONCATENATEX`).
+
+Le modèle compte désormais **32 relations** : les 28 de 3.2, les 3 du journal et cette relation inactive.
+
+**`TOPN`** (dossier `2. Secteur\Concentration`, vides si une banque manque) :
+- `Top 3 banques PNB` : `TOPN ( 3, ALL ( Dim_Banque ), [PNB], DESC )` garde les 3 lignes de banque au plus fort
+  PNB du trimestre, `CONCATENATEX` les écrit dans l'ordre : « BIAT, BNA, BH » au T3 2024 ;
+- `Part 3 premieres banques PNB` : leur part du PNB des 12 banques (ratio de concentration CR3, souvent lu
+  avec le HHI de 3.4) : 45,8 % au T3 2024 (21,06 + 13,97 + 10,80).
+
+**Contrôle** : vider la vue Requête DAX (**Ctrl+A**, **Suppr**), coller `dax/controle_complements.dax`,
+**Exécuter** ; trois résultats. Valeurs attendues :
+
+| Résultat | Attendu |
+|---|---|
+| 1 | 12 banques ; « peu liquide » pour BTE, UBCI, WIB, « liquide » pour les 9 autres ; charges opératoires « total publié = frais de personnel + charges générales d'exploitation » pour BH, BT, BTE, STB, « … dotations aux amortissements, les trois lignes publiées » pour UIB et WIB, « total publié > frais de personnel + charges générales ; … » pour AB, ATB, BIAT, BNA, TJARI, UBCI ; capitaux propres « … y compris le résultat de la période … » pour ATB et BTE, « hors résultat de la période en cours d'année ; au 31/12, après affectation … » pour AB et BIAT, « … sans le résultat de la période en cours … » pour les 8 autres |
+| 2 | Écart annuel expliqué 22 ; Événement 11 ; Révision des états financiers 8 |
+| 3 | « BIAT, BNA, BH » ; 0.458 ; 3 ; 1 ; vide ; « BTE : Abou Dhabi Investment Authority (ADIA) (01/07/2024) » ; 10 faits en 2020 |
+
+### 3.11 Fonctions DAX utilisées
 
 Chaque fonction DAX employée dans `dax/*.dax`, ce qu'elle fait ici et où elle sert. Le test
 `tests/test_guide_powerbi.py` vérifie qu'aucune fonction d'un fichier `dax/*.dax` ne manque à ce
@@ -1142,6 +1197,12 @@ tableau.
 | `GROUPBY`, `CURRENTGROUP`, `COUNTX` | regroupe des lignes par colonne ; `COUNTX ( CURRENTGROUP (), 1 )` compte les lignes de chaque groupe | `Dim_Date` |
 | `IN { … }` | vrai si la valeur est dans la liste | `Dim_Date` |
 | `VALUES` | valeurs distinctes d'une colonne dans le filtre courant (les banques de la sélection) | `mesures` |
+| `RELATEDTABLE` | lignes d'une table liée, filtrées par la ligne en cours (les séances d'une banque) | `colonnes_calculees` |
+| `LOOKUPVALUE` | valeur d'une colonne d'une autre table, trouvée par une ou plusieurs colonnes de recherche | `colonnes_calculees` |
+| `USERELATIONSHIP` | dans `CALCULATE`, active une relation inactive pour ce seul calcul | `mesures` |
+| `UNION` | met bout à bout des tables de mêmes colonnes | `Journal_Faits_Marquants` |
+| `SELECTCOLUMNS` | table aux colonnes choisies et renommées (forme commune avant `UNION`) | `Journal_Faits_Marquants`, `controle_complements` |
+| `TOPN` | les n premières lignes d'une table selon une expression (3 banques au plus fort PNB) | `mesures` |
 | `MEDIANX` | médiane d'une expression calculée sur chaque ligne d'une table (coefficient des 12 banques) | `mesures` |
 | `ABS` | valeur absolue (dénominateur des variations) | `mesures` |
 | `DATEADD` | décale les dates du filtre (ici : d'un trimestre en arrière) ; utilisé seulement pour la variation d'un trimestre sur l'autre | `mesures` |

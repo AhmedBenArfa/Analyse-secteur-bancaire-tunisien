@@ -40,11 +40,11 @@ def fonctions_dax_utilisees():
 
 def test_chaque_fonction_dax_est_expliquee():
     guide = (RACINE / "docs" / "guide_powerbi.md").read_text(encoding="utf-8")
-    section = guide.split("### 3.10", 1)[1].split("\n## ", 1)[0]
+    section = guide.split("### 3.11", 1)[1].split("\n## ", 1)[0]
     documentees = set()
     for cellule in re.findall(r"^\| ([^|]+) \|", section, re.M):
         documentees |= set(re.findall(r"`([A-Z][A-Z0-9.]+)`", cellule))
     utilisees = fonctions_dax_utilisees()
     manquantes = sorted(set(utilisees) - documentees)
-    assert not manquantes, f"fonctions DAX sans explication dans le guide (section 3.10) : {manquantes}"
+    assert not manquantes, f"fonctions DAX sans explication dans le guide (section 3.11) : {manquantes}"
     assert "CALENDAR" in utilisees

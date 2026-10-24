@@ -29,6 +29,7 @@ ref table Definitions_Charges
 ref table Definitions_Capitaux_Propres
 ref table Dim_Date
 ref table Mesures
+ref table Journal_Faits_Marquants
 
 ref cultureInfo fr-FR
 

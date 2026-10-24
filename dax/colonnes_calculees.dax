@@ -1,0 +1,34 @@
+// Auteur : Ahmed Ben Arfa
+// Colonnes calculées DAX, écrites dans le TMDL par python scripts/ecrire_tmdl_segment.py colonnes. Chaque colonne :
+// une ligne « // [Table | type | format] description » (format « - » : aucun), puis « COLUMN Table[Nom] = » et son
+// expression, jusqu'à la ligne vide suivante. Une seule colonne de Dim_Banque passe par RELATEDTABLE (transition
+// de contexte) : deux colonnes de ce genre dans une même table sans clé se calculeraient l'une avec l'autre
+// (dépendance circulaire) ; les autres utilisent LOOKUPVALUE, qui n'en fait pas.
+
+// [Dim_Banque | string | -] Liquidité du titre sur toute la période des cours : « peu liquide » si plus de 20 % des séances sont sans transaction (RELATEDTABLE : les séances de la banque, par la relation Dim_Banque → Fait_Cours)
+COLUMN Dim_Banque[Liquidite_Titre] =
+    VAR Seances = COUNTROWS ( RELATEDTABLE ( Fait_Cours ) )
+    VAR SansTransaction = COUNTROWS ( FILTER ( RELATEDTABLE ( Fait_Cours ), Fait_Cours[sans_transaction] ) )
+    RETURN
+        IF ( DIVIDE ( SansTransaction, Seances ) > 0.20, "peu liquide", "liquide" )
+
+// [Dim_Banque | string | -] Contenu des charges opératoires publiées par la banque, période la plus récente (LOOKUPVALUE dans Definitions_Charges : banque et dernier trimestre)
+COLUMN Dim_Banque[Definition_Charges_Operatoires] =
+    VAR Dernier =
+        MAXX (
+            FILTER ( ALL ( Definitions_Charges ), Definitions_Charges[banque] = Dim_Banque[code_banque] ),
+            Definitions_Charges[dernier_trimestre]
+        )
+    RETURN
+        LOOKUPVALUE (
+            Definitions_Charges[description],
+            Definitions_Charges[banque], Dim_Banque[code_banque],
+            Definitions_Charges[dernier_trimestre], Dernier
+        )
+
+// [Dim_Banque | string | -] Définition des capitaux propres trimestriels de la banque (LOOKUPVALUE dans Definitions_Capitaux_Propres) : à afficher à côté de ces capitaux propres, dans la fiche banque seulement
+COLUMN Dim_Banque[Definition_Capitaux_Propres] =
+    LOOKUPVALUE (
+        Definitions_Capitaux_Propres[description],
+        Definitions_Capitaux_Propres[banque], Dim_Banque[code_banque]
+    )

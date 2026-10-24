@@ -573,6 +573,12 @@ Relations (1 → plusieurs, filtre simple) :
   −41,182 à 17,912 MDT) : ces 3 codes sont ajoutés à `Dim_Indicateur` dans Power Query (ajout de
   lignes, nature `flux` pour le résultat, `stock` pour les deux autres) pour que la relation
   garde l'annotation sur la page « Rentabilité »
+- Ajouts du 24/10/2026 (32 relations) : `Journal_Faits_Marquants` (table calculée par `UNION` des événements,
+  des écarts annuels expliqués et des révisions importantes des états financiers) reliée à `Dim_Date`,
+  `Dim_Banque` et `Dim_Indicateur` ; relation **inactive** `Banques_Actionnariat[date_debut]` → `Dim_Date[Date]`,
+  utilisée par `USERELATIONSHIP` (mesures des changements d'actionnaire) ; colonnes calculées de `Dim_Banque`
+  (`Liquidite_Titre` par `RELATEDTABLE`, définitions par `LOOKUPVALUE`) ; mesures `TOPN` (3 premières banques,
+  CR3). Code : `dax/colonnes_calculees.dax`, `dax/Journal_Faits_Marquants.dax`, `dax/mesures.dax` (groupe 8).
 - Liste complète écrite dans le modèle (23/10/2026, 28 relations, `relationships.tmdl`) : `Dim_Date` vers
   les dates de `Fait_Indicateurs`, `Variations_Comparables`, `Fait_Etats_Financiers`, `Revisions`,
   `Revisions_Etats_Financiers`, `Controle`, `Controle_Annuel`, `Evenements`, `Fait_Cours` ; `Dim_Banque` vers

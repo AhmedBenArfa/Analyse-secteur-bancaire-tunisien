@@ -79,6 +79,49 @@ table Dim_Banque
 
 		annotation SummarizationSetBy = User
 
+	/// Liquidité du titre sur toute la période des cours : « peu liquide » si plus de 20 % des séances sont sans transaction (RELATEDTABLE : les séances de la banque, par la relation Dim_Banque → Fait_Cours)
+	column Liquidite_Titre =
+			VAR Seances = COUNTROWS ( RELATEDTABLE ( Fait_Cours ) )
+			VAR SansTransaction = COUNTROWS ( FILTER ( RELATEDTABLE ( Fait_Cours ), Fait_Cours[sans_transaction] ) )
+			RETURN
+			    IF ( DIVIDE ( SansTransaction, Seances ) > 0.20, "peu liquide", "liquide" )
+		dataType: string
+		lineageTag: 6de44e50-4308-4a9f-ba47-ff1e58e4eb12
+		summarizeBy: none
+
+		annotation SummarizationSetBy = User
+
+	/// Contenu des charges opératoires publiées par la banque, période la plus récente (LOOKUPVALUE dans Definitions_Charges : banque et dernier trimestre)
+	column Definition_Charges_Operatoires =
+			VAR Dernier =
+			    MAXX (
+			        FILTER ( ALL ( Definitions_Charges ), Definitions_Charges[banque] = Dim_Banque[code_banque] ),
+			        Definitions_Charges[dernier_trimestre]
+			    )
+			RETURN
+			    LOOKUPVALUE (
+			        Definitions_Charges[description],
+			        Definitions_Charges[banque], Dim_Banque[code_banque],
+			        Definitions_Charges[dernier_trimestre], Dernier
+			    )
+		dataType: string
+		lineageTag: eea4299c-2236-47d1-94d0-727063dbeecc
+		summarizeBy: none
+
+		annotation SummarizationSetBy = User
+
+	/// Définition des capitaux propres trimestriels de la banque (LOOKUPVALUE dans Definitions_Capitaux_Propres) : à afficher à côté de ces capitaux propres, dans la fiche banque seulement
+	column Definition_Capitaux_Propres =
+			LOOKUPVALUE (
+			    Definitions_Capitaux_Propres[description],
+			    Definitions_Capitaux_Propres[banque], Dim_Banque[code_banque]
+			)
+		dataType: string
+		lineageTag: 3dccaac0-717c-4b3a-a2b3-5dba86736bbe
+		summarizeBy: none
+
+		annotation SummarizationSetBy = User
+
 	partition Dim_Banque = m
 		mode: import
 		source =

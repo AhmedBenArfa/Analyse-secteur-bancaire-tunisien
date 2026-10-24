@@ -1,0 +1,32 @@
+// Auteur : Ahmed Ben Arfa
+// Contrôle des compléments (guide, section 3.10) : colonnes calculées (RELATEDTABLE, LOOKUPVALUE), table du journal
+// (UNION), mesures TOPN et USERELATIONSHIP. Vider la vue Requête DAX (Ctrl+A, Suppr), coller ce texte, Exécuter ;
+// trois résultats, à comparer aux valeurs attendues du guide.
+// 1. Colonnes calculées de Dim_Banque.
+EVALUATE
+SELECTCOLUMNS (
+    Dim_Banque,
+    "banque", Dim_Banque[code_banque],
+    "liquidite", Dim_Banque[Liquidite_Titre],
+    "charges operatoires", Dim_Banque[Definition_Charges_Operatoires],
+    "capitaux propres", Dim_Banque[Definition_Capitaux_Propres]
+)
+ORDER BY [banque]
+// 2. Journal des faits marquants : nombre de faits par type.
+EVALUATE
+SUMMARIZECOLUMNS (
+    Journal_Faits_Marquants[type_fait],
+    "Nb faits", [Nb faits marquants]
+)
+ORDER BY Journal_Faits_Marquants[type_fait]
+// 3. TOPN au T3 2024 ; changements d'actionnaire (toute la période, 2021, 2023, 2024).
+EVALUATE
+ROW (
+    "Top 3 PNB 2024T3", CALCULATE ( [Top 3 banques PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Part 3 premieres 2024T3", CALCULATE ( [Part 3 premieres banques PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Changements (tout)", [Changements actionnaire],
+    "Changements 2021", CALCULATE ( [Changements actionnaire], Dim_Date[Annee] = 2021 ),
+    "Changements 2023 (vide attendu)", CALCULATE ( [Changements actionnaire], Dim_Date[Annee] = 2023 ),
+    "Detail 2024", CALCULATE ( [Changements actionnaire detail], Dim_Date[Annee] = 2024 ),
+    "Nb faits marquants 2020", CALCULATE ( [Nb faits marquants], Dim_Date[Annee] = 2020 )
+)
