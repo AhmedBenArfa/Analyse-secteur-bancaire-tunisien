@@ -72,8 +72,8 @@ table Dim_Banque
 
 	column icone
 		dataType: string
-		dataCategory: ImageUrl
 		lineageTag: 5687b82e-f936-4cec-88da-cdf45b7c1cfa
+		dataCategory: ImageUrl
 		summarizeBy: none
 		sourceColumn: icone
 
