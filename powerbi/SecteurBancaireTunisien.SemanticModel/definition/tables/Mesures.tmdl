@@ -480,6 +480,228 @@ table Mesures
 		displayFolder: 3. Ratios\Bilan
 		lineageTag: 19e949ba-3af9-42a9-8a24-00117e43994f
 
+	/// Somme des valeurs N du trimestre seul (même document que N-1) ; vide si plusieurs dates d'arrêté
+	measure 'VC N trim' =
+			IF (
+			    DISTINCTCOUNT ( Variations_Comparables[date_arrete] ) = 1,
+			    CALCULATE ( SUM ( Variations_Comparables[valeur_N] ), Variations_Comparables[mesure] = "trim" )
+			)
+		formatString: #,0.000
+		displayFolder: 4. Croissances\Intermédiaires
+		lineageTag: c97562a6-42a1-4639-b8a9-07517c2c38be
+
+	/// Somme des valeurs N-1 du trimestre seul, lues dans le document de l'année N
+	measure 'VC N1 trim' =
+			IF (
+			    DISTINCTCOUNT ( Variations_Comparables[date_arrete] ) = 1,
+			    CALCULATE ( SUM ( Variations_Comparables[valeur_N1] ), Variations_Comparables[mesure] = "trim" )
+			)
+		formatString: #,0.000
+		displayFolder: 4. Croissances\Intermédiaires
+		lineageTag: 18757622-cab1-4350-8918-da48188f9344
+
+	/// Somme des valeurs N du cumul depuis janvier (flux) ou du solde (stock)
+	measure 'VC N cumul' =
+			IF (
+			    DISTINCTCOUNT ( Variations_Comparables[date_arrete] ) = 1,
+			    CALCULATE ( SUM ( Variations_Comparables[valeur_N] ), Variations_Comparables[mesure] = "cumul" )
+			)
+		formatString: #,0.000
+		displayFolder: 4. Croissances\Intermédiaires
+		lineageTag: e35a6d1c-5a5c-488f-91f9-a11bb031bcc0
+
+	/// Somme des valeurs N-1 du cumul ou du solde, lues dans le document de l'année N
+	measure 'VC N1 cumul' =
+			IF (
+			    DISTINCTCOUNT ( Variations_Comparables[date_arrete] ) = 1,
+			    CALCULATE ( SUM ( Variations_Comparables[valeur_N1] ), Variations_Comparables[mesure] = "cumul" )
+			)
+		formatString: #,0.000
+		displayFolder: 4. Croissances\Intermédiaires
+		lineageTag: 501a532a-a5a6-4ff8-b5f7-56c320845b2e
+
+	/// Variation sur un an du trimestre seul, pour l'indicateur choisi ; vide si une banque de la sélection n'a pas N et N-1
+	measure 'Var A/A trimestre %' =
+			IF (
+			    HASONEVALUE ( Dim_Indicateur[code_indicateur] ),
+			    VAR Lignes =
+			        ADDCOLUMNS ( VALUES ( Dim_Banque[code_banque] ), "@N", [VC N trim], "@N1", [VC N1 trim] )
+			    VAR Completes = FILTER ( Lignes, NOT ISBLANK ( [@N] ) && NOT ISBLANK ( [@N1] ) )
+			    VAR N = SUMX ( Completes, [@N] )
+			    VAR N1 = SUMX ( Completes, [@N1] )
+			    RETURN
+			        IF ( COUNTROWS ( Completes ) = COUNTROWS ( Lignes ), DIVIDE ( N - N1, ABS ( N1 ) ) )
+			)
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 4. Croissances\Sur un an
+		lineageTag: 1e00a540-ea22-4547-9787-0d840ba3c0ee
+
+	/// Variation sur un an du cumul ou du solde à une date d'arrêté, pour l'indicateur choisi
+	measure 'Var A/A cumul a la date %' =
+			IF (
+			    HASONEVALUE ( Dim_Indicateur[code_indicateur] ),
+			    VAR Lignes =
+			        ADDCOLUMNS ( VALUES ( Dim_Banque[code_banque] ), "@N", [VC N cumul], "@N1", [VC N1 cumul] )
+			    VAR Completes = FILTER ( Lignes, NOT ISBLANK ( [@N] ) && NOT ISBLANK ( [@N1] ) )
+			    VAR N = SUMX ( Completes, [@N] )
+			    VAR N1 = SUMX ( Completes, [@N1] )
+			    RETURN
+			        IF ( COUNTROWS ( Completes ) = COUNTROWS ( Lignes ), DIVIDE ( N - N1, ABS ( N1 ) ) )
+			)
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 4. Croissances\Intermédiaires
+		lineageTag: 1480ea82-6e1d-42ce-8c28-759736275f4d
+
+	/// Variation sur un an du cumul depuis janvier (flux) ou du solde (stock), à la dernière date de la sélection qui a une valeur
+	measure 'Var A/A cumul %' =
+			VAR DateFin =
+			    CALCULATE ( MAX ( Variations_Comparables[date_arrete] ), Variations_Comparables[mesure] = "cumul" )
+			RETURN
+			    CALCULATE ( [Var A/A cumul a la date %], REMOVEFILTERS ( Dim_Date ), Dim_Date[Date] = DateFin )
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 4. Croissances\Sur un an
+		lineageTag: 029a9028-f51a-41a3-86e6-bf00a571c3c3
+
+	/// PNB du trimestre seul : variation sur un an (même document)
+	measure 'Var PNB A/A %' = CALCULATE ( [Var A/A trimestre %], Dim_Indicateur[code_indicateur] = "PNB" )
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 4. Croissances\Sur un an
+		lineageTag: b7473b83-77ad-447a-a684-d34efd753128
+
+	/// PNB cumulé depuis janvier : variation sur un an (même document)
+	measure 'Var PNB cumul A/A %' = CALCULATE ( [Var A/A cumul %], Dim_Indicateur[code_indicateur] = "PNB" )
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 4. Croissances\Sur un an
+		lineageTag: fcb49998-be02-4419-89e0-be73e6cdd1c1
+
+	/// PNB de l'année : variation sur un an du cumul au 31/12, dans le document du T4
+	measure 'Var PNB annuel A/A %' = CALCULATE ( [Var A/A cumul %], Dim_Indicateur[code_indicateur] = "PNB", Dim_Date[Trimestre] = "T4" )
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 4. Croissances\Sur un an
+		lineageTag: c141a249-bf2b-40fb-9a90-e389198f05a1
+
+	/// Charges opératoires cumulées : variation sur un an (contenu propre à chaque banque, stable dans un même document)
+	measure 'Var Charges operatoires A/A %' = CALCULATE ( [Var A/A cumul %], Dim_Indicateur[code_indicateur] = "CHG_OPER" )
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 4. Croissances\Sur un an
+		lineageTag: c0287eeb-12bb-474b-89c4-adbb63dc7835
+
+	/// Encours des crédits : variation sur un an
+	measure 'Var Credits A/A %' = CALCULATE ( [Var A/A cumul %], Dim_Indicateur[code_indicateur] = "CREDITS" )
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 4. Croissances\Sur un an
+		lineageTag: edd71f5a-fd76-49c6-86f1-899a722da3d7
+
+	/// Encours des dépôts : variation sur un an
+	measure 'Var Depots A/A %' = CALCULATE ( [Var A/A cumul %], Dim_Indicateur[code_indicateur] = "DEPOTS" )
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 4. Croissances\Sur un an
+		lineageTag: 2cb315b1-363f-4e19-beef-2d1c42aa08e9
+
+	/// PNB du trimestre précédent (document du trimestre précédent : à lire avec les marqueurs de rupture)
+	measure 'PNB T-1' = CALCULATE ( [PNB], DATEADD ( Dim_Date[Date], -1, QUARTER ) )
+		formatString: #,0.000
+		displayFolder: 4. Croissances\Sur un trimestre
+		lineageTag: 4e0ae578-fd2d-4c19-be5d-79ff47b1c329
+
+	/// PNB : variation par rapport au trimestre précédent (deux documents successifs, pas d'autre source) ; vide si une banque de la sélection manque à l'un des deux trimestres
+	measure 'Var PNB T/T %' =
+			VAR Lignes =
+			    ADDCOLUMNS ( VALUES ( Dim_Banque[code_banque] ), "@P", [PNB], "@P1", [PNB T-1] )
+			VAR Completes = FILTER ( Lignes, NOT ISBLANK ( [@P] ) && NOT ISBLANK ( [@P1] ) )
+			VAR P = SUMX ( Completes, [@P] )
+			VAR P1 = SUMX ( Completes, [@P1] )
+			RETURN
+			    IF ( COUNTROWS ( Completes ) = COUNTROWS ( Lignes ), DIVIDE ( P - P1, ABS ( P1 ) ) )
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 4. Croissances\Sur un trimestre
+		lineageTag: 9415267d-be3a-4649-8f43-b434fc5e3430
+
+	/// PNB des 4 derniers trimestres publiés jusqu'à la dernière date de la sélection : indicateur de TENDANCE (somme de trimestres), jamais un chiffre annuel ; vide s'il manque un trimestre ou une banque de la sélection
+	measure 'PNB 4T glissants' =
+			VAR Fin = CALCULATE ( MAX ( Fait_Indicateurs[date_arrete] ), Dim_Indicateur[code_indicateur] = "PNB" )
+			VAR NbBanques = COUNTROWS ( VALUES ( Dim_Banque[code_banque] ) )
+			VAR Trimestres =
+			    CALCULATETABLE (
+			        ADDCOLUMNS (
+			            VALUES ( Dim_Date[Cle_Trimestre] ),
+			            "@PNB", [PNB],
+			            "@Banques", COUNTROWS ( FILTER ( VALUES ( Dim_Banque[code_banque] ), NOT ISBLANK ( [PNB] ) ) )
+			        ),
+			        REMOVEFILTERS ( Dim_Date ),
+			        Dim_Date[Date] > EDATE ( Fin, -12 ),
+			        Dim_Date[Date] <= Fin
+			    )
+			VAR Complets = FILTER ( Trimestres, [@Banques] = NbBanques )
+			RETURN
+			    IF ( NOT ISBLANK ( Fin ) && COUNTROWS ( Complets ) = 4, SUMX ( Complets, [@PNB] ) )
+		formatString: #,0.000
+		displayFolder: 4. Croissances\Tendance
+		lineageTag: cfe612a6-054f-463b-840e-d8922c1b1c73
+
+	/// Croissance annuelle moyenne du PNB de 2020 à 2025 : enchaînement des 5 variations annuelles comparables (2021 à 2025, chacune dans son document T4), jamais 2025 / 2020 entre deux documents ; vide s'il en manque une
+	measure 'TCAM PNB 2020-2025' =
+			VAR Annees = GENERATESERIES ( 2021, 2025 )
+			VAR Variations =
+			    ADDCOLUMNS (
+			        Annees,
+			        "@Var",
+			            VAR A = [Value]
+			            RETURN
+			                CALCULATE ( [Var PNB annuel A/A %], REMOVEFILTERS ( Dim_Date ), Dim_Date[Annee] = A )
+			    )
+			VAR Completes = COUNTROWS ( FILTER ( Variations, NOT ISBLANK ( [@Var] ) ) )
+			RETURN
+			    IF ( Completes = 5, PRODUCTX ( Variations, 1 + [@Var] ) ^ ( 1 / 5 ) - 1 )
+		formatString: +0.0 %;-0.0 %;0.0 %
+		displayFolder: 4. Croissances\Sur plusieurs années
+		lineageTag: d56c154d-f076-4d84-ace9-84ab753f20b2
+
+	/// Description des événements (evenements.csv) de la banque, de l'indicateur et de la date du point ; un par ligne
+	measure 'Evenement texte' = CONCATENATEX ( VALUES ( Evenements[description] ), Evenements[description], UNICHAR ( 10 ) )
+		displayFolder: 4. Croissances\Annotations
+		lineageTag: bb035b09-0210-45c5-be0b-ee99033b8083
+
+	/// Montant cité par les événements du point (MDT)
+	measure 'Evenement montant MDT' = SUM ( Evenements[montant_mdt] )
+		formatString: #,0.000
+		displayFolder: 4. Croissances\Annotations
+		lineageTag: b455b2e6-0385-4a2a-8f9d-fab378fcde71
+
+	/// Nombre d'événements du point
+	measure 'Nb evenements' = COUNTROWS ( Evenements )
+		formatString: 0
+		displayFolder: 4. Croissances\Annotations
+		lineageTag: 75abeffe-dd63-44d5-8aa4-bd48adfb94ae
+
+	/// Marqueur de rupture de série : PNB du trimestre là où la période a été révisée de plus de 2 % sur le cumul (série de points à superposer à la courbe)
+	measure 'Rupture PNB' =
+			IF (
+			    CALCULATE (
+			        COUNTROWS ( Fait_Indicateurs ),
+			        Fait_Indicateurs[Rupture_Trim] = "oui",
+			        Dim_Indicateur[code_indicateur] = "PNB"
+			    ) > 0,
+			    [PNB]
+			)
+		formatString: #,0.000
+		displayFolder: 4. Croissances\Annotations
+		lineageTag: 9776692c-dccc-4193-affe-2684d013f023
+
+	/// Marqueur de rupture de série sur le PNB cumulé depuis janvier
+	measure 'Rupture PNB cumul' =
+			IF (
+			    CALCULATE (
+			        COUNTROWS ( Fait_Indicateurs ),
+			        Fait_Indicateurs[Rupture_Cumul] = "oui",
+			        Dim_Indicateur[code_indicateur] = "PNB"
+			    ) > 0,
+			    [PNB depuis debut annee]
+			)
+		formatString: #,0.000
+		displayFolder: 4. Croissances\Annotations
+		lineageTag: fdb32c05-17f0-4e5e-b742-92a029821b9d
+
 	column Colonne_Masquee
 		dataType: int64
 		isHidden

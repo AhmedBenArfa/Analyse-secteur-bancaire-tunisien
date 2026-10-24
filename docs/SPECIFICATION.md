@@ -734,6 +734,13 @@ BH : seul le T4 2025 donne 2025 et 2024 dans la même méthode, −2,8 % ; avec 
 au T4 2024, on obtiendrait −11,0 %). Le secteur se calcule de
 même (somme des N contre somme des N-1, banque par banque dans leurs documents respectifs).
 
+Code exact : `dax/mesures.dax`, groupe 4 (24/10/2026). Ajouts à ce qui suit : `VC …` vides si plusieurs dates
+d'arrêté ; variations calculées sur une ligne par banque, **vides si une banque de la sélection n'a pas N et
+N-1** (secteur : les 12) ; dénominateur en valeur absolue (comme `Variation_Pct`) ; `Var A/A cumul %` à la
+dernière date de la sélection ; `Var PNB T/T %` et `PNB 4T glissants` sur les mêmes banques à chaque trimestre
+(le garde-fou de 7.1 rend `[PNB]` vide sur plusieurs trimestres : la somme glissante se fait trimestre par
+trimestre).
+
 ```dax
 -- Bases (filtrées par Dim_Indicateur, Dim_Banque, Dim_Date)
 VC N trim   = CALCULATE ( SUM ( Variations_Comparables[valeur_N] ),  Variations_Comparables[mesure] = "trim" )

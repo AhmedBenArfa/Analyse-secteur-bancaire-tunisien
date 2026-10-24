@@ -896,6 +896,61 @@ Résultat 3, coefficient harmonisé annuel 2024 : AB 38,4 % ; ATB 59,1 % ; BH 37
 
 La vue Requête DAX affiche les pourcentages en décimales (0.295 pour 29,5 %).
 
+### 3.6 Croissances, tendance et annotations (groupe 4, spécification 7.3)
+
+**Une variation sur un an se lit dans un seul document.** Chaque document trimestriel publie l'année N et
+l'année N-1 côte à côte, dans la même méthode ; `Variations_Comparables` garde ces deux colonnes (2.12b).
+Rapprocher deux documents (`SAMEPERIODLASTYEAR` ou `DATEADD` sur `Fait_Indicateurs`) mélangerait deux
+méthodes quand la banque a retraité ses chiffres. Exemple : BH, PNB 2025 contre 2024. Le document du T4 2025
+donne −2,8 % (681,479 contre 701,188, 2024 retraité) ; le PNB 2024 publié un an plus tôt (765,932) donnerait
+−11,0 %, une baisse qui vient surtout du changement de méthode.
+
+| Dossier | Mesures | Calcul |
+|---|---|---|
+| Intermédiaires | `VC N trim`, `VC N1 trim`, `VC N cumul`, `VC N1 cumul` | sommes des colonnes N et N-1 de `Variations_Comparables`, une date d'arrêté à la fois (même garde-fou qu'en 3.3) |
+| Sur un an | `Var A/A trimestre %`, `Var A/A cumul %` | pour l'indicateur choisi dans un segment ; le cumul est pris à la dernière date de la sélection qui a une valeur |
+| Sur un an | `Var PNB A/A %`, `Var PNB cumul A/A %`, `Var PNB annuel A/A %`, `Var Charges operatoires A/A %`, `Var Credits A/A %`, `Var Depots A/A %` | les mêmes, pour un indicateur fixé ; annuel = cumul au 31/12 dans le document du T4 |
+| Sur un trimestre | `PNB T-1`, `Var PNB T/T %` | trimestre précédent (`DATEADD … -1, QUARTER`) : deux documents successifs, seule source possible, à lire avec les marqueurs de rupture |
+| Tendance | `PNB 4T glissants` | somme des 4 derniers trimestres publiés : tendance, **jamais un chiffre annuel** (le chiffre annuel est `PNB annuel`, le cumul au 31/12) |
+| Sur plusieurs années | `TCAM PNB 2020-2025` | croissance annuelle moyenne : produit des 5 variations annuelles comparables 2021 à 2025 (`PRODUCTX`), racine cinquième, moins 1 ; chacune dans son document T4 |
+| Annotations | `Evenement texte`, `Evenement montant MDT`, `Nb evenements` | événements de `evenements.csv` (don au Fonds 1818, accord salarial, retraitement BH 2024…) filtrés par banque, indicateur et date : info-bulle des courbes |
+| Annotations | `Rupture PNB`, `Rupture PNB cumul` | PNB seulement aux trimestres en rupture de série (période révisée de plus de 2 % sur le cumul) : série de points à superposer à la courbe |
+
+**Plusieurs banques à la fois** (secteur, groupe d'actionnariat) : somme des N contre somme des N-1, calculée
+sur une ligne par banque (`ADDCOLUMNS ( VALUES ( Dim_Banque[code_banque] ), … )`), **seulement si toutes les
+banques de la sélection ont les deux valeurs** ; pour le secteur, les 12. Le dénominateur est pris en valeur
+absolue (`ABS`), comme la colonne `Variation_Pct` : une baisse d'une valeur négative reste une baisse. `PNB 4T
+glissants` et `Var PNB T/T %` suivent la même règle (toutes les banques de la sélection à chaque trimestre).
+
+**Contrôle** : vider la vue Requête DAX (**Ctrl+A**, **Suppr**), coller `dax/controle_croissances.dax`,
+**Exécuter** ; trois résultats. Valeurs attendues (calculées à part depuis `donnees_publiees/`) :
+
+Résultat 1, secteur (12 banques) :
+
+| Mesure | Attendu |
+|---|---|
+| Var PNB A/A, T3 2024 (trimestre seul) | +7,14 % |
+| Var PNB cumul A/A, 9 mois 2024 | +5,71 % |
+| Var crédits A/A, 30/09/2024 | +2,15 % |
+| Var dépôts A/A, 30/09/2024 | +9,70 % |
+| Var charges opératoires A/A, 9 mois 2024 | +7,70 % |
+| Var PNB T/T, T3 2024 contre T2 2024 | +0,16 % |
+| PNB 4T glissants au T3 2024 (T4 2023 à T3 2024) | 6 992,476 |
+| Var PNB annuel A/A 2025 | +4,34 % |
+| Var crédits A/A sur l'année 2026 (au 30/09/2026) | +2,14 % |
+| TCAM PNB 2020-2025 | +8,17 % par an (variations annuelles : +10,43 %, +12,11 %, +8,31 %, +5,85 %, +4,34 %) |
+
+Résultat 2 :
+
+| Banque | Var PNB annuel 2025 | Var PNB A/A T4 2025 | Var crédits A/A T3 2024 | Var PNB T/T T3 2024 | PNB 4T glissants T3 2024 | TCAM 2020-2025 |
+|---|---|---|---|---|---|---|
+| BH | −2,81 % | +7,08 % | +5,25 % | −4,08 % | 751,458 | +8,21 % |
+| BIAT | +7,80 % | +2,52 % | +4,43 % | +3,58 % | 1 445,942 | +11,08 % |
+
+Résultat 3 : texte de l'événement `BH_RETRAITEMENT_2024` (« PNB 2024 redonné à 701,188 MDT… ») ; montant
+−64,744 ; rupture du PNB de BH au T4 2024 = 177,219 (PNB du trimestre) ; au T3 2024 : vide (pas de rupture) ;
+11 événements en tout.
+
 ### 3.9 Fonctions DAX utilisées
 
 Chaque fonction DAX employée dans `dax/*.dax`, ce qu'elle fait ici et où elle sert. Le test
@@ -936,6 +991,14 @@ tableau.
 | `IN { … }` | vrai si la valeur est dans la liste | `Dim_Date` |
 | `VALUES` | valeurs distinctes d'une colonne dans le filtre courant (les banques de la sélection) | `mesures` |
 | `MEDIANX` | médiane d'une expression calculée sur chaque ligne d'une table (coefficient des 12 banques) | `mesures` |
+| `ABS` | valeur absolue (dénominateur des variations) | `mesures` |
+| `DATEADD` | décale les dates du filtre (ici : d'un trimestre en arrière) ; utilisé seulement pour la variation d'un trimestre sur l'autre | `mesures` |
+| `EDATE` | même jour n mois plus tôt ou plus tard (12 mois avant la fin de la période glissante) | `mesures` |
+| `CALCULATETABLE` | comme `CALCULATE`, pour une table : calcule la table dans un filtre modifié | `mesures` |
+| `GENERATESERIES` | table d'une colonne `Value` de nombres consécutifs (années 2021 à 2025) | `mesures` |
+| `PRODUCTX` | produit d'une expression sur chaque ligne d'une table (enchaînement des variations annuelles) | `mesures` |
+| `CONCATENATEX` | met bout à bout les textes d'une table, avec un séparateur | `mesures` |
+| `UNICHAR` | caractère d'après son code (10 = retour à la ligne) | `mesures` |
 
 ## 4. Pages du rapport : visuels, champs et mesures
 

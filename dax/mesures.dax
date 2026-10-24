@@ -354,3 +354,176 @@ MEASURE Mesures[Credits / Depots] =
 // [3. Ratios\Bilan | 0.0 %] Dépôts à vue / total des dépôts en fin de période (ressources peu coûteuses)
 MEASURE Mesures[Part depots a vue] =
     DIVIDE ( [Depots a vue], [Depots] )
+
+// ===== 4. Croissances, tendances et annotations (spécification 7.3) =====
+// Variation sur un an : TOUJOURS Variations_Comparables (valeur N et valeur N-1 du même document), jamais
+// SAMEPERIODLASTYEAR ni DATEADD sur Fait_Indicateurs (deux documents de méthodes parfois différentes).
+// Plusieurs banques : somme des N contre somme des N-1, seulement si TOUTES les banques de la sélection ont
+// les deux valeurs (pour le secteur : les 12) ; dénominateur en valeur absolue, comme Variation_Pct.
+
+// [4. Croissances\Intermédiaires | #,0.000] Somme des valeurs N du trimestre seul (même document que N-1) ; vide si plusieurs dates d'arrêté
+MEASURE Mesures[VC N trim] =
+    IF (
+        DISTINCTCOUNT ( Variations_Comparables[date_arrete] ) = 1,
+        CALCULATE ( SUM ( Variations_Comparables[valeur_N] ), Variations_Comparables[mesure] = "trim" )
+    )
+
+// [4. Croissances\Intermédiaires | #,0.000] Somme des valeurs N-1 du trimestre seul, lues dans le document de l'année N
+MEASURE Mesures[VC N1 trim] =
+    IF (
+        DISTINCTCOUNT ( Variations_Comparables[date_arrete] ) = 1,
+        CALCULATE ( SUM ( Variations_Comparables[valeur_N1] ), Variations_Comparables[mesure] = "trim" )
+    )
+
+// [4. Croissances\Intermédiaires | #,0.000] Somme des valeurs N du cumul depuis janvier (flux) ou du solde (stock)
+MEASURE Mesures[VC N cumul] =
+    IF (
+        DISTINCTCOUNT ( Variations_Comparables[date_arrete] ) = 1,
+        CALCULATE ( SUM ( Variations_Comparables[valeur_N] ), Variations_Comparables[mesure] = "cumul" )
+    )
+
+// [4. Croissances\Intermédiaires | #,0.000] Somme des valeurs N-1 du cumul ou du solde, lues dans le document de l'année N
+MEASURE Mesures[VC N1 cumul] =
+    IF (
+        DISTINCTCOUNT ( Variations_Comparables[date_arrete] ) = 1,
+        CALCULATE ( SUM ( Variations_Comparables[valeur_N1] ), Variations_Comparables[mesure] = "cumul" )
+    )
+
+// [4. Croissances\Sur un an | +0.0 %;-0.0 %;0.0 %] Variation sur un an du trimestre seul, pour l'indicateur choisi ; vide si une banque de la sélection n'a pas N et N-1
+MEASURE Mesures[Var A/A trimestre %] =
+    IF (
+        HASONEVALUE ( Dim_Indicateur[code_indicateur] ),
+        VAR Lignes =
+            ADDCOLUMNS ( VALUES ( Dim_Banque[code_banque] ), "@N", [VC N trim], "@N1", [VC N1 trim] )
+        VAR Completes = FILTER ( Lignes, NOT ISBLANK ( [@N] ) && NOT ISBLANK ( [@N1] ) )
+        VAR N = SUMX ( Completes, [@N] )
+        VAR N1 = SUMX ( Completes, [@N1] )
+        RETURN
+            IF ( COUNTROWS ( Completes ) = COUNTROWS ( Lignes ), DIVIDE ( N - N1, ABS ( N1 ) ) )
+    )
+
+// [4. Croissances\Intermédiaires | +0.0 %;-0.0 %;0.0 %] Variation sur un an du cumul ou du solde à une date d'arrêté, pour l'indicateur choisi
+MEASURE Mesures[Var A/A cumul a la date %] =
+    IF (
+        HASONEVALUE ( Dim_Indicateur[code_indicateur] ),
+        VAR Lignes =
+            ADDCOLUMNS ( VALUES ( Dim_Banque[code_banque] ), "@N", [VC N cumul], "@N1", [VC N1 cumul] )
+        VAR Completes = FILTER ( Lignes, NOT ISBLANK ( [@N] ) && NOT ISBLANK ( [@N1] ) )
+        VAR N = SUMX ( Completes, [@N] )
+        VAR N1 = SUMX ( Completes, [@N1] )
+        RETURN
+            IF ( COUNTROWS ( Completes ) = COUNTROWS ( Lignes ), DIVIDE ( N - N1, ABS ( N1 ) ) )
+    )
+
+// [4. Croissances\Sur un an | +0.0 %;-0.0 %;0.0 %] Variation sur un an du cumul depuis janvier (flux) ou du solde (stock), à la dernière date de la sélection qui a une valeur
+MEASURE Mesures[Var A/A cumul %] =
+    VAR DateFin =
+        CALCULATE ( MAX ( Variations_Comparables[date_arrete] ), Variations_Comparables[mesure] = "cumul" )
+    RETURN
+        CALCULATE ( [Var A/A cumul a la date %], REMOVEFILTERS ( Dim_Date ), Dim_Date[Date] = DateFin )
+
+// [4. Croissances\Sur un an | +0.0 %;-0.0 %;0.0 %] PNB du trimestre seul : variation sur un an (même document)
+MEASURE Mesures[Var PNB A/A %] =
+    CALCULATE ( [Var A/A trimestre %], Dim_Indicateur[code_indicateur] = "PNB" )
+
+// [4. Croissances\Sur un an | +0.0 %;-0.0 %;0.0 %] PNB cumulé depuis janvier : variation sur un an (même document)
+MEASURE Mesures[Var PNB cumul A/A %] =
+    CALCULATE ( [Var A/A cumul %], Dim_Indicateur[code_indicateur] = "PNB" )
+
+// [4. Croissances\Sur un an | +0.0 %;-0.0 %;0.0 %] PNB de l'année : variation sur un an du cumul au 31/12, dans le document du T4
+MEASURE Mesures[Var PNB annuel A/A %] =
+    CALCULATE ( [Var A/A cumul %], Dim_Indicateur[code_indicateur] = "PNB", Dim_Date[Trimestre] = "T4" )
+
+// [4. Croissances\Sur un an | +0.0 %;-0.0 %;0.0 %] Charges opératoires cumulées : variation sur un an (contenu propre à chaque banque, stable dans un même document)
+MEASURE Mesures[Var Charges operatoires A/A %] =
+    CALCULATE ( [Var A/A cumul %], Dim_Indicateur[code_indicateur] = "CHG_OPER" )
+
+// [4. Croissances\Sur un an | +0.0 %;-0.0 %;0.0 %] Encours des crédits : variation sur un an
+MEASURE Mesures[Var Credits A/A %] =
+    CALCULATE ( [Var A/A cumul %], Dim_Indicateur[code_indicateur] = "CREDITS" )
+
+// [4. Croissances\Sur un an | +0.0 %;-0.0 %;0.0 %] Encours des dépôts : variation sur un an
+MEASURE Mesures[Var Depots A/A %] =
+    CALCULATE ( [Var A/A cumul %], Dim_Indicateur[code_indicateur] = "DEPOTS" )
+
+// [4. Croissances\Sur un trimestre | #,0.000] PNB du trimestre précédent (document du trimestre précédent : à lire avec les marqueurs de rupture)
+MEASURE Mesures[PNB T-1] =
+    CALCULATE ( [PNB], DATEADD ( Dim_Date[Date], -1, QUARTER ) )
+
+// [4. Croissances\Sur un trimestre | +0.0 %;-0.0 %;0.0 %] PNB : variation par rapport au trimestre précédent (deux documents successifs, pas d'autre source) ; vide si une banque de la sélection manque à l'un des deux trimestres
+MEASURE Mesures[Var PNB T/T %] =
+    VAR Lignes =
+        ADDCOLUMNS ( VALUES ( Dim_Banque[code_banque] ), "@P", [PNB], "@P1", [PNB T-1] )
+    VAR Completes = FILTER ( Lignes, NOT ISBLANK ( [@P] ) && NOT ISBLANK ( [@P1] ) )
+    VAR P = SUMX ( Completes, [@P] )
+    VAR P1 = SUMX ( Completes, [@P1] )
+    RETURN
+        IF ( COUNTROWS ( Completes ) = COUNTROWS ( Lignes ), DIVIDE ( P - P1, ABS ( P1 ) ) )
+
+// [4. Croissances\Tendance | #,0.000] PNB des 4 derniers trimestres publiés jusqu'à la dernière date de la sélection : indicateur de TENDANCE (somme de trimestres), jamais un chiffre annuel ; vide s'il manque un trimestre ou une banque de la sélection
+MEASURE Mesures[PNB 4T glissants] =
+    VAR Fin = CALCULATE ( MAX ( Fait_Indicateurs[date_arrete] ), Dim_Indicateur[code_indicateur] = "PNB" )
+    VAR NbBanques = COUNTROWS ( VALUES ( Dim_Banque[code_banque] ) )
+    VAR Trimestres =
+        CALCULATETABLE (
+            ADDCOLUMNS (
+                VALUES ( Dim_Date[Cle_Trimestre] ),
+                "@PNB", [PNB],
+                "@Banques", COUNTROWS ( FILTER ( VALUES ( Dim_Banque[code_banque] ), NOT ISBLANK ( [PNB] ) ) )
+            ),
+            REMOVEFILTERS ( Dim_Date ),
+            Dim_Date[Date] > EDATE ( Fin, -12 ),
+            Dim_Date[Date] <= Fin
+        )
+    VAR Complets = FILTER ( Trimestres, [@Banques] = NbBanques )
+    RETURN
+        IF ( NOT ISBLANK ( Fin ) && COUNTROWS ( Complets ) = 4, SUMX ( Complets, [@PNB] ) )
+
+// [4. Croissances\Sur plusieurs années | +0.0 %;-0.0 %;0.0 %] Croissance annuelle moyenne du PNB de 2020 à 2025 : enchaînement des 5 variations annuelles comparables (2021 à 2025, chacune dans son document T4), jamais 2025 / 2020 entre deux documents ; vide s'il en manque une
+MEASURE Mesures[TCAM PNB 2020-2025] =
+    VAR Annees = GENERATESERIES ( 2021, 2025 )
+    VAR Variations =
+        ADDCOLUMNS (
+            Annees,
+            "@Var",
+                VAR A = [Value]
+                RETURN
+                    CALCULATE ( [Var PNB annuel A/A %], REMOVEFILTERS ( Dim_Date ), Dim_Date[Annee] = A )
+        )
+    VAR Completes = COUNTROWS ( FILTER ( Variations, NOT ISBLANK ( [@Var] ) ) )
+    RETURN
+        IF ( Completes = 5, PRODUCTX ( Variations, 1 + [@Var] ) ^ ( 1 / 5 ) - 1 )
+
+// [4. Croissances\Annotations | texte] Description des événements (evenements.csv) de la banque, de l'indicateur et de la date du point ; un par ligne
+MEASURE Mesures[Evenement texte] =
+    CONCATENATEX ( VALUES ( Evenements[description] ), Evenements[description], UNICHAR ( 10 ) )
+
+// [4. Croissances\Annotations | #,0.000] Montant cité par les événements du point (MDT)
+MEASURE Mesures[Evenement montant MDT] =
+    SUM ( Evenements[montant_mdt] )
+
+// [4. Croissances\Annotations | 0] Nombre d'événements du point
+MEASURE Mesures[Nb evenements] =
+    COUNTROWS ( Evenements )
+
+// [4. Croissances\Annotations | #,0.000] Marqueur de rupture de série : PNB du trimestre là où la période a été révisée de plus de 2 % sur le cumul (série de points à superposer à la courbe)
+MEASURE Mesures[Rupture PNB] =
+    IF (
+        CALCULATE (
+            COUNTROWS ( Fait_Indicateurs ),
+            Fait_Indicateurs[Rupture_Trim] = "oui",
+            Dim_Indicateur[code_indicateur] = "PNB"
+        ) > 0,
+        [PNB]
+    )
+
+// [4. Croissances\Annotations | #,0.000] Marqueur de rupture de série sur le PNB cumulé depuis janvier
+MEASURE Mesures[Rupture PNB cumul] =
+    IF (
+        CALCULATE (
+            COUNTROWS ( Fait_Indicateurs ),
+            Fait_Indicateurs[Rupture_Cumul] = "oui",
+            Dim_Indicateur[code_indicateur] = "PNB"
+        ) > 0,
+        [PNB depuis debut annee]
+    )

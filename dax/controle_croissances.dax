@@ -1,0 +1,39 @@
+// Auteur : Ahmed Ben Arfa
+// Contrôle des croissances (guide, section 3.6) : vider la vue Requête DAX (Ctrl+A, Suppr), coller ce texte,
+// Exécuter ; trois résultats, à comparer aux valeurs attendues du guide.
+// 1. Secteur (12 banques) : variations sur un an au T3 2024, PNB de l'année 2025, tendance, TCAM.
+EVALUATE
+ROW (
+    "Var PNB A/A 2024T3", CALCULATE ( [Var PNB A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var PNB cumul A/A 2024T3", CALCULATE ( [Var PNB cumul A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var Credits A/A 2024T3", CALCULATE ( [Var Credits A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var Depots A/A 2024T3", CALCULATE ( [Var Depots A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var Charges operatoires A/A 2024T3", CALCULATE ( [Var Charges operatoires A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var PNB T/T 2024T3", CALCULATE ( [Var PNB T/T %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "PNB 4T glissants 2024T3", CALCULATE ( [PNB 4T glissants], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var PNB annuel A/A 2025", CALCULATE ( [Var PNB annuel A/A %], Dim_Date[Annee] = 2025 ),
+    "Var Credits A/A 2026", CALCULATE ( [Var Credits A/A %], Dim_Date[Annee] = 2026 ),
+    "TCAM PNB 2020-2025", [TCAM PNB 2020-2025]
+)
+// 2. Deux banques : BH (retraitement de 2024) et BIAT.
+EVALUATE
+SUMMARIZECOLUMNS (
+    Dim_Banque[code_banque],
+    TREATAS ( { "BH", "BIAT" }, Dim_Banque[code_banque] ),
+    "Var PNB annuel A/A 2025", CALCULATE ( [Var PNB annuel A/A %], Dim_Date[Annee] = 2025 ),
+    "Var PNB A/A 2025T4", CALCULATE ( [Var PNB A/A %], Dim_Date[Annee_Trimestre] = "2025T4" ),
+    "Var Credits A/A 2024T3", CALCULATE ( [Var Credits A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Var PNB T/T 2024T3", CALCULATE ( [Var PNB T/T %], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "PNB 4T glissants 2024T3", CALCULATE ( [PNB 4T glissants], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "TCAM PNB 2020-2025", [TCAM PNB 2020-2025]
+)
+ORDER BY Dim_Banque[code_banque]
+// 3. Annotations : événement et marqueur de rupture du PNB de BH au T4 2024 ; nombre total d'événements.
+EVALUATE
+ROW (
+    "Evenement BH 2024T4 PNB", CALCULATE ( [Evenement texte], Dim_Banque[code_banque] = "BH", Dim_Date[Annee_Trimestre] = "2024T4", Dim_Indicateur[code_indicateur] = "PNB" ),
+    "Montant MDT", CALCULATE ( [Evenement montant MDT], Dim_Banque[code_banque] = "BH", Dim_Date[Annee_Trimestre] = "2024T4", Dim_Indicateur[code_indicateur] = "PNB" ),
+    "Rupture PNB BH 2024T4", CALCULATE ( [Rupture PNB], Dim_Banque[code_banque] = "BH", Dim_Date[Annee_Trimestre] = "2024T4" ),
+    "Rupture PNB BH 2024T3 (vide attendu)", CALCULATE ( [Rupture PNB], Dim_Banque[code_banque] = "BH", Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Nb evenements", [Nb evenements]
+)
