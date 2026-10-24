@@ -1,32 +1,32 @@
-
 EVALUATE
 SUMMARIZECOLUMNS (
     Dim_Banque[code_banque],
-    "ROE 2024", CALCULATE ( [ROE], Dim_Date[Annee] = 2024 ),
-    "ROA 2024", CALCULATE ( [ROA], Dim_Date[Annee] = 2024 ),
-    "ROE S1 2025", CALCULATE ( [ROE], Dim_Date[Annee_Trimestre] = "2025T2" ),
-    "ROA S1 2025", CALCULATE ( [ROA], Dim_Date[Annee_Trimestre] = "2025T2" )
+    TREATAS ( { "BIAT", "BT", "UBCI" }, Dim_Banque[code_banque] ),
+    TREATAS ( { 2025 }, Dim_Date[Annee] ),
+    "Premier cours", [Premier cours],
+    "Dernier cours", [Dernier cours],
+    "Performance prix", [Performance prix],
+    "Rendement total", [Rendement total],
+    "Volatilite", [Volatilite annualisee],
+    "Seances", [Seances],
+    "Sans transaction", [Seances sans transaction]
 )
 ORDER BY Dim_Banque[code_banque]
 
 EVALUATE
-ROW (
-    "ROE secteur 2024", CALCULATE ( [ROE secteur], Dim_Date[Annee] = 2024 ),
-    "ROA secteur 2024", CALCULATE ( [ROA secteur], Dim_Date[Annee] = 2024 ),
-    "ROE secteur S1 2025", CALCULATE ( [ROE secteur], Dim_Date[Annee_Trimestre] = "2025T2" ),
-    "ROE secteur S1 2026", CALCULATE ( [ROE secteur], Dim_Date[Annee_Trimestre] = "2026T2" ),
-    "Date fin EF (sans filtre)", [Date fin EF],
-    "ROE secteur 2019 (vide attendu)", CALCULATE ( [ROE secteur], Dim_Date[Annee] = 2019 )
+SUMMARIZECOLUMNS (
+    Dim_Banque[code_banque],
+    "Taux sans transaction", [Taux seances sans transaction],
+    "Avertissement", [Avertissement liquidite],
+    "Date dernier cours", [Date dernier cours]
 )
+ORDER BY [Taux sans transaction] DESC
 
 EVALUATE
 ROW (
-    "BIAT 2024 resultat net", CALCULATE ( [Resultat net], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] = 2024 ),
-    "BIAT 2024 cap propres", CALCULATE ( [Cap propres EF], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] = 2024 ),
-    "BIAT 2024 cap propres moyens", CALCULATE ( [Cap propres moyens], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] = 2024 ),
-    "BIAT 2024 total actif", CALCULATE ( [Total actif], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] = 2024 ),
-    "UIB S1 2020 resultat net", CALCULATE ( [Resultat net], Dim_Banque[code_banque] = "UIB", Dim_Date[Annee_Trimestre] = "2020T2" ),
-    "UIB S1 2020 ROE", CALCULATE ( [ROE], Dim_Banque[code_banque] = "UIB", Dim_Date[Annee_Trimestre] = "2020T2" ),
-    "BNA S1 2025 resultat net", CALCULATE ( [Resultat net], Dim_Banque[code_banque] = "BNA", Dim_Date[Annee_Trimestre] = "2025T2" ),
-    "BNA S1 2025 annualise", CALCULATE ( [Resultat net annualise], Dim_Banque[code_banque] = "BNA", Dim_Date[Annee_Trimestre] = "2025T2" )
+    "BIAT 2019-2025 performance prix", CALCULATE ( [Performance prix], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] <= 2025 ),
+    "BIAT 2019-2025 rendement total", CALCULATE ( [Rendement total], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] <= 2025 ),
+    "BIAT premier cours 2019", CALCULATE ( [Premier cours], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] <= 2025 ),
+    "BIAT dernier cours 2025", CALCULATE ( [Dernier cours], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] <= 2025 ),
+    "Dernier cours sans banque (vide attendu)", [Dernier cours]
 )

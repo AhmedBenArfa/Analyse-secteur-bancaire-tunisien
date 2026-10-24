@@ -19,7 +19,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
-| 6 | Modèle en étoile et mesures DAX | **En cours** : table des dates et 28 relations vérifiées dans Power BI Desktop ; vue Modèle rangée (un onglet par thème) ; mesures de base (26) vérifiées ; secteur (17 mesures, colonne `Choix_Trimestre`) vérifié ; ratios (16 mesures) vérifiés ; croissances (22 mesures) vérifiées ; ROE et ROA (19 mesures) vérifiés ; Bourse (15 mesures) écrite, à vérifier ; ensuite qualité des données |
+| 6 | Modèle en étoile et mesures DAX | **En cours** : table des dates et 28 relations vérifiées dans Power BI Desktop ; vue Modèle rangée (un onglet par thème) ; mesures de base (26) vérifiées ; secteur (17 mesures, colonne `Choix_Trimestre`) vérifié ; ratios (16 mesures) vérifiés ; croissances (22 mesures) vérifiées ; ROE et ROA (19 mesures) vérifiés ; Bourse (15 mesures) vérifiée ; prochaine action : qualité des données |
 | 7 | Pages du rapport | À faire |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
@@ -55,7 +55,7 @@ Un groupe à la fois, vérifié dans Power BI Desktop avant le suivant :
    `dax/controle_secteur.dax`) ; ratios (16 mesures, vérifiées le 24/10/2026 avec
    `dax/controle_ratios.dax`) ; croissances (22 mesures, vérifiées le 24/10/2026 avec
    `dax/controle_croissances.dax`) ; ROE et ROA (19 mesures, vérifiées le 24/10/2026 avec
-   `dax/controle_rentabilite.dax`) ; Bourse (15 mesures écrites le 24/10/2026, à vérifier avec
+   `dax/controle_rentabilite.dax`) ; Bourse (15 mesures, vérifiées le 24/10/2026 avec
    `dax/controle_bourse.dax`) ; totaux du secteur, nombre de banques présentes et dernier
    trimestre complet ; ratios ; croissances ; ROE et ROA ; Bourse ; qualité des données.
 
