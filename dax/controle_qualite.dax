@@ -1,0 +1,41 @@
+// Auteur : Ahmed Ben Arfa
+// Contrôle des mesures de qualité (guide, section 3.9) : vider la vue Requête DAX (Ctrl+A, Suppr), coller ce
+// texte, Exécuter ; trois résultats, à comparer aux valeurs attendues du guide. Aucun filtre : toutes les données.
+// 1. Documents trimestriels (336).
+EVALUATE
+ROW (
+    "Nb documents", [Nb documents],
+    "Part sans alerte", [Part documents sans alerte],
+    "Nb ecarts signales", [Nb ecarts signales],
+    "Nb ecarts trim cumul", [Nb ecarts trim cumul],
+    "Nb ecarts composantes", [Nb ecarts composantes],
+    "Nb a verifier", [Nb documents a verifier],
+    "Nb illisibles", [Nb documents illisibles],
+    "Nb saisis", [Nb documents saisis],
+    "Titre", [Titre rapport]
+)
+// 2. Révisions et ruptures de série.
+EVALUATE
+ROW (
+    "Part cumuls revises", [Part cumuls revises],
+    "Part 31-12 provisoires", [Part 31-12 provisoires],
+    "Nb revisions", [Nb revisions],
+    "Nb revisions importantes", [Nb revisions importantes],
+    "Nb retraitements mineurs", [Nb retraitements mineurs],
+    "Nb reclassements", [Nb reclassements],
+    "Nb ruptures serie", [Nb ruptures serie],
+    "Nb valeurs non disponibles (vide attendu)", [Nb valeurs non disponibles],
+    "Nb revisions importantes EF", [Nb revisions importantes EF]
+)
+// 3. Contrôle annuel (somme des 4 trimestres contre cumul annuel) ; couleur du coefficient de BT au T3 2024.
+EVALUATE
+ROW (
+    "Nb annees conformes", [Nb annees conformes],
+    "Nb annees en attente", [Nb annees en attente],
+    "Nb ecarts annuels", [Nb ecarts annuels],
+    "Nb ecarts expliques", [Nb ecarts expliques],
+    "Nb ruptures annuelles", [Nb ruptures annuelles],
+    "Ecart annuel MDT", [Ecart annuel MDT],
+    "Couleur coef BT 2024T3", CALCULATE ( [Couleur coef], Dim_Banque[code_banque] = "BT", Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Couleur coef BTE 2024T3", CALCULATE ( [Couleur coef], Dim_Banque[code_banque] = "BTE", Dim_Date[Annee_Trimestre] = "2024T3" )
+)

@@ -731,3 +731,139 @@ MEASURE Mesures[Avertissement liquidite] =
         "Titre peu liquide : " & FORMAT ( [Taux seances sans transaction], "0 %" )
             & " des séances sans transaction ; volatilité et performance à lire avec prudence"
     )
+
+// ===== 7. Affichage et qualité des données (spécification 7.8) =====
+
+// [7. Qualité\Affichage | Short Date] Date d'arrêté la plus récente des indicateurs trimestriels, tous filtres ignorés
+MEASURE Mesures[Date derniere donnee] =
+    CALCULATE ( MAX ( Fait_Indicateurs[date_arrete] ), REMOVEFILTERS () )
+
+// [7. Qualité\Affichage | texte] Titre du rapport avec la date des dernières données
+MEASURE Mesures[Titre rapport] =
+    "Banques cotées — données au " & FORMAT ( [Date derniere donnee], "dd/mm/yyyy" )
+
+// [7. Qualité\Affichage | texte] Couleur de mise en forme du coefficient : vert si la banque est plus efficace que la médiane (écart ≤ 0), rouge sinon ; rien si l'écart est vide
+MEASURE Mesures[Couleur coef] =
+    VAR Ecart = [Ecart coef / mediane]
+    RETURN
+        IF ( NOT ISBLANK ( Ecart ), IF ( Ecart <= 0, "#2E7D32", "#C62828" ) )
+
+// [7. Qualité\Documents | #,0] Nombre de documents trimestriels (un par banque et par trimestre)
+MEASURE Mesures[Nb documents] =
+    COUNTROWS ( Controle )
+
+// [7. Qualité\Documents | 0.0 %] Part des documents lus sans aucune alerte ; les autres ont surtout des écarts qui viennent des révisions des banques (Nb ecarts signales), pas d'erreurs d'extraction
+MEASURE Mesures[Part documents sans alerte] =
+    DIVIDE ( CALCULATE ( [Nb documents], Controle[statut] = "ok" ), [Nb documents] )
+
+// [7. Qualité\Documents | #,0] Documents avec un écart signalé qui vient de la banque (retraitement possible, écart trimestre/cumul, écart composantes), non bloquant
+MEASURE Mesures[Nb ecarts signales] =
+    CALCULATE (
+        [Nb documents],
+        Controle[statut] IN { "retraitement possible", "ecart trimestre/cumul", "ecart composantes" }
+    )
+
+// [7. Qualité\Documents | #,0] Documents dont le trimestre seul ne vaut pas le cumul moins le cumul précédent (révision de la banque en cours d'année)
+MEASURE Mesures[Nb ecarts trim cumul] =
+    CALCULATE ( [Nb documents], Controle[statut] = "ecart trimestre/cumul" )
+
+// [7. Qualité\Documents | #,0] Documents dont le total publié ne vaut pas la somme de ses composantes (incohérence de la banque, vérifiée dans le PDF)
+MEASURE Mesures[Nb ecarts composantes] =
+    CALCULATE ( [Nb documents], Controle[statut] = "ecart composantes" )
+
+// [7. Qualité\Documents | #,0] Documents avec une alerte bloquante (erreur du document de la banque, vérifiée sur l'image)
+MEASURE Mesures[Nb documents a verifier] =
+    CALCULATE ( [Nb documents], Controle[statut] = "a verifier" )
+
+// [7. Qualité\Documents | #,0] Documents publiés en image, repris du document suivant
+MEASURE Mesures[Nb documents illisibles] =
+    CALCULATE ( [Nb documents], Controle[statut] = "illisible (image)" )
+
+// [7. Qualité\Documents | #,0] Documents publiés en image, saisis à la main (saisies_manuelles.csv, contrôles de cohérence)
+MEASURE Mesures[Nb documents saisis] =
+    CALCULATE ( [Nb documents], Controle[statut] = "saisie manuelle" )
+
+// [7. Qualité\Révisions | 0.0 %] Part des cumuls affichés qui viennent d'une version révisée (colonne N-1 ou 31/12 d'un document suivant)
+MEASURE Mesures[Part cumuls revises] =
+    DIVIDE (
+        CALCULATE ( COUNTROWS ( Fait_Indicateurs ), LEFT ( Fait_Indicateurs[Source_Cumul], 7 ) = "revisee" ),
+        CALCULATE ( COUNTROWS ( Fait_Indicateurs ), NOT ISBLANK ( Fait_Indicateurs[Source_Cumul] ) )
+    )
+
+// [7. Qualité\Révisions | 0.0 %] Part des cumuls affichés qui viennent de la colonne 31/12 d'un document T1 à T3 suivant (le T4 de l'année suivante n'est pas encore publié)
+MEASURE Mesures[Part 31-12 provisoires] =
+    DIVIDE (
+        CALCULATE ( COUNTROWS ( Fait_Indicateurs ), LEFT ( Fait_Indicateurs[Source_Cumul], 14 ) = "revisee_31-12_" ),
+        CALCULATE ( COUNTROWS ( Fait_Indicateurs ), NOT ISBLANK ( Fait_Indicateurs[Source_Cumul] ) )
+    )
+
+// [7. Qualité\Révisions | #,0] Versions non retenues qui diffèrent de la valeur retenue de plus de 2 kDT
+MEASURE Mesures[Nb revisions] =
+    CALCULATE ( COUNTROWS ( Revisions ), ABS ( Revisions[Ecart_MDT] ) > 0.002 )
+
+// [7. Qualité\Révisions | #,0] Valeurs initiales remplacées par une révision de plus de 2 % (sur le cumul)
+MEASURE Mesures[Nb revisions importantes] =
+    CALCULATE (
+        COUNTROWS ( Revisions ),
+        Revisions[version] = "initiale",
+        Revisions[statut_revision] = "revision_importante"
+    )
+
+// [7. Qualité\Révisions | #,0] Valeurs initiales remplacées par une révision de 2 % au plus
+MEASURE Mesures[Nb retraitements mineurs] =
+    CALCULATE (
+        COUNTROWS ( Revisions ),
+        Revisions[version] = "initiale",
+        Revisions[statut_revision] = "retraitement_mineur"
+    )
+
+// [7. Qualité\Révisions | #,0] Versions où une composante change sans que le total change (reclassement)
+MEASURE Mesures[Nb reclassements] =
+    CALCULATE ( COUNTROWS ( Revisions ), Revisions[statut_revision] = "reclassement" )
+
+// [7. Qualité\Révisions | #,0.000] Somme des écarts valeur retenue − version non retenue (MDT)
+MEASURE Mesures[Ecart revision MDT] =
+    SUM ( Revisions[Ecart_MDT] )
+
+// [7. Qualité\Révisions | #,0] Indicateurs × trimestres en rupture de série (période révisée de plus de 2 % sur le cumul)
+MEASURE Mesures[Nb ruptures serie] =
+    CALCULATE (
+        COUNTROWS ( Fait_Indicateurs ),
+        Fait_Indicateurs[Rupture_Trim] = "oui" || Fait_Indicateurs[Rupture_Cumul] = "oui"
+    )
+
+// [7. Qualité\Révisions | #,0] Valeurs absentes parce que le document est en image et non repris (aucune depuis la saisie des documents BTE)
+MEASURE Mesures[Nb valeurs non disponibles] =
+    CALCULATE ( COUNTROWS ( Revisions ), Revisions[statut_revision] = "non disponible (image)" )
+
+// [7. Qualité\Contrôle annuel | #,0] Années × indicateurs dont la somme des 4 trimestres vaut le cumul annuel
+MEASURE Mesures[Nb annees conformes] =
+    CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "ok" )
+
+// [7. Qualité\Contrôle annuel | #,0] Années en attente du document de l'année suivante (versions révisées pas encore toutes publiées)
+MEASURE Mesures[Nb annees en attente] =
+    CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "en attente de révision" )
+
+// [7. Qualité\Contrôle annuel | #,0] Années × indicateurs avec un écart entre somme des trimestres et cumul annuel
+MEASURE Mesures[Nb ecarts annuels] =
+    CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "ecart" )
+
+// [7. Qualité\Contrôle annuel | #,0] Écarts annuels dont la cause est écrite (docs/ecarts_annuels.csv : retraitement, erreur du document, reclassement, arrondi)
+MEASURE Mesures[Nb ecarts expliques] =
+    CALCULATE (
+        COUNTROWS ( Controle_Annuel ),
+        Controle_Annuel[statut] = "ecart",
+        NOT ISBLANK ( Controle_Annuel[categorie_ecart] )
+    )
+
+// [7. Qualité\Contrôle annuel | #,0] Années × indicateurs avec un changement de méthode en cours d'année (rupture de série)
+MEASURE Mesures[Nb ruptures annuelles] =
+    CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "rupture de série" )
+
+// [7. Qualité\Contrôle annuel | #,0.000] Somme des écarts annuels (somme des trimestres − cumul annuel, MDT)
+MEASURE Mesures[Ecart annuel MDT] =
+    CALCULATE ( SUM ( Controle_Annuel[Ecart_MDT] ), Controle_Annuel[statut] = "ecart" )
+
+// [7. Qualité\États financiers | #,0] Valeurs des états financiers remplacées par une révision de plus de 2 %
+MEASURE Mesures[Nb revisions importantes EF] =
+    CALCULATE ( COUNTROWS ( Revisions_Etats_Financiers ), Revisions_Etats_Financiers[statut_revision] = "revision_importante" )

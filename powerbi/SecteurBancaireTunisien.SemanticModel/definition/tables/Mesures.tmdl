@@ -976,6 +976,200 @@ table Mesures
 		displayFolder: 6. Bourse\Risque et liquidité
 		lineageTag: dbf21edb-d5ef-4ce5-b57b-31978fd89de0
 
+	/// Date d'arrêté la plus récente des indicateurs trimestriels, tous filtres ignorés
+	measure 'Date derniere donnee' = CALCULATE ( MAX ( Fait_Indicateurs[date_arrete] ), REMOVEFILTERS () )
+		formatString: Short Date
+		displayFolder: 7. Qualité\Affichage
+		lineageTag: 14241acc-5bbf-4897-b6de-be0e768c54db
+
+	/// Titre du rapport avec la date des dernières données
+	measure 'Titre rapport' = "Banques cotées — données au " & FORMAT ( [Date derniere donnee], "dd/mm/yyyy" )
+		displayFolder: 7. Qualité\Affichage
+		lineageTag: 2aae83df-4d49-440c-ad2e-6022aff1abe6
+
+	/// Couleur de mise en forme du coefficient : vert si la banque est plus efficace que la médiane (écart ≤ 0), rouge sinon ; rien si l'écart est vide
+	measure 'Couleur coef' =
+			VAR Ecart = [Ecart coef / mediane]
+			RETURN
+			    IF ( NOT ISBLANK ( Ecart ), IF ( Ecart <= 0, "#2E7D32", "#C62828" ) )
+		displayFolder: 7. Qualité\Affichage
+		lineageTag: 48cd0dd6-6ab0-4f8f-b284-101649baa59a
+
+	/// Nombre de documents trimestriels (un par banque et par trimestre)
+	measure 'Nb documents' = COUNTROWS ( Controle )
+		formatString: #,0
+		displayFolder: 7. Qualité\Documents
+		lineageTag: 3220dd64-93fd-46da-aa12-929bc7d08739
+
+	/// Part des documents lus sans aucune alerte ; les autres ont surtout des écarts qui viennent des révisions des banques (Nb ecarts signales), pas d'erreurs d'extraction
+	measure 'Part documents sans alerte' = DIVIDE ( CALCULATE ( [Nb documents], Controle[statut] = "ok" ), [Nb documents] )
+		formatString: 0.0 %
+		displayFolder: 7. Qualité\Documents
+		lineageTag: 9373a03f-1d29-449b-a75a-31fb8e19edfa
+
+	/// Documents avec un écart signalé qui vient de la banque (retraitement possible, écart trimestre/cumul, écart composantes), non bloquant
+	measure 'Nb ecarts signales' =
+			CALCULATE (
+			    [Nb documents],
+			    Controle[statut] IN { "retraitement possible", "ecart trimestre/cumul", "ecart composantes" }
+			)
+		formatString: #,0
+		displayFolder: 7. Qualité\Documents
+		lineageTag: 79fd214a-e99f-4720-9604-961a8987b714
+
+	/// Documents dont le trimestre seul ne vaut pas le cumul moins le cumul précédent (révision de la banque en cours d'année)
+	measure 'Nb ecarts trim cumul' = CALCULATE ( [Nb documents], Controle[statut] = "ecart trimestre/cumul" )
+		formatString: #,0
+		displayFolder: 7. Qualité\Documents
+		lineageTag: 8850fd28-9a04-4cbd-b6d1-f08413a3e904
+
+	/// Documents dont le total publié ne vaut pas la somme de ses composantes (incohérence de la banque, vérifiée dans le PDF)
+	measure 'Nb ecarts composantes' = CALCULATE ( [Nb documents], Controle[statut] = "ecart composantes" )
+		formatString: #,0
+		displayFolder: 7. Qualité\Documents
+		lineageTag: b489693c-3589-44b9-b41c-dc81e96b338a
+
+	/// Documents avec une alerte bloquante (erreur du document de la banque, vérifiée sur l'image)
+	measure 'Nb documents a verifier' = CALCULATE ( [Nb documents], Controle[statut] = "a verifier" )
+		formatString: #,0
+		displayFolder: 7. Qualité\Documents
+		lineageTag: 12b20416-49b0-4776-869a-1a9fd39b01fd
+
+	/// Documents publiés en image, repris du document suivant
+	measure 'Nb documents illisibles' = CALCULATE ( [Nb documents], Controle[statut] = "illisible (image)" )
+		formatString: #,0
+		displayFolder: 7. Qualité\Documents
+		lineageTag: 6905ab98-f61b-4c6e-95ec-8703511bbba3
+
+	/// Documents publiés en image, saisis à la main (saisies_manuelles.csv, contrôles de cohérence)
+	measure 'Nb documents saisis' = CALCULATE ( [Nb documents], Controle[statut] = "saisie manuelle" )
+		formatString: #,0
+		displayFolder: 7. Qualité\Documents
+		lineageTag: de708e53-9bea-4580-94a8-ed546204e6b7
+
+	/// Part des cumuls affichés qui viennent d'une version révisée (colonne N-1 ou 31/12 d'un document suivant)
+	measure 'Part cumuls revises' =
+			DIVIDE (
+			    CALCULATE ( COUNTROWS ( Fait_Indicateurs ), LEFT ( Fait_Indicateurs[Source_Cumul], 7 ) = "revisee" ),
+			    CALCULATE ( COUNTROWS ( Fait_Indicateurs ), NOT ISBLANK ( Fait_Indicateurs[Source_Cumul] ) )
+			)
+		formatString: 0.0 %
+		displayFolder: 7. Qualité\Révisions
+		lineageTag: f67f8be5-dc0b-4fcf-b489-939549592dd0
+
+	/// Part des cumuls affichés qui viennent de la colonne 31/12 d'un document T1 à T3 suivant (le T4 de l'année suivante n'est pas encore publié)
+	measure 'Part 31-12 provisoires' =
+			DIVIDE (
+			    CALCULATE ( COUNTROWS ( Fait_Indicateurs ), LEFT ( Fait_Indicateurs[Source_Cumul], 14 ) = "revisee_31-12_" ),
+			    CALCULATE ( COUNTROWS ( Fait_Indicateurs ), NOT ISBLANK ( Fait_Indicateurs[Source_Cumul] ) )
+			)
+		formatString: 0.0 %
+		displayFolder: 7. Qualité\Révisions
+		lineageTag: 4a741c2c-3974-4800-a142-c2cf1e9c3365
+
+	/// Versions non retenues qui diffèrent de la valeur retenue de plus de 2 kDT
+	measure 'Nb revisions' = CALCULATE ( COUNTROWS ( Revisions ), ABS ( Revisions[Ecart_MDT] ) > 0.002 )
+		formatString: #,0
+		displayFolder: 7. Qualité\Révisions
+		lineageTag: 40b3a4bc-7d8b-431e-adfd-d1f166150330
+
+	/// Valeurs initiales remplacées par une révision de plus de 2 % (sur le cumul)
+	measure 'Nb revisions importantes' =
+			CALCULATE (
+			    COUNTROWS ( Revisions ),
+			    Revisions[version] = "initiale",
+			    Revisions[statut_revision] = "revision_importante"
+			)
+		formatString: #,0
+		displayFolder: 7. Qualité\Révisions
+		lineageTag: 956e492e-caba-4d0b-8020-f234515b0778
+
+	/// Valeurs initiales remplacées par une révision de 2 % au plus
+	measure 'Nb retraitements mineurs' =
+			CALCULATE (
+			    COUNTROWS ( Revisions ),
+			    Revisions[version] = "initiale",
+			    Revisions[statut_revision] = "retraitement_mineur"
+			)
+		formatString: #,0
+		displayFolder: 7. Qualité\Révisions
+		lineageTag: c68750c1-0d4f-4deb-8d70-51246cbc20df
+
+	/// Versions où une composante change sans que le total change (reclassement)
+	measure 'Nb reclassements' = CALCULATE ( COUNTROWS ( Revisions ), Revisions[statut_revision] = "reclassement" )
+		formatString: #,0
+		displayFolder: 7. Qualité\Révisions
+		lineageTag: d354d4e1-c575-4ab3-8a82-8b0f271014f2
+
+	/// Somme des écarts valeur retenue − version non retenue (MDT)
+	measure 'Ecart revision MDT' = SUM ( Revisions[Ecart_MDT] )
+		formatString: #,0.000
+		displayFolder: 7. Qualité\Révisions
+		lineageTag: c1d77067-d4d6-4bde-99a4-f8eaa193f8e1
+
+	/// Indicateurs × trimestres en rupture de série (période révisée de plus de 2 % sur le cumul)
+	measure 'Nb ruptures serie' =
+			CALCULATE (
+			    COUNTROWS ( Fait_Indicateurs ),
+			    Fait_Indicateurs[Rupture_Trim] = "oui" || Fait_Indicateurs[Rupture_Cumul] = "oui"
+			)
+		formatString: #,0
+		displayFolder: 7. Qualité\Révisions
+		lineageTag: 632088b1-683b-4a50-bc48-daca26af6c8e
+
+	/// Valeurs absentes parce que le document est en image et non repris (aucune depuis la saisie des documents BTE)
+	measure 'Nb valeurs non disponibles' = CALCULATE ( COUNTROWS ( Revisions ), Revisions[statut_revision] = "non disponible (image)" )
+		formatString: #,0
+		displayFolder: 7. Qualité\Révisions
+		lineageTag: e7339aa9-f14e-415c-82d7-7a89e59d2549
+
+	/// Années × indicateurs dont la somme des 4 trimestres vaut le cumul annuel
+	measure 'Nb annees conformes' = CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "ok" )
+		formatString: #,0
+		displayFolder: 7. Qualité\Contrôle annuel
+		lineageTag: 40b3f7af-755a-49de-b30c-f41015da1d2b
+
+	/// Années en attente du document de l'année suivante (versions révisées pas encore toutes publiées)
+	measure 'Nb annees en attente' = CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "en attente de révision" )
+		formatString: #,0
+		displayFolder: 7. Qualité\Contrôle annuel
+		lineageTag: ee5703d7-6333-487b-adfa-7b11aa78f0af
+
+	/// Années × indicateurs avec un écart entre somme des trimestres et cumul annuel
+	measure 'Nb ecarts annuels' = CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "ecart" )
+		formatString: #,0
+		displayFolder: 7. Qualité\Contrôle annuel
+		lineageTag: 738437d2-a19b-447d-ac9c-0723c01dc2e2
+
+	/// Écarts annuels dont la cause est écrite (docs/ecarts_annuels.csv : retraitement, erreur du document, reclassement, arrondi)
+	measure 'Nb ecarts expliques' =
+			CALCULATE (
+			    COUNTROWS ( Controle_Annuel ),
+			    Controle_Annuel[statut] = "ecart",
+			    NOT ISBLANK ( Controle_Annuel[categorie_ecart] )
+			)
+		formatString: #,0
+		displayFolder: 7. Qualité\Contrôle annuel
+		lineageTag: a36d68cd-9730-444f-8f41-5e953be3cff8
+
+	/// Années × indicateurs avec un changement de méthode en cours d'année (rupture de série)
+	measure 'Nb ruptures annuelles' = CALCULATE ( COUNTROWS ( Controle_Annuel ), Controle_Annuel[statut] = "rupture de série" )
+		formatString: #,0
+		displayFolder: 7. Qualité\Contrôle annuel
+		lineageTag: 30e43ba1-39e6-4c44-b72f-120dd17cf62a
+
+	/// Somme des écarts annuels (somme des trimestres − cumul annuel, MDT)
+	measure 'Ecart annuel MDT' = CALCULATE ( SUM ( Controle_Annuel[Ecart_MDT] ), Controle_Annuel[statut] = "ecart" )
+		formatString: #,0.000
+		displayFolder: 7. Qualité\Contrôle annuel
+		lineageTag: 330aa5f1-595f-4711-b165-fc4e3b397283
+
+	/// Valeurs des états financiers remplacées par une révision de plus de 2 %
+	measure 'Nb revisions importantes EF' = CALCULATE ( COUNTROWS ( Revisions_Etats_Financiers ), Revisions_Etats_Financiers[statut_revision] = "revision_importante" )
+		formatString: #,0
+		displayFolder: 7. Qualité\États financiers
+		lineageTag: 8f28f0c7-4f3c-4032-a209-c77706bd9f1b
+
 	column Colonne_Masquee
 		dataType: int64
 		isHidden

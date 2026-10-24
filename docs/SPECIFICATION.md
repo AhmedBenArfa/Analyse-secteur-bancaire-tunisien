@@ -1222,6 +1222,13 @@ toujours les **comptes individuels** pour rester cohérent avec les indicateurs 
 
 ### 7.8 Affichage et qualité
 
+Code exact : `dax/mesures.dax`, groupe 7 (24/10/2026). Différences avec le texte ci-dessous : `Taux extraction ok`
+devient `Part documents sans alerte` (91/336 : les autres documents ont surtout des écarts qui viennent des
+banques), avec `Nb ecarts signales` et `Nb documents a verifier` ; les écarts annuels expliqués sont comptés dans
+`Controle_Annuel` (`categorie_ecart`), `Ecarts_Annuels` n'étant pas chargée ; `Couleur coef` vide si l'écart est
+vide ; ajout de `Nb annees conformes` et `Nb revisions importantes EF`. Le paramètre de champ se crée avec les
+pages (étape 7).
+
 ```dax
 Date derniere donnee = CALCULATE ( MAX ( Fait_Indicateurs[date_arrete] ), REMOVEFILTERS () )
 Titre rapport = "Banques cotées — données au " & FORMAT ( [Date derniere donnee], "dd/mm/yyyy" )

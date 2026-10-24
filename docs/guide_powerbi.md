@@ -1060,7 +1060,39 @@ l'avertissement « Titre peu liquide : 53 % / 43 % / 38 % … »), puis BH 8,6 %
 Résultat 3 : BIAT 2019-2025 performance prix +125,76 %, rendement total +232,85 %, premier cours 118,000, dernier
 cours 111,000 ; dernier cours sans banque : vide.
 
-### 3.9 Fonctions DAX utilisées
+### 3.9 Affichage et qualité des données (groupe 7, spécification 7.8)
+
+Ces mesures alimentent la page « Qualité des données » : elles montrent d'où viennent les chiffres et ce qui a
+été corrigé, révisé ou saisi, sans rien cacher.
+
+| Dossier | Mesures | Ce qu'elles comptent |
+|---|---|---|
+| Affichage | `Date derniere donnee`, `Titre rapport`, `Couleur coef` | date des dernières données (tous filtres ignorés), titre « Banques cotées — données au 30/09/2026 », couleur du coefficient (vert si la banque fait mieux que la médiane, rouge sinon, rien si l'écart est vide) |
+| Documents | `Nb documents`, `Part documents sans alerte`, `Nb ecarts signales`, `Nb ecarts trim cumul`, `Nb ecarts composantes`, `Nb documents a verifier`, `Nb documents illisibles`, `Nb documents saisis` | statut de chaque document trimestriel (`Controle`) |
+| Révisions | `Part cumuls revises`, `Part 31-12 provisoires`, `Nb revisions`, `Nb revisions importantes`, `Nb retraitements mineurs`, `Nb reclassements`, `Ecart revision MDT`, `Nb ruptures serie`, `Nb valeurs non disponibles` | versions non retenues (`Revisions`) et origine des valeurs affichées (`Fait_Indicateurs[Source_Cumul]`) |
+| Contrôle annuel | `Nb annees conformes`, `Nb annees en attente`, `Nb ecarts annuels`, `Nb ecarts expliques`, `Nb ruptures annuelles`, `Ecart annuel MDT` | somme des 4 trimestres contre cumul annuel (`Controle_Annuel`, causes de `docs/ecarts_annuels.csv` fusionnées en 2.12f) |
+| États financiers | `Nb revisions importantes EF` | révisions de plus de 2 % des états financiers |
+
+Deux écarts avec la spécification : la part des documents « ok » s'appelle `Part documents sans alerte` (et non
+« taux d'extraction ») : 27 % seulement, parce que les autres documents ont surtout des écarts **qui viennent des
+banques** (révisions en cours d'année, `Nb ecarts signales` = 228), pas des erreurs de lecture ; les causes des
+écarts annuels sont comptées dans `Controle_Annuel` (colonne `categorie_ecart`), la table `Ecarts_Annuels` étant
+une requête intermédiaire non chargée. `Couleur coef` ne renvoie rien si l'écart est vide (en DAX, « vide ≤ 0 »
+est vrai : sans ce test, une banque sans coefficient serait colorée en vert). Le paramètre de champ « Indicateur
+affiché » de la spécification se crée dans Power BI Desktop avec les pages du rapport (étape 7 : **Modélisation ›
+Nouveau paramètre › Champs**).
+
+**Contrôle** : vider la vue Requête DAX (**Ctrl+A**, **Suppr**), coller `dax/controle_qualite.dax`, **Exécuter** ;
+trois résultats, sans filtre (toutes les données). Valeurs attendues (calculées à part depuis
+`donnees_publiees/` et `docs/ecarts_annuels.csv`) :
+
+| Résultat | Attendu |
+|---|---|
+| 1 | 336 documents ; sans alerte 27,1 % (91) ; écarts signalés 228 (136 retraitements possibles + 89 écarts trimestre/cumul + 3 écarts composantes) ; 89 ; 3 ; à vérifier 2 ; illisibles 2 ; saisis 13 ; « Banques cotées — données au 30/09/2026 » |
+| 2 | cumuls révisés 88,3 % (6 331 / 7 173) ; 31/12 provisoires 3,8 % (276) ; révisions de plus de 2 kDT 4 311 ; révisions importantes 813 ; retraitements mineurs 3 992 ; reclassements 99 ; ruptures de série 450 ; valeurs non disponibles : vide ; révisions importantes des états financiers 8 |
+| 3 | années conformes 205 ; en attente 41 ; écarts 22 ; écarts expliqués 22 ; ruptures 20 ; somme des écarts −9,953 MDT ; couleur BT T3 2024 « #2E7D32 » (vert, coefficient sous la médiane) ; BTE « #C62828 » (rouge) |
+
+### 3.10 Fonctions DAX utilisées
 
 Chaque fonction DAX employée dans `dax/*.dax`, ce qu'elle fait ici et où elle sert. Le test
 `tests/test_guide_powerbi.py` vérifie qu'aucune fonction d'un fichier `dax/*.dax` ne manque à ce
@@ -1112,7 +1144,8 @@ tableau.
 | `MIN` | plus petite valeur d'une colonne (date du premier cours) | `mesures` |
 | `STDEVX.S` | écart-type (échantillon) d'une expression sur chaque ligne d'une table (rendements quotidiens) | `mesures` |
 | `SQRT` | racine carrée (√252 pour annualiser une volatilité quotidienne) | `mesures` |
-| `FORMAT` | nombre mis en texte selon un format (« 53 % » dans l'avertissement) | `mesures` |
+| `FORMAT` | nombre ou date mis en texte selon un format (« 53 % » dans l'avertissement, « 30/09/2026 » dans le titre) | `mesures` |
+| `LEFT` | premiers caractères d'un texte (« revisee » au début de la source d'une valeur) | `mesures` |
 
 ## 4. Pages du rapport : visuels, champs et mesures
 
