@@ -2,30 +2,32 @@ EVALUATE
 SUMMARIZECOLUMNS (
     Dim_Banque[code_banque],
     TREATAS ( { "2024T3" }, Dim_Date[Annee_Trimestre] ),
-    "Part de marche PNB", [Part de marche PNB],
-    "Rang PNB", [Rang PNB],
-    "Part de marche credits", [Part de marche credits],
-    "Part de marche depots", [Part de marche depots]
+    "Coef harmonise", [Coef exploitation harmonise],
+    "Rang coef", [Rang coef],
+    "Ecart / mediane", [Ecart coef / mediane],
+    "Coef publie", [Coef exploitation publie],
+    "Part marge interets", [Part marge interets],
+    "Part commissions", [Part commissions],
+    "Part portefeuille", [Part portefeuille],
+    "Frais personnel / PNB", [Frais personnel / PNB],
+    "Credits / Depots", [Credits / Depots],
+    "Part depots a vue", [Part depots a vue]
 )
-ORDER BY [Rang PNB]
+ORDER BY [Rang coef]
 
 EVALUATE
 ROW (
-    "Banques presentes PNB 2024T3", CALCULATE ( [Banques presentes PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "PNB secteur 2024T3", CALCULATE ( [PNB secteur], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "HHI PNB 2024T3", CALCULATE ( [HHI PNB], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Credits secteur 2024T3", CALCULATE ( [Credits secteur], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Depots secteur 2024T3", CALCULATE ( [Depots secteur], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Credits secteur 2026", CALCULATE ( [Credits secteur], Dim_Date[Annee] = 2026 ),
-    "Date fin credits 2026", CALCULATE ( [Date fin credits], Dim_Date[Annee] = 2026 ),
-    "Dernier trimestre complet", [Dernier trimestre complet],
-    "Date dernier trimestre complet", [Date dernier trimestre complet]
+    "Banques presentes coef 2024T3", CALCULATE ( [Banques presentes coef], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Coef secteur 2024T3", CALCULATE ( [Coef secteur], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Coef mediane 2024T3", CALCULATE ( [Coef mediane], Dim_Date[Annee_Trimestre] = "2024T3" ),
+    "Coef harmonise 2024 (vide attendu)", CALCULATE ( [Coef exploitation harmonise], Dim_Date[Annee] = 2024 ),
+    "Coef harmonise annuel 2024 secteur", CALCULATE ( [Coef exploitation harmonise annuel], Dim_Date[Annee] = 2024 )
 )
 
 EVALUATE
 SUMMARIZECOLUMNS (
-    Dim_Indicateur[code_indicateur],
-    TREATAS ( { "PORTEF", "DEP_TERME" }, Dim_Indicateur[code_indicateur] ),
-    "Banques presentes 2020T1", CALCULATE ( [Banques presentes], Dim_Date[Annee_Trimestre] = "2020T1" ),
-    "Banques presentes 2024T3", CALCULATE ( [Banques presentes], Dim_Date[Annee_Trimestre] = "2024T3" )
+    Dim_Banque[code_banque],
+    TREATAS ( { 2024 }, Dim_Date[Annee] ),
+    "Coef harmonise annuel", [Coef exploitation harmonise annuel]
 )
+ORDER BY Dim_Banque[code_banque]
