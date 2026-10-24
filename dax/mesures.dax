@@ -527,3 +527,118 @@ MEASURE Mesures[Rupture PNB cumul] =
         ) > 0,
         [PNB depuis debut annee]
     )
+
+// ===== 5. Rentabilité : ROE et ROA (spécification 7.7) =====
+// Source : états financiers individuels (Fait_Etats_Financiers), au 30/06 et au 31/12 seulement : ROE et ROA sont
+// semestriels et annuels, jamais trimestriels. Résultat net avant modifications comptables, annualisé (× 2 au
+// 30/06) ; capitaux propres et total de l'actif du BILAN, moyenne de l'ouverture (31/12/N-1) et de la date.
+// Plusieurs banques : seulement si toutes les banques de la sélection ont les valeurs (secteur : les 12).
+
+// [5. Rentabilité\Intermédiaires | #,0.000] Somme des valeurs retenues des états financiers ; vide si plusieurs dates d'arrêté
+MEASURE Mesures[EF valeur] =
+    IF ( DISTINCTCOUNT ( Fait_Etats_Financiers[date_arrete] ) = 1, SUM ( Fait_Etats_Financiers[valeur_mdt] ) )
+
+// [5. Rentabilité\Intermédiaires | #,0.000] Résultat net (avant modifications comptables) à une date d'arrêté, cumulé depuis le 1er janvier
+MEASURE Mesures[Resultat net brut] =
+    CALCULATE ( [EF valeur], Dim_Indicateur[code_indicateur] = "RES_NET" )
+
+// [5. Rentabilité\Intermédiaires | #,0.000] Capitaux propres du bilan (résultat inclus) à une date d'arrêté
+MEASURE Mesures[Cap propres EF brut] =
+    CALCULATE ( [EF valeur], Dim_Indicateur[code_indicateur] = "CAP_PROPRES_EF" )
+
+// [5. Rentabilité\Intermédiaires | #,0.000] Total de l'actif du bilan à une date d'arrêté
+MEASURE Mesures[Total actif brut] =
+    CALCULATE ( [EF valeur], Dim_Indicateur[code_indicateur] = "TOTAL_ACTIF" )
+
+// [5. Rentabilité\Intermédiaires | #,0.000] Résultat net annualisé à une date d'arrêté : × facteur_annualisation (2 au 30/06, 1 au 31/12)
+MEASURE Mesures[Resultat net annualise brut] =
+    CALCULATE (
+        IF (
+            DISTINCTCOUNT ( Fait_Etats_Financiers[date_arrete] ) = 1,
+            SUMX ( Fait_Etats_Financiers, Fait_Etats_Financiers[valeur_mdt] * Fait_Etats_Financiers[facteur_annualisation] )
+        ),
+        Dim_Indicateur[code_indicateur] = "RES_NET"
+    )
+
+// [5. Rentabilité\Bilan et résultat | Short Date] Dernière date d'arrêté des états financiers (30/06 ou 31/12) de la sélection qui a un résultat net
+MEASURE Mesures[Date fin EF] =
+    CALCULATE ( MAX ( Fait_Etats_Financiers[date_arrete] ), Dim_Indicateur[code_indicateur] = "RES_NET" )
+
+// [5. Rentabilité\Bilan et résultat | #,0.000] Résultat net publié (avant modifications comptables), cumulé depuis le 1er janvier, à la dernière date de la sélection
+MEASURE Mesures[Resultat net] =
+    CALCULATE ( [Resultat net brut], LASTNONBLANK ( Dim_Date[Date], [Resultat net brut] ) )
+
+// [5. Rentabilité\Bilan et résultat | #,0.000] Capitaux propres du bilan (résultat inclus) à la dernière date de la sélection : référence de toutes les comparaisons entre banques
+MEASURE Mesures[Cap propres EF] =
+    CALCULATE ( [Cap propres EF brut], LASTNONBLANK ( Dim_Date[Date], [Cap propres EF brut] ) )
+
+// [5. Rentabilité\Bilan et résultat | #,0.000] Total de l'actif du bilan à la dernière date de la sélection
+MEASURE Mesures[Total actif] =
+    CALCULATE ( [Total actif brut], LASTNONBLANK ( Dim_Date[Date], [Total actif brut] ) )
+
+// [5. Rentabilité\Intermédiaires | #,0.000] Résultat net annualisé à une date d'arrêté, banque par banque ; vide si une banque de la sélection manque
+MEASURE Mesures[Resultat net annualise a la date] =
+    VAR Lignes = ADDCOLUMNS ( VALUES ( Dim_Banque[code_banque] ), "@RN", [Resultat net annualise brut] )
+    VAR Completes = FILTER ( Lignes, NOT ISBLANK ( [@RN] ) )
+    RETURN
+        IF ( COUNTROWS ( Completes ) = COUNTROWS ( Lignes ), SUMX ( Completes, [@RN] ) )
+
+// [5. Rentabilité\Intermédiaires | #,0.000] Capitaux propres moyens à une date d'arrêté : (31/12/N-1 + date) / 2, banque par banque ; vide si l'une des deux valeurs manque (jamais une seule valeur prise pour la moyenne)
+MEASURE Mesures[Cap propres moyens a la date] =
+    VAR Ouverture = DATE ( YEAR ( MAX ( Dim_Date[Date] ) ) - 1, 12, 31 )
+    VAR Lignes =
+        ADDCOLUMNS (
+            VALUES ( Dim_Banque[code_banque] ),
+            "@Fin", [Cap propres EF brut],
+            "@Ouv", CALCULATE ( [Cap propres EF brut], REMOVEFILTERS ( Dim_Date ), Dim_Date[Date] = Ouverture )
+        )
+    VAR Completes = FILTER ( Lignes, NOT ISBLANK ( [@Fin] ) && NOT ISBLANK ( [@Ouv] ) )
+    RETURN
+        IF ( COUNTROWS ( Completes ) = COUNTROWS ( Lignes ), SUMX ( Completes, ( [@Ouv] + [@Fin] ) / 2 ) )
+
+// [5. Rentabilité\Intermédiaires | #,0.000] Total de l'actif moyen à une date d'arrêté : (31/12/N-1 + date) / 2, banque par banque ; vide si l'une des deux valeurs manque
+MEASURE Mesures[Total actif moyen a la date] =
+    VAR Ouverture = DATE ( YEAR ( MAX ( Dim_Date[Date] ) ) - 1, 12, 31 )
+    VAR Lignes =
+        ADDCOLUMNS (
+            VALUES ( Dim_Banque[code_banque] ),
+            "@Fin", [Total actif brut],
+            "@Ouv", CALCULATE ( [Total actif brut], REMOVEFILTERS ( Dim_Date ), Dim_Date[Date] = Ouverture )
+        )
+    VAR Completes = FILTER ( Lignes, NOT ISBLANK ( [@Fin] ) && NOT ISBLANK ( [@Ouv] ) )
+    RETURN
+        IF ( COUNTROWS ( Completes ) = COUNTROWS ( Lignes ), SUMX ( Completes, ( [@Ouv] + [@Fin] ) / 2 ) )
+
+// [5. Rentabilité\Bilan et résultat | #,0.000] Résultat net annualisé à la dernière date des états financiers de la sélection (× 2 pour un semestre)
+MEASURE Mesures[Resultat net annualise] =
+    VAR DateFin = [Date fin EF]
+    RETURN
+        CALCULATE ( [Resultat net annualise a la date], REMOVEFILTERS ( Dim_Date ), Dim_Date[Date] = DateFin )
+
+// [5. Rentabilité\Bilan et résultat | #,0.000] Capitaux propres moyens du bilan à la dernière date des états financiers de la sélection
+MEASURE Mesures[Cap propres moyens] =
+    VAR DateFin = [Date fin EF]
+    RETURN
+        CALCULATE ( [Cap propres moyens a la date], REMOVEFILTERS ( Dim_Date ), Dim_Date[Date] = DateFin )
+
+// [5. Rentabilité\Bilan et résultat | #,0.000] Total de l'actif moyen à la dernière date des états financiers de la sélection
+MEASURE Mesures[Total actif moyen] =
+    VAR DateFin = [Date fin EF]
+    RETURN
+        CALCULATE ( [Total actif moyen a la date], REMOVEFILTERS ( Dim_Date ), Dim_Date[Date] = DateFin )
+
+// [5. Rentabilité\Ratios | 0.0 %] ROE = résultat net annualisé / capitaux propres moyens du bilan, à la dernière date des états financiers de la sélection (semestre annualisé au 30/06, exercice au 31/12) ; résultat semestriel non audité (revue limitée)
+MEASURE Mesures[ROE] =
+    DIVIDE ( [Resultat net annualise], [Cap propres moyens] )
+
+// [5. Rentabilité\Ratios | 0.00 %] ROA = résultat net annualisé / total de l'actif moyen, à la dernière date des états financiers de la sélection
+MEASURE Mesures[ROA] =
+    DIVIDE ( [Resultat net annualise], [Total actif moyen] )
+
+// [5. Rentabilité\Ratios | 0.0 %] ROE des 12 banques ensemble (somme des résultats / somme des capitaux propres moyens) ; vide si une banque manque
+MEASURE Mesures[ROE secteur] =
+    CALCULATE ( [ROE], REMOVEFILTERS ( Dim_Banque ) )
+
+// [5. Rentabilité\Ratios | 0.00 %] ROA des 12 banques ensemble ; vide si une banque manque
+MEASURE Mesures[ROA secteur] =
+    CALCULATE ( [ROA], REMOVEFILTERS ( Dim_Banque ) )

@@ -1171,7 +1171,12 @@ Relations : `Dim_Banque` et `Dim_Date` comme les autres faits.
 - Annualisation : × 2 pour un résultat au 30/06, × 1 au 31/12
 - Moyenne = (valeur à l'ouverture de l'exercice + valeur à la date) / 2
 
-**Mesures :**
+**Mesures :** code exact dans `dax/mesures.dax`, groupe 5 (24/10/2026). Différences avec le texte ci-dessous :
+valeurs des états financiers vides si plusieurs dates d'arrêté ; annualisation par la colonne
+`facteur_annualisation` ; moyennes calculées banque par banque, **vides si l'ouverture ou la fin manque** (et
+non `AVERAGEX`, qui prendrait la seule valeur présente) ; ratios à la dernière date des états financiers de la
+sélection (`Date fin EF`) ; plusieurs banques seulement si toutes ont les valeurs (`ROE secteur`, `ROA
+secteur`) ; filtre par `Dim_Indicateur[code_indicateur]`.
 
 ```dax
 Resultat net brut = CALCULATE ( SUM ( Fait_Etats_Financiers[valeur_mdt] ),

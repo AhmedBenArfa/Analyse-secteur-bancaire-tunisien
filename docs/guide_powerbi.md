@@ -951,6 +951,66 @@ Résultat 3 : texte de l'événement `BH_RETRAITEMENT_2024` (« PNB 2024 redonn�
 −64,744 ; rupture du PNB de BH au T4 2024 = 177,219 (PNB du trimestre) ; au T3 2024 : vide (pas de rupture) ;
 11 événements en tout.
 
+### 3.7 Rentabilité : ROE et ROA (groupe 5, spécification 7.7)
+
+Le résultat net n'est pas dans les indicateurs trimestriels : il vient des **états financiers individuels**
+(`Fait_Etats_Financiers`, 2.12c), publiés au 30/06 (semestre, revue limitée) et au 31/12 (exercice, audité).
+Le ROE et le ROA sont donc **semestriels et annuels**, jamais trimestriels.
+
+- **ROE** = résultat net annualisé / capitaux propres moyens du bilan ; **ROA** = résultat net annualisé /
+  total de l'actif moyen.
+- **Résultat net** : avant modifications comptables (décision du 18/10/2026), cumulé depuis le 1er janvier ;
+  **annualisé** par la colonne `facteur_annualisation` de Power Query (× 2 au 30/06, × 1 au 31/12 ;
+  l'annualisation ignore la saisonnalité).
+- **Capitaux propres et total de l'actif** : ceux du **bilan** (résultat inclus), jamais les capitaux propres
+  trimestriels (définition propre à chaque banque, fiche banque seulement) ; **moyenne** de l'ouverture de
+  l'exercice (31/12/N-1, valeur retenue = colonne N-1 du document de l'exercice N, même méthode que la fin) et
+  de la date. Si l'une des deux manque, la moyenne reste vide (la version de la spécification avec
+  `AVERAGEX ( { ouverture, fin } )` aurait pris la seule valeur de fin) : le ROE de 2019 est vide, faute
+  d'états financiers au 31/12/2018.
+- **Date** : la dernière date des états financiers de la sélection (`Date fin EF`) : sur l'année 2024, le
+  31/12/2024 (exercice) ; sur le T2 2025, le 30/06/2025 (semestre annualisé) ; sur l'année 2026, le 30/06/2026.
+- **Plusieurs banques** : somme des résultats / somme des capitaux propres moyens, banque par banque, vide si
+  une banque de la sélection manque (`ROE secteur`, `ROA secteur` : les 12).
+
+| Dossier | Mesures |
+|---|---|
+| Bilan et résultat | `Date fin EF`, `Resultat net`, `Resultat net annualise`, `Cap propres EF`, `Cap propres moyens`, `Total actif`, `Total actif moyen` |
+| Ratios | `ROE`, `ROA`, `ROE secteur`, `ROA secteur` |
+| Intermédiaires | `EF valeur` (une date à la fois), `… brut`, `… a la date` (calcul banque par banque à une date) |
+
+**Contrôle** : vider la vue Requête DAX (**Ctrl+A**, **Suppr**), coller `dax/controle_rentabilite.dax`,
+**Exécuter** ; trois résultats. Valeurs attendues (calculées à part depuis `donnees_publiees/`) :
+
+Résultat 1 :
+
+| Banque | ROE 2024 | ROA 2024 | ROE S1 2025 (annualisé) | ROA S1 2025 |
+|---|---|---|---|---|
+| AB | 15,25 % | 2,013 % | 16,55 % | 2,163 % |
+| ATB | 1,82 % | 0,128 % | 0,90 % | 0,063 % |
+| BH | 5,24 % | 0,503 % | 7,94 % | 0,737 % |
+| BIAT | 16,61 % | 1,492 % | 22,10 % | 1,930 % |
+| BNA | 12,22 % | 1,186 % | 14,11 % | 1,340 % |
+| BT | 13,89 % | 2,304 % | 12,09 % | 1,967 % |
+| BTE | −63,66 % | −1,865 % | −30,71 % | −0,685 % |
+| STB | 6,64 % | 0,558 % | 3,45 % | 0,296 % |
+| TJARI | 21,45 % | 1,947 % | 21,90 % | 1,843 % |
+| UBCI | 10,13 % | 1,112 % | 9,96 % | 1,008 % |
+| UIB | 8,76 % | 1,077 % | 9,65 % | 1,172 % |
+| WIB | 5,48 % | 0,593 % | 2,42 % | 0,240 % |
+
+BTE : pertes de 2020 à 2025 et capitaux propres faibles (41,704 MDT au 30/06/2024 avant l'augmentation de
+capital), d'où un ROE très négatif ; c'est la donnée publiée, pas une erreur de calcul.
+
+Résultat 2 : ROE secteur 2024 11,85 %, ROA 1,193 % ; ROE secteur S1 2025 13,13 % ; S1 2026 12,46 % ; dernière
+date des états financiers 30/06/2026 ; ROE 2019 vide.
+
+Résultat 3 : BIAT 2024 résultat net 357,754 ; capitaux propres 2 226,391 ; capitaux propres moyens 2 154,256
+((2 082,120 + 2 226,391) / 2) ; total de l'actif 24 996,225 ; UIB S1 2020 résultat net 17,912 (révisé : le
+semestre publié montrait −41,182, intérêts du moratoire Covid réintégrés ensuite), ROE 5,66 % ; BNA S1 2025
+résultat net 155,069 (avant modifications comptables, la version révisée 137,318 n'est pas retenue), annualisé
+310,138.
+
 ### 3.9 Fonctions DAX utilisées
 
 Chaque fonction DAX employée dans `dax/*.dax`, ce qu'elle fait ici et où elle sert. Le test

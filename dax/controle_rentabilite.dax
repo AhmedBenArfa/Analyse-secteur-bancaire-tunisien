@@ -1,0 +1,35 @@
+// Auteur : Ahmed Ben Arfa
+// Contrôle du ROE et du ROA (guide, section 3.7) : vider la vue Requête DAX (Ctrl+A, Suppr), coller ce texte,
+// Exécuter ; trois résultats, à comparer aux valeurs attendues du guide.
+// 1. Une ligne par banque pour l'exercice 2024 (31/12/2024) et le semestre 1 2025 (30/06/2025, annualisé).
+EVALUATE
+SUMMARIZECOLUMNS (
+    Dim_Banque[code_banque],
+    "ROE 2024", CALCULATE ( [ROE], Dim_Date[Annee] = 2024 ),
+    "ROA 2024", CALCULATE ( [ROA], Dim_Date[Annee] = 2024 ),
+    "ROE S1 2025", CALCULATE ( [ROE], Dim_Date[Annee_Trimestre] = "2025T2" ),
+    "ROA S1 2025", CALCULATE ( [ROA], Dim_Date[Annee_Trimestre] = "2025T2" )
+)
+ORDER BY Dim_Banque[code_banque]
+// 2. Secteur (12 banques) ; dernière date des états financiers sans filtre ; ROE 2019 vide (pas de 31/12/2018).
+EVALUATE
+ROW (
+    "ROE secteur 2024", CALCULATE ( [ROE secteur], Dim_Date[Annee] = 2024 ),
+    "ROA secteur 2024", CALCULATE ( [ROA secteur], Dim_Date[Annee] = 2024 ),
+    "ROE secteur S1 2025", CALCULATE ( [ROE secteur], Dim_Date[Annee_Trimestre] = "2025T2" ),
+    "ROE secteur S1 2026", CALCULATE ( [ROE secteur], Dim_Date[Annee_Trimestre] = "2026T2" ),
+    "Date fin EF (sans filtre)", [Date fin EF],
+    "ROE secteur 2019 (vide attendu)", CALCULATE ( [ROE secteur], Dim_Date[Annee] = 2019 )
+)
+// 3. Détail du calcul pour BIAT 2024, et deux cas particuliers (UIB 30/06/2020, BNA 30/06/2025).
+EVALUATE
+ROW (
+    "BIAT 2024 resultat net", CALCULATE ( [Resultat net], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] = 2024 ),
+    "BIAT 2024 cap propres", CALCULATE ( [Cap propres EF], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] = 2024 ),
+    "BIAT 2024 cap propres moyens", CALCULATE ( [Cap propres moyens], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] = 2024 ),
+    "BIAT 2024 total actif", CALCULATE ( [Total actif], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] = 2024 ),
+    "UIB S1 2020 resultat net", CALCULATE ( [Resultat net], Dim_Banque[code_banque] = "UIB", Dim_Date[Annee_Trimestre] = "2020T2" ),
+    "UIB S1 2020 ROE", CALCULATE ( [ROE], Dim_Banque[code_banque] = "UIB", Dim_Date[Annee_Trimestre] = "2020T2" ),
+    "BNA S1 2025 resultat net", CALCULATE ( [Resultat net], Dim_Banque[code_banque] = "BNA", Dim_Date[Annee_Trimestre] = "2025T2" ),
+    "BNA S1 2025 annualise", CALCULATE ( [Resultat net annualise], Dim_Banque[code_banque] = "BNA", Dim_Date[Annee_Trimestre] = "2025T2" )
+)
