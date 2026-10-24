@@ -65,7 +65,8 @@ Un groupe à la fois, chacun vérifié dans Power BI Desktop (requête de contr�
 Pages construites dans Power BI Desktop à partir des mesures (liste des pages : spécification, section 9),
 avec le segment « Dernier trimestre complet » par défaut et le paramètre de champ « Indicateur affiché ».
 Présentation commune (demande du 24/10/2026, sans changer les pages ni les visuels prévus) : thème bancaire,
-fonds de page signés, segment par banque avec une icône cliquable, visuel Play Axis pour faire défiler les
+fonds de page signés, segment par banque avec le logo de chaque banque (colonne `icone`, à vérifier dans
+Power BI Desktop), visuel Play Axis pour faire défiler les
 années (guide, section 4.1).
 Ensuite : `docs/validation.md` (étape 3), captures et publication sur le web avec le lien en tête du README
 (étape 8).
@@ -135,6 +136,7 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 23/10/2026 | Ouverture du projet par un tiers | Cache des données Power BI versionné (données publiques) : le projet s'ouvre avec ses données sans réglage ; section « Ouvrir le rapport » du README ; publication sur le web à la fin |
 | 23/10/2026 | Documentation des fonctions M | Tableau de chaque fonction M utilisée (ce qu'elle fait, requêtes) dans le guide et son PDF, contrôlé par un test |
 | 23/10/2026 | Étape 5 terminée | Les 22 requêtes Power Query sont vérifiées ; passage à l'étape 6 (table des dates, relations, mesures DAX) |
+| 24/10/2026 | Logos des banques | Logos officiels téléchargés (sites des banques, sinon fiche de la Bourse ou Wikimedia Commons), réduits en vignettes 240 × 120, versionnés dans `donnees_reference/logos/` avec leur source et la mention de propriété ; colonne `icone` de `Dim_Banque` construite en Power Query (image intégrée, catégorie « URL d'image ») ; pastilles au code en secours |
 | 24/10/2026 | Présentation du rapport | Thème bleu marine et or, fonds de page 16:9 signés (`python scripts/generer_theme.py`), pastilles au code de chaque banque pour le segment à images (pas de logo officiel), visuel Play Axis pour faire défiler les années ; pages et visuels de la spécification inchangés |
 | 24/10/2026 | Étape 6 terminée | Table des dates, relations et 142 mesures vérifiées ; passage à l'étape 7 (pages du rapport) |
 | 24/10/2026 | Qualité des données | « Taux d'extraction » remplacé par la part des documents sans alerte, à côté du nombre d'écarts qui viennent des banques et des documents à vérifier ; paramètre de champ « Indicateur affiché » créé avec les pages du rapport |

@@ -7,8 +7,8 @@ Sorties dans powerbi/theme/ :
 - secteur_bancaire.json : thème à importer (Affichage › Thèmes › Parcourir les thèmes) ;
 - fond_page.png : bandeau de titre en haut, pied de page signé ; fond_page_filtres.png : même fond avec
   une bande claire sous le titre pour les segments (banques, Play Axis) ;
-- icones_banques.png : aperçu des pastilles (le texte SVG de chaque pastille est construit dans Power Query,
-  colonne icone de Dim_Banque, mêmes couleurs : COULEURS_BANQUES).
+- icones_banques.png : aperçu des pastilles au code de chaque banque, solution de secours si un logo
+  officiel (donnees_reference/logos/, colonne icone de Dim_Banque) devait être retiré.
 
 Utilisation : python scripts/generer_theme.py
 """

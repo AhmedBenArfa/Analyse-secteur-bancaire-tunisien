@@ -307,6 +307,14 @@ inconnue, entre le 30/06 et le 31/12/2024 »), pour que les périodes se suivent
 | `SansColonnesVides` | retire `actionnariat` et `groupe`, vides dans le CSV |
 | `ActionnariatActuel` | filtre de `Banques_Actionnariat` : la ligne sans `date_fin` (une par banque) |
 | `Fusion`, `Developpee` | **fusion** sur `code_banque` (jointure externe gauche) : actionnaire de référence, part du capital, catégorie, groupe, date de la source (`date_actionnariat`) |
+| `Logos` | connecteur Dossier sur `donnees_reference\logos\` : les fichiers `.png` (un par banque, nommé par son code ; sources dans le `LISEZMOI.md` du dossier) |
+| `Icones` | colonne `icone` = `"data:image/png;base64,"` & le contenu du fichier en base 64 (`Binary.ToText`) : l'image elle-même écrite en texte, que Power BI affiche sans aller sur internet |
+| `CodeLogo`, `FusionLogos`, `AvecIcone` | code de la banque tiré du nom du fichier (`AB.png` → `AB`), puis **fusion** sur `code_banque` : une banque sans logo garderait une icône vide |
+
+Dans le modèle, `icone` a la **catégorie de données « URL d'image »** (`dataCategory: ImageUrl`) : un tableau ou un
+segment à images affiche le logo au lieu du texte. Les logos (12 vignettes de 240 × 120 pixels, fond transparent)
+sont la propriété des banques ; ils servent seulement à les identifier (`tests/test_logos.py` : un logo par banque,
+assez léger pour une image intégrée, source écrite pour chacun).
 
 **Pourquoi l'actionnariat actuel seulement** : la dimension a une ligne par banque (relation 1 →
 plusieurs vers les faits) ; l'historique reste dans `Banques_Actionnariat`.
@@ -508,7 +516,8 @@ ne manque à ce tableau.
 
 | Fonction | Ce qu'elle fait | Requêtes |
 |---|---|---|
-| `Folder.Files` | liste les fichiers d'un dossier (nom, contenu binaire, extension, dossier, dates) : connecteur Dossier | `Fichiers_Donnees` |
+| `Folder.Files` | liste les fichiers d'un dossier (nom, contenu binaire, extension, dossier, dates) : connecteur Dossier | `Fichiers_Donnees`, `Dim_Banque` (logos) |
+| `Binary.ToText` | écrit un contenu binaire en texte ; avec `BinaryEncoding.Base64`, en base 64 (image intégrée `data:image/png;base64,…`) | `Dim_Banque` |
 | `File.Contents` | lit un fichier du disque en binaire | `Banques_Actionnariat` |
 | `Excel.Workbook` | ouvre un classeur Excel et liste ses feuilles et ses tables nommées : connecteur Excel | `Banques_Actionnariat` |
 | `Web.Contents` | télécharge une adresse web ; avec `RelativePath`, l'adresse de base reste fixe : source URL | `Operations_Titres`, `Evenements` |
@@ -548,6 +557,8 @@ ne manque à ce tableau.
 | `Text.Start` | premiers caractères d'un texte (« 2024T3 » → « 2024 ») | `Controle` |
 | `Text.End` | derniers caractères d'un texte (« 2024T3 » → « 3 ») | `Controle` |
 | `Date.EndOfMonth` | dernier jour du mois d'une date (date d'arrêté du trimestre) | `Controle` |
+| `Text.Lower` | met un texte en minuscules (extension « .PNG » ou « .png ») | `Dim_Banque` |
+| `Text.BeforeDelimiter` | partie d'un texte avant un séparateur (« AB.png » → « AB ») | `Dim_Banque` |
 | `Text.Split` | découpe un texte selon un séparateur (alertes séparées par « \| ») | `Controle` |
 | `List.Count` | nombre d'éléments d'une liste (nombre d'alertes) | `Controle` |
 | `List.Contains` | la liste contient-elle cette valeur (les quatre catégories d'actionnariat) ? | `Banques_Actionnariat` |
@@ -1169,11 +1180,11 @@ sur le bandeau (le fond n'en contient pas, pour servir à toutes les pages). Pos
 dans le vide), **Format de la page › Arrière-plan du canevas › Image › Parcourir**, ajustement **Ajuster**,
 transparence **0 %** ; **Arrière-plan du papier peint** à la même couleur que le fond (`#E9EEF5`).
 
-**Segment par banque avec une icône.** Pastilles rondes au code de chaque banque, une couleur par banque
-(aperçu : `powerbi/theme/icones_banques.png`) : pas de logo officiel (marques des banques). Elles seront
-construites dans Power Query (colonne `icone` de `Dim_Banque` : texte SVG en adresse `data:image/svg+xml`,
-catégorie de données « URL d'image ») avec la première page qui les utilise, puis affichées dans un segment
-cliquable à images (segment à boutons de Power BI, ou visuel « Chiclet Slicer » d'AppSource s'il faut).
+**Segment par banque avec une icône.** Les **logos officiels** des 12 banques (`donnees_reference/logos/`,
+décision du 24/10/2026, sources et mention de propriété dans le `LISEZMOI.md` du dossier) sont dans la colonne
+`icone` de `Dim_Banque` (2.8), catégorie « URL d'image ». Ils s'affichent dans un segment cliquable à images
+(segment à boutons de Power BI, ou visuel « Chiclet Slicer » d'AppSource s'il faut), choisi avec la première
+page. Solution de secours : pastilles au code de chaque banque (aperçu `powerbi/theme/icones_banques.png`).
 
 **Défilement des années : Play Axis.** Le visuel personnalisé **Play Axis (Dynamic Slicer)** (AppSource :
 **Visualisations › … › Obtenir d'autres visuels**, rechercher « Play Axis ») ajoute des boutons lecture,

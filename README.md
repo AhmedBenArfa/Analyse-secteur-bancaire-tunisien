@@ -202,6 +202,10 @@ de chaque document.
 Le code de ce dépôt (scripts Python, requêtes Power Query, mesures DAX) est publié sous licence
 MIT : voir [LICENSE](LICENSE).
 
+Les logos des banques (`donnees_reference/logos/`) sont la propriété de leurs banques respectives ; ils
+servent uniquement à identifier chaque banque dans le rapport et ne sont pas couverts par la licence du
+code (source de chaque logo : [`donnees_reference/logos/LISEZMOI.md`](donnees_reference/logos/LISEZMOI.md)).
+
 ## Auteur
 
 Auteur : Ahmed Ben Arfa

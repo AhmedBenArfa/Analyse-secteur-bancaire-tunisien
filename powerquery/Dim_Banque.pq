@@ -21,6 +21,22 @@ let
         Fusion, "Actionnariat",
         {"actionnaire_reference", "part_capital_pct", "actionnariat", "groupe", "date_reference"},
         {"actionnaire_reference", "part_capital_pct", "actionnariat", "groupe", "date_actionnariat"}
-    )
+    ),
+    // logos des banques (donnees_reference\logos\<code>.png, sources dans le LISEZMOI du dossier), lus avec le
+    // connecteur Dossier : chaque image devient une adresse « data:image/png;base64,… » que Power BI affiche
+    // dans un segment ou un tableau (catégorie de données « URL d'image »)
+    Logos = Table.SelectRows(
+        Folder.Files(CheminDonnees & "\donnees_reference\logos"), each Text.Lower([Extension]) = ".png"
+    ),
+    Icones = Table.AddColumn(
+        Logos, "icone", each "data:image/png;base64," & Binary.ToText([Content], BinaryEncoding.Base64), type text
+    ),
+    CodeLogo = Table.AddColumn(Icones, "code_logo", each Text.BeforeDelimiter([Name], "."), type text),
+    // fusion sur le code : une banque sans logo garde une icône vide
+    FusionLogos = Table.NestedJoin(
+        Developpee, {"code_banque"}, Table.SelectColumns(CodeLogo, {"code_logo", "icone"}), {"code_logo"},
+        "Logo", JoinKind.LeftOuter
+    ),
+    AvecIcone = Table.ExpandTableColumn(FusionLogos, "Logo", {"icone"})
 in
-    Developpee
+    AvecIcone

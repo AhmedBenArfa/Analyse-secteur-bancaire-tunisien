@@ -52,14 +52,17 @@ def ajouter_fonction(nom, description, apres):
     print(nom, "ajoutée (fonction)")
 
 
-def ajouter_colonne(table, colonne, type_tmdl="string"):
-    """Colonne ajoutée juste avant la partition (le code M doit la produire : voir remplacer_partition)."""
+def ajouter_colonne(table, colonne, type_tmdl="string", categorie=None):
+    """Colonne ajoutée juste avant la partition (le code M doit la produire : voir remplacer_partition) ;
+    categorie : catégorie de données de Power BI (ImageUrl pour une image, WebUrl pour un lien)."""
     p = DEF / "tables" / f"{table}.tmdl"
     t = lire(p)
     if f"\tcolumn {colonne}{NL}" in t:
         print(table, colonne, "existe déjà : rien à faire")
         return
-    bloc = [f"\tcolumn {colonne}", f"\t\tdataType: {type_tmdl}", f"\t\tlineageTag: {uuid.uuid4()}",
+    bloc = [f"\tcolumn {colonne}", f"\t\tdataType: {type_tmdl}"]
+    bloc += [f"\t\tdataCategory: {categorie}"] if categorie else []
+    bloc += [f"\t\tlineageTag: {uuid.uuid4()}",
             "\t\tsummarizeBy: none", f"\t\tsourceColumn: {colonne}", "", "\t\tannotation SummarizationSetBy = User", "", ""]
     i = t.index("\tpartition ")
     p.write_bytes((t[:i] + NL.join(bloc) + t[i:]).encode("utf-8"))
