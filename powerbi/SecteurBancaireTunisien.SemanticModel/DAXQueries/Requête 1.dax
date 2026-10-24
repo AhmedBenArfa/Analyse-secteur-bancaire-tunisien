@@ -1,35 +1,32 @@
-EVALUATE
-ROW (
-    "Var PNB A/A 2024T3", CALCULATE ( [Var PNB A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Var PNB cumul A/A 2024T3", CALCULATE ( [Var PNB cumul A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Var Credits A/A 2024T3", CALCULATE ( [Var Credits A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Var Depots A/A 2024T3", CALCULATE ( [Var Depots A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Var Charges operatoires A/A 2024T3", CALCULATE ( [Var Charges operatoires A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Var PNB T/T 2024T3", CALCULATE ( [Var PNB T/T %], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "PNB 4T glissants 2024T3", CALCULATE ( [PNB 4T glissants], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Var PNB annuel A/A 2025", CALCULATE ( [Var PNB annuel A/A %], Dim_Date[Annee] = 2025 ),
-    "Var Credits A/A 2026", CALCULATE ( [Var Credits A/A %], Dim_Date[Annee] = 2026 ),
-    "TCAM PNB 2020-2025", [TCAM PNB 2020-2025]
-)
 
 EVALUATE
 SUMMARIZECOLUMNS (
     Dim_Banque[code_banque],
-    TREATAS ( { "BH", "BIAT" }, Dim_Banque[code_banque] ),
-    "Var PNB annuel A/A 2025", CALCULATE ( [Var PNB annuel A/A %], Dim_Date[Annee] = 2025 ),
-    "Var PNB A/A 2025T4", CALCULATE ( [Var PNB A/A %], Dim_Date[Annee_Trimestre] = "2025T4" ),
-    "Var Credits A/A 2024T3", CALCULATE ( [Var Credits A/A %], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Var PNB T/T 2024T3", CALCULATE ( [Var PNB T/T %], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "PNB 4T glissants 2024T3", CALCULATE ( [PNB 4T glissants], Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "TCAM PNB 2020-2025", [TCAM PNB 2020-2025]
+    "ROE 2024", CALCULATE ( [ROE], Dim_Date[Annee] = 2024 ),
+    "ROA 2024", CALCULATE ( [ROA], Dim_Date[Annee] = 2024 ),
+    "ROE S1 2025", CALCULATE ( [ROE], Dim_Date[Annee_Trimestre] = "2025T2" ),
+    "ROA S1 2025", CALCULATE ( [ROA], Dim_Date[Annee_Trimestre] = "2025T2" )
 )
 ORDER BY Dim_Banque[code_banque]
 
 EVALUATE
 ROW (
-    "Evenement BH 2024T4 PNB", CALCULATE ( [Evenement texte], Dim_Banque[code_banque] = "BH", Dim_Date[Annee_Trimestre] = "2024T4", Dim_Indicateur[code_indicateur] = "PNB" ),
-    "Montant MDT", CALCULATE ( [Evenement montant MDT], Dim_Banque[code_banque] = "BH", Dim_Date[Annee_Trimestre] = "2024T4", Dim_Indicateur[code_indicateur] = "PNB" ),
-    "Rupture PNB BH 2024T4", CALCULATE ( [Rupture PNB], Dim_Banque[code_banque] = "BH", Dim_Date[Annee_Trimestre] = "2024T4" ),
-    "Rupture PNB BH 2024T3 (vide attendu)", CALCULATE ( [Rupture PNB], Dim_Banque[code_banque] = "BH", Dim_Date[Annee_Trimestre] = "2024T3" ),
-    "Nb evenements", [Nb evenements]
+    "ROE secteur 2024", CALCULATE ( [ROE secteur], Dim_Date[Annee] = 2024 ),
+    "ROA secteur 2024", CALCULATE ( [ROA secteur], Dim_Date[Annee] = 2024 ),
+    "ROE secteur S1 2025", CALCULATE ( [ROE secteur], Dim_Date[Annee_Trimestre] = "2025T2" ),
+    "ROE secteur S1 2026", CALCULATE ( [ROE secteur], Dim_Date[Annee_Trimestre] = "2026T2" ),
+    "Date fin EF (sans filtre)", [Date fin EF],
+    "ROE secteur 2019 (vide attendu)", CALCULATE ( [ROE secteur], Dim_Date[Annee] = 2019 )
+)
+
+EVALUATE
+ROW (
+    "BIAT 2024 resultat net", CALCULATE ( [Resultat net], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] = 2024 ),
+    "BIAT 2024 cap propres", CALCULATE ( [Cap propres EF], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] = 2024 ),
+    "BIAT 2024 cap propres moyens", CALCULATE ( [Cap propres moyens], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] = 2024 ),
+    "BIAT 2024 total actif", CALCULATE ( [Total actif], Dim_Banque[code_banque] = "BIAT", Dim_Date[Annee] = 2024 ),
+    "UIB S1 2020 resultat net", CALCULATE ( [Resultat net], Dim_Banque[code_banque] = "UIB", Dim_Date[Annee_Trimestre] = "2020T2" ),
+    "UIB S1 2020 ROE", CALCULATE ( [ROE], Dim_Banque[code_banque] = "UIB", Dim_Date[Annee_Trimestre] = "2020T2" ),
+    "BNA S1 2025 resultat net", CALCULATE ( [Resultat net], Dim_Banque[code_banque] = "BNA", Dim_Date[Annee_Trimestre] = "2025T2" ),
+    "BNA S1 2025 annualise", CALCULATE ( [Resultat net annualise], Dim_Banque[code_banque] = "BNA", Dim_Date[Annee_Trimestre] = "2025T2" )
 )
