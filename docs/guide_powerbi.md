@@ -1252,3 +1252,40 @@ page. Solution de secours : pastilles au code de chaque banque (aperçu `powerbi
 pause, précédent et suivant qui font défiler les valeurs d'un champ (années, ou `Annee_Trimestre`) et filtrent
 la page à chaque pas : utile pour les pages Vue d'ensemble, Classement et Évolution. Visuel certifié, il reste
 affiché après la publication sur le web.
+
+### 4.2 Page 1 : Vue d'ensemble
+
+**But** : en un coup d'œil, la taille du secteur au dernier trimestre complet (PNB, crédits, dépôts), son
+efficacité (coefficient d'exploitation harmonisé) et sa concentration (part de marché de chaque banque,
+indice HHI dans le temps). Chiffres du secteur seulement si les 12 banques sont présentes (3.4).
+
+**Mise en page** (page 1 280 × 720, positions en pixels : x, y, largeur × hauteur ; **Format › Général ›
+Propriétés › Taille et position**) :
+
+| Élément | Position | Champs et mesures | Réglages |
+|---|---|---|---|
+| Fond | page entière | `powerbi/theme/fond_page_filtres.png` | Format de la page › Arrière-plan du canevas › Image, ajustement **Ajuster**, transparence 0 % |
+| Titre | 24, 14, 600 × 44 | zone de texte « Vue d'ensemble du secteur » | Segoe UI Semibold 24, blanc, sans arrière-plan |
+| Date des données | 640, 22, 360 × 32 | carte (nouvelle) : `Titre rapport` | sans arrière-plan ni contour, valeur Segoe UI 12 blanche, étiquette masquée |
+| Segment du trimestre | 24, 92, 250 × 52 | segment : `Dim_Date[Choix_Trimestre]` | style **Liste déroulante**, **sélection unique**, choisir « Dernier trimestre complet » ; en-tête « Trimestre » |
+| Segment des banques | 290, 92, 966 × 52 | segment à boutons : `Dim_Banque[code_banque]`, image : `Dim_Banque[icone]` | 12 boutons sur une ligne, image seule, sélection multiple ; sans effet sur les cartes du secteur (elles ignorent le filtre de banque) |
+| Carte PNB | 16, 162, 304 × 110 | `PNB secteur` | étiquette « PNB du trimestre (MDT) », 1 décimale ; étiquette de référence : `Banques presentes PNB` « banques présentes » |
+| Carte coefficient | 330, 162, 304 × 110 | `Coef secteur` | étiquette « Coefficient d'exploitation harmonisé » ; référence : `Coef mediane` « médiane des banques » |
+| Carte crédits | 644, 162, 304 × 110 | `Credits secteur` | étiquette « Encours de crédits (MDT) », 0 décimale ; référence : `Var Credits A/A %` « sur un an » |
+| Carte dépôts | 958, 162, 306 × 110 | `Depots secteur` | étiquette « Encours de dépôts (MDT) », 0 décimale ; référence : `Var Depots A/A %` « sur un an » |
+| Parts de marché | 16, 284, 620 × 400 | graphique à barres groupées : axe Y `Dim_Banque[code_banque]`, axe X `Part de marche PNB`, info-bulles `PNB`, `Rang PNB` | tri par `Part de marche PNB` décroissant, étiquettes de données « 0,0 % » ; titre « Part de marché du PNB » |
+| Concentration | 646, 284, 618 × 280 | graphique en courbes : axe X `Dim_Date[Annee_Trimestre]`, axe Y `HHI PNB`, info-bulles `Part 3 premieres banques PNB`, `Top 3 banques PNB` | axe X **catégoriel**, axe Y de 1 000 à 1 300 ; titre « Concentration du PNB (indice HHI) » ; **Modifier les interactions** : le segment du trimestre ne filtre **pas** ce graphique (icône « Aucun ») |
+| Trois premières banques | 646, 574, 618 × 110 | carte (nouvelle) : `Top 3 banques PNB` et `Part 3 premieres banques PNB` | étiquettes « Trois premières banques » et « Part du PNB du secteur » |
+
+**Pourquoi ces choix.** Le segment du trimestre est réglé sur « Dernier trimestre complet » et non sur le
+dernier trimestre : la page reste juste quand de nouvelles publications arrivent (3.1). Le graphique du HHI
+montre toute la période : on retire le filtre du segment du trimestre sur ce seul visuel (interaction
+« Aucun »), sinon il n'afficherait qu'un point. Le segment des banques filtre les barres (une banque choisie
+reste seule avec sa part) ; les cartes du secteur ne bougent pas, puisque leurs mesures ignorent le filtre de
+banque.
+
+**Valeurs attendues au T3 2026** (calculées à part depuis `donnees_publiees/`) : PNB du secteur 1 936,6 MDT
+(12 banques présentes) ; coefficient du secteur 44,7 % ; crédits 86 880 MDT ; dépôts 112 896 MDT ; parts du
+PNB : BIAT 22,4 %, BNA 15,4 %, STB 10,0 %, Attijari 9,1 %, BH 8,5 %, AB 7,8 %, UIB 7,5 %, BT 6,8 %, ATB 5,0 %,
+UBCI 4,9 %, Wifak 1,7 %, BTE 1,0 % ; trois premières banques « BIAT, BNA, STB », 47,8 % du PNB ; HHI 1 209
+(entre 1 106 au T2 2021 et 1 209 au T3 2026 sur les 28 trimestres : marché peu concentré, en légère hausse).
