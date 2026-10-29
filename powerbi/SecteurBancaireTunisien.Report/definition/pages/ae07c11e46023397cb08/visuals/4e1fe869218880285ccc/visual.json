@@ -82,6 +82,30 @@
             "order": 0
           }
         }
+      ],
+      "referenceLabelTitle": [
+        {
+          "properties": {
+            "titleContentType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'custom'"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'sur un an'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Credits secteur texte",
+            "id": "field-b8b64fc3-53c3-8281-14f7-bbfc545ab845"
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true

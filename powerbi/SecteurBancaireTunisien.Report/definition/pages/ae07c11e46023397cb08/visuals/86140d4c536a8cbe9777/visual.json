@@ -82,6 +82,30 @@
             "order": 0
           }
         }
+      ],
+      "referenceLabelTitle": [
+        {
+          "properties": {
+            "titleContentType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'custom'"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'sur un an'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Depots secteur texte",
+            "id": "field-2eeb2300-87d4-86ed-0a21-be6eedb83eef"
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true

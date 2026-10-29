@@ -82,6 +82,30 @@
             "order": 0
           }
         }
+      ],
+      "referenceLabelTitle": [
+        {
+          "properties": {
+            "titleContentType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'custom'"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'médiane des banques'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Coef secteur",
+            "id": "field-f674de9f-83aa-2970-d9c8-2ef6ceab1670"
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true

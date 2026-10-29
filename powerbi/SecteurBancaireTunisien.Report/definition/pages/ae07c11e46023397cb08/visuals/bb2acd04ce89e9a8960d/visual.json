@@ -82,6 +82,30 @@
             "order": 0
           }
         }
+      ],
+      "referenceLabelTitle": [
+        {
+          "properties": {
+            "titleContentType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'custom'"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'banques présentes'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.PNB secteur texte",
+            "id": "field-e03a9507-99cc-1228-abda-44f62a8eb81d"
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true
