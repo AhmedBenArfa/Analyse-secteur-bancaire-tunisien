@@ -9,6 +9,15 @@
         "page": "2.3.1"
       },
       "type": "SharedResources"
+    },
+    "customTheme": {
+      "name": "Secteur_bancaire_tunisien48812771579061043.json",
+      "reportVersionAtImport": {
+        "visual": "2.14.0",
+        "report": "3.4.0",
+        "page": "2.3.1"
+      },
+      "type": "RegisteredResources"
     }
   },
   "objects": {
@@ -35,6 +44,22 @@
           "name": "Fluent2-CY26SU10",
           "path": "BaseThemes/Fluent2-CY26SU10.json",
           "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "fond_page_filtres20611384248992515.png",
+          "path": "fond_page_filtres20611384248992515.png",
+          "type": "Image"
+        },
+        {
+          "name": "Secteur_bancaire_tunisien48812771579061043.json",
+          "path": "Secteur_bancaire_tunisien48812771579061043.json",
+          "type": "CustomTheme"
         }
       ]
     }

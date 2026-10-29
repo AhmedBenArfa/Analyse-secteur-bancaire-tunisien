@@ -248,7 +248,7 @@ table Mesures
 			    [Banques presentes PNB] = [Nombre de banques],
 			    CALCULATE ( [PNB], REMOVEFILTERS ( Dim_Banque ) )
 			)
-		formatString: #,0.000
+		formatString: #,0.0
 		displayFolder: 2. Secteur\Totaux
 		lineageTag: e538ba6b-082d-44ad-819c-a548b1ac7162
 
