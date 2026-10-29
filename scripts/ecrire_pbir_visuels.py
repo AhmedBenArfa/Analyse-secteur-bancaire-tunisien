@@ -34,18 +34,23 @@ def texte(s):
     return litteral("'" + s.replace("'", "''") + "'")
 
 
-def remplacer_mesure(page, visuel, ancienne, nouvelle):
-    """Remplace une mesure par une autre partout dans le visuel (champ, tri, filtre, sélecteurs) ; rien si déjà fait."""
+def remplacer_champ(page, visuel, table, ancien, nouveau):
+    """Remplace un champ (mesure ou colonne de la table) par un autre partout dans le visuel (champ, tri, filtre,
+    sélecteurs) ; rien si déjà fait."""
     p = PAGES / page / "visuals" / visuel / "visual.json"
     t = p.read_bytes().decode("utf-8")
-    if f'"Mesures.{nouvelle}"' in t:
+    if f'"{table}.{nouveau}"' in t:
         return
-    for a, b in [(f'"Property": "{ancienne}"', f'"Property": "{nouvelle}"'),
-                 (f'"Mesures.{ancienne}"', f'"Mesures.{nouvelle}"'),
-                 (f'"nativeQueryRef": "{ancienne}"', f'"nativeQueryRef": "{nouvelle}"')]:
+    for a, b in [(f'"Property": "{ancien}"', f'"Property": "{nouveau}"'),
+                 (f'"{table}.{ancien}"', f'"{table}.{nouveau}"'),
+                 (f'"nativeQueryRef": "{ancien}"', f'"nativeQueryRef": "{nouveau}"')]:
         assert a in t, f"{visuel} : {a} introuvable"
         t = t.replace(a, b)
     p.write_bytes(t.encode("utf-8"))
+
+
+def remplacer_mesure(page, visuel, ancienne, nouvelle):
+    remplacer_champ(page, visuel, "Mesures", ancienne, nouvelle)
 
 
 def titre_etiquette_reference(page, visuel, titre):
@@ -111,13 +116,15 @@ def vue_ensemble():
            {"Mesures.Part de marche PNB": "Part de marché", "Dim_Banque.code_banque": "Banque",
             "Mesures.PNB": "PNB du trimestre (MDT)", "Mesures.Rang PNB": "Rang"},
            titre="Part de marché du PNB", objets={"labels": {"show": litteral("true")}})
-    # concentration : trimestres en axe catégoriel, HHI de 1 000 à 1 300, titre
+    # concentration : date en axe continu (les 28 trimestres tiennent dans la largeur, sans défilement ; un point au
+    # dernier jour de chaque trimestre, seules dates où le HHI a une valeur), HHI de 1 000 à 1 300, titre
+    remplacer_champ(page, "1c3ebd2e2c48355e47e4", "Dim_Date", "Annee_Trimestre", "Date")
     regler(page, "1c3ebd2e2c48355e47e4", (646, 304, 618, 270),
-           {"Dim_Date.Annee_Trimestre": "Trimestre", "Mesures.HHI PNB": "Indice HHI",
+           {"Dim_Date.Date": "Fin du trimestre", "Mesures.HHI PNB": "Indice HHI",
             "Mesures.Top 3 banques PNB": "Trois premières banques",
             "Mesures.Part 3 premieres banques PNB": "Part des trois premières"},
            titre="Concentration du PNB (indice HHI)",
-           objets={"categoryAxis": {"axisType": texte("Categorical")},
+           objets={"categoryAxis": {"axisType": texte("Continuous")},
                    "valueAxis": {"start": litteral("1000D"), "end": litteral("1300D")}})
     # le segment du trimestre ne filtre pas la courbe : toute la période reste visible
     interactions(page, [("fb55d5a1c75e90385c70", "1c3ebd2e2c48355e47e4", "NoFilter")])

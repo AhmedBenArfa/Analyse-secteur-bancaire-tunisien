@@ -23,13 +23,13 @@
                       "Entity": "Dim_Date"
                     }
                   },
-                  "Property": "Annee_Trimestre"
+                  "Property": "Date"
                 }
               },
-              "queryRef": "Dim_Date.Annee_Trimestre",
-              "nativeQueryRef": "Annee_Trimestre",
+              "queryRef": "Dim_Date.Date",
+              "nativeQueryRef": "Date",
               "active": true,
-              "displayName": "Trimestre"
+              "displayName": "Fin du trimestre"
             }
           ]
         },
@@ -131,7 +131,7 @@
             "axisType": {
               "expr": {
                 "Literal": {
-                  "Value": "'Categorical'"
+                  "Value": "'Continuous'"
                 }
               }
             }
@@ -171,7 +171,7 @@
                 "Entity": "Dim_Date"
               }
             },
-            "Property": "Annee_Trimestre"
+            "Property": "Date"
           }
         },
         "type": "Categorical"

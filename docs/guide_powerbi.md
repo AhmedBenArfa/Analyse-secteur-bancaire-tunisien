@@ -1274,7 +1274,7 @@ Propriétés › Taille et position**) :
 | Carte crédits | 644, 162, 304 × 130 | `Credits secteur` | étiquette « Encours de crédits (MDT) », 0 décimale ; référence : `Var Credits A/A %` « sur un an » |
 | Carte dépôts | 958, 162, 306 × 130 | `Depots secteur` | étiquette « Encours de dépôts (MDT) », 0 décimale ; référence : `Var Depots A/A %` « sur un an » |
 | Parts de marché | 16, 304, 620 × 380 | graphique à barres groupées : axe Y `Dim_Banque[code_banque]`, axe X `Part de marche PNB`, info-bulles `PNB`, `Rang PNB` | tri par `Part de marche PNB` décroissant, étiquettes de données « 0,0 % » ; titre « Part de marché du PNB » |
-| Concentration | 646, 304, 618 × 270 | graphique en courbes : axe X `Dim_Date[Annee_Trimestre]`, axe Y `HHI PNB`, info-bulles `Part 3 premieres banques PNB`, `Top 3 banques PNB` | axe X **catégoriel**, axe Y de 1 000 à 1 300 ; titre « Concentration du PNB (indice HHI) » ; **Modifier les interactions** : le segment du trimestre ne filtre **pas** ce graphique (icône « Aucun ») |
+| Concentration | 646, 304, 618 × 270 | graphique en courbes : axe X `Dim_Date[Date]`, axe Y `HHI PNB`, info-bulles `Part 3 premieres banques PNB`, `Top 3 banques PNB` | axe X **continu** (années ; un point au dernier jour de chaque trimestre), axe Y de 1 000 à 1 300 ; titre « Concentration du PNB (indice HHI) » ; **Modifier les interactions** : le segment du trimestre ne filtre **pas** ce graphique (icône « Aucun ») |
 | Trois premières banques | 646, 584, 618 × 100 | carte (nouvelle) : `Top 3 banques PNB` et `Part 3 premieres banques PNB` | étiquettes « Trois premières banques » et « Part du PNB du secteur » |
 
 **Construction (30/10/2026).** Les visuels sont créés dans Power BI Desktop avec leurs champs ; les réglages
@@ -1295,6 +1295,11 @@ visuel), projet fermé. Deux écarts avec le tableau :
 - **Cartes de 130 pixels de haut** (et non 110) : à 110, le libellé au-dessus de la valeur était coupé ; les
   graphiques sont descendus de 20 pixels. Le sous-titre automatique des graphiques (« Part de marché, PNB du
   trimestre (MDT) et Rang par Banque ») est masqué (`subTitle`).
+- **Axe de la courbe de concentration : la date, en axe continu** (et non le libellé « 2024T3 ») : en axe
+  catégoriel, les 28 trimestres ne tenaient pas dans la largeur (barre de défilement, 2026T2 et 2026T3 cachés à
+  droite). Sur l'axe des dates, le HHI n'a de valeur qu'au dernier jour de chaque trimestre : un point par
+  trimestre, l'axe gradué en années, la date exacte dans l'info-bulle. Les trimestres sans indicateurs (2019T1 à
+  2019T3, avant le début des données ; 2026T4, pas encore publié) n'ont pas de point.
 
 **Pourquoi ces choix.** Le segment du trimestre est réglé sur « Dernier trimestre complet » et non sur le
 dernier trimestre : la page reste juste quand de nouvelles publications arrivent (3.1). Le graphique du HHI
