@@ -3,9 +3,9 @@
   "name": "fec36675a31e52c8c044",
   "position": {
     "x": 16,
-    "y": 284,
+    "y": 304,
     "z": 6001,
-    "height": 400,
+    "height": 380,
     "width": 620,
     "tabOrder": 6001
   },
@@ -122,6 +122,19 @@
               "expr": {
                 "Literal": {
                   "Value": "'Part de marché du PNB'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

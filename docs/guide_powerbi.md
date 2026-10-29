@@ -1269,13 +1269,13 @@ Propriétés › Taille et position**) :
 | Date des données | 640, 22, 360 × 32 | carte (nouvelle) : `Titre rapport` | sans arrière-plan ni contour, valeur Segoe UI 12 blanche, étiquette masquée |
 | Segment du trimestre | 24, 92, 250 × 52 | segment : `Dim_Date[Choix_Trimestre]` | style **Liste déroulante**, **sélection unique**, choisir « Dernier trimestre complet » ; en-tête « Trimestre » |
 | Segment des banques | 290, 92, 966 × 52 | segment à boutons : `Dim_Banque[code_banque]`, image : `Dim_Banque[icone]` | 12 boutons sur une ligne, image seule, sélection multiple ; sans effet sur les cartes du secteur (elles ignorent le filtre de banque) |
-| Carte PNB | 16, 162, 304 × 110 | `PNB secteur` | étiquette « PNB du trimestre (MDT) », 1 décimale ; étiquette de référence : `Banques presentes PNB` « banques présentes » |
-| Carte coefficient | 330, 162, 304 × 110 | `Coef secteur` | étiquette « Coefficient d'exploitation harmonisé » ; référence : `Coef mediane` « médiane des banques » |
-| Carte crédits | 644, 162, 304 × 110 | `Credits secteur` | étiquette « Encours de crédits (MDT) », 0 décimale ; référence : `Var Credits A/A %` « sur un an » |
-| Carte dépôts | 958, 162, 306 × 110 | `Depots secteur` | étiquette « Encours de dépôts (MDT) », 0 décimale ; référence : `Var Depots A/A %` « sur un an » |
-| Parts de marché | 16, 284, 620 × 400 | graphique à barres groupées : axe Y `Dim_Banque[code_banque]`, axe X `Part de marche PNB`, info-bulles `PNB`, `Rang PNB` | tri par `Part de marche PNB` décroissant, étiquettes de données « 0,0 % » ; titre « Part de marché du PNB » |
-| Concentration | 646, 284, 618 × 280 | graphique en courbes : axe X `Dim_Date[Annee_Trimestre]`, axe Y `HHI PNB`, info-bulles `Part 3 premieres banques PNB`, `Top 3 banques PNB` | axe X **catégoriel**, axe Y de 1 000 à 1 300 ; titre « Concentration du PNB (indice HHI) » ; **Modifier les interactions** : le segment du trimestre ne filtre **pas** ce graphique (icône « Aucun ») |
-| Trois premières banques | 646, 574, 618 × 110 | carte (nouvelle) : `Top 3 banques PNB` et `Part 3 premieres banques PNB` | étiquettes « Trois premières banques » et « Part du PNB du secteur » |
+| Carte PNB | 16, 162, 304 × 130 | `PNB secteur` | étiquette « PNB du trimestre (MDT) », 1 décimale ; étiquette de référence : `Banques presentes PNB` « banques présentes » |
+| Carte coefficient | 330, 162, 304 × 130 | `Coef secteur` | étiquette « Coefficient d'exploitation harmonisé » ; référence : `Coef mediane` « médiane des banques » |
+| Carte crédits | 644, 162, 304 × 130 | `Credits secteur` | étiquette « Encours de crédits (MDT) », 0 décimale ; référence : `Var Credits A/A %` « sur un an » |
+| Carte dépôts | 958, 162, 306 × 130 | `Depots secteur` | étiquette « Encours de dépôts (MDT) », 0 décimale ; référence : `Var Depots A/A %` « sur un an » |
+| Parts de marché | 16, 304, 620 × 380 | graphique à barres groupées : axe Y `Dim_Banque[code_banque]`, axe X `Part de marche PNB`, info-bulles `PNB`, `Rang PNB` | tri par `Part de marche PNB` décroissant, étiquettes de données « 0,0 % » ; titre « Part de marché du PNB » |
+| Concentration | 646, 304, 618 × 270 | graphique en courbes : axe X `Dim_Date[Annee_Trimestre]`, axe Y `HHI PNB`, info-bulles `Part 3 premieres banques PNB`, `Top 3 banques PNB` | axe X **catégoriel**, axe Y de 1 000 à 1 300 ; titre « Concentration du PNB (indice HHI) » ; **Modifier les interactions** : le segment du trimestre ne filtre **pas** ce graphique (icône « Aucun ») |
+| Trois premières banques | 646, 584, 618 × 100 | carte (nouvelle) : `Top 3 banques PNB` et `Part 3 premieres banques PNB` | étiquettes « Trois premières banques » et « Part du PNB du secteur » |
 
 **Construction (30/10/2026).** Les visuels sont créés dans Power BI Desktop avec leurs champs ; les réglages
 (positions, noms affichés, titres, étiquettes de données, axes, interaction) sont ensuite écrits dans les fichiers
@@ -1288,8 +1288,13 @@ visuel), projet fermé. Deux écarts avec le tableau :
   renvoient le nombre déjà mis en forme (`FORMAT ( valeur, "#,0.0" )`, « 1 936,6 »), vides si le total est vide.
   Le calcul reste celui de `PNB secteur`, `Credits secteur` et `Depots secteur`. `PNB secteur` a gardé une
   décimale (`#,0.0`), réglée dans Power BI et reportée dans `dax/mesures.dax`.
-- **Titres des étiquettes de référence** (« Banques presentes », etc.) : le nom du réglage n'est pas connu dans les
-  fichiers ; ils se renomment dans Power BI (**Format › Objet visuel › Étiquettes de référence**).
+- **Titres des étiquettes de référence** (« banques présentes », « médiane des banques », « sur un an ») : saisis
+  une première fois dans Power BI (**Format › Objet visuel › Étiquettes de référence**), ce qui a montré leur réglage
+  dans les fichiers (`referenceLabelTitle` : `titleContentType` « custom », `titleText`, même sélecteur que
+  l'étiquette) ; l'outil les écrit désormais lui-même.
+- **Cartes de 130 pixels de haut** (et non 110) : à 110, le libellé au-dessus de la valeur était coupé ; les
+  graphiques sont descendus de 20 pixels. Le sous-titre automatique des graphiques (« Part de marché, PNB du
+  trimestre (MDT) et Rang par Banque ») est masqué (`subTitle`).
 
 **Pourquoi ces choix.** Le segment du trimestre est réglé sur « Dernier trimestre complet » et non sur le
 dernier trimestre : la page reste juste quand de nouvelles publications arrivent (3.1). Le graphique du HHI

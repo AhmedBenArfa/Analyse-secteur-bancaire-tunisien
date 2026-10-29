@@ -48,8 +48,22 @@ def remplacer_mesure(page, visuel, ancienne, nouvelle):
     p.write_bytes(t.encode("utf-8"))
 
 
+def titre_etiquette_reference(page, visuel, titre):
+    """Titre de l'étiquette de référence d'une carte (cardVisual) : objet referenceLabelTitle, même sélecteur
+    (metadata et id) que l'étiquette (referenceLabel) ; nom du réglage relevé sur un titre saisi dans Power BI."""
+    p = PAGES / page / "visuals" / visuel / "visual.json"
+    d = lire(p)
+    objets = d["visual"]["objects"]
+    selecteur = objets["referenceLabel"][0]["selector"]
+    objets["referenceLabelTitle"] = [{
+        "properties": {"titleContentType": texte("custom"), "titleText": texte(titre)},
+        "selector": {"metadata": selecteur["metadata"], "id": selecteur["id"]}}]
+    ecrire(p, d)
+
+
 def regler(page, visuel, position, noms=None, titre=None, objets=None):
-    """Position (x, y, largeur, hauteur), noms affichés {queryRef: nom}, titre du visuel, objets {objet: propriétés}."""
+    """Position (x, y, largeur, hauteur), noms affichés {queryRef: nom}, titre du visuel (son sous-titre automatique
+    est masqué), objets {objet: propriétés}."""
     p = PAGES / page / "visuals" / visuel / "visual.json"
     d = lire(p)
     d["position"].update(dict(zip(("x", "y", "width", "height"), position)))
@@ -58,8 +72,9 @@ def regler(page, visuel, position, noms=None, titre=None, objets=None):
             if noms and pr["queryRef"] in noms:
                 pr["displayName"] = noms[pr["queryRef"]]
     if titre is not None:
-        d["visual"].setdefault("visualContainerObjects", {})["title"] = [
-            {"properties": {"show": litteral("true"), "text": texte(titre)}}]
+        conteneur = d["visual"].setdefault("visualContainerObjects", {})
+        conteneur["title"] = [{"properties": {"show": litteral("true"), "text": texte(titre)}}]
+        conteneur["subTitle"] = [{"properties": {"show": litteral("false")}}]
     for cle, proprietes in (objets or {}).items():
         d["visual"].setdefault("objects", {})[cle] = [{"properties": proprietes}]
     ecrire(p, d)
@@ -80,20 +95,24 @@ def vue_ensemble():
     for visuel, mesure in [("bb2acd04ce89e9a8960d", "PNB secteur"), ("4e1fe869218880285ccc", "Credits secteur"),
                            ("86140d4c536a8cbe9777", "Depots secteur")]:
         remplacer_mesure(page, visuel, mesure, mesure + " texte")
-    regler(page, "bb2acd04ce89e9a8960d", (16, 162, 304, 110), {"Mesures.PNB secteur texte": "PNB du trimestre (MDT)"})
-    regler(page, "debf00a7b8c4b10106dc", (330, 162, 304, 110), {"Mesures.Coef secteur": "Coefficient d'exploitation"})
-    regler(page, "4e1fe869218880285ccc", (644, 162, 304, 110), {"Mesures.Credits secteur texte": "Crédits (MDT)"})
-    regler(page, "86140d4c536a8cbe9777", (958, 162, 306, 110), {"Mesures.Depots secteur texte": "Dépôts (MDT)"})
-    regler(page, "85ee3c73c966a8290dd4", (646, 574, 618, 110),
+    # cartes de 130 de haut (à 110, le libellé au-dessus de la valeur était coupé)
+    regler(page, "bb2acd04ce89e9a8960d", (16, 162, 304, 130), {"Mesures.PNB secteur texte": "PNB du trimestre (MDT)"})
+    regler(page, "debf00a7b8c4b10106dc", (330, 162, 304, 130), {"Mesures.Coef secteur": "Coefficient d'exploitation"})
+    regler(page, "4e1fe869218880285ccc", (644, 162, 304, 130), {"Mesures.Credits secteur texte": "Crédits (MDT)"})
+    regler(page, "86140d4c536a8cbe9777", (958, 162, 306, 130), {"Mesures.Depots secteur texte": "Dépôts (MDT)"})
+    for visuel, titre in [("bb2acd04ce89e9a8960d", "banques présentes"), ("debf00a7b8c4b10106dc", "médiane des banques"),
+                          ("4e1fe869218880285ccc", "sur un an"), ("86140d4c536a8cbe9777", "sur un an")]:
+        titre_etiquette_reference(page, visuel, titre)
+    regler(page, "85ee3c73c966a8290dd4", (646, 584, 618, 100),
            {"Mesures.Top 3 banques PNB": "Trois premières banques",
             "Mesures.Part 3 premieres banques PNB": "Part du PNB du secteur"})
     # parts de marché : barres triées par part décroissante (réglage de Power BI), étiquettes de données, titre
-    regler(page, "fec36675a31e52c8c044", (16, 284, 620, 400),
+    regler(page, "fec36675a31e52c8c044", (16, 304, 620, 380),
            {"Mesures.Part de marche PNB": "Part de marché", "Dim_Banque.code_banque": "Banque",
             "Mesures.PNB": "PNB du trimestre (MDT)", "Mesures.Rang PNB": "Rang"},
            titre="Part de marché du PNB", objets={"labels": {"show": litteral("true")}})
     # concentration : trimestres en axe catégoriel, HHI de 1 000 à 1 300, titre
-    regler(page, "1c3ebd2e2c48355e47e4", (646, 284, 618, 280),
+    regler(page, "1c3ebd2e2c48355e47e4", (646, 304, 618, 270),
            {"Dim_Date.Annee_Trimestre": "Trimestre", "Mesures.HHI PNB": "Indice HHI",
             "Mesures.Top 3 banques PNB": "Trois premières banques",
             "Mesures.Part 3 premieres banques PNB": "Part des trois premières"},

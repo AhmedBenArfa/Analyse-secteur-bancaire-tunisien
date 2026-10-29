@@ -3,9 +3,9 @@
   "name": "1c3ebd2e2c48355e47e4",
   "position": {
     "x": 646,
-    "y": 284,
+    "y": 304,
     "z": 6002,
-    "height": 280,
+    "height": 270,
     "width": 618,
     "tabOrder": 6002
   },
@@ -104,6 +104,19 @@
               "expr": {
                 "Literal": {
                   "Value": "'Concentration du PNB (indice HHI)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
