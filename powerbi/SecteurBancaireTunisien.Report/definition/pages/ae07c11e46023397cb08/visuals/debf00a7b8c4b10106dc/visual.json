@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "debf00a7b8c4b10106dc",
   "position": {
-    "x": 289.70104335470069,
-    "y": 262.23503021497737,
+    "x": 330,
+    "y": 162,
     "z": 5000,
-    "height": 149.75516688087237,
-    "width": 186.37651773383678,
+    "height": 110,
+    "width": 304,
     "tabOrder": 5000
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Mesures.Coef secteur",
-              "nativeQueryRef": "Coef secteur"
+              "nativeQueryRef": "Coef secteur",
+              "displayName": "Coefficient d'exploitation"
             }
           ]
         }

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "fec36675a31e52c8c044",
   "position": {
-    "x": 482.61708802656682,
-    "y": 166.75793691974872,
+    "x": 16,
+    "y": 284,
     "z": 6001,
-    "height": 150,
-    "width": 780,
+    "height": 400,
+    "width": 620,
     "tabOrder": 6001
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Banque.code_banque",
               "nativeQueryRef": "code_banque",
-              "active": true
+              "active": true,
+              "displayName": "Banque"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Mesures.PNB",
-              "nativeQueryRef": "PNB"
+              "nativeQueryRef": "PNB",
+              "displayName": "PNB du trimestre (MDT)"
             },
             {
               "field": {
@@ -60,7 +62,8 @@
                 }
               },
               "queryRef": "Mesures.Rang PNB",
-              "nativeQueryRef": "Rang PNB"
+              "nativeQueryRef": "Rang PNB",
+              "displayName": "Rang"
             }
           ]
         },
@@ -78,7 +81,8 @@
                 }
               },
               "queryRef": "Mesures.Part de marche PNB",
-              "nativeQueryRef": "Part de marche PNB"
+              "nativeQueryRef": "Part de marche PNB",
+              "displayName": "Part de marché"
             }
           ]
         }
@@ -102,7 +106,44 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Part de marché du PNB'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

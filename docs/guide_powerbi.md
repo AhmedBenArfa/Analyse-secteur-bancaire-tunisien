@@ -1277,6 +1277,20 @@ Propriétés › Taille et position**) :
 | Concentration | 646, 284, 618 × 280 | graphique en courbes : axe X `Dim_Date[Annee_Trimestre]`, axe Y `HHI PNB`, info-bulles `Part 3 premieres banques PNB`, `Top 3 banques PNB` | axe X **catégoriel**, axe Y de 1 000 à 1 300 ; titre « Concentration du PNB (indice HHI) » ; **Modifier les interactions** : le segment du trimestre ne filtre **pas** ce graphique (icône « Aucun ») |
 | Trois premières banques | 646, 574, 618 × 110 | carte (nouvelle) : `Top 3 banques PNB` et `Part 3 premieres banques PNB` | étiquettes « Trois premières banques » et « Part du PNB du secteur » |
 
+**Construction (30/10/2026).** Les visuels sont créés dans Power BI Desktop avec leurs champs ; les réglages
+(positions, noms affichés, titres, étiquettes de données, axes, interaction) sont ensuite écrits dans les fichiers
+du rapport par `python scripts/ecrire_pbir_visuels.py vue_ensemble` (format PBIR : un fichier `visual.json` par
+visuel), projet fermé. Deux écarts avec le tableau :
+
+- **Cartes du PNB, des crédits et des dépôts** : la nouvelle carte abrège les grands nombres en milliers
+  (« 1,9K ») et cette version de Power BI ne montre pas le réglage des unités ; elles affichent donc les mesures
+  `PNB secteur texte`, `Credits secteur texte` et `Depots secteur texte` (dossier `2. Secteur\Affichage`), qui
+  renvoient le nombre déjà mis en forme (`FORMAT ( valeur, "#,0.0" )`, « 1 936,6 »), vides si le total est vide.
+  Le calcul reste celui de `PNB secteur`, `Credits secteur` et `Depots secteur`. `PNB secteur` a gardé une
+  décimale (`#,0.0`), réglée dans Power BI et reportée dans `dax/mesures.dax`.
+- **Titres des étiquettes de référence** (« Banques presentes », etc.) : le nom du réglage n'est pas connu dans les
+  fichiers ; ils se renomment dans Power BI (**Format › Objet visuel › Étiquettes de référence**).
+
 **Pourquoi ces choix.** Le segment du trimestre est réglé sur « Dernier trimestre complet » et non sur le
 dernier trimestre : la page reste juste quand de nouvelles publications arrivent (3.1). Le graphique du HHI
 montre toute la période : on retire le filtre du segment du trimestre sur ce seul visuel (interaction

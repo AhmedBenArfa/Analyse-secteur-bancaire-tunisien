@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "85ee3c73c966a8290dd4",
   "position": {
-    "x": 483,
-    "y": 482,
+    "x": 646,
+    "y": 574,
     "z": 6003,
-    "height": 150,
-    "width": 773,
+    "height": 110,
+    "width": 618,
     "tabOrder": 6003
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Mesures.Top 3 banques PNB",
-              "nativeQueryRef": "Top 3 banques PNB"
+              "nativeQueryRef": "Top 3 banques PNB",
+              "displayName": "Trois premières banques"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "Mesures.Part 3 premieres banques PNB",
-              "nativeQueryRef": "Part 3 premieres banques PNB"
+              "nativeQueryRef": "Part 3 premieres banques PNB",
+              "displayName": "Part du PNB du secteur"
             }
           ]
         }

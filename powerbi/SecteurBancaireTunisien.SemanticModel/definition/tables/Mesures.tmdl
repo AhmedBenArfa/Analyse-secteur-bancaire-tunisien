@@ -1222,6 +1222,30 @@ table Mesures
 		displayFolder: 7. Qualité\Journal
 		lineageTag: 6ed73c23-678a-40ee-9a3a-6fea7efed5c3
 
+	/// PNB du trimestre des 12 banques, mis en forme pour une carte (« 1 936,6 »)
+	measure 'PNB secteur texte' =
+			VAR Valeur = [PNB secteur]
+			RETURN
+			    IF ( NOT ISBLANK ( Valeur ), FORMAT ( Valeur, "#,0.0" ) )
+		displayFolder: 2. Secteur\Affichage
+		lineageTag: 106e61ce-116e-4885-906d-10a500b3acb7
+
+	/// Encours de crédits des 12 banques, mis en forme pour une carte (« 86 880 »)
+	measure 'Credits secteur texte' =
+			VAR Valeur = [Credits secteur]
+			RETURN
+			    IF ( NOT ISBLANK ( Valeur ), FORMAT ( Valeur, "#,0" ) )
+		displayFolder: 2. Secteur\Affichage
+		lineageTag: 86768bb0-e42b-4e35-9032-b35f0a3e04b2
+
+	/// Encours de dépôts des 12 banques, mis en forme pour une carte (« 112 896 »)
+	measure 'Depots secteur texte' =
+			VAR Valeur = [Depots secteur]
+			RETURN
+			    IF ( NOT ISBLANK ( Valeur ), FORMAT ( Valeur, "#,0" ) )
+		displayFolder: 2. Secteur\Affichage
+		lineageTag: 4ef9016e-5330-4ed8-9f35-1f48bb7b5bc1
+
 	column Colonne_Masquee
 		dataType: int64
 		isHidden

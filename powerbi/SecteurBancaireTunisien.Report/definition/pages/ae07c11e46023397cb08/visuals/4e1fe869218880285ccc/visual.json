@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "4e1fe869218880285ccc",
   "position": {
-    "x": 24,
-    "y": 477,
+    "x": 644,
+    "y": 162,
     "z": 4000,
-    "height": 150,
-    "width": 250,
+    "height": 110,
+    "width": 304,
     "tabOrder": 4000
   },
   "visual": {
@@ -23,11 +23,12 @@
                       "Entity": "Mesures"
                     }
                   },
-                  "Property": "Credits secteur"
+                  "Property": "Credits secteur texte"
                 }
               },
-              "queryRef": "Mesures.Credits secteur",
-              "nativeQueryRef": "Credits secteur"
+              "queryRef": "Mesures.Credits secteur texte",
+              "nativeQueryRef": "Credits secteur texte",
+              "displayName": "Crédits (MDT)"
             }
           ]
         }
@@ -42,7 +43,7 @@
                     "Entity": "Mesures"
                   }
                 },
-                "Property": "Credits secteur"
+                "Property": "Credits secteur texte"
               }
             },
             "direction": "Descending"
@@ -76,7 +77,7 @@
                 }
               }
             ],
-            "metadata": "Mesures.Credits secteur",
+            "metadata": "Mesures.Credits secteur texte",
             "id": "field-b8b64fc3-53c3-8281-14f7-bbfc545ab845",
             "order": 0
           }
@@ -96,7 +97,7 @@
                 "Entity": "Mesures"
               }
             },
-            "Property": "Credits secteur"
+            "Property": "Credits secteur texte"
           }
         },
         "type": "Advanced"

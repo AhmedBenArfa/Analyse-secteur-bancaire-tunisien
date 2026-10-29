@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "1c3ebd2e2c48355e47e4",
   "position": {
-    "x": 482.61708802656682,
-    "y": 332.20796845189153,
+    "x": 646,
+    "y": 284,
     "z": 6002,
-    "height": 150,
-    "width": 773,
+    "height": 280,
+    "width": 618,
     "tabOrder": 6002
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Date.Annee_Trimestre",
               "nativeQueryRef": "Annee_Trimestre",
-              "active": true
+              "active": true,
+              "displayName": "Trimestre"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Mesures.Top 3 banques PNB",
-              "nativeQueryRef": "Top 3 banques PNB"
+              "nativeQueryRef": "Top 3 banques PNB",
+              "displayName": "Trois premières banques"
             },
             {
               "field": {
@@ -60,7 +62,8 @@
                 }
               },
               "queryRef": "Mesures.Part 3 premieres banques PNB",
-              "nativeQueryRef": "Part 3 premieres banques PNB"
+              "nativeQueryRef": "Part 3 premieres banques PNB",
+              "displayName": "Part des trois premières"
             }
           ]
         },
@@ -78,13 +81,71 @@
                 }
               },
               "queryRef": "Mesures.HHI PNB",
-              "nativeQueryRef": "HHI PNB"
+              "nativeQueryRef": "HHI PNB",
+              "displayName": "Indice HHI"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Concentration du PNB (indice HHI)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Categorical'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "start": {
+              "expr": {
+                "Literal": {
+                  "Value": "1000D"
+                }
+              }
+            },
+            "end": {
+              "expr": {
+                "Literal": {
+                  "Value": "1300D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

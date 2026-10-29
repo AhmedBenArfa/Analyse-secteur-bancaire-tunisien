@@ -20,7 +20,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
 | 6 | Modèle en étoile et mesures DAX | **Terminée le 24/10/2026** : table des dates, 28 relations, 142 mesures en 7 groupes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
-| 7 | Pages du rapport | **En cours** : page 1 « Vue d'ensemble » décrite (guide 4.2), à construire dans Power BI Desktop |
+| 7 | Pages du rapport | **En cours** : page 1 « Vue d'ensemble » construite (visuels créés dans Power BI Desktop, réglages écrits dans les fichiers du rapport), à vérifier |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
 ## Étape 5 : requêtes Power Query (terminée)
@@ -138,6 +138,7 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 23/10/2026 | Ouverture du projet par un tiers | Cache des données Power BI versionné (données publiques) : le projet s'ouvre avec ses données sans réglage ; section « Ouvrir le rapport » du README ; publication sur le web à la fin |
 | 23/10/2026 | Documentation des fonctions M | Tableau de chaque fonction M utilisée (ce qu'elle fait, requêtes) dans le guide et son PDF, contrôlé par un test |
 | 23/10/2026 | Étape 5 terminée | Les 22 requêtes Power Query sont vérifiées ; passage à l'étape 6 (table des dates, relations, mesures DAX) |
+| 30/10/2026 | Construction des pages | Visuels créés dans Power BI Desktop, réglages (positions, noms, titres, axes, interactions) écrits dans les fichiers du rapport par un script ; cartes du PNB, des crédits et des dépôts en mesures de texte mises en forme (la nouvelle carte abrège en milliers) |
 | 24/10/2026 | Fonctions DAX complémentaires | `RELATEDTABLE` et `LOOKUPVALUE` en colonnes calculées de `Dim_Banque` (liquidité du titre, définitions), table `Journal_Faits_Marquants` par `UNION` (41 faits datés), relation inactive vers la date d'entrée d'un actionnaire et mesures `USERELATIONSHIP`, mesures `TOPN` (3 premières banques, CR3) ; mesures déjà vérifiées inchangées |
 | 24/10/2026 | Logos des banques | Logos officiels téléchargés (sites des banques, sinon fiche de la Bourse ou Wikimedia Commons), réduits en vignettes 240 × 120, versionnés dans `donnees_reference/logos/` avec leur source et la mention de propriété ; colonne `icone` de `Dim_Banque` construite en Power Query (image intégrée, catégorie « URL d'image ») ; pastilles au code en secours |
 | 24/10/2026 | Présentation du rapport | Thème bleu marine et or, fonds de page 16:9 signés (`python scripts/generer_theme.py`), pastilles au code de chaque banque pour le segment à images (pas de logo officiel), visuel Play Axis pour faire défiler les années ; pages et visuels de la spécification inchangés |

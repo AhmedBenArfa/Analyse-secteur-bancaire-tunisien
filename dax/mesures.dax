@@ -178,7 +178,7 @@ MEASURE Mesures[Banques presentes] =
         COUNTROWS ( FILTER ( ALL ( Dim_Banque ), NOT ISBLANK ( [Valeur Cumul] ) ) )
     )
 
-// [2. Secteur\Totaux | #,0.000] PNB du trimestre des 12 banques ; vide si une banque manque
+// [2. Secteur\Totaux | #,0.0] PNB du trimestre des 12 banques ; vide si une banque manque
 MEASURE Mesures[PNB secteur] =
     IF (
         [Banques presentes PNB] = [Nombre de banques],
@@ -909,3 +909,25 @@ MEASURE Mesures[Changements actionnaire detail] =
 // [7. Qualité\Journal | #,0] Nombre de faits marquants (événements, écarts annuels expliqués, révisions importantes des états financiers) de la sélection
 MEASURE Mesures[Nb faits marquants] =
     COUNTROWS ( Journal_Faits_Marquants )
+
+// ===== 9. Affichage des cartes (étape 7, 30/10/2026) =====
+// La nouvelle carte de Power BI abrège les grands nombres en milliers (« 1,9K ») ; ces mesures renvoient le nombre déjà
+// mis en forme (texte), vide si le total est vide (secteur incomplet). Le calcul reste celui des mesures d'origine.
+
+// [2. Secteur\Affichage | texte] PNB du trimestre des 12 banques, mis en forme pour une carte (« 1 936,6 »)
+MEASURE Mesures[PNB secteur texte] =
+    VAR Valeur = [PNB secteur]
+    RETURN
+        IF ( NOT ISBLANK ( Valeur ), FORMAT ( Valeur, "#,0.0" ) )
+
+// [2. Secteur\Affichage | texte] Encours de crédits des 12 banques, mis en forme pour une carte (« 86 880 »)
+MEASURE Mesures[Credits secteur texte] =
+    VAR Valeur = [Credits secteur]
+    RETURN
+        IF ( NOT ISBLANK ( Valeur ), FORMAT ( Valeur, "#,0" ) )
+
+// [2. Secteur\Affichage | texte] Encours de dépôts des 12 banques, mis en forme pour une carte (« 112 896 »)
+MEASURE Mesures[Depots secteur texte] =
+    VAR Valeur = [Depots secteur]
+    RETURN
+        IF ( NOT ISBLANK ( Valeur ), FORMAT ( Valeur, "#,0" ) )
