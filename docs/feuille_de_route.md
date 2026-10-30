@@ -21,7 +21,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
 | 6 | Modèle en étoile et mesures DAX | **Terminée le 24/10/2026** : table des dates, 32 relations (dont une inactive), 150 mesures (151 avec la mesure d'affichage de la page 2), colonnes calculées et journal des faits marquants, tout vérifié dans Power BI Desktop (détail ci-dessous) |
 | 7 | Pages du rapport | **En cours** : page 1 « Vue d'ensemble » terminée et vérifiée (30/10/2026) ; page 2 « Classement » terminée et vérifiée (30/10/2026) ; page 3 « Évolution 2020–2026 » terminée et vérifiée (30/10/2026) ; page 4 « Structure du PNB » décrite et créée (fond, titre, segments), visuels à ajouter |
-| 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
+| 8 | README final et captures | README à jour au 30/10/2026 (aperçu et captures des trois pages terminées, chiffres clés, avancement) ; à compléter page par page, puis lien de publication sur le web |
 
 ## Étape 5 : requêtes Power Query (terminée)
 
