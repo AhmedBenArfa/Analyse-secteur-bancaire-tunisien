@@ -1,6 +1,6 @@
 # Auteur : Ahmed Ben Arfa
 """
-Génère les trois documents PDF du dossier docs/ :
+Génère les quatre documents PDF du dossier docs/ :
   - docs/Specification_projet.pdf : rendu de docs/SPECIFICATION.md ;
   - docs/Guide_PowerBI.pdf : rendu de docs/guide_powerbi.md (chaque transformation expliquée), avec en
     annexe le code M de chaque requête (powerquery/*.pq) et la feuille de route (décisions) ;
@@ -12,9 +12,13 @@ Conversion : HTML -> PDF par Microsoft Edge en mode headless (chemin modifiable 
 d'environnement EDGE), puis numéros de page et métadonnées ajoutés avec PyMuPDF.
 Les tests (pytest) sont relancés pour donner leur résultat dans le rapport (environ 1 minute).
 
+  - docs/Presentation_rapport.pdf : présentation du rapport Power BI (données, démarche, pages terminées avec
+    leurs captures docs/captures/*.png), rendu de docs/presentation_rapport.md.
+
 Utilisation :
-  python scripts/generer_pdf.py                 # les trois documents
+  python scripts/generer_pdf.py                 # les quatre documents
   python scripts/generer_pdf.py guide           # seulement le guide (après chaque requête ou mesure)
+  python scripts/generer_pdf.py presentation    # seulement la présentation (après chaque page terminée)
 """
 import collections, csv, datetime, html, os, posixpath, re, subprocess, sys, tempfile
 from pathlib import Path
@@ -195,6 +199,32 @@ def guide():
     vers_pdf(page_html("Guide Power BI", corps), R / "docs/Guide_PowerBI.pdf",
              "Guide Power BI — Analyse du secteur bancaire tunisien", "Transformations Power Query et mesures DAX",
              f"Analyse du secteur bancaire tunisien — Guide Power BI ({DATE})")
+
+
+# --------------------------------------------------------------------------- présentation
+def presentation():
+    """Présentation du rapport Power BI : docs/presentation_rapport.md, avec les captures des pages terminées
+    (docs/captures/*.png, images exportées de Power BI Desktop) intégrées dans le PDF."""
+    import base64
+    md = re.sub(r"\A<!--.*?-->\s*", "", (R / "docs/presentation_rapport.md").read_text(encoding="utf-8"), flags=re.S)
+    titre, reste = md.split("\n", 1)
+    rendu = mistune.create_markdown(plugins=["table", "strikethrough"], escape=False)(reste)
+
+    def image(m):
+        chemin = R / "docs" / m.group(1)
+        if not chemin.exists():
+            sys.exit(f"capture absente : {chemin.relative_to(R)}")
+        return 'src="data:image/png;base64,' + base64.b64encode(chemin.read_bytes()).decode() + '"'
+    rendu = re.sub(r'src="(captures/[^"]+\.png)"', image, rendu)
+    style = ("<style>img { width: 100%; border: 0.8pt solid #c9d6e5; border-radius: 3pt; margin: 4pt 0 6pt 0; } "
+             "h3 { break-before: page; }</style>")
+    corps = (f'{style}<div class="titre"><h1>{e(titre.lstrip("# ").strip())}</h1>'
+             f'<div class="soustitre">Données, démarche et pages terminées, avec leurs captures</div>'
+             f'<div class="meta">{AUTEUR} · version du {DATE} (générée à partir de docs/presentation_rapport.md)'
+             f'</div></div>{rendu}')
+    vers_pdf(page_html("Présentation du rapport", corps), R / "docs/Presentation_rapport.pdf",
+             "Présentation du rapport Power BI — Analyse du secteur bancaire tunisien", "Présentation du rapport",
+             f"Analyse du secteur bancaire tunisien — Présentation du rapport ({DATE})")
 
 
 # --------------------------------------------------------------------------- rapport
@@ -705,7 +735,10 @@ def rapport():
         ["6", "Modèle en étoile et mesures DAX",
          f"Fait : table des dates, {nb_relations} relations, {nb_mesures} mesures, {nb_colonnes} colonnes calculées, "
          "journal des faits marquants ; chaque transformation expliquée dans <code>docs/Guide_PowerBI.pdf</code>"],
-        ["7", "Pages du rapport Power BI", "Prochaine étape : thème, fonds de page et logos des banques prêts"],
+        ["7", "Pages du rapport Power BI",
+         "En cours : thème, fonds de page et logos des banques ; pages « Vue d'ensemble », « Classement » et "
+         "« Évolution 2020–2026 » terminées et vérifiées ; « Structure du PNB » en construction ; 9 pages prévues "
+         "(captures et explications : <code>docs/Presentation_rapport.pdf</code>)"],
         ["8", "README final et captures pour le portfolio",
          "README réécrit en page d'accueil du dépôt ; captures et mise à jour finale après le rapport"]]))
 
@@ -716,9 +749,10 @@ def rapport():
 
 if __name__ == "__main__":
     # sans argument : les trois documents ; sinon seulement ceux nommés (ex. « guide », plus rapide)
-    choix = sys.argv[1:] or ["specification", "guide", "rapport"]
-    inconnus = set(choix) - {"specification", "guide", "rapport"}
+    documents = {"specification": specification, "guide": guide, "rapport": rapport, "presentation": presentation}
+    choix = sys.argv[1:] or list(documents)
+    inconnus = set(choix) - set(documents)
     if inconnus:
-        sys.exit(f"documents inconnus : {sorted(inconnus)} (specification, guide, rapport)")
+        sys.exit(f"documents inconnus : {sorted(inconnus)} ({', '.join(documents)})")
     for nom in choix:
-        {"specification": specification, "guide": guide, "rapport": rapport}[nom]()
+        documents[nom]()

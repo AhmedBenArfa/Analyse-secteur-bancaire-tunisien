@@ -232,8 +232,11 @@ extraction, avant le commit.
 ## 9. Documents PDF de `docs/`
 
 ```
-python scripts/generer_pdf.py          # les trois documents
-python scripts/generer_pdf.py guide    # seulement le guide Power BI (quelques secondes)
+python scripts/generer_pdf.py                # les quatre documents
+python scripts/generer_pdf.py guide          # seulement le guide Power BI (quelques secondes)
+python scripts/generer_pdf.py presentation   # présentation du rapport avec les captures des pages
+# captures : Power BI Desktop, Fichier › Exporter › Exporter au format PDF, puis une image par page
+# terminée dans docs/captures/ (marge blanche de 18 points retirée, 150 dpi)
 ```
 
 Régénère `docs/Specification_projet.pdf` (rendu de `docs/SPECIFICATION.md`),
