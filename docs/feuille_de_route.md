@@ -68,8 +68,11 @@ Pages construites dans Power BI Desktop à partir des mesures (liste des pages :
 avec le segment « Dernier trimestre complet » par défaut et le paramètre de champ « Indicateur affiché ».
 Présentation commune (demande du 24/10/2026, sans changer les pages ni les visuels prévus) : thème bancaire,
 fonds de page signés, segment par banque avec le logo de chaque banque (colonne `icone`, vérifiée dans
-Power BI Desktop le 24/10/2026), visuel Play Axis pour faire défiler les
-années (guide, section 4.1).
+Power BI Desktop le 24/10/2026), défilement des trimestres par l'axe de lecture intégré au nuage de points
+(page 2 ; le visuel Play Axis, essayé d'abord, a été retiré : guide, section 4.3).
+Page 8 « Rentabilité » (ajout du 30/10/2026, demande de l'utilisateur) : jointures DAX `NATURALINNERJOIN` et
+`NATURALLEFTOUTERJOIN` pour réunir le ROE (30/06 et 31/12) et le coefficient d'exploitation (chaque trimestre)
+par banque et par date ; les jointures faites jusqu'ici sont les fusions de Power Query (`Table.NestedJoin`).
 Ensuite : `docs/validation.md` (étape 3), captures et publication sur le web avec le lien en tête du README
 (étape 8).
 
@@ -143,6 +146,7 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 30/10/2026 | Page 2 « Classement » : choix du trimestre | Segment « Dernier trimestre complet » (comme la page 1) et **axe de lecture intégré au nuage de points** pour faire défiler les trimestres ; le visuel Play Axis, essayé d'abord, démarre sans trimestre et vide la page en fin de lecture : retiré ; carte « Trimestre affiché » (mesure `Trimestre affiche`) |
 | 30/10/2026 | Page 3 « Évolution » : période Covid et ruptures | Lignes verticales au début et à la fin de la période Covid (une bande grise est impossible avec une courbe par banque) ; ruptures de série et événements dans l'info-bulle (mesure `Ruptures texte`) et dans un tableau des événements, à la place des marqueurs superposés |
 | 30/10/2026 | Date/heure automatique désactivée | Tables de dates cachées créées par Power BI pour les dates de l'actionnariat retirées : la table `Dim_Date` sert de calendrier unique |
+| 30/10/2026 | Jointures DAX (page 8) | `NATURALINNERJOIN` (dates où ROE et coefficient existent tous deux) et `NATURALLEFTOUTERJOIN` (tous les trimestres) dans la page « Rentabilité », documentées dans le guide comme les autres fonctions |
 | 30/10/2026 | Construction des pages | Visuels créés dans Power BI Desktop, réglages (positions, noms, titres, axes, interactions) écrits dans les fichiers du rapport par un script ; cartes du PNB, des crédits et des dépôts en mesures de texte mises en forme (la nouvelle carte abrège en milliers) |
 | 24/10/2026 | Fonctions DAX complémentaires | `RELATEDTABLE` et `LOOKUPVALUE` en colonnes calculées de `Dim_Banque` (liquidité du titre, définitions), table `Journal_Faits_Marquants` par `UNION` (41 faits datés), relation inactive vers la date d'entrée d'un actionnaire et mesures `USERELATIONSHIP`, mesures `TOPN` (3 premières banques, CR3) ; mesures déjà vérifiées inchangées |
 | 24/10/2026 | Logos des banques | Logos officiels téléchargés (sites des banques, sinon fiche de la Bourse ou Wikimedia Commons), réduits en vignettes 240 × 120, versionnés dans `donnees_reference/logos/` avec leur source et la mention de propriété ; colonne `icone` de `Dim_Banque` construite en Power Query (image intégrée, catégorie « URL d'image ») ; pastilles au code en secours |
