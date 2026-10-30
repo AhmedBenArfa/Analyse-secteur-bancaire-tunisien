@@ -1446,7 +1446,7 @@ médiane 45,9 %, secteur 45,7 %, UIB −78,7 % et Wifak +79,3 % sur un an, PNB d
 croissances, ligne de total à +6,1 %) ; l'axe de lecture du nuage fait défiler les trimestres de 2019T4 à 2026T3 et
 s'arrête sur le dernier. Le tableau affiche 8 banques sans défilement (les 4 dernières par la barre verticale).
 
-### 4.4 Page 3 : Évolution 2020–2026 (en construction)
+### 4.4 Page 3 : Évolution 2020–2026 (terminée le 30/10/2026)
 
 **But** : suivre chaque banque trimestre par trimestre, de 2019T4 à 2026T3, sur l'indicateur choisi, avec la
 période Covid repérée et l'explication des sauts de série (révisions de plus de 2 %, événements datés).
@@ -1495,6 +1495,10 @@ en ont (de 2 pour AB à 29 pour BTE, 174 lignes sur les cinq indicateurs de la p
 **Deuxième capture (30/10/2026)** : sélecteur sur « PNB », deux tableaux, lignes de la période Covid : bon. Retouches :
 courbes droites au lieu de lissées (thème, 4.1) ; colonnes des deux tableaux rétrécies (barre de défilement
 horizontale, « Trimestre » et la date coupés sur deux lignes).
+
+**Vérifiée le 30/10/2026** (troisième capture) : courbes droites, sélecteur sur « PNB », lignes de la période Covid,
+tableaux des révisions et des événements ; dernier réglage des largeurs de colonnes (en-tête « Banque » coupé) fait
+ensuite dans les fichiers.
 
 **Mise en page** (positions : x, y, largeur × hauteur) :
 

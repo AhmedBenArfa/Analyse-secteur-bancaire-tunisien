@@ -20,7 +20,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
 | 6 | Modèle en étoile et mesures DAX | **Terminée le 24/10/2026** : table des dates, 32 relations (dont une inactive), 150 mesures (151 avec la mesure d'affichage de la page 2), colonnes calculées et journal des faits marquants, tout vérifié dans Power BI Desktop (détail ci-dessous) |
-| 7 | Pages du rapport | **En cours** : page 1 « Vue d'ensemble » terminée et vérifiée (30/10/2026) ; page 2 « Classement » terminée et vérifiée (30/10/2026) ; page 3 « Évolution 2020–2026 » décrite et créée (fond, titre, segment des banques), visuels à ajouter |
+| 7 | Pages du rapport | **En cours** : page 1 « Vue d'ensemble » terminée et vérifiée (30/10/2026) ; page 2 « Classement » terminée et vérifiée (30/10/2026) ; page 3 « Évolution 2020–2026 » terminée et vérifiée (30/10/2026) ; prochaine : page 4 « Structure du PNB » |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
 ## Étape 5 : requêtes Power Query (terminée)
@@ -73,6 +73,9 @@ Power BI Desktop le 24/10/2026), défilement des trimestres par l'axe de lecture
 Page 8 « Rentabilité » (ajout du 30/10/2026, demande de l'utilisateur) : jointures DAX `NATURALINNERJOIN` et
 `NATURALLEFTOUTERJOIN` pour réunir le ROE (30/06 et 31/12) et le coefficient d'exploitation (chaque trimestre)
 par banque et par date ; les jointures faites jusqu'ici sont les fusions de Power Query (`Table.NestedJoin`).
+Page 7 « Fiche banque » (ajout du 30/10/2026, demande de l'utilisateur) : fonctions de hiérarchie parent-enfant
+`PATH`, `PATHITEM`, `PATHLENGTH`, `PATHCONTAINS` sur une table « chaîne de contrôle » (secteur → catégorie
+d'actionnariat → groupe de référence → banque), construite depuis l'actionnariat déjà sourcé (rien d'ajouté).
 Ensuite : `docs/validation.md` (étape 3), captures et publication sur le web avec le lien en tête du README
 (étape 8).
 
@@ -147,6 +150,7 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 30/10/2026 | Page 3 « Évolution » : période Covid et ruptures | Lignes verticales au début et à la fin de la période Covid (une bande grise est impossible avec une courbe par banque) ; ruptures de série et événements dans l'info-bulle (mesure `Ruptures texte`) et dans un tableau des événements, à la place des marqueurs superposés |
 | 30/10/2026 | Date/heure automatique désactivée | Tables de dates cachées créées par Power BI pour les dates de l'actionnariat retirées : la table `Dim_Date` sert de calendrier unique |
 | 30/10/2026 | Jointures DAX (page 8) | `NATURALINNERJOIN` (dates où ROE et coefficient existent tous deux) et `NATURALLEFTOUTERJOIN` (tous les trimestres) dans la page « Rentabilité », documentées dans le guide comme les autres fonctions |
+| 30/10/2026 | Fonctions PATH (page 7) | Chaîne de contrôle de chaque banque en hiérarchie parent-enfant (`PATH`, `PATHITEM`, `PATHLENGTH`, `PATHCONTAINS`), à partir de `Banques_Actionnariat` |
 | 30/10/2026 | Construction des pages | Visuels créés dans Power BI Desktop, réglages (positions, noms, titres, axes, interactions) écrits dans les fichiers du rapport par un script ; cartes du PNB, des crédits et des dépôts en mesures de texte mises en forme (la nouvelle carte abrège en milliers) |
 | 24/10/2026 | Fonctions DAX complémentaires | `RELATEDTABLE` et `LOOKUPVALUE` en colonnes calculées de `Dim_Banque` (liquidité du titre, définitions), table `Journal_Faits_Marquants` par `UNION` (41 faits datés), relation inactive vers la date d'entrée d'un actionnaire et mesures `USERELATIONSHIP`, mesures `TOPN` (3 premières banques, CR3) ; mesures déjà vérifiées inchangées |
 | 24/10/2026 | Logos des banques | Logos officiels téléchargés (sites des banques, sinon fiche de la Bourse ou Wikimedia Commons), réduits en vignettes 240 × 120, versionnés dans `donnees_reference/logos/` avec leur source et la mention de propriété ; colonne `icone` de `Dim_Banque` construite en Power Query (image intégrée, catégorie « URL d'image ») ; pastilles au code en secours |
