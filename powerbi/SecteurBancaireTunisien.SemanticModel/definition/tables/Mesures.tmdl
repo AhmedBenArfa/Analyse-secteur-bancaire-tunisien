@@ -1246,6 +1246,11 @@ table Mesures
 		displayFolder: 2. Secteur\Affichage
 		lineageTag: 4ef9016e-5330-4ed8-9f35-1f48bb7b5bc1
 
+	/// Trimestre filtré par la barre de lecture (Play Axis) de la page Classement, par exemple « 2026T3 » ; invite à choisir un trimestre si aucun ou plusieurs sont sélectionnés
+	measure 'Trimestre affiche' = SELECTEDVALUE ( Dim_Date[Annee_Trimestre], "Choisir un trimestre (lecture ▶)" )
+		displayFolder: 2. Secteur\Affichage
+		lineageTag: 079b0f0e-6c02-43c1-b9c7-520a0f7ad56b
+
 	column Colonne_Masquee
 		dataType: int64
 		isHidden

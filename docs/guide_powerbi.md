@@ -1361,3 +1361,67 @@ UBCI 4,9 %, Wifak 1,7 %, BTE 1,0 % ; trois premières banques « BIAT, BNA, STB 
 **Vérifiée le 30/10/2026** dans Power BI Desktop : toutes ces valeurs, médiane des coefficients 47,0 %, crédits
 +2,1 % et dépôts +8,2 % sur un an ; segment limité aux trimestres publiés (« Dernier trimestre complet », 2019T4 à
 2026T2) ; courbe sur toute la période sans défilement.
+
+### 4.3 Page 2 : Classement (en construction)
+
+**But** : classer les 12 banques sur un trimestre (taille, efficacité, croissance) et voir, d'un trimestre à
+l'autre, comment le classement bouge. Le tableau montre, pour chaque banque, son PNB, sa part de marché et son rang,
+son coefficient d'exploitation harmonisé et son rang (1 = la plus efficace), l'écart à la médiane des 12 banques
+(vert : plus efficace que la médiane, rouge : moins) et la croissance du PNB sur un an. Le nuage de points croise
+croissance et efficacité : en bas à droite, les banques qui grandissent vite à faible coût.
+
+**Barre de lecture (Play Axis) à la place du segment du trimestre** (décision du 30/10/2026). Sur cette page seule,
+le trimestre se choisit avec le visuel **Play Axis (Dynamic Slicer)** (4.1) sur `Dim_Date[Annee_Trimestre]`, limité
+aux trimestres publiés (`Trimestre_Publie` = Vrai, 2019T4 à 2026T3) : les boutons lecture, précédent et suivant
+font défiler les 28 trimestres et le tableau et le nuage se recalculent à chaque pas (en 2020, le recul du PNB et
+la hausse des coefficients ; au T2 2020, le PNB de l'UIB recule de 78,6 % sur un an, effet du moratoire Covid). Un
+segment « Dernier trimestre complet » sur la même page entrerait en conflit avec la barre (deux filtres sur la même
+table des dates) : il n'y en a pas ici. Une carte affiche le trimestre filtré : mesure `Trimestre affiche`
+(dossier `2. Secteur\Affichage`, ajoutée le 30/10/2026), `SELECTEDVALUE ( Dim_Date[Annee_Trimestre], … )`, qui invite
+à choisir un trimestre si la barre n'en filtre aucun (toutes les mesures du trimestre sont alors vides : garde-fou
+de 3.3 contre la somme de plusieurs trimestres). L'état de la barre à l'ouverture du rapport est à vérifier.
+
+**Création de la page** : faite dans les fichiers par `python scripts/ecrire_pbir_visuels.py nouvelle_page
+"Classement" "Classement des banques"` (même fond que la page 1, titre et segment des banques à logos copiés).
+
+**Mise en page** (positions : x, y, largeur × hauteur) :
+
+| Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
+|---|---|---|---|
+| Fond, titre, segment des banques | comme la page 1 | copiés de la page 1 | titre « Classement des banques » |
+| Barre de lecture | 24, 92, 250 × 52 | Play Axis : `Dim_Date[Annee_Trimestre]` | filtre du visuel `Dim_Date[Trimestre_Publie]` = Vrai |
+| Trimestre affiché | 16, 162, 365 × 100 | carte (nouvelle) : `Trimestre affiche` (`2. Secteur\Affichage`) | libellé « Trimestre affiché » |
+| Médiane des coefficients | 391, 162, 365 × 100 | carte (nouvelle) : `Coef mediane` (`3. Ratios\Comparaison au secteur`) ; étiquette de référence `Coef secteur` | libellé « Médiane des coefficients » ; référence « coefficient du secteur » |
+| Classement | 16, 272, 740 × 412 | tableau : `Dim_Banque[icone]`, `Dim_Banque[code_banque]`, `PNB` (`1. Bases\Flux du trimestre`), `Part de marche PNB` (`2. Secteur\Parts de marché`), `Rang PNB` (`2. Secteur\Rangs`), `Coef exploitation harmonise` (`3. Ratios\Coefficient d'exploitation`), `Rang coef`, `Ecart coef / mediane` (`3. Ratios\Comparaison au secteur`), `Var PNB A/A %` (`4. Croissances\Sur un an`) | tri par `Rang PNB` croissant ; couleur de police du coefficient et de l'écart = valeur du champ `Couleur coef` ; titre « Classement des banques au trimestre » |
+| Croissance et efficacité | 766, 162, 498 × 522 | nuage de points : axe X `Var PNB A/A %`, axe Y `Coef exploitation harmonise`, valeurs `Dim_Banque[code_banque]`, taille `PNB`, info-bulles `Rang PNB`, `Rang coef` | étiquettes de catégorie (code de la banque) ; ligne médiane de l'axe Y (= médiane des coefficients) ; titre « Croissance du PNB et coefficient d'exploitation » |
+
+**Pourquoi ces choix.** Le classement utilise le coefficient **harmonisé** (frais de personnel + charges générales,
+3.5), seul comparable d'une banque à l'autre. La croissance est celle du **trimestre seul sur un an**, lue dans le
+même document que le trimestre (`Variations_Comparables`, 3.6) : c'est la même période que le PNB et le coefficient
+du tableau. La couleur vient d'une mesure (`Couleur coef`) plutôt que de règles saisies dans le visuel : la règle
+(écart à la médiane ≤ 0 → vert) est écrite une fois, dans le modèle. La taille des points suit le PNB : le poids de
+chaque banque dans le secteur reste visible. La ligne médiane du nuage vaut la médiane des 12 coefficients : la
+même référence que la colonne « écart ». Le segment des banques filtre le tableau et le nuage ; les rangs et la
+médiane restent calculés sur les 12 banques.
+
+**Valeurs attendues au T3 2026** (calculées à part depuis `donnees_publiees/`) :
+
+| Rang PNB | Banque | PNB (MDT) | Part | Coefficient | Rang coef | Écart à la médiane | PNB sur un an | Couleur |
+|---|---|---|---|---|---|---|---|---|
+| 1 | BIAT | 433,328 | 22,38 % | 39,7 % | 3 | −7,4 | +6,5 % | vert |
+| 2 | BNA | 298,334 | 15,41 % | 34,9 % | 2 | −12,1 | +9,8 % | vert |
+| 3 | STB | 193,988 | 10,02 % | 46,3 % | 5 | −0,8 | +12,6 % | vert |
+| 4 | Attijari | 176,968 | 9,14 % | 52,2 % | 8 | +5,2 | +0,5 % | rouge |
+| 5 | BH | 165,030 | 8,52 % | 47,6 % | 7 | +0,6 | −4,9 % | rouge |
+| 6 | AB | 150,021 | 7,75 % | 44,7 % | 4 | −2,3 | +11,0 % | vert |
+| 7 | UIB | 145,463 | 7,51 % | 46,5 % | 6 | −0,6 | +11,9 % | vert |
+| 8 | BT | 131,414 | 6,79 % | 30,1 % | 1 | −16,9 | +7,5 % | vert |
+| 9 | ATB | 96,564 | 4,99 % | 62,2 % | 9 | +15,2 | −11,4 % | rouge |
+| 10 | UBCI | 94,251 | 4,87 % | 62,6 % | 10 | +15,6 | +11,6 % | rouge |
+| 11 | Wifak | 32,113 | 1,66 % | 63,3 % | 11 | +16,3 | +26,5 % | rouge |
+| 12 | BTE | 19,089 | 0,99 % | 82,4 % | 12 | +35,4 | +9,5 % | rouge |
+
+Écart à la médiane en points de pourcentage. Ligne de total du tableau : PNB 1 936,564, part 100 %, coefficient
+44,7 % (= coefficient du secteur), PNB +6,1 % sur un an, rangs et écart vides. Médiane des coefficients 47,0 %.
+Contrôle de la barre de lecture au **T2 2020** : BIAT 1re (19,68 %), BT coefficient le plus bas (23,1 %), Wifak 12e,
+médiane 45,9 %, secteur 45,7 %, UIB −78,6 % et Wifak +79,3 % sur un an, PNB du secteur −12,8 %.

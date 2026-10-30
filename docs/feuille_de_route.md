@@ -19,8 +19,8 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
-| 6 | Modèle en étoile et mesures DAX | **Terminée le 24/10/2026** : table des dates, 32 relations (dont une inactive), 150 mesures, colonnes calculées et journal des faits marquants, tout vérifié dans Power BI Desktop (détail ci-dessous) |
-| 7 | Pages du rapport | **En cours** : page 1 « Vue d'ensemble » terminée et vérifiée (30/10/2026) ; prochaine : page 2 « Classement » |
+| 6 | Modèle en étoile et mesures DAX | **Terminée le 24/10/2026** : table des dates, 32 relations (dont une inactive), 150 mesures (151 avec la mesure d'affichage de la page 2), colonnes calculées et journal des faits marquants, tout vérifié dans Power BI Desktop (détail ci-dessous) |
+| 7 | Pages du rapport | **En cours** : page 1 « Vue d'ensemble » terminée et vérifiée (30/10/2026) ; page 2 « Classement » décrite et créée (fond, titre, segment des banques), visuels à ajouter dans Power BI Desktop |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
 ## Étape 5 : requêtes Power Query (terminée)
@@ -140,6 +140,7 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 | 23/10/2026 | Étape 5 terminée | Les 22 requêtes Power Query sont vérifiées ; passage à l'étape 6 (table des dates, relations, mesures DAX) |
 | 30/10/2026 | Segment du trimestre | Filtré par la colonne `Dim_Date[Trimestre_Publie]` (trimestres où au moins une banque a publié), sélection unique ; un filtre par mesure ne convient pas sur un segment |
 | 30/10/2026 | Documentation des pages | Dans le guide (section 4 : méthode, présentation commune, une sous-section par page), et non dans un document séparé : un seul PDF explique tout le rapport |
+| 30/10/2026 | Page 2 « Classement » : choix du trimestre | Barre de lecture **Play Axis** sur `Dim_Date[Annee_Trimestre]` (trimestres publiés) à la place du segment « Dernier trimestre complet », sur cette page seulement (deux filtres de date sur la même page seraient en conflit) ; carte « Trimestre affiché » (mesure `Trimestre affiche`) |
 | 30/10/2026 | Construction des pages | Visuels créés dans Power BI Desktop, réglages (positions, noms, titres, axes, interactions) écrits dans les fichiers du rapport par un script ; cartes du PNB, des crédits et des dépôts en mesures de texte mises en forme (la nouvelle carte abrège en milliers) |
 | 24/10/2026 | Fonctions DAX complémentaires | `RELATEDTABLE` et `LOOKUPVALUE` en colonnes calculées de `Dim_Banque` (liquidité du titre, définitions), table `Journal_Faits_Marquants` par `UNION` (41 faits datés), relation inactive vers la date d'entrée d'un actionnaire et mesures `USERELATIONSHIP`, mesures `TOPN` (3 premières banques, CR3) ; mesures déjà vérifiées inchangées |
 | 24/10/2026 | Logos des banques | Logos officiels téléchargés (sites des banques, sinon fiche de la Bourse ou Wikimedia Commons), réduits en vignettes 240 × 120, versionnés dans `donnees_reference/logos/` avec leur source et la mention de propriété ; colonne `icone` de `Dim_Banque` construite en Power Query (image intégrée, catégorie « URL d'image ») ; pastilles au code en secours |

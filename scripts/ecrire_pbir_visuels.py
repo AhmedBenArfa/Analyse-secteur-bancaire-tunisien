@@ -9,6 +9,8 @@ et ferme le projet ; ce script applique les réglages décrits dans le guide (se
 vérifie. À lancer seulement quand ce projet est fermé dans Power BI Desktop ; vérifier `git status` avant.
 
 Utilisation : python scripts/ecrire_pbir_visuels.py vue_ensemble
+              python scripts/ecrire_pbir_visuels.py nouvelle_page "Classement" "Classement des banques"
+(nouvelle page : même fond que la page 1, titre et segment des banques copiés ; l'utilisateur y ajoute les visuels)
 """
 import json, sys
 from pathlib import Path
@@ -113,6 +115,37 @@ def interactions(page, liste):
     ecrire(p, d)
 
 
+def nouvelle_page(nom, titre, source="ae07c11e46023397cb08", garder=("00560b6cd900dd5045b6", "434970303466cded6802")):
+    """Crée une page à partir de la page source : même taille et même fond, copie des visuels communs (titre, segment
+    des banques à logos), texte du titre remplacé ; ajoutée à la fin de pages.json. Rien si une page porte déjà ce nom.
+    Les identifiants de la page et des visuels copiés sont neufs (20 caractères hexadécimaux, comme Power BI)."""
+    import secrets
+    liste = PAGES / "pages.json"
+    ordre = lire(liste)
+    for page in ordre["pageOrder"]:
+        if lire(PAGES / page / "page.json")["displayName"] == nom:
+            print(f"page « {nom} » déjà créée : {page}")
+            return page
+    page = secrets.token_hex(10)
+    d = lire(PAGES / source / "page.json")
+    d["name"], d["displayName"] = page, nom
+    d.pop("visualInteractions", None)
+    (PAGES / page / "visuals").mkdir(parents=True)
+    ecrire(PAGES / page / "page.json", d)
+    for visuel in garder:
+        v = lire(PAGES / source / "visuals" / visuel / "visual.json")
+        v["name"] = secrets.token_hex(10)
+        if v["visual"]["visualType"] == "textbox":
+            v["visual"]["objects"]["general"][0]["properties"]["paragraphs"][0]["textRuns"][0]["value"] = titre
+        (PAGES / page / "visuals" / v["name"]).mkdir()
+        ecrire(PAGES / page / "visuals" / v["name"] / "visual.json", v)
+    ordre["pageOrder"].append(page)
+    ordre["activePageName"] = page  # le projet s'ouvre sur la nouvelle page
+    ecrire(liste, ordre)
+    print(f"page « {nom} » créée : {page}")
+    return page
+
+
 def vue_ensemble():
     """Page 1 « Vue d'ensemble » (guide 4.2)."""
     page = "ae07c11e46023397cb08"
@@ -160,6 +193,10 @@ def vue_ensemble():
 PAGES_REGLEES = {"vue_ensemble": vue_ensemble}
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2 or sys.argv[1] not in PAGES_REGLEES:
-        sys.exit("utilisation : python scripts/ecrire_pbir_visuels.py " + " | ".join(PAGES_REGLEES))
-    PAGES_REGLEES[sys.argv[1]]()
+    if len(sys.argv) == 4 and sys.argv[1] == "nouvelle_page":
+        nouvelle_page(sys.argv[2], sys.argv[3])
+    elif len(sys.argv) == 2 and sys.argv[1] in PAGES_REGLEES:
+        PAGES_REGLEES[sys.argv[1]]()
+    else:
+        sys.exit("utilisation : python scripts/ecrire_pbir_visuels.py " + " | ".join(PAGES_REGLEES)
+                 + ' | nouvelle_page "<nom>" "<titre>"')

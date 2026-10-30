@@ -931,3 +931,7 @@ MEASURE Mesures[Depots secteur texte] =
     VAR Valeur = [Depots secteur]
     RETURN
         IF ( NOT ISBLANK ( Valeur ), FORMAT ( Valeur, "#,0" ) )
+
+// [2. Secteur\Affichage | texte] Trimestre filtré par la barre de lecture (Play Axis) de la page Classement, par exemple « 2026T3 » ; invite à choisir un trimestre si aucun ou plusieurs sont sélectionnés
+MEASURE Mesures[Trimestre affiche] =
+    SELECTEDVALUE ( Dim_Date[Annee_Trimestre], "Choisir un trimestre (lecture ▶)" )
