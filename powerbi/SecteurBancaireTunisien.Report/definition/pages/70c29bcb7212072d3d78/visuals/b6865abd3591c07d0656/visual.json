@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "b6865abd3591c07d0656",
   "position": {
-    "x": 15.694864651270466,
-    "y": 171.9895584701722,
+    "x": 24,
+    "y": 92,
     "z": 2001,
-    "height": 115.09567410931676,
-    "width": 482.61708802656682,
+    "height": 52,
+    "width": 250,
     "tabOrder": 2001
   },
   "visual": {
@@ -51,6 +51,61 @@
           }
         },
         "type": "Categorical"
+      },
+      {
+        "name": "trimestres_publies",
+        "ordinal": 1,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Date"
+              }
+            },
+            "Property": "Trimestre_Publie"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim_Date",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "Trimestre_Publie"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "true"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
       }
     ]
   }

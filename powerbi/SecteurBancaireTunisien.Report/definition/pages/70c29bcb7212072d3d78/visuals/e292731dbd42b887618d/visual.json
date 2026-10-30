@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "e292731dbd42b887618d",
   "position": {
-    "x": 894,
-    "y": 180,
+    "x": 766,
+    "y": 162,
     "z": 2006,
-    "height": 288,
-    "width": 362,
+    "height": 522,
+    "width": 498,
     "tabOrder": 2006
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Banque.code_banque",
               "nativeQueryRef": "code_banque",
-              "active": true
+              "active": true,
+              "displayName": "Banque"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Mesures.PNB",
-              "nativeQueryRef": "PNB"
+              "nativeQueryRef": "PNB",
+              "displayName": "PNB (MDT)"
             }
           ]
         },
@@ -64,7 +66,8 @@
                 }
               },
               "queryRef": "Mesures.Rang PNB",
-              "nativeQueryRef": "Rang PNB"
+              "nativeQueryRef": "Rang PNB",
+              "displayName": "Rang PNB"
             },
             {
               "field": {
@@ -78,7 +81,8 @@
                 }
               },
               "queryRef": "Mesures.Rang coef",
-              "nativeQueryRef": "Rang coef"
+              "nativeQueryRef": "Rang coef",
+              "displayName": "Rang coef."
             }
           ]
         },
@@ -97,7 +101,8 @@
               },
               "queryRef": "Mesures.Var PNB A/A %",
               "nativeQueryRef": "Var PNB A/A %",
-              "active": true
+              "active": true,
+              "displayName": "PNB sur un an"
             }
           ]
         },
@@ -115,13 +120,64 @@
                 }
               },
               "queryRef": "Mesures.Coef exploitation harmonise",
-              "nativeQueryRef": "Coef exploitation harmonise"
+              "nativeQueryRef": "Coef exploitation harmonise",
+              "displayName": "Coefficient d'exploitation"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Croissance du PNB et coefficient d''exploitation'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "categoryLabels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

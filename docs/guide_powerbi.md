@@ -1383,6 +1383,13 @@ de 3.3 contre la somme de plusieurs trimestres). L'état de la barre à l'ouvert
 
 **Création de la page** : faite dans les fichiers par `python scripts/ecrire_pbir_visuels.py nouvelle_page
 "Classement" "Classement des banques"` (même fond que la page 1, titre et segment des banques à logos copiés).
+Visuels créés dans Power BI Desktop avec leurs champs (30/10/2026), puis réglés par `python scripts/ecrire_pbir_visuels.py
+classement` : positions, noms affichés, titres, tri du tableau par `Rang PNB`, couleur `Couleur coef` recopiée sur la
+colonne de l'écart (forme relevée sur la mise en forme saisie dans Power BI pour le coefficient), barre de lecture
+limitée aux trimestres publiés, étiquettes des banques sur le nuage, titre de l'étiquette de référence. Une
+extraction (*drillthrough*) sur `code_banque` posée par mégarde sur la page, avec le bouton « Retour » ajouté
+automatiquement, a été retirée (`retirer_extraction`) : l'extraction est réservée à la fiche banque (page 7). La
+ligne médiane du nuage n'est pas encore ajoutée.
 
 **Mise en page** (positions : x, y, largeur × hauteur) :
 

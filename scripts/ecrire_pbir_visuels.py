@@ -146,6 +146,79 @@ def nouvelle_page(nom, titre, source="ae07c11e46023397cb08", garder=("00560b6cd9
     return page
 
 
+def retirer_extraction(page):
+    """Retire une extraction (drillthrough) posée par erreur sur une page : liaison de page, filtre d'extraction et
+    bouton « Retour » ajouté par Power BI ; rien s'il n'y en a pas."""
+    p = PAGES / page / "page.json"
+    d = lire(p)
+    d.pop("pageBinding", None)
+    if "filterConfig" in d:
+        d["filterConfig"]["filters"] = [f for f in d["filterConfig"]["filters"] if f.get("howCreated") != "Drillthrough"]
+        if not d["filterConfig"]["filters"]:
+            del d["filterConfig"]
+    ecrire(p, d)
+    for f in (PAGES / page / "visuals").glob("*/visual.json"):
+        v = lire(f)
+        lien = v["visual"].get("visualContainerObjects", {}).get("visualLink", [{}])[0].get("properties", {})
+        if v["visual"]["visualType"] == "actionButton" and lien.get("type") == texte("Back"):
+            f.unlink()
+            f.parent.rmdir()
+
+
+def trier(page, visuel, table, champ, sens="Ascending"):
+    """Tri par défaut du visuel sur une mesure (sens « Ascending » ou « Descending »)."""
+    p = PAGES / page / "visuals" / visuel / "visual.json"
+    d = lire(p)
+    d["visual"]["query"]["sortDefinition"] = {"sort": [{
+        "field": {"Measure": {"Expression": {"SourceRef": {"Entity": table}}, "Property": champ}},
+        "direction": sens}], "isDefaultSort": True}
+    ecrire(p, d)
+
+
+def couleur_par_mesure(page, visuel, colonnes, mesure):
+    """Couleur de police des colonnes d'un tableau = valeur de la mesure (mise en forme conditionnelle « valeur du
+    champ » ; forme relevée sur une mise en forme saisie dans Power BI)."""
+    p = PAGES / page / "visuals" / visuel / "visual.json"
+    d = lire(p)
+    d["visual"].setdefault("objects", {})["values"] = [{
+        "properties": {"fontColor": {"solid": {"color": {"expr": {
+            "Measure": {"Expression": {"SourceRef": {"Entity": "Mesures"}}, "Property": mesure}}}}}},
+        "selector": {"data": [{"dataViewWildcard": {"matchingOption": 1}}], "metadata": colonne}}
+        for colonne in colonnes]
+    ecrire(p, d)
+
+
+def classement():
+    """Page 2 « Classement » (guide 4.3)."""
+    page = "70c29bcb7212072d3d78"
+    retirer_extraction(page)
+    # barre de lecture (Play Axis) à la place du segment du trimestre : seulement les trimestres publiés
+    regler(page, "b6865abd3591c07d0656", (24, 92, 250, 52))
+    filtre_colonne(page, "b6865abd3591c07d0656", "Dim_Date", "Trimestre_Publie", "true", "trimestres_publies")
+    regler(page, "b9106fd5eec51c3d7967", (16, 162, 365, 100), {"Mesures.Trimestre affiche": "Trimestre affiché"})
+    regler(page, "997bf12c95589026ae69", (391, 162, 365, 100), {"Mesures.Coef mediane": "Médiane des coefficients"})
+    titre_etiquette_reference(page, "997bf12c95589026ae69", "coefficient du secteur")
+    # tableau : trié par rang du PNB, coefficient et écart à la médiane colorés par Couleur coef
+    tableau = "a65d1a3a157cddcdd761"
+    regler(page, tableau, (16, 272, 740, 412),
+           {"Dim_Banque.icone": "Logo", "Dim_Banque.code_banque": "Banque", "Mesures.PNB": "PNB (MDT)",
+            "Mesures.Part de marche PNB": "Part du PNB", "Mesures.Rang PNB": "Rang PNB",
+            "Mesures.Coef exploitation harmonise": "Coefficient", "Mesures.Rang coef": "Rang coef.",
+            "Mesures.Ecart coef / mediane": "Écart à la médiane", "Mesures.Var PNB A/A %": "PNB sur un an"},
+           titre="Classement des banques au trimestre")
+    trier(page, tableau, "Mesures", "Rang PNB")
+    couleur_par_mesure(page, tableau, ["Mesures.Coef exploitation harmonise", "Mesures.Ecart coef / mediane"],
+                       "Couleur coef")
+    # nuage : croissance du PNB sur un an (X) et coefficient (Y), taille = PNB, code de la banque sur chaque point
+    regler(page, "e292731dbd42b887618d", (766, 162, 498, 522),
+           {"Dim_Banque.code_banque": "Banque", "Mesures.Var PNB A/A %": "PNB sur un an",
+            "Mesures.Coef exploitation harmonise": "Coefficient d'exploitation", "Mesures.PNB": "PNB (MDT)",
+            "Mesures.Rang PNB": "Rang PNB", "Mesures.Rang coef": "Rang coef."},
+           titre="Croissance du PNB et coefficient d'exploitation",
+           objets={"categoryLabels": {"show": litteral("true")}})
+    print("Classement : visuels réglés")
+
+
 def vue_ensemble():
     """Page 1 « Vue d'ensemble » (guide 4.2)."""
     page = "ae07c11e46023397cb08"
@@ -190,7 +263,7 @@ def vue_ensemble():
     print("Vue d'ensemble : visuels réglés")
 
 
-PAGES_REGLEES = {"vue_ensemble": vue_ensemble}
+PAGES_REGLEES = {"vue_ensemble": vue_ensemble, "classement": classement}
 
 if __name__ == "__main__":
     if len(sys.argv) == 4 and sys.argv[1] == "nouvelle_page":

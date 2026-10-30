@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "b9106fd5eec51c3d7967",
   "position": {
-    "x": 15.694864651270466,
-    "y": 312.58938763780344,
+    "x": 16,
+    "y": 162,
     "z": 2002,
-    "height": 116.40357949692263,
-    "width": 317.167056494424,
+    "height": 100,
+    "width": 365,
     "tabOrder": 2002
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Mesures.Trimestre affiche",
-              "nativeQueryRef": "Trimestre affiche"
+              "nativeQueryRef": "Trimestre affiche",
+              "displayName": "Trimestre affiché"
             }
           ]
         }

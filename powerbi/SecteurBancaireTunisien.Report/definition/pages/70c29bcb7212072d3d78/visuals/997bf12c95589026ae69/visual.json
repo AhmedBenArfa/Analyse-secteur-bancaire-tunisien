@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "997bf12c95589026ae69",
   "position": {
-    "x": 16,
-    "y": 506.5,
+    "x": 391,
+    "y": 162,
     "z": 2003,
-    "height": 150,
-    "width": 317,
+    "height": 100,
+    "width": 365,
     "tabOrder": 2003
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Mesures.Coef mediane",
-              "nativeQueryRef": "Coef mediane"
+              "nativeQueryRef": "Coef mediane",
+              "displayName": "Médiane des coefficients"
             }
           ]
         }
@@ -79,6 +80,30 @@
             "metadata": "Mesures.Coef mediane",
             "id": "field-2844a1ce-1bb8-566d-c155-9c1906956f2e",
             "order": 0
+          }
+        }
+      ],
+      "referenceLabelTitle": [
+        {
+          "properties": {
+            "titleContentType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'custom'"
+                }
+              }
+            },
+            "titleText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'coefficient du secteur'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Coef mediane",
+            "id": "field-2844a1ce-1bb8-566d-c155-9c1906956f2e"
           }
         }
       ]
