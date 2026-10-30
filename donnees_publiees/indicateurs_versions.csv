@@ -26156,8 +26156,8 @@ WIB;2025T2;2025-06-30;2025;2;PROD_EXPL;trim;revisee_T2_N+1;47.027;WIB_2026T2.pdf
 WIB;2025T2;2025-06-30;2025;2;PROD_EXPL;trim;initiale;46.775;WIB_2025T2_bulletin.pdf;1;47.027;revisee_T2_N+1;-0.252;retraitement_mineur;;;;
 WIB;2025T2;2025-06-30;2025;2;REV_PORTEF;cumul;revisee_T2_N+1;1.407;WIB_2026T2.pdf;1;1.407;revisee_T2_N+1;0.0;retenue;;;;
 WIB;2025T2;2025-06-30;2025;2;REV_PORTEF;cumul;initiale;1.173;WIB_2025T2_bulletin.pdf;1;1.407;revisee_T2_N+1;-0.234;retraitement_mineur;;;;
-WIB;2025T2;2025-06-30;2025;2;REV_PORTEF;trim;revisee_T2_N+1;0.222;WIB_2026T2.pdf;1;0.222;revisee_T2_N+1;0.0;retenue;;;;
-WIB;2025T2;2025-06-30;2025;2;REV_PORTEF;trim;initiale;0.701;WIB_2025T2_bulletin.pdf;1;0.222;revisee_T2_N+1;0.479;retraitement_mineur;;;;
+WIB;2025T2;2025-06-30;2025;2;REV_PORTEF;trim;revisee_T2_N+1;0.935;WIB_2026T2.pdf;1;0.935;revisee_T2_N+1;0.0;retenue;portefeuille commercial 713 + portefeuille d'investissement 222 : le 713, calé à gauche de sa colonne, n'était pas extrait ;;;
+WIB;2025T2;2025-06-30;2025;2;REV_PORTEF;trim;initiale;0.701;WIB_2025T2_bulletin.pdf;1;0.935;revisee_T2_N+1;-0.234;retraitement_mineur;;;;
 WIB;2025T3;2025-09-30;2025;3;CAP_PROPRES;cumul;revisee_T3_N+1;161.92;WIB_2026T3.pdf;1;161.92;revisee_T3_N+1;0.0;retenue;résultat de la période non inclus;;;
 WIB;2025T3;2025-09-30;2025;3;CAP_PROPRES;cumul;initiale;161.92;WIB_2025T3_bulletin.pdf;1;161.92;revisee_T3_N+1;0.0;;résultat de la période non inclus;;;
 WIB;2025T3;2025-09-30;2025;3;CHG_EXPL;cumul;revisee_T3_N+1;60.701;WIB_2026T3.pdf;1;60.701;revisee_T3_N+1;0.0;retenue;;;;
@@ -26393,7 +26393,7 @@ WIB;2026T2;2026-06-30;2026;2;PORTEF_INV;cumul;initiale;61.982;WIB_2026T2.pdf;1;6
 WIB;2026T2;2026-06-30;2026;2;PROD_EXPL;cumul;initiale;102.968;WIB_2026T2.pdf;1;102.968;initiale;0.0;retenue;;;;
 WIB;2026T2;2026-06-30;2026;2;PROD_EXPL;trim;initiale;53.727;WIB_2026T2.pdf;1;53.727;initiale;0.0;retenue;;;;
 WIB;2026T2;2026-06-30;2026;2;REV_PORTEF;cumul;initiale;1.857;WIB_2026T2.pdf;1;1.857;initiale;0.0;retenue;;;;
-WIB;2026T2;2026-06-30;2026;2;REV_PORTEF;trim;initiale;607.829;WIB_2026T2.pdf;1;607.829;initiale;0.0;retenue;;;;
+WIB;2026T2;2026-06-30;2026;2;REV_PORTEF;trim;initiale;0.723;WIB_2026T2.pdf;1;0.723;initiale;0.0;retenue;portefeuille commercial 607 + portefeuille d'investissement 116 : extraction erronée (« 607 » et « 713 » de deux colonnes voisines lus comme le nombre 607 713) ;;;
 WIB;2026T3;2026-09-30;2026;3;CAP_PROPRES;cumul;initiale;170.666;WIB_2026T3.pdf;1;170.666;initiale;0.0;retenue;résultat de la période non inclus;;;
 WIB;2026T3;2026-09-30;2026;3;CHG_EXPL;cumul;initiale;62.812;WIB_2026T3.pdf;1;62.812;initiale;0.0;retenue;;;;
 WIB;2026T3;2026-09-30;2026;3;CHG_EXPL;trim;initiale;19.458;WIB_2026T3.pdf;1;19.458;initiale;0.0;retenue;;;;

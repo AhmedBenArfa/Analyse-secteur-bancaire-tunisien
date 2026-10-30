@@ -341,6 +341,44 @@ def test_wib_2022t3_site_de_la_banque():
     assert proche(v[("CHG_OPER", "cumul_N")], 30.505) and proche(v[("CREDITS", "cumul_N")], 742.188)
 
 
+def test_wib_2026t2_portefeuille_saisi():
+    """Wifak 2026T2 (30/10/2026) : « 607 » (T2 2026) et « 713 » (T2 2025, calé à gauche de sa colonne) étaient lus
+    comme le nombre 607 713 ; revenus du portefeuille = commercial + investissement, saisis depuis l'image :
+    607 + 116 = 723 et 713 + 222 = 935 milliers de dinars (produits 53 727 et 47 027 vérifiés)."""
+    chemin = cb.DOSSIER_PDF / "WIB" / "WIB_2026T2.pdf"
+    if not chemin.exists():
+        return
+    lignes, _, _ = cb.extraire_document("WIB", "2026T2", chemin)
+    v = {(l["code_indicateur"], l["colonne"]): l["valeur_mdt"] for l in lignes}
+    assert proche(v[("REV_PORTEF", "trim_N")], 0.723) and proche(v[("REV_PORTEF", "trim_N1")], 0.935)
+    assert proche(v[("REV_PORTEF", "cumul_N")], 1.857) and proche(v[("PNB", "trim_N")], 31.190)
+
+
+def test_composantes_du_pnb():
+    """Dans chaque version publiée, PNB = marge d'intérêts + marge sur commissions + revenus du portefeuille, à
+    0,05 MDT près : une colonne mal lue (deux nombres voisins collés, WIB 2026T2) fait apparaître un reste. Exceptions
+    vérifiées dans les PDF : BTE publie ses gains de change sans code ; BT publie des pertes sur portefeuille
+    commercial au T2 2026 (2,172, reprises dans le cumul du T3) ; colonnes N-1 exclues (erreurs de la banque)."""
+    chemin = RACINE / "donnees_publiees" / "indicateurs_versions.csv"
+    codes = ("PNB", "INT_PERCUS", "INT_ENCOURUS", "COMM_PROD", "COMM_CHG", "REV_PORTEF")
+    versions: dict[tuple, dict] = {}
+    with chemin.open(encoding="utf-8-sig") as f:
+        for r in csv.DictReader(f, delimiter=";"):
+            if r["code_indicateur"] in codes and r["valeur_mdt"] and not r["statut_revision"].startswith("exclue"):
+                cle = (r["banque"], r["trimestre"], r["mesure"], r["version"], r["fichier"])
+                versions.setdefault(cle, {})[r["code_indicateur"]] = float(r["valeur_mdt"])
+    restes, controlees = {}, 0
+    for cle, v in versions.items():
+        controlees += len(v) == len(codes)
+        if len(v) == len(codes) and cle[0] != "BTE" and not (cle[0] == "BT" and cle[1] in ("2026T2", "2026T3")):
+            reste = (v["PNB"] - (v["INT_PERCUS"] - v["INT_ENCOURUS"]) - (v["COMM_PROD"] - v["COMM_CHG"])
+                     - v["REV_PORTEF"])
+            if abs(reste) > 0.05:
+                restes[cle] = round(reste, 3)
+    # 1 468 versions complètes au 30/10/2026 (trimestre ou cumul, initiale ou révisée, 336 documents)
+    assert controlees >= 1468 and not restes, restes
+
+
 def test_candidats_liste_cmf_non_publie():
     """« non publié » : aucun nom de la liste du CMF ne porte la banque, l'année et le rang du
     trimestre (score 0). Un PDF de la banque pour un autre trimestre de la même année n'y suffit pas."""
