@@ -34,7 +34,6 @@
         }
       }
     },
-    "drillFilterOtherVisuals": true,
     "objects": {
       "data": [
         {
@@ -100,7 +99,7 @@
                                   "Source": "i"
                                 }
                               },
-                              "Property": "Indicateur affiché"
+                              "Property": "Indicateur affiché Champs"
                             }
                           }
                         ],
@@ -108,10 +107,60 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'PNB'"
+                                "Value": "'''Mesures''[PNB]'"
                               }
                             }
                           ]
+                        ]
+                      }
+                    },
+                    "Annotations": {
+                      "filterExpressionMetadata": {
+                        "expressions": [
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Entity": "Indicateur affiché"
+                                }
+                              },
+                              "Property": "Indicateur affiché"
+                            }
+                          }
+                        ],
+                        "decomposedIdentities": {
+                          "values": [
+                            [
+                              {
+                                "0": [
+                                  {
+                                    "Literal": {
+                                      "Value": "'''Mesures''[PNB]'"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          ],
+                          "columns": [
+                            {
+                              "value": {
+                                "Column": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Entity": "Indicateur affiché"
+                                    }
+                                  },
+                                  "Property": "Indicateur affiché Champs"
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "valueMap": [
+                          {
+                            "0": "PNB"
+                          }
                         ]
                       }
                     }
@@ -122,7 +171,8 @@
           }
         }
       ]
-    }
+    },
+    "drillFilterOtherVisuals": true
   },
   "filterConfig": {
     "filters": [
