@@ -5,6 +5,47 @@
   "displayOption": "FitToPage",
   "height": 720,
   "width": 1280,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "2c95ee142e63a9990901",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "code_banque"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "Drillthrough"
+      }
+    ]
+  },
+  "pageBinding": {
+    "name": "6acfc2bdd7194b804500",
+    "type": "Drillthrough",
+    "parameters": [
+      {
+        "name": "3ca7c3da4835c06a7b77",
+        "boundFilter": "2c95ee142e63a9990901",
+        "asAggregation": false,
+        "qnaSingleSelectRequired": false,
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "code_banque"
+          }
+        }
+      }
+    ]
+  },
   "objects": {
     "background": [
       {

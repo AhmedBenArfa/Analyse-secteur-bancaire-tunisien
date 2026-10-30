@@ -1,0 +1,214 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "e292731dbd42b887618d",
+  "position": {
+    "x": 894,
+    "y": 180,
+    "z": 2006,
+    "height": 288,
+    "width": 362,
+    "tabOrder": 2006
+  },
+  "visual": {
+    "visualType": "scatterChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "code_banque"
+                }
+              },
+              "queryRef": "Dim_Banque.code_banque",
+              "nativeQueryRef": "code_banque",
+              "active": true
+            }
+          ]
+        },
+        "Size": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "PNB"
+                }
+              },
+              "queryRef": "Mesures.PNB",
+              "nativeQueryRef": "PNB"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Rang PNB"
+                }
+              },
+              "queryRef": "Mesures.Rang PNB",
+              "nativeQueryRef": "Rang PNB"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Rang coef"
+                }
+              },
+              "queryRef": "Mesures.Rang coef",
+              "nativeQueryRef": "Rang coef"
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Var PNB A/A %"
+                }
+              },
+              "queryRef": "Mesures.Var PNB A/A %",
+              "nativeQueryRef": "Var PNB A/A %",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Coef exploitation harmonise"
+                }
+              },
+              "queryRef": "Mesures.Coef exploitation harmonise",
+              "nativeQueryRef": "Coef exploitation harmonise"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "ad3df0fd092e30d0ad93",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "code_banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "bc5f77c34385a10942cd",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Var PNB A/A %"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b70df80bbe930dd58852",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Coef exploitation harmonise"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b0b2caac6738ee79b6b4",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "PNB"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "595c88a5da2d11e3905c",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Rang PNB"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "84fdde7b79cd475cd4c3",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Rang coef"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

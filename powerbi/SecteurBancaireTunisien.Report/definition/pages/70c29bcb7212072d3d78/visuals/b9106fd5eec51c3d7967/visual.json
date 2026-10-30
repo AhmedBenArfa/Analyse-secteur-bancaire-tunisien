@@ -1,0 +1,56 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "b9106fd5eec51c3d7967",
+  "position": {
+    "x": 15.694864651270466,
+    "y": 312.58938763780344,
+    "z": 2002,
+    "height": 116.40357949692263,
+    "width": 317.167056494424,
+    "tabOrder": 2002
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Trimestre affiche"
+                }
+              },
+              "queryRef": "Mesures.Trimestre affiche",
+              "nativeQueryRef": "Trimestre affiche"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "5cac5ae1c85895d05c8b",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Trimestre affiche"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

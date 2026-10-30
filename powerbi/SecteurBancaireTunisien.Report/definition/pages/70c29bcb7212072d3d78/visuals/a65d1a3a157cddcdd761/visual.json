@@ -1,0 +1,331 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "a65d1a3a157cddcdd761",
+  "position": {
+    "x": 513.35286463530485,
+    "y": 180.49094348961037,
+    "z": 2004,
+    "height": 288.39313796709484,
+    "width": 380.60046779330884,
+    "tabOrder": 2004
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "icone"
+                }
+              },
+              "queryRef": "Dim_Banque.icone",
+              "nativeQueryRef": "icone"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "code_banque"
+                }
+              },
+              "queryRef": "Dim_Banque.code_banque",
+              "nativeQueryRef": "code_banque"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "PNB"
+                }
+              },
+              "queryRef": "Mesures.PNB",
+              "nativeQueryRef": "PNB"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Part de marche PNB"
+                }
+              },
+              "queryRef": "Mesures.Part de marche PNB",
+              "nativeQueryRef": "Part de marche PNB"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Rang PNB"
+                }
+              },
+              "queryRef": "Mesures.Rang PNB",
+              "nativeQueryRef": "Rang PNB"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Coef exploitation harmonise"
+                }
+              },
+              "queryRef": "Mesures.Coef exploitation harmonise",
+              "nativeQueryRef": "Coef exploitation harmonise"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Rang coef"
+                }
+              },
+              "queryRef": "Mesures.Rang coef",
+              "nativeQueryRef": "Rang coef"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Ecart coef / mediane"
+                }
+              },
+              "queryRef": "Mesures.Ecart coef / mediane",
+              "nativeQueryRef": "Ecart coef / mediane"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Var PNB A/A %"
+                }
+              },
+              "queryRef": "Mesures.Var PNB A/A %",
+              "nativeQueryRef": "Var PNB A/A %"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Mesures"
+                  }
+                },
+                "Property": "Coef exploitation harmonise"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Mesures"
+                        }
+                      },
+                      "Property": "Couleur coef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "Mesures.Coef exploitation harmonise"
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "cfdb17545458431d0cce",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "icone"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "aaa6a6af89ab24ab2c48",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "code_banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "8794edad0c00e5d989ad",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "PNB"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "6a13f205e6076a060159",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part de marche PNB"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "be1a1709deb970ab1899",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Rang PNB"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "67cd53e2c280a4da796a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Coef exploitation harmonise"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e671194a989b3a00140a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Rang coef"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "a52b37ff1a401cb9c8d0",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Ecart coef / mediane"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "1e0bd58238571de62136",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Var PNB A/A %"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}
