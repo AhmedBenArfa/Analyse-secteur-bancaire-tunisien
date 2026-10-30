@@ -64,6 +64,22 @@ table Mesures
 		displayFolder: 1. Bases\Flux du trimestre
 		lineageTag: 7541328b-6439-4edb-817c-b5d5c7ec86fe
 
+	/// Reste du PNB du trimestre hors marge d'intérêts, marge sur commissions et revenus du portefeuille (gains de change, autres produits, pertes sur portefeuille publiées à part : BT, BTE) ; presque toujours nul ; vide si l'un des termes manque
+	measure 'Autres elements PNB' =
+			VAR Interets = [Marge interets]
+			VAR Commissions = [Marge commissions]
+			VAR Portefeuille = [Revenus portefeuille]
+			VAR Total = [PNB]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( Interets ) && NOT ISBLANK ( Commissions ) && NOT ISBLANK ( Portefeuille )
+			            && NOT ISBLANK ( Total ),
+			        Total - Interets - Commissions - Portefeuille
+			    )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Flux du trimestre
+		lineageTag: c6b2213f-a78d-4685-84cf-84442bbb3e00
+
 	/// PNB cumulé depuis janvier à une date d'arrêté
 	measure 'PNB cumul brut' = CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "PNB" )
 		formatString: #,0.000
@@ -462,6 +478,12 @@ table Mesures
 		displayFolder: 3. Ratios\Structure du PNB
 		lineageTag: a2c62407-cf52-4a79-a6c3-27f97640c418
 
+	/// Autres éléments du PNB / PNB du trimestre (reste hors des trois composantes, presque toujours nul)
+	measure 'Part autres elements' = DIVIDE ( [Autres elements PNB], [PNB] )
+		formatString: 0.0 %
+		displayFolder: 3. Ratios\Structure du PNB
+		lineageTag: 76642fb8-1a10-4329-b868-9e8358fccd91
+
 	/// Frais de personnel / PNB du trimestre
 	measure 'Frais personnel / PNB' = DIVIDE ( [Frais personnel], [PNB] )
 		formatString: 0.0 %
@@ -701,6 +723,24 @@ table Mesures
 		formatString: #,0.000
 		displayFolder: 4. Croissances\Annotations
 		lineageTag: fdb32c05-17f0-4e5e-b742-92a029821b9d
+
+	/// Ruptures de série du point (banque et trimestre) pour les indicateurs de la page Évolution (PNB, frais de personnel, charges générales, crédits, dépôts) : code et détail de la révision de plus de 2 %, un par ligne ; vide sans rupture
+	measure 'Ruptures texte' =
+			VAR Lignes =
+			    FILTER (
+			        Fait_Indicateurs,
+			        Fait_Indicateurs[Rupture_Cumul] = "oui"
+			            && Fait_Indicateurs[code_indicateur] IN { "PNB", "FRAIS_PERS", "CHG_GEN", "CREDITS", "DEPOTS" }
+			    )
+			RETURN
+			    CONCATENATEX (
+			        Lignes,
+			        Fait_Indicateurs[code_indicateur] & " : " & Fait_Indicateurs[Detail_Rupture_Cumul],
+			        UNICHAR ( 10 ),
+			        Fait_Indicateurs[code_indicateur]
+			    )
+		displayFolder: 4. Croissances\Annotations
+		lineageTag: d2d7dd21-a846-4353-988f-476c34b49e02
 
 	/// Somme des valeurs retenues des états financiers ; vide si plusieurs dates d'arrêté
 	measure 'EF valeur' = IF ( DISTINCTCOUNT ( Fait_Etats_Financiers[date_arrete] ) = 1, SUM ( Fait_Etats_Financiers[valeur_mdt] ) )
@@ -1250,24 +1290,6 @@ table Mesures
 	measure 'Trimestre affiche' = SELECTEDVALUE ( Dim_Date[Annee_Trimestre], "plusieurs trimestres" )
 		displayFolder: 2. Secteur\Affichage
 		lineageTag: 079b0f0e-6c02-43c1-b9c7-520a0f7ad56b
-
-	/// Ruptures de série du point (banque et trimestre) pour les indicateurs de la page Évolution (PNB, frais de personnel, charges générales, crédits, dépôts) : code et détail de la révision de plus de 2 %, un par ligne ; vide sans rupture
-	measure 'Ruptures texte' =
-			VAR Lignes =
-			    FILTER (
-			        Fait_Indicateurs,
-			        Fait_Indicateurs[Rupture_Cumul] = "oui"
-			            && Fait_Indicateurs[code_indicateur] IN { "PNB", "FRAIS_PERS", "CHG_GEN", "CREDITS", "DEPOTS" }
-			    )
-			RETURN
-			    CONCATENATEX (
-			        Lignes,
-			        Fait_Indicateurs[code_indicateur] & " : " & Fait_Indicateurs[Detail_Rupture_Cumul],
-			        UNICHAR ( 10 ),
-			        Fait_Indicateurs[code_indicateur]
-			    )
-		displayFolder: 4. Croissances\Annotations
-		lineageTag: d2d7dd21-a846-4353-988f-476c34b49e02
 
 	column Colonne_Masquee
 		dataType: int64

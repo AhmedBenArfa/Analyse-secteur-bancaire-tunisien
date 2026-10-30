@@ -1500,6 +1500,60 @@ horizontale, « Trimestre » et la date coupés sur deux lignes).
 tableaux des révisions et des événements ; dernier réglage des largeurs de colonnes (en-tête « Banque » coupé) fait
 ensuite dans les fichiers.
 
+### 4.5 Page 4 : Structure du PNB (en construction)
+
+**But** : de quoi est fait le PNB de chaque banque au trimestre choisi, et comment la structure du secteur a changé
+depuis 2019 : marge d'intérêts (intérêts perçus − intérêts encourus), marge sur commissions (commissions perçues −
+commissions encourues), revenus du portefeuille (portefeuille commercial et d'investissement) et autres éléments.
+
+**Le reste du PNB.** Dans les données, PNB = marge d'intérêts + marge sur commissions + revenus du portefeuille,
+presque toujours à l'arrondi près : la rubrique du portefeuille contient déjà les gains sur titres. Seules deux
+banques publient un reste : BTE (gains de change sans ligne propre, 4,3 % du PNB au T3 2026) et BT (1,7 % au T3 2026 ;
+pertes sur portefeuille commercial de 2,172 MDT au T2 2026, d'où un reste négatif ce trimestre-là). La mesure
+`Autres elements PNB` (ajoutée le 30/10/2026, dossier `1. Bases\Flux du trimestre`) garde ce reste pour que les barres
+à 100 % restent exactes, et `Part autres elements` (`3. Ratios\Structure du PNB`) sa part. Ce contrôle a fait trouver
+une erreur d'extraction (Wifak, T2 2026 : feuille de route, décision du 30/10/2026), corrigée avant la page.
+
+**Création de la page** : `python scripts/ecrire_pbir_visuels.py nouvelle_page "Structure du PNB" "Structure du PNB"`
+(fond, titre et segment des banques copiés de la page 1) et copie du segment du trimestre de la page 1
+(`copier_visuel`, « Dernier trimestre complet »).
+
+**Mise en page** (positions : x, y, largeur × hauteur) :
+
+| Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
+|---|---|---|---|
+| Fond, titre, segments du trimestre et des banques | comme la page 1 | copiés de la page 1 | titre « Structure du PNB » |
+| Structure par banque | 16, 162, 620 × 522 | graphique à barres empilées 100 % : axe Y `Dim_Banque[code_banque]`, axe X `Marge interets`, `Marge commissions`, `Revenus portefeuille` (`1. Bases\Flux du trimestre`), `Autres elements PNB` (même dossier) ; info-bulles `Part marge interets`, `Part commissions`, `Part portefeuille` (`3. Ratios\Structure du PNB`) | tri par `Part marge interets` décroissant ; titre « Structure du PNB par banque » |
+| Structure du secteur dans le temps | 646, 162, 618 × 330 | histogramme empilé 100 % : axe X `Dim_Date[Annee_Trimestre]`, mêmes quatre mesures | trimestres publiés seulement (`Trimestre_Publie`) ; le segment du trimestre ne le filtre pas (interaction « Aucun ») ; titre « Structure du PNB des banques choisies, 2019T4–2026T3 » |
+| Parts au trimestre | 646, 502, 618 × 182 | carte (nouvelle) : `Part marge interets`, `Part commissions`, `Part portefeuille` | libellés « Marge d'intérêts », « Commissions », « Portefeuille » |
+
+**Pourquoi ces choix.** Des barres à 100 % comparent la composition du PNB sans que la taille des banques écrase les
+petites (BTE, Wifak). Les trois parts sont les mesures déjà vérifiées au groupe 3 (3.5). L'histogramme dans le temps
+garde l'axe en trimestres (`Annee_Trimestre`, catégoriel) : 28 colonnes tiennent dans la largeur. Le segment des
+banques filtre les trois visuels : sans choix, l'histogramme et la carte montrent les 12 banques ensemble.
+
+**Valeurs attendues au T3 2026** (calculées à part depuis `donnees_publiees/`, en % du PNB du trimestre) :
+
+| Banque | Marge d'intérêts | Commissions | Portefeuille | Autres |
+|---|---|---|---|---|
+| Wifak | 68,7 % | 28,2 % | 3,2 % | 0,0 % |
+| BT | 58,8 % | 16,9 % | 22,6 % | 1,7 % |
+| UIB | 53,9 % | 28,1 % | 18,1 % | 0,0 % |
+| UBCI | 53,0 % | 17,3 % | 29,7 % | 0,0 % |
+| ATB | 47,6 % | 22,1 % | 30,4 % | 0,0 % |
+| BIAT | 34,1 % | 18,7 % | 47,3 % | 0,0 % |
+| Attijari | 31,8 % | 20,4 % | 47,9 % | 0,0 % |
+| AB | 27,2 % | 21,5 % | 51,2 % | 0,0 % |
+| BTE | 24,0 % | 31,4 % | 40,3 % | 4,3 % |
+| BH | 23,4 % | 21,8 % | 54,8 % | 0,0 % |
+| BNA | 18,5 % | 15,2 % | 66,3 % | 0,0 % |
+| STB | 15,8 % | 15,8 % | 68,4 % | 0,0 % |
+| **12 banques** | **33,4 %** | **19,5 %** | **47,0 %** | **0,2 %** |
+
+Secteur dans le temps (12 banques) : marge d'intérêts 58,2 % du PNB au 2019T4, 54,2 % au 2020T2, 49,2 % au 2022T4,
+41,2 % au 2024T4, 33,4 % au 2026T3 ; portefeuille 21,5 %, 27,4 %, 31,3 %, 38,8 %, 47,0 % ; commissions stables entre 18 %
+et 20 %. Les données montrent le déplacement ; elles n'en donnent pas la cause, que le rapport n'avance pas.
+
 **Mise en page** (positions : x, y, largeur × hauteur) :
 
 | Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |

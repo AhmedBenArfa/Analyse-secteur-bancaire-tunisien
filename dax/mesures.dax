@@ -50,6 +50,19 @@ MEASURE Mesures[Marge commissions] =
 MEASURE Mesures[Revenus portefeuille] =
     CALCULATE ( [Valeur Trim], Dim_Indicateur[code_indicateur] = "REV_PORTEF" )
 
+// [1. Bases\Flux du trimestre | #,0.000] Reste du PNB du trimestre hors marge d'intérêts, marge sur commissions et revenus du portefeuille (gains de change, autres produits, pertes sur portefeuille publiées à part : BT, BTE) ; presque toujours nul ; vide si l'un des termes manque
+MEASURE Mesures[Autres elements PNB] =
+    VAR Interets = [Marge interets]
+    VAR Commissions = [Marge commissions]
+    VAR Portefeuille = [Revenus portefeuille]
+    VAR Total = [PNB]
+    RETURN
+        IF (
+            NOT ISBLANK ( Interets ) && NOT ISBLANK ( Commissions ) && NOT ISBLANK ( Portefeuille )
+                && NOT ISBLANK ( Total ),
+            Total - Interets - Commissions - Portefeuille
+        )
+
 // [1. Bases\Intermédiaires | #,0.000] PNB cumulé depuis janvier à une date d'arrêté
 MEASURE Mesures[PNB cumul brut] =
     CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "PNB" )
@@ -342,6 +355,10 @@ MEASURE Mesures[Part commissions] =
 // [3. Ratios\Structure du PNB | 0.0 %] Revenus du portefeuille-titres / PNB du trimestre
 MEASURE Mesures[Part portefeuille] =
     DIVIDE ( [Revenus portefeuille], [PNB] )
+
+// [3. Ratios\Structure du PNB | 0.0 %] Autres éléments du PNB / PNB du trimestre (reste hors des trois composantes, presque toujours nul)
+MEASURE Mesures[Part autres elements] =
+    DIVIDE ( [Autres elements PNB], [PNB] )
 
 // [3. Ratios\Structure du PNB | 0.0 %] Frais de personnel / PNB du trimestre
 MEASURE Mesures[Frais personnel / PNB] =
