@@ -620,6 +620,90 @@ cultureInfo fr-FR
 			          }
 			        }
 			      ]
+			    },
+			    "fait_indicateurs.trimestre": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Fait_Indicateurs",
+			          "ConceptualProperty": "trimestre"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Trimestre": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "fait_indicateurs.banque": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Fait_Indicateurs",
+			          "ConceptualProperty": "banque"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Banque": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "fait_indicateurs.code_indicateur": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Fait_Indicateurs",
+			          "ConceptualProperty": "code_indicateur"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Indicateur": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "fait_indicateurs.detail_rupture_cumul": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Fait_Indicateurs",
+			          "ConceptualProperty": "Detail_Rupture_Cumul"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Révision": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
 			    }
 			  }
 			}
