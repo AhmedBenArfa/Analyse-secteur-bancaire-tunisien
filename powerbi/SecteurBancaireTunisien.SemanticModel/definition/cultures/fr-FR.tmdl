@@ -12,19 +12,7 @@ cultureInfo fr-FR
 			          "ConceptualProperty": "Annee_Trimestre"
 			        }
 			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Trimestre": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
+			      "State": "Generated"
 			    },
 			    "mesures.top_3_banques_pnb": {
 			      "Definition": {
@@ -257,6 +245,27 @@ cultureInfo fr-FR
 			      "Terms": [
 			        {
 			          "Banque": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "dim_date.date": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Dim_Date",
+			          "ConceptualProperty": "Date"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Fin du trimestre": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
