@@ -1470,7 +1470,15 @@ dans le tableau des événements, à droite, filtré par la banque et le point c
 légende) : l'info-bulle la remplace.
 
 **Création de la page** : `python scripts/ecrire_pbir_visuels.py nouvelle_page "Évolution" "Évolution 2020–2026"`
-(fond, titre et segment des banques copiés de la page 1).
+(fond, titre et segment des banques copiés de la page 1). Visuels et paramètre de champ créés dans Power BI Desktop
+(30/10/2026), puis réglés par `python scripts/ecrire_pbir_visuels.py evolution` : positions, titres, noms affichés, axe
+continu, lignes de la période Covid (`xAxisReferenceLine`), filtre des trimestres publiés, sélecteur en liste
+déroulante à sélection unique sur « PNB », tableau trié par date avec retour à la ligne, interaction tableau →
+courbes « Aucun ». Corrections du modèle au même moment : nom du paramètre sans le point final saisi par mégarde
+(« Indicateur affiché. »), libellés en français (« Coefficient d'exploitation », « Crédits / dépôts », « Part du
+PNB », « PNB sur un an ») ; option **Date/heure automatique** désactivée pour ce fichier : Power BI venait de créer
+quatre tables de dates cachées (`LocalDateTable_…`) et trois relations pour les dates de l'actionnariat, inutiles avec
+`Dim_Date` et coûteuses en mémoire (**Fichier › Options › Fichier actif › Chargement des données**).
 
 **Mise en page** (positions : x, y, largeur × hauteur) :
 

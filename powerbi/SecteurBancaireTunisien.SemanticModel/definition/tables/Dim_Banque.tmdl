@@ -66,11 +66,6 @@ table Dim_Banque
 		summarizeBy: none
 		sourceColumn: date_actionnariat
 
-		variation Variation
-			isDefault
-			relationship: 5ee798ae-2928-4094-808d-b9f78fb8304e
-			defaultHierarchy: LocalDateTable_81126fe8-3f23-4953-8f70-58a695e343e2.'Hiérarchie de dates'
-
 		annotation SummarizationSetBy = User
 
 		annotation UnderlyingDateTimeDataType = Date

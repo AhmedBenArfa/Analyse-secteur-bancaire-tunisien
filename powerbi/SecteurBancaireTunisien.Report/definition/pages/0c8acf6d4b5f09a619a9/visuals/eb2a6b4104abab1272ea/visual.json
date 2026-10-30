@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "eb2a6b4104abab1272ea",
   "position": {
-    "x": 24,
-    "y": 481,
+    "x": 16,
+    "y": 162,
     "z": 2002,
-    "height": 150,
-    "width": 600,
+    "height": 522,
+    "width": 860,
     "tabOrder": 2002
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Date.Date",
               "nativeQueryRef": "Date",
-              "active": true
+              "active": true,
+              "displayName": "Fin du trimestre"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Dim_Banque.code_banque",
-              "nativeQueryRef": "code_banque"
+              "nativeQueryRef": "code_banque",
+              "displayName": "Banque"
             }
           ]
         },
@@ -64,7 +66,8 @@
                 }
               },
               "queryRef": "Mesures.Evenement texte",
-              "nativeQueryRef": "Evenement texte"
+              "nativeQueryRef": "Evenement texte",
+              "displayName": "Événements"
             },
             {
               "field": {
@@ -78,7 +81,8 @@
                 }
               },
               "queryRef": "Mesures.Ruptures texte",
-              "nativeQueryRef": "Ruptures texte"
+              "nativeQueryRef": "Ruptures texte",
+              "displayName": "Ruptures de série"
             }
           ]
         },
@@ -106,10 +110,10 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Indicateur affiché."
+                      "Entity": "Indicateur affiché"
                     }
                   },
-                  "Property": "Indicateur affiché."
+                  "Property": "Indicateur affiché"
                 }
               },
               "index": 0,
@@ -137,7 +141,201 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Évolution par banque (lignes : début et fin de la période Covid)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Scalar'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "xAxisReferenceLine": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "displayName": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Début Covid'"
+                }
+              }
+            },
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "datetime'2020-03-01T00:00:00'"
+                }
+              }
+            },
+            "lineColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#C62828'"
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "expr": {
+                "Literal": {
+                  "Value": "'dashed'"
+                }
+              }
+            },
+            "dataLabelShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "dataLabelText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Name'"
+                }
+              }
+            },
+            "dataLabelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#C62828'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "1"
+          }
+        },
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "displayName": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Fin Covid'"
+                }
+              }
+            },
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "datetime'2022-01-01T00:00:00'"
+                }
+              }
+            },
+            "lineColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#2E7D32'"
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "expr": {
+                "Literal": {
+                  "Value": "'dashed'"
+                }
+              }
+            },
+            "dataLabelShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "dataLabelText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Name'"
+                }
+              }
+            },
+            "dataLabelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#2E7D32'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "2"
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [
@@ -170,46 +368,59 @@
         "type": "Categorical"
       },
       {
-        "name": "529a3b1945b64c913329",
+        "name": "trimestres_publies",
+        "ordinal": 2,
         "field": {
-          "Measure": {
+          "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Mesures"
+                "Entity": "Dim_Date"
               }
             },
-            "Property": "PNB"
+            "Property": "Trimestre_Publie"
           }
         },
-        "type": "Advanced"
-      },
-      {
-        "name": "46eb0b2f7cb8a005060d",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim_Date",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "Trimestre_Publie"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "true"
+                        }
+                      }
+                    ]
+                  ]
+                }
               }
-            },
-            "Property": "Evenement texte"
-          }
+            }
+          ]
         },
-        "type": "Advanced"
-      },
-      {
-        "name": "22812f6b43ee383947a5",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "Ruptures texte"
-          }
-        },
-        "type": "Advanced"
+        "howCreated": "User"
       }
     ]
   }

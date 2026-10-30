@@ -7,7 +7,7 @@ model Model
 		legacyRedirects
 		returnErrorValuesAsNull
 
-annotation __PBI_TimeIntelligenceEnabled = 1
+annotation __PBI_TimeIntelligenceEnabled = 0
 
 annotation PBI_ProTooling = ["DevMode","DaxQueryView_Desktop"]
 
@@ -30,11 +30,7 @@ ref table Definitions_Capitaux_Propres
 ref table Dim_Date
 ref table Mesures
 ref table Journal_Faits_Marquants
-ref table 'Indicateur affiché.'
-ref table DateTableTemplate_995d60d4-d293-475d-8a7b-6e37bcd9b5d9
-ref table LocalDateTable_9ac37c16-8ab0-425e-be1e-6ed25a34d9f1
-ref table LocalDateTable_4af62b5e-0313-4652-b289-e6f31bba99d3
-ref table LocalDateTable_81126fe8-3f23-4953-8f70-58a695e343e2
+ref table 'Indicateur affiché'
 
 ref cultureInfo fr-FR
 

@@ -165,12 +165,13 @@ def retirer_extraction(page):
             f.parent.rmdir()
 
 
-def trier(page, visuel, table, champ, sens="Ascending"):
-    """Tri par défaut du visuel sur une mesure (sens « Ascending » ou « Descending »)."""
+def trier(page, visuel, table, champ, sens="Ascending", genre="Measure"):
+    """Tri par défaut du visuel sur une mesure (genre « Measure ») ou une colonne (« Column ») ; sens « Ascending » ou
+    « Descending »."""
     p = PAGES / page / "visuals" / visuel / "visual.json"
     d = lire(p)
     d["visual"]["query"]["sortDefinition"] = {"sort": [{
-        "field": {"Measure": {"Expression": {"SourceRef": {"Entity": table}}, "Property": champ}},
+        "field": {genre: {"Expression": {"SourceRef": {"Entity": table}}, "Property": champ}},
         "direction": sens}], "isDefaultSort": True}
     ecrire(p, d)
 
@@ -264,6 +265,66 @@ def classement():
     print("Classement : visuels réglés")
 
 
+def lignes_verticales(page, visuel, lignes):
+    """Lignes constantes de l'axe X d'un graphique à axe de dates continu : [(nom, date AAAA-MM-JJ, couleur)], avec
+    leur nom affiché au-dessus de la ligne."""
+    p = PAGES / page / "visuals" / visuel / "visual.json"
+    d = lire(p)
+    d["visual"].setdefault("objects", {})["xAxisReferenceLine"] = [{
+        "properties": {"show": litteral("true"), "displayName": texte(nom),
+                       "value": litteral(f"datetime'{jour}T00:00:00'"),
+                       "lineColor": {"solid": {"color": litteral(f"'{couleur}'")}},
+                       "style": texte("dashed"), "dataLabelShow": litteral("true"), "dataLabelText": texte("Name"),
+                       "dataLabelColor": {"solid": {"color": litteral(f"'{couleur}'")}}},
+        "selector": {"id": str(i)}} for i, (nom, jour, couleur) in enumerate(lignes, 1)]
+    ecrire(p, d)
+
+
+def evolution():
+    """Page 3 « Évolution 2020–2026 » (guide 4.4)."""
+    page = "0c8acf6d4b5f09a619a9"
+    retirer_extraction(page)
+    # sélecteur d'indicateur (paramètre de champ) à la place du segment du trimestre : liste déroulante, un seul
+    # indicateur à la fois, « PNB » au départ
+    selecteur = "3891b1531292597b0c66"
+    regler(page, selecteur, (24, 92, 250, 52))
+    p = PAGES / page / "visuals" / selecteur / "visual.json"
+    d = lire(p)
+    colonne = {"Column": {"Expression": {"SourceRef": {"Source": "i"}}, "Property": "Indicateur affiché"}}
+    d["visual"]["objects"] = {
+        "data": [{"properties": {"mode": texte("Dropdown")}}],
+        "header": [{"properties": {"text": texte("Indicateur")}}],
+        "selection": [{"properties": {"strictSingleSelect": litteral("true")}}],
+        "general": [{"properties": {"filter": {"filter": {
+            "Version": 2, "From": [{"Name": "i", "Entity": "Indicateur affiché", "Type": 0}],
+            "Where": [{"Condition": {"In": {"Expressions": [colonne], "Values": [[{"Literal": {"Value": "'PNB'"}}]]}}}]}}}}]}
+    ecrire(p, d)
+    # courbes : axe des dates continu (un point par trimestre), trimestres publiés, période Covid en lignes verticales
+    courbes = "eb2a6b4104abab1272ea"
+    regler(page, courbes, (16, 162, 860, 522),
+           {"Dim_Date.Date": "Fin du trimestre", "Dim_Banque.code_banque": "Banque",
+            "Mesures.Evenement texte": "Événements", "Mesures.Ruptures texte": "Ruptures de série"},
+           titre="Évolution par banque (lignes : début et fin de la période Covid)",
+           objets={"categoryAxis": {"axisType": texte("Scalar")}})
+    lignes_verticales(page, courbes, [("Début Covid", "2020-03-01", "#C62828"), ("Fin Covid", "2022-01-01", "#2E7D32")])
+    filtre_colonne(page, courbes, "Dim_Date", "Trimestre_Publie", "true", "trimestres_publies")
+    # tableau des événements : trié par date, description sur plusieurs lignes, sans effet sur les courbes
+    tableau = "0b0d0fce4ac5c840b305"
+    regler(page, tableau, (886, 162, 378, 522),
+           {"Evenements.date": "Date", "Evenements.banque": "Banque", "Evenements.description": "Événement",
+            "Evenements.montant_mdt": "MDT"},
+           titre="Événements qui expliquent un saut", objets={"values": {"wordWrap": litteral("true")}})
+    trier(page, tableau, "Evenements", "date", genre="Column")
+    p = PAGES / page / "visuals" / tableau / "visual.json"
+    d = lire(p)
+    d["visual"]["objects"]["columnWidth"] = [
+        {"properties": {"value": litteral(f"{largeur}D")}, "selector": {"metadata": f"Evenements.{colonne}"}}
+        for colonne, largeur in [("date", 70), ("banque", 50), ("description", 180), ("montant_mdt", 50)]]
+    ecrire(p, d)
+    interactions(page, [(tableau, courbes, "NoFilter")])
+    print("Évolution : visuels réglés")
+
+
 def vue_ensemble():
     """Page 1 « Vue d'ensemble » (guide 4.2)."""
     page = "ae07c11e46023397cb08"
@@ -308,7 +369,7 @@ def vue_ensemble():
     print("Vue d'ensemble : visuels réglés")
 
 
-PAGES_REGLEES = {"vue_ensemble": vue_ensemble, "classement": classement}
+PAGES_REGLEES = {"vue_ensemble": vue_ensemble, "classement": classement, "evolution": evolution}
 
 if __name__ == "__main__":
     if len(sys.argv) == 4 and sys.argv[1] == "nouvelle_page":

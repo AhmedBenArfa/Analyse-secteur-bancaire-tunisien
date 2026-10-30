@@ -3,10 +3,10 @@
   "name": "3891b1531292597b0c66",
   "position": {
     "x": 24,
-    "y": 266,
+    "y": 92,
     "z": 2001,
-    "height": 150,
-    "width": 600,
+    "height": 52,
+    "width": 250,
     "tabOrder": 2001
   },
   "visual": {
@@ -20,21 +20,109 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Indicateur affiché."
+                      "Entity": "Indicateur affiché"
                     }
                   },
-                  "Property": "Indicateur affiché."
+                  "Property": "Indicateur affiché"
                 }
               },
-              "queryRef": "Indicateur affiché..Indicateur affiché.",
-              "nativeQueryRef": "Indicateur affiché.",
+              "queryRef": "Indicateur affiché.Indicateur affiché",
+              "nativeQueryRef": "Indicateur affiché",
               "active": true
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Dropdown'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "header": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Indicateur'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "selection": [
+        {
+          "properties": {
+            "strictSingleSelect": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "filter": {
+              "filter": {
+                "Version": 2,
+                "From": [
+                  {
+                    "Name": "i",
+                    "Entity": "Indicateur affiché",
+                    "Type": 0
+                  }
+                ],
+                "Where": [
+                  {
+                    "Condition": {
+                      "In": {
+                        "Expressions": [
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Source": "i"
+                                }
+                              },
+                              "Property": "Indicateur affiché"
+                            }
+                          }
+                        ],
+                        "Values": [
+                          [
+                            {
+                              "Literal": {
+                                "Value": "'PNB'"
+                              }
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [
@@ -44,10 +132,10 @@
           "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Indicateur affiché."
+                "Entity": "Indicateur affiché"
               }
             },
-            "Property": "Indicateur affiché."
+            "Property": "Indicateur affiché"
           }
         },
         "type": "Categorical"
