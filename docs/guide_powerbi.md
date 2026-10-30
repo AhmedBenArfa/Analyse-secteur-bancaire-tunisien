@@ -1480,6 +1480,15 @@ PNB », « PNB sur un an ») ; option **Date/heure automatique** désactivée po
 quatre tables de dates cachées (`LocalDateTable_…`) et trois relations pour les dates de l'actionnariat, inutiles avec
 `Dim_Date` et coûteuses en mémoire (**Fichier › Options › Fichier actif › Chargement des données**).
 
+**Première capture (30/10/2026)** : lignes de la période Covid et retour à la ligne pris en compte ; deux corrections.
+(1) Le sélecteur affichait « Tout » : un segment de paramètre de champ ne se règle pas sur la colonne affichée mais
+sur sa colonne cachée « Indicateur affiché Champs », dont la valeur est la référence de la mesure (`'Mesures'[PNB]`) ;
+Power BI a réécrit la sélection à l'enregistrement, et l'outil l'écrit désormais sous cette forme
+(`selection_parametre`). (2) Le tableau des événements reste vide pour 8 banques : les 11 événements documentés ne
+concernent que BH, BNA, BT et l'UIB, et rien n'est inventé pour les autres. Un second tableau, créé dans les fichiers
+par copie du premier (`copier_visuel`, `tableau_colonnes`), liste les révisions de plus de 2 % : toutes les banques
+en ont (de 2 pour AB à 29 pour BTE, 174 lignes sur les cinq indicateurs de la page).
+
 **Mise en page** (positions : x, y, largeur × hauteur) :
 
 | Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
@@ -1487,7 +1496,8 @@ quatre tables de dates cachées (`LocalDateTable_…`) et trois relations pour l
 | Fond, titre, segment des banques | comme la page 1 | copiés de la page 1 | titre « Évolution 2020–2026 » |
 | Indicateur affiché | 24, 92, 250 × 52 | segment du paramètre de champ `Indicateur affiché` | liste déroulante, sélection unique, « PNB » par défaut |
 | Évolution par banque | 16, 162, 860 × 522 | graphique en courbes : axe X `Dim_Date[Date]`, axe Y `Indicateur affiché`, légende `Dim_Banque[code_banque]`, info-bulles `Evenement texte`, `Ruptures texte` (`4. Croissances\Annotations`) | axe X continu ; lignes verticales Covid au 01/03/2020 et au 01/01/2022 ; filtre `Trimestre_Publie` = Vrai ; titre « Évolution par banque » |
-| Événements | 886, 162, 378 × 522 | tableau : `Evenements[date]`, `Evenements[banque]`, `Evenements[description]`, `Evenements[montant_mdt]` | tri par date ; titre « Événements qui expliquent un saut » ; un clic dans le tableau ne filtre pas les courbes (interaction « Aucun ») |
+| Révisions de plus de 2 % | 886, 162, 378 × 300 | tableau : `Fait_Indicateurs[trimestre]`, `[banque]`, `[code_indicateur]`, `[Detail_Rupture_Cumul]` ; filtres du visuel `Rupture_Cumul` = « oui » et indicateur parmi PNB, FRAIS_PERS, CHG_GEN, CREDITS, DEPOTS | tri par trimestre ; retour à la ligne ; titre « Révisions de plus de 2 % (ruptures de série) » ; sans effet sur les courbes |
+| Événements datés | 886, 472, 378 × 212 | tableau : `Evenements[date]`, `Evenements[banque]`, `Evenements[description]`, `Evenements[montant_mdt]` | tri par date ; retour à la ligne ; un clic dans le tableau ne filtre pas les courbes (interaction « Aucun ») |
 
 **Pourquoi ces choix.** L'axe des dates est continu, comme pour le HHI de la page 1 : les 28 trimestres tiennent sans
 défilement et chaque mesure n'a de valeur qu'au dernier jour d'un trimestre (un point par trimestre). Le segment des

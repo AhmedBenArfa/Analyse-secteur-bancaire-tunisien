@@ -88,8 +88,10 @@ def regler(page, visuel, position, noms=None, titre=None, objets=None):
 
 
 def filtre_colonne(page, visuel, table, colonne, valeur, nom):
-    """Filtre du visuel « colonne = valeur » (littéral, ex. "true") ; les filtres de mesure du visuel sont retirés (sur
-    un segment, un filtre de mesure tient compte de la sélection du segment lui-même et masque les autres valeurs)."""
+    """Filtre du visuel « colonne = valeur » (littéral, ex. "true", ou liste de littéraux : « colonne dans la liste ») ;
+    les filtres de mesure du visuel sont retirés (sur un segment, un filtre de mesure tient compte de la sélection du
+    segment lui-même et masque les autres valeurs)."""
+    valeurs = valeur if isinstance(valeur, list) else [valeur]
     p = PAGES / page / "visuals" / visuel / "visual.json"
     d = lire(p)
     config = d.setdefault("filterConfig", {"filters": []})
@@ -101,7 +103,7 @@ def filtre_colonne(page, visuel, table, colonne, valeur, nom):
         "filter": {"Version": 2, "From": [{"Name": "d", "Entity": table, "Type": 0}],
                    "Where": [{"Condition": {"In": {
                        "Expressions": [{"Column": {"Expression": {"SourceRef": {"Source": "d"}}, "Property": colonne}}],
-                       "Values": [[{"Literal": {"Value": valeur}}]]}}}]},
+                       "Values": [[{"Literal": {"Value": v}}] for v in valeurs]}}}]},
         "howCreated": "User"})
     config["filters"] = filtres
     ecrire(p, d)
@@ -265,6 +267,39 @@ def classement():
     print("Classement : visuels réglés")
 
 
+def tableau_colonnes(page, visuel, colonnes, largeurs):
+    """Colonnes d'un tableau : [(table, colonne)] dans l'ordre, filtres du visuel remis à zéro (ceux des anciennes
+    colonnes), largeur de chaque colonne en pixels {(table, colonne): largeur}."""
+    p = PAGES / page / "visuals" / visuel / "visual.json"
+    d = lire(p)
+    d["visual"]["query"]["queryState"] = {"Values": {"projections": [
+        {"field": {"Column": {"Expression": {"SourceRef": {"Entity": t}}, "Property": c}},
+         "queryRef": f"{t}.{c}", "nativeQueryRef": c} for t, c in colonnes]}}
+    d["filterConfig"] = {"filters": []}
+    d["visual"].setdefault("objects", {})["columnWidth"] = [
+        {"properties": {"value": litteral(f"{l}D")}, "selector": {"metadata": f"{t}.{c}"}}
+        for (t, c), l in largeurs.items()]
+    ecrire(p, d)
+
+
+def selection_parametre(parametre, mesure, libelle):
+    """Filtre d'un segment de paramètre de champ qui choisit une mesure de la table Mesures : condition sur la colonne
+    cachée « <paramètre> Champs » (valeur NAMEOF de la mesure), avec les annotations que Power BI y ajoute (forme
+    relevée sur un segment enregistré par Power BI ; une condition sur la colonne affichée laisse le segment sur
+    « Tout »)."""
+    champs = f"{parametre} Champs"
+    valeur = [{"Literal": {"Value": "'''Mesures''[" + mesure + "]'"}}]
+    def colonne(propriete, source=None):
+        ref = {"Source": source} if source else {"Entity": parametre}
+        return {"Column": {"Expression": {"SourceRef": ref}, "Property": propriete}}
+    return {"Version": 2, "From": [{"Name": "i", "Entity": parametre, "Type": 0}],
+            "Where": [{"Condition": {"In": {"Expressions": [colonne(champs, "i")], "Values": [valeur]}},
+                       "Annotations": {"filterExpressionMetadata": {
+                           "expressions": [colonne(parametre)],
+                           "decomposedIdentities": {"values": [[{"0": valeur}]], "columns": [{"value": colonne(champs)}]},
+                           "valueMap": [{"0": libelle}]}}}]}
+
+
 def lignes_verticales(page, visuel, lignes):
     """Lignes constantes de l'axe X d'un graphique à axe de dates continu : [(nom, date AAAA-MM-JJ, couleur)], avec
     leur nom affiché au-dessus de la ligne."""
@@ -290,14 +325,11 @@ def evolution():
     regler(page, selecteur, (24, 92, 250, 52))
     p = PAGES / page / "visuals" / selecteur / "visual.json"
     d = lire(p)
-    colonne = {"Column": {"Expression": {"SourceRef": {"Source": "i"}}, "Property": "Indicateur affiché"}}
     d["visual"]["objects"] = {
         "data": [{"properties": {"mode": texte("Dropdown")}}],
         "header": [{"properties": {"text": texte("Indicateur")}}],
         "selection": [{"properties": {"strictSingleSelect": litteral("true")}}],
-        "general": [{"properties": {"filter": {"filter": {
-            "Version": 2, "From": [{"Name": "i", "Entity": "Indicateur affiché", "Type": 0}],
-            "Where": [{"Condition": {"In": {"Expressions": [colonne], "Values": [[{"Literal": {"Value": "'PNB'"}}]]}}}]}}}}]}
+        "general": [{"properties": {"filter": {"filter": selection_parametre("Indicateur affiché", "PNB", "PNB")}}}]}
     ecrire(p, d)
     # courbes : axe des dates continu (un point par trimestre), trimestres publiés, période Covid en lignes verticales
     courbes = "eb2a6b4104abab1272ea"
@@ -308,20 +340,37 @@ def evolution():
            objets={"categoryAxis": {"axisType": texte("Scalar")}})
     lignes_verticales(page, courbes, [("Début Covid", "2020-03-01", "#C62828"), ("Fin Covid", "2022-01-01", "#2E7D32")])
     filtre_colonne(page, courbes, "Dim_Date", "Trimestre_Publie", "true", "trimestres_publies")
-    # tableau des événements : trié par date, description sur plusieurs lignes, sans effet sur les courbes
+    # tableau des révisions de plus de 2 % (ruptures de série), créé par copie du tableau des événements : toutes les
+    # banques en ont, alors que les événements datés ne concernent que BH, BNA, BT et UIB
     tableau = "0b0d0fce4ac5c840b305"
-    regler(page, tableau, (886, 162, 378, 522),
+    ruptures = copier_visuel(page, tableau, page)
+    tableau_colonnes(page, ruptures,
+                     [("Fait_Indicateurs", "trimestre"), ("Fait_Indicateurs", "banque"),
+                      ("Fait_Indicateurs", "code_indicateur"), ("Fait_Indicateurs", "Detail_Rupture_Cumul")],
+                     {("Fait_Indicateurs", "trimestre"): 60, ("Fait_Indicateurs", "banque"): 60,
+                      ("Fait_Indicateurs", "code_indicateur"): 80, ("Fait_Indicateurs", "Detail_Rupture_Cumul"): 160})
+    regler(page, ruptures, (886, 162, 378, 300),
+           {"Fait_Indicateurs.trimestre": "Trimestre", "Fait_Indicateurs.banque": "Banque",
+            "Fait_Indicateurs.code_indicateur": "Indicateur", "Fait_Indicateurs.Detail_Rupture_Cumul": "Révision"},
+           titre="Révisions de plus de 2 % (ruptures de série)", objets={"values": {"wordWrap": litteral("true")}})
+    trier(page, ruptures, "Fait_Indicateurs", "trimestre", genre="Column")
+    filtre_colonne(page, ruptures, "Fait_Indicateurs", "Rupture_Cumul", "'oui'", "ruptures")
+    filtre_colonne(page, ruptures, "Fait_Indicateurs", "code_indicateur",
+                   ["'PNB'", "'FRAIS_PERS'", "'CHG_GEN'", "'CREDITS'", "'DEPOTS'"], "indicateurs_page")
+    # tableau des événements : trié par date, description sur plusieurs lignes ; aucun des deux tableaux ne filtre
+    # les courbes
+    regler(page, tableau, (886, 472, 378, 212),
            {"Evenements.date": "Date", "Evenements.banque": "Banque", "Evenements.description": "Événement",
             "Evenements.montant_mdt": "MDT"},
-           titre="Événements qui expliquent un saut", objets={"values": {"wordWrap": litteral("true")}})
+           titre="Événements datés", objets={"values": {"wordWrap": litteral("true")}})
     trier(page, tableau, "Evenements", "date", genre="Column")
     p = PAGES / page / "visuals" / tableau / "visual.json"
     d = lire(p)
     d["visual"]["objects"]["columnWidth"] = [
         {"properties": {"value": litteral(f"{largeur}D")}, "selector": {"metadata": f"Evenements.{colonne}"}}
-        for colonne, largeur in [("date", 70), ("banque", 50), ("description", 180), ("montant_mdt", 50)]]
+        for colonne, largeur in [("date", 70), ("banque", 60), ("description", 170), ("montant_mdt", 50)]]
     ecrire(p, d)
-    interactions(page, [(tableau, courbes, "NoFilter")])
+    interactions(page, [(tableau, courbes, "NoFilter"), (ruptures, courbes, "NoFilter")])
     print("Évolution : visuels réglés")
 
 
