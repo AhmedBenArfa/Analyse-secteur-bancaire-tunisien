@@ -1370,23 +1370,28 @@ son coefficient d'exploitation harmonisé et son rang (1 = la plus efficace), l'
 (vert : plus efficace que la médiane, rouge : moins) et la croissance du PNB sur un an. Le nuage de points croise
 croissance et efficacité : en bas à droite, les banques qui grandissent vite à faible coût.
 
-**Barre de lecture (Play Axis) à la place du segment du trimestre** (décision du 30/10/2026). Sur cette page seule,
-le trimestre se choisit avec le visuel **Play Axis (Dynamic Slicer)** (4.1) sur `Dim_Date[Annee_Trimestre]`, limité
-aux trimestres publiés (`Trimestre_Publie` = Vrai, 2019T4 à 2026T3) : les boutons lecture, précédent et suivant
-font défiler les 28 trimestres et le tableau et le nuage se recalculent à chaque pas (en 2020, le recul du PNB et
-la hausse des coefficients ; au T2 2020, le PNB de l'UIB recule de 78,6 % sur un an, effet du moratoire Covid). Un
-segment « Dernier trimestre complet » sur la même page entrerait en conflit avec la barre (deux filtres sur la même
-table des dates) : il n'y en a pas ici. Une carte affiche le trimestre filtré : mesure `Trimestre affiche`
-(dossier `2. Secteur\Affichage`, ajoutée le 30/10/2026), `SELECTEDVALUE ( Dim_Date[Annee_Trimestre], … )`, qui invite
-à choisir un trimestre si la barre n'en filtre aucun (toutes les mesures du trimestre sont alors vides : garde-fou
-de 3.3 contre la somme de plusieurs trimestres). L'état de la barre à l'ouverture du rapport est à vérifier.
+**Choix du trimestre et animation** (décision du 30/10/2026, revue le même jour). Premier essai : le visuel
+**Play Axis (Dynamic Slicer)** à la place du segment du trimestre. Abandonné après le premier affichage : ce visuel
+démarre **sans trimestre choisi** (toutes les mesures du trimestre vides, garde-fou de 3.3), il **efface sa
+sélection à la fin de la lecture** (la page redevient vide) et, à 52 pixels de haut, le titre que le thème donne à
+chaque visuel cachait ses boutons (code public du visuel, `mprozil/PlayAxis` sur GitHub : `resetAnimation`,
+`stopAnimation`). Solution retenue : le **segment du trimestre** de la page 1 (« Dernier trimestre complet » : la page
+s'ouvre sur le dernier trimestre complet) pour le tableau et les cartes, et l'**axe de lecture intégré au nuage de
+points** de Power BI (zone « Axe de lecture », `Dim_Date[Annee_Trimestre]`, trimestres publiés seulement) : le
+bouton ▶ du nuage fait défiler les 28 trimestres (en 2020, le recul du PNB et la hausse des coefficients ; au T2
+2020, le PNB de l'UIB recule de 78,6 % sur un an, effet du moratoire Covid). Le segment ne filtre pas le nuage
+(interaction « Aucun »), sinon l'animation n'aurait qu'une image. La carte « Trimestre affiché » (mesure
+`Trimestre affiche`, `SELECTEDVALUE ( Dim_Date[Annee_Trimestre], "plusieurs trimestres" )`, dossier
+`2. Secteur\Affichage`) dit quel trimestre le tableau montre.
 
 **Création de la page** : faite dans les fichiers par `python scripts/ecrire_pbir_visuels.py nouvelle_page
 "Classement" "Classement des banques"` (même fond que la page 1, titre et segment des banques à logos copiés).
 Visuels créés dans Power BI Desktop avec leurs champs (30/10/2026), puis réglés par `python scripts/ecrire_pbir_visuels.py
 classement` : positions, noms affichés, titres, tri du tableau par `Rang PNB`, couleur `Couleur coef` recopiée sur la
 colonne de l'écart (forme relevée sur la mise en forme saisie dans Power BI pour le coefficient), barre de lecture
-limitée aux trimestres publiés, étiquettes des banques sur le nuage, titre de l'étiquette de référence. Une
+limitée aux trimestres publiés, étiquettes des banques sur le nuage, titre de l'étiquette de référence ; puis Play
+Axis retiré, segment du trimestre copié de la page 1 et axe de lecture ajouté au nuage (fonctions `supprimer_visuel`,
+`copier_visuel`, `ajouter_colonne_role`). Une
 extraction (*drillthrough*) sur `code_banque` posée par mégarde sur la page, avec le bouton « Retour » ajouté
 automatiquement, a été retirée (`retirer_extraction`) : l'extraction est réservée à la fiche banque (page 7). La
 ligne médiane du nuage n'est pas encore ajoutée.
@@ -1396,19 +1401,18 @@ ligne médiane du nuage n'est pas encore ajoutée.
 | Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
 |---|---|---|---|
 | Fond, titre, segment des banques | comme la page 1 | copiés de la page 1 | titre « Classement des banques » |
-| Barre de lecture | 24, 92, 250 × 52 | Play Axis : `Dim_Date[Annee_Trimestre]` | filtre du visuel `Dim_Date[Trimestre_Publie]` = Vrai |
+| Segment du trimestre | 24, 92, 250 × 52 | copie du segment de la page 1 : `Dim_Date[Choix_Trimestre]` | « Dernier trimestre complet », sélection unique, filtre `Trimestre_Publie` = Vrai ; ne filtre pas le nuage |
 | Trimestre affiché | 16, 162, 365 × 100 | carte (nouvelle) : `Trimestre affiche` (`2. Secteur\Affichage`) | libellé « Trimestre affiché » |
 | Médiane des coefficients | 391, 162, 365 × 100 | carte (nouvelle) : `Coef mediane` (`3. Ratios\Comparaison au secteur`) ; étiquette de référence `Coef secteur` | libellé « Médiane des coefficients » ; référence « coefficient du secteur » |
 | Classement | 16, 272, 740 × 412 | tableau : `Dim_Banque[icone]`, `Dim_Banque[code_banque]`, `PNB` (`1. Bases\Flux du trimestre`), `Part de marche PNB` (`2. Secteur\Parts de marché`), `Rang PNB` (`2. Secteur\Rangs`), `Coef exploitation harmonise` (`3. Ratios\Coefficient d'exploitation`), `Rang coef`, `Ecart coef / mediane` (`3. Ratios\Comparaison au secteur`), `Var PNB A/A %` (`4. Croissances\Sur un an`) | tri par `Rang PNB` croissant ; couleur de police du coefficient et de l'écart = valeur du champ `Couleur coef` ; titre « Classement des banques au trimestre » |
-| Croissance et efficacité | 766, 162, 498 × 522 | nuage de points : axe X `Var PNB A/A %`, axe Y `Coef exploitation harmonise`, valeurs `Dim_Banque[code_banque]`, taille `PNB`, info-bulles `Rang PNB`, `Rang coef` | étiquettes de catégorie (code de la banque) ; ligne médiane de l'axe Y (= médiane des coefficients) ; titre « Croissance du PNB et coefficient d'exploitation » |
+| Croissance et efficacité | 766, 162, 498 × 522 | nuage de points : axe X `Var PNB A/A %`, axe Y `Coef exploitation harmonise`, valeurs `Dim_Banque[code_banque]`, taille `PNB`, axe de lecture `Dim_Date[Annee_Trimestre]`, info-bulles `Rang PNB`, `Rang coef` | étiquettes de catégorie (code de la banque) ; filtre `Trimestre_Publie` = Vrai ; titre « Croissance du PNB et coefficient d'exploitation (▶ : tous les trimestres) » |
 
 **Pourquoi ces choix.** Le classement utilise le coefficient **harmonisé** (frais de personnel + charges générales,
 3.5), seul comparable d'une banque à l'autre. La croissance est celle du **trimestre seul sur un an**, lue dans le
 même document que le trimestre (`Variations_Comparables`, 3.6) : c'est la même période que le PNB et le coefficient
 du tableau. La couleur vient d'une mesure (`Couleur coef`) plutôt que de règles saisies dans le visuel : la règle
 (écart à la médiane ≤ 0 → vert) est écrite une fois, dans le modèle. La taille des points suit le PNB : le poids de
-chaque banque dans le secteur reste visible. La ligne médiane du nuage vaut la médiane des 12 coefficients : la
-même référence que la colonne « écart ». Le segment des banques filtre le tableau et le nuage ; les rangs et la
+chaque banque dans le secteur reste visible. Le segment des banques filtre le tableau et le nuage ; les rangs et la
 médiane restent calculés sur les 12 banques.
 
 **Valeurs attendues au T3 2026** (calculées à part depuis `donnees_publiees/`) :
@@ -1430,5 +1434,5 @@ médiane restent calculés sur les 12 banques.
 
 Écart à la médiane en points de pourcentage. Ligne de total du tableau : PNB 1 936,564, part 100 %, coefficient
 44,7 % (= coefficient du secteur), PNB +6,1 % sur un an, rangs et écart vides. Médiane des coefficients 47,0 %.
-Contrôle de la barre de lecture au **T2 2020** : BIAT 1re (19,68 %), BT coefficient le plus bas (23,1 %), Wifak 12e,
+Contrôle au **T2 2020** (segment ou axe de lecture du nuage) : BIAT 1re (19,68 %), BT coefficient le plus bas (23,1 %), Wifak 12e,
 médiane 45,9 %, secteur 45,7 %, UIB −78,6 % et Wifak +79,3 % sur un an, PNB du secteur −12,8 %.

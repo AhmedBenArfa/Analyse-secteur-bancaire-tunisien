@@ -124,6 +124,26 @@
               "displayName": "Coefficient d'exploitation"
             }
           ]
+        },
+        "Play": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Date"
+                    }
+                  },
+                  "Property": "Annee_Trimestre"
+                }
+              },
+              "queryRef": "Dim_Date.Annee_Trimestre",
+              "nativeQueryRef": "Annee_Trimestre",
+              "active": true,
+              "displayName": "Trimestre"
+            }
+          ]
         }
       }
     },
@@ -142,7 +162,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Croissance du PNB et coefficient d''exploitation'"
+                  "Value": "'Croissance du PNB et coefficient d''exploitation (▶ : tous les trimestres)'"
                 }
               }
             }
@@ -196,74 +216,59 @@
         "type": "Categorical"
       },
       {
-        "name": "bc5f77c34385a10942cd",
+        "name": "trimestres_publies",
+        "ordinal": 1,
         "field": {
-          "Measure": {
+          "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Mesures"
+                "Entity": "Dim_Date"
               }
             },
-            "Property": "Var PNB A/A %"
+            "Property": "Trimestre_Publie"
           }
         },
-        "type": "Advanced"
-      },
-      {
-        "name": "b70df80bbe930dd58852",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim_Date",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "Trimestre_Publie"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "true"
+                        }
+                      }
+                    ]
+                  ]
+                }
               }
-            },
-            "Property": "Coef exploitation harmonise"
-          }
+            }
+          ]
         },
-        "type": "Advanced"
-      },
-      {
-        "name": "b0b2caac6738ee79b6b4",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "PNB"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "595c88a5da2d11e3905c",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "Rang PNB"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "84fdde7b79cd475cd4c3",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "Rang coef"
-          }
-        },
-        "type": "Advanced"
+        "howCreated": "User"
       }
     ]
   }

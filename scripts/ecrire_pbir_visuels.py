@@ -188,13 +188,50 @@ def couleur_par_mesure(page, visuel, colonnes, mesure):
     ecrire(p, d)
 
 
+def copier_visuel(source, visuel, page):
+    """Copie un visuel d'une page dans une autre (même position, mêmes réglages, sélection d'un segment comprise) ;
+    identifiant neuf tiré des deux identifiants, donc stable : rien si la copie existe déjà. Renvoie l'identifiant."""
+    import hashlib
+    nom = hashlib.md5((page + visuel).encode()).hexdigest()[:20]
+    cible = PAGES / page / "visuals" / nom / "visual.json"
+    if not cible.exists():
+        v = lire(PAGES / source / "visuals" / visuel / "visual.json")
+        v["name"] = nom
+        cible.parent.mkdir()
+        ecrire(cible, v)
+    return nom
+
+
+def supprimer_visuel(page, visuel):
+    """Supprime un visuel de la page ; rien s'il n'existe plus."""
+    f = PAGES / page / "visuals" / visuel / "visual.json"
+    if f.exists():
+        f.unlink()
+        f.parent.rmdir()
+
+
+def ajouter_colonne_role(page, visuel, role, table, colonne):
+    """Ajoute une colonne dans une zone (rôle) d'un visuel, par exemple l'axe de lecture « Play » d'un nuage de
+    points ; rien si elle y est déjà."""
+    p = PAGES / page / "visuals" / visuel / "visual.json"
+    d = lire(p)
+    projections = d["visual"]["query"]["queryState"].setdefault(role, {"projections": []})["projections"]
+    if not any(pr["queryRef"] == f"{table}.{colonne}" for pr in projections):
+        projections.append({"field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": colonne}},
+                            "queryRef": f"{table}.{colonne}", "nativeQueryRef": colonne, "active": True})
+    ecrire(p, d)
+
+
 def classement():
     """Page 2 « Classement » (guide 4.3)."""
     page = "70c29bcb7212072d3d78"
     retirer_extraction(page)
-    # barre de lecture (Play Axis) à la place du segment du trimestre : seulement les trimestres publiés
-    regler(page, "b6865abd3591c07d0656", (24, 92, 250, 52))
-    filtre_colonne(page, "b6865abd3591c07d0656", "Dim_Date", "Trimestre_Publie", "true", "trimestres_publies")
+    # le visuel Play Axis démarre sans trimestre choisi et efface sa sélection en fin de lecture (page vide) :
+    # remplacé par le segment du trimestre de la page 1 (« Dernier trimestre complet ») et par l'axe de lecture
+    # intégré au nuage de points
+    supprimer_visuel(page, "b6865abd3591c07d0656")
+    segment = copier_visuel("ae07c11e46023397cb08", "fb55d5a1c75e90385c70", page)
+    regler(page, segment, (24, 92, 250, 52))
     regler(page, "b9106fd5eec51c3d7967", (16, 162, 365, 100), {"Mesures.Trimestre affiche": "Trimestre affiché"})
     regler(page, "997bf12c95589026ae69", (391, 162, 365, 100), {"Mesures.Coef mediane": "Médiane des coefficients"})
     titre_etiquette_reference(page, "997bf12c95589026ae69", "coefficient du secteur")
@@ -209,13 +246,18 @@ def classement():
     trier(page, tableau, "Mesures", "Rang PNB")
     couleur_par_mesure(page, tableau, ["Mesures.Coef exploitation harmonise", "Mesures.Ecart coef / mediane"],
                        "Couleur coef")
-    # nuage : croissance du PNB sur un an (X) et coefficient (Y), taille = PNB, code de la banque sur chaque point
-    regler(page, "e292731dbd42b887618d", (766, 162, 498, 522),
+    # nuage : croissance du PNB sur un an (X) et coefficient (Y), taille = PNB, code de la banque sur chaque point ;
+    # axe de lecture sur les trimestres publiés, sans filtre du segment du trimestre (il anime toute la période)
+    nuage = "e292731dbd42b887618d"
+    ajouter_colonne_role(page, nuage, "Play", "Dim_Date", "Annee_Trimestre")
+    regler(page, nuage, (766, 162, 498, 522),
            {"Dim_Banque.code_banque": "Banque", "Mesures.Var PNB A/A %": "PNB sur un an",
             "Mesures.Coef exploitation harmonise": "Coefficient d'exploitation", "Mesures.PNB": "PNB (MDT)",
-            "Mesures.Rang PNB": "Rang PNB", "Mesures.Rang coef": "Rang coef."},
-           titre="Croissance du PNB et coefficient d'exploitation",
+            "Mesures.Rang PNB": "Rang PNB", "Mesures.Rang coef": "Rang coef.", "Dim_Date.Annee_Trimestre": "Trimestre"},
+           titre="Croissance du PNB et coefficient d'exploitation (▶ : tous les trimestres)",
            objets={"categoryLabels": {"show": litteral("true")}})
+    filtre_colonne(page, nuage, "Dim_Date", "Trimestre_Publie", "true", "trimestres_publies")
+    interactions(page, [(segment, nuage, "NoFilter")])
     print("Classement : visuels réglés")
 
 
