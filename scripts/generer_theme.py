@@ -10,9 +10,12 @@ Sorties dans powerbi/theme/ :
 - icones_banques.png : aperçu des pastilles au code de chaque banque, solution de secours si un logo
   officiel (donnees_reference/logos/, colonne icone de Dim_Banque) devait être retiré.
 
-Utilisation : python scripts/generer_theme.py
+Utilisation : python scripts/generer_theme.py           (thème et images dans powerbi/theme/)
+              python scripts/generer_theme.py rapport   (styles des visuels reportés dans la copie du thème importée
+                                                         dans le rapport, sans le réimporter ; projet fermé)
 """
 import json
+import sys
 from pathlib import Path
 
 import fitz
@@ -81,6 +84,9 @@ def theme():
                 "header": [{"fontColor": plein(MARINE), "fontFamily": "Segoe UI Semibold"}],
                 "items": [{"fontColor": plein(TEXTE)}],
             }},
+            # courbes droites entre deux trimestres : le thème de base de Power BI (Fluent 2) les lisse, ce qui
+            # dessine des creux et des pics qui n'existent pas entre deux points publiés
+            "lineChart": {"*": {"lineStyles": [{"lineChartType": "linear"}]}},
         },
     }
 
@@ -152,5 +158,17 @@ def main():
         f'<rect width="1292" height="136" fill="{FOND}"/>{planche}</svg>', SORTIE / "icones_banques.png", 1)
 
 
+def rapport():
+    """Reporte les styles des visuels du thème (visualStyles) dans la copie importée dans le rapport
+    (StaticResources/RegisteredResources, que Power BI complète à l'import : ses autres clés sont gardées), JSON indenté
+    de 2 espaces en CRLF comme Power BI ; relancer ne change rien."""
+    dossier = R / "powerbi" / "SecteurBancaireTunisien.Report" / "StaticResources" / "RegisteredResources"
+    (copie,) = dossier.glob("Secteur_bancaire_tunisien*.json")
+    d = json.loads(copie.read_bytes().decode("utf-8-sig"))
+    d.setdefault("visualStyles", {}).update(theme()["visualStyles"])
+    copie.write_bytes(json.dumps(d, indent=2, ensure_ascii=False).replace("\n", "\r\n").encode("utf-8"))
+    print(copie.relative_to(R))
+
+
 if __name__ == "__main__":
-    main()
+    rapport() if sys.argv[1:] == ["rapport"] else main()

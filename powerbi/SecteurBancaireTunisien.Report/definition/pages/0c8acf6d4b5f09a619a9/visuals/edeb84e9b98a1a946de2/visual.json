@@ -117,7 +117,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "60D"
+                  "Value": "72D"
                 }
               }
             }
@@ -131,7 +131,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "60D"
+                  "Value": "55D"
                 }
               }
             }
@@ -145,7 +145,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "80D"
+                  "Value": "78D"
                 }
               }
             }
@@ -159,7 +159,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "160D"
+                  "Value": "135D"
                 }
               }
             }
@@ -349,49 +349,8 @@
               }
             }
           ]
-        }
-      },
-      {
-        "name": "d37aaec970a0393c3a60",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Fait_Indicateurs"
-              }
-            },
-            "Property": "trimestre"
-          }
         },
-        "type": "Categorical"
-      },
-      {
-        "name": "30e558e053a06e5eb9ae",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Fait_Indicateurs"
-              }
-            },
-            "Property": "banque"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "fee53f312443035dd7d8",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Fait_Indicateurs"
-              }
-            },
-            "Property": "Detail_Rupture_Cumul"
-          }
-        },
-        "type": "Categorical"
+        "howCreated": "User"
       }
     ]
   }

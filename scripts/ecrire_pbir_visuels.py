@@ -347,8 +347,8 @@ def evolution():
     tableau_colonnes(page, ruptures,
                      [("Fait_Indicateurs", "trimestre"), ("Fait_Indicateurs", "banque"),
                       ("Fait_Indicateurs", "code_indicateur"), ("Fait_Indicateurs", "Detail_Rupture_Cumul")],
-                     {("Fait_Indicateurs", "trimestre"): 60, ("Fait_Indicateurs", "banque"): 60,
-                      ("Fait_Indicateurs", "code_indicateur"): 80, ("Fait_Indicateurs", "Detail_Rupture_Cumul"): 160})
+                     {("Fait_Indicateurs", "trimestre"): 72, ("Fait_Indicateurs", "banque"): 55,
+                      ("Fait_Indicateurs", "code_indicateur"): 78, ("Fait_Indicateurs", "Detail_Rupture_Cumul"): 135})
     regler(page, ruptures, (886, 162, 378, 300),
            {"Fait_Indicateurs.trimestre": "Trimestre", "Fait_Indicateurs.banque": "Banque",
             "Fait_Indicateurs.code_indicateur": "Indicateur", "Fait_Indicateurs.Detail_Rupture_Cumul": "Révision"},
@@ -357,7 +357,9 @@ def evolution():
     filtre_colonne(page, ruptures, "Fait_Indicateurs", "Rupture_Cumul", "'oui'", "ruptures")
     filtre_colonne(page, ruptures, "Fait_Indicateurs", "code_indicateur",
                    ["'PNB'", "'FRAIS_PERS'", "'CHG_GEN'", "'CREDITS'", "'DEPOTS'"], "indicateurs_page")
-    # tableau des événements : trié par date, description sur plusieurs lignes ; aucun des deux tableaux ne filtre
+    # largeurs : leur somme reste sous la largeur utile du tableau (environ 345 pixels), sans barre de défilement
+    # horizontale ; tableau des événements : trié par date, description sur plusieurs lignes ; aucun des deux
+    # tableaux ne filtre
     # les courbes
     regler(page, tableau, (886, 472, 378, 212),
            {"Evenements.date": "Date", "Evenements.banque": "Banque", "Evenements.description": "Événement",
@@ -368,7 +370,7 @@ def evolution():
     d = lire(p)
     d["visual"]["objects"]["columnWidth"] = [
         {"properties": {"value": litteral(f"{largeur}D")}, "selector": {"metadata": f"Evenements.{colonne}"}}
-        for colonne, largeur in [("date", 70), ("banque", 60), ("description", 170), ("montant_mdt", 50)]]
+        for colonne, largeur in [("date", 82), ("banque", 55), ("description", 140), ("montant_mdt", 50)]]
     ecrire(p, d)
     interactions(page, [(tableau, courbes, "NoFilter"), (ruptures, courbes, "NoFilter")])
     print("Évolution : visuels réglés")

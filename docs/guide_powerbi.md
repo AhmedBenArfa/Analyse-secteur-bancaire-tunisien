@@ -1273,7 +1273,10 @@ Trois constats faits en construisant la page 1, valables pour les suivantes :
 d'un rapport bancaire, bleu marine `#0B2545` et `#134074`, or `#C9A227` en filet, fond de page gris très
 clair `#F4F6FA`, visuels sur cartes blanches à coins arrondis et contour léger, titres en Segoe UI Semibold
 bleu marine, en-têtes de tableaux bleus ; vert `#2E7D32` et rouge `#C62828` pour bon et mauvais (mêmes
-couleurs que la mesure `Couleur coef`) ; 12 couleurs de séries assez foncées pour un texte blanc. Import :
+couleurs que la mesure `Couleur coef`) ; 12 couleurs de séries assez foncées pour un texte blanc ; courbes
+droites entre deux points (le thème de base de Power BI, « Fluent 2 », les lisse : un lissage dessine entre deux
+trimestres des creux et des pics qui n'existent pas dans les données ; ajouté le 30/10/2026 et reporté dans la
+copie du thème importée dans le rapport par `python scripts/generer_theme.py rapport`, sans réimport). Import :
 **Affichage › Thèmes › Parcourir les thèmes**, choisir le fichier.
 
 **Fonds de page** (1 920 × 1 080, format 16:9, même script) : `fond_page.png` (bandeau bleu marine en haut
@@ -1488,6 +1491,10 @@ Power BI a réécrit la sélection à l'enregistrement, et l'outil l'écrit dés
 concernent que BH, BNA, BT et l'UIB, et rien n'est inventé pour les autres. Un second tableau, créé dans les fichiers
 par copie du premier (`copier_visuel`, `tableau_colonnes`), liste les révisions de plus de 2 % : toutes les banques
 en ont (de 2 pour AB à 29 pour BTE, 174 lignes sur les cinq indicateurs de la page).
+
+**Deuxième capture (30/10/2026)** : sélecteur sur « PNB », deux tableaux, lignes de la période Covid : bon. Retouches :
+courbes droites au lieu de lissées (thème, 4.1) ; colonnes des deux tableaux rétrécies (barre de défilement
+horizontale, « Trimestre » et la date coupés sur deux lignes).
 
 **Mise en page** (positions : x, y, largeur × hauteur) :
 
