@@ -127,3 +127,18 @@ relationship 089369ad-449b-4ec1-813b-a1d9dba98f41
 	fromColumn: Banques_Actionnariat.date_debut
 	toColumn: Dim_Date.Date
 
+relationship 382c4ecf-0f9e-49ef-bb3e-f89b179dc46e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Banques_Actionnariat.date_reference
+	toColumn: LocalDateTable_9ac37c16-8ab0-425e-be1e-6ed25a34d9f1.Date
+
+relationship 2366a2e1-d55a-47e4-a549-92f0e61fcabd
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Banques_Actionnariat.date_fin
+	toColumn: LocalDateTable_4af62b5e-0313-4652-b289-e6f31bba99d3.Date
+
+relationship 5ee798ae-2928-4094-808d-b9f78fb8304e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Dim_Banque.date_actionnariat
+	toColumn: LocalDateTable_81126fe8-3f23-4953-8f70-58a695e343e2.Date
+

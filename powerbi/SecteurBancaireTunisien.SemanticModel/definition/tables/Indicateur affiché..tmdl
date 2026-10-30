@@ -1,0 +1,51 @@
+table 'Indicateur affiché.'
+	lineageTag: ad1bb4a2-1fde-4365-9809-e42c04ac7957
+
+	column 'Indicateur affiché.'
+		lineageTag: a2a55574-66bb-4ad4-8c53-b2d9e4899c55
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Indicateur affiché. Commande'
+
+		relatedColumnDetails
+			groupByColumn: 'Indicateur affiché. Champs'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Indicateur affiché. Champs'
+		isHidden
+		lineageTag: bbd963ef-0115-4d85-8b5b-493ae205b899
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Indicateur affiché. Commande'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Indicateur affiché. Commande'
+		isHidden
+		formatString: 0
+		lineageTag: 9a0524b9-775b-4b6d-8f22-a8c6ac07787e
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Indicateur affiché.' = calculated
+		mode: import
+		source =
+				{
+				    ("PNB", NAMEOF('Mesures'[PNB]), 0),
+				    ("Coef exploitation harmonise", NAMEOF('Mesures'[Coef exploitation harmonise]), 1),
+				    ("Credits / Depots", NAMEOF('Mesures'[Credits / Depots]), 2),
+				    ("Part de marche PNB", NAMEOF('Mesures'[Part de marche PNB]), 3),
+				    ("Var PNB A/A %", NAMEOF('Mesures'[Var PNB A/A %]), 4)
+				}
+
+	annotation PBI_Id = d24f4d984aa445b1a526a2ccada781df
+

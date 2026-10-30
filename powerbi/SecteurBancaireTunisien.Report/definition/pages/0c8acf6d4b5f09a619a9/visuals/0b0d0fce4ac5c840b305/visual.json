@@ -1,0 +1,140 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "0b0d0fce4ac5c840b305",
+  "position": {
+    "x": 624,
+    "y": 266,
+    "z": 2003,
+    "height": 150,
+    "width": 632,
+    "tabOrder": 2003
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Evenements"
+                    }
+                  },
+                  "Property": "date"
+                }
+              },
+              "queryRef": "Evenements.date",
+              "nativeQueryRef": "date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Evenements"
+                    }
+                  },
+                  "Property": "banque"
+                }
+              },
+              "queryRef": "Evenements.banque",
+              "nativeQueryRef": "banque"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Evenements"
+                    }
+                  },
+                  "Property": "description"
+                }
+              },
+              "queryRef": "Evenements.description",
+              "nativeQueryRef": "description"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Evenements"
+                    }
+                  },
+                  "Property": "montant_mdt"
+                }
+              },
+              "queryRef": "Evenements.montant_mdt",
+              "nativeQueryRef": "montant_mdt"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "66c00a7c87872d726a64",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Evenements"
+              }
+            },
+            "Property": "date"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "3a49f33064b0d4ba6360",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Evenements"
+              }
+            },
+            "Property": "banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "ed31d65a73d703100b22",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Evenements"
+              }
+            },
+            "Property": "description"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "24f1cbb00e7d9cb9eb8d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Evenements"
+              }
+            },
+            "Property": "montant_mdt"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

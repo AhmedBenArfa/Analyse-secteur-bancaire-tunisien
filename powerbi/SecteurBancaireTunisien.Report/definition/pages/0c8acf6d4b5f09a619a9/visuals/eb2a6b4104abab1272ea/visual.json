@@ -1,0 +1,216 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "eb2a6b4104abab1272ea",
+  "position": {
+    "x": 24,
+    "y": 481,
+    "z": 2002,
+    "height": 150,
+    "width": 600,
+    "tabOrder": 2002
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Date"
+                    }
+                  },
+                  "Property": "Date"
+                }
+              },
+              "queryRef": "Dim_Date.Date",
+              "nativeQueryRef": "Date",
+              "active": true
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "code_banque"
+                }
+              },
+              "queryRef": "Dim_Banque.code_banque",
+              "nativeQueryRef": "code_banque"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Evenement texte"
+                }
+              },
+              "queryRef": "Mesures.Evenement texte",
+              "nativeQueryRef": "Evenement texte"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Ruptures texte"
+                }
+              },
+              "queryRef": "Mesures.Ruptures texte",
+              "nativeQueryRef": "Ruptures texte"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "PNB"
+                }
+              },
+              "queryRef": "Mesures.PNB",
+              "nativeQueryRef": "PNB",
+              "displayName": "PNB"
+            }
+          ],
+          "fieldParameters": [
+            {
+              "parameterExpr": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Indicateur affiché."
+                    }
+                  },
+                  "Property": "Indicateur affiché."
+                }
+              },
+              "index": 0,
+              "length": 1
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Dim_Date"
+                  }
+                },
+                "Property": "Date"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "1ad6211da63a918bed67",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Date"
+              }
+            },
+            "Property": "Date"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "801e7ef90a4ed94d2615",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "code_banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "529a3b1945b64c913329",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "PNB"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "46eb0b2f7cb8a005060d",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Evenement texte"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "22812f6b43ee383947a5",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Ruptures texte"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

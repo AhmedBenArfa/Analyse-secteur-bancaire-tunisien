@@ -58,6 +58,11 @@ table Banques_Actionnariat
 		summarizeBy: none
 		sourceColumn: date_reference
 
+		variation Variation
+			isDefault
+			relationship: 382c4ecf-0f9e-49ef-bb3e-f89b179dc46e
+			defaultHierarchy: LocalDateTable_9ac37c16-8ab0-425e-be1e-6ed25a34d9f1.'Hiérarchie de dates'
+
 		annotation SummarizationSetBy = User
 
 		annotation UnderlyingDateTimeDataType = Date
@@ -95,6 +100,11 @@ table Banques_Actionnariat
 		lineageTag: df5b9787-ba5c-4c04-99f3-55b003447c0f
 		summarizeBy: none
 		sourceColumn: date_fin
+
+		variation Variation
+			isDefault
+			relationship: 2366a2e1-d55a-47e4-a549-92f0e61fcabd
+			defaultHierarchy: LocalDateTable_4af62b5e-0313-4652-b289-e6f31bba99d3.'Hiérarchie de dates'
 
 		annotation SummarizationSetBy = User
 
