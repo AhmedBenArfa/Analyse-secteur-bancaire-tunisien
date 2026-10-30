@@ -3,7 +3,7 @@
   "name": "fb55d5a1c75e90385c70",
   "position": {
     "x": 23.5422969769057,
-    "y": 92.207329826213993,
+    "y": 92.20732982621399,
     "z": 1000,
     "height": 52,
     "width": 250,
@@ -107,6 +107,19 @@
             }
           }
         }
+      ],
+      "selection": [
+        {
+          "properties": {
+            "strictSingleSelect": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "drillFilterOtherVisuals": true
@@ -129,19 +142,58 @@
         "type": "Categorical"
       },
       {
-        "name": "dac030e49aa80c9a0300",
+        "name": "trimestres_publies",
         "ordinal": 1,
         "field": {
-          "Measure": {
+          "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Mesures"
+                "Entity": "Dim_Date"
               }
             },
-            "Property": "Banques presentes"
+            "Property": "Trimestre_Publie"
           }
         },
-        "type": "Advanced",
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim_Date",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "Trimestre_Publie"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "true"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
         "howCreated": "User"
       }
     ],

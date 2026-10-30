@@ -6,6 +6,8 @@
 // Choix_Trimestre : « Dernier trimestre complet » pour le dernier trimestre où les 12 banques ont publié
 // PNB, crédits et dépôts (valeurs retenues), sinon Annee_Trimestre ; triée par Ordre_Choix_Trimestre
 // (0 en tête). Un segment réglé sur « Dernier trimestre complet » suit les nouvelles publications.
+// Trimestre_Publie : vrai pour les trimestres où au moins une banque a publié (PNB, crédits ou dépôts) ; filtre
+// des segments de trimestre (sans 2019T1 à 2019T3, avant les données, ni les trimestres pas encore publiés).
 VAR NbBanques = COUNTROWS ( Dim_Banque )
 VAR Presences =
     GROUPBY (
@@ -20,6 +22,8 @@ VAR Presences =
     )
 VAR DernierComplet = MAXX ( FILTER ( Presences, [@Valeurs] = 3 * NbBanques ), Fait_Indicateurs[date_arrete] )
 VAR CleDernier = YEAR ( DernierComplet ) * 10 + QUARTER ( DernierComplet )
+VAR ClesPubliees =
+    SELECTCOLUMNS ( Presences, "@Cle", YEAR ( Fait_Indicateurs[date_arrete] ) * 10 + QUARTER ( Fait_Indicateurs[date_arrete] ) )
 RETURN
     ADDCOLUMNS (
         CALENDAR ( DATE ( 2019, 1, 1 ), DATE ( 2026, 12, 31 ) ),
@@ -53,5 +57,6 @@ RETURN
                 YEAR ( [Date] ) * 10 + QUARTER ( [Date] ) = CleDernier,
                 0,
                 YEAR ( [Date] ) * 10 + QUARTER ( [Date] )
-            )
+            ),
+        "Trimestre_Publie", YEAR ( [Date] ) * 10 + QUARTER ( [Date] ) IN ClesPubliees
     )

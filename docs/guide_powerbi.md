@@ -653,6 +653,13 @@ trimestre au format des faits et la colonne de tri de la période.
      seul, sans toucher au rapport (règle « filtre par défaut sur le dernier trimestre complet », pas sur
      le dernier trimestre qui contient une donnée : au début d'un trimestre, seules quelques banques ont
      publié) ;
+   - `Trimestre_Publie` (ajoutée le 30/10/2026 avec la page 1) : vrai pour les trimestres où au moins une banque a
+     publié le PNB, les crédits ou les dépôts (mêmes lignes que pour `Choix_Trimestre`, clés des trimestres
+     `SELECTCOLUMNS` puis test `IN`). Elle filtre les segments de trimestre : sans elle, ils listeraient aussi 2019T1
+     à 2019T3 (avant les données), les trimestres pas encore publiés (2026T4) et la ligne « (Vide) » de la table des
+     dates (créée par la relation inactive vers la date d'entrée des actionnaires, dont les premières périodes n'ont
+     pas de date). Un filtre par mesure ne convient pas sur un segment : il se calcule avec la sélection du segment
+     lui-même et ne laisse que la valeur choisie ;
 3. **Réglages du modèle** (dans le TMDL) : table **marquée comme table de dates** sur la colonne `Date`
    (`dataCategory: Time`, `isKey` ; dans Power BI : **Outils de table › Marquer comme table de
    dates**) ; colonnes de tri `Cle_Trimestre` et `Ordre_Periode` **masquées** (elles ne servent qu'au
@@ -1267,7 +1274,7 @@ Propriétés › Taille et position**) :
 | Fond | page entière | `powerbi/theme/fond_page_filtres.png` | Format de la page › Arrière-plan du canevas › Image, ajustement **Ajuster**, transparence 0 % |
 | Titre | 24, 14, 600 × 44 | zone de texte « Vue d'ensemble du secteur » | Segoe UI Semibold 24, blanc, sans arrière-plan |
 | Date des données | 640, 22, 360 × 32 | carte (nouvelle) : `Titre rapport` | sans arrière-plan ni contour, valeur Segoe UI 12 blanche, étiquette masquée |
-| Segment du trimestre | 24, 92, 250 × 52 | segment : `Dim_Date[Choix_Trimestre]` | style **Liste déroulante**, **sélection unique**, choisir « Dernier trimestre complet » ; en-tête « Trimestre » |
+| Segment du trimestre | 24, 92, 250 × 52 | segment : `Dim_Date[Choix_Trimestre]` ; filtre du visuel `Dim_Date[Trimestre_Publie]` = Vrai | style **Liste déroulante**, **sélection unique**, choisir « Dernier trimestre complet » ; en-tête « Trimestre » |
 | Segment des banques | 290, 92, 966 × 52 | segment à boutons : `Dim_Banque[code_banque]`, image : `Dim_Banque[icone]` | 12 boutons sur une ligne, image seule, sélection multiple ; sans effet sur les cartes du secteur (elles ignorent le filtre de banque) |
 | Carte PNB | 16, 162, 304 × 130 | `PNB secteur` | étiquette « PNB du trimestre (MDT) », 1 décimale ; étiquette de référence : `Banques presentes PNB` « banques présentes » |
 | Carte coefficient | 330, 162, 304 × 130 | `Coef secteur` | étiquette « Coefficient d'exploitation harmonisé » ; référence : `Coef mediane` « médiane des banques » |
@@ -1298,7 +1305,8 @@ visuel), projet fermé. Deux écarts avec le tableau :
 - **Axe de la courbe de concentration : la date, en axe continu** (et non le libellé « 2024T3 ») : en axe
   catégoriel, les 28 trimestres ne tenaient pas dans la largeur (barre de défilement, 2026T2 et 2026T3 cachés à
   droite). Sur l'axe des dates, le HHI n'a de valeur qu'au dernier jour de chaque trimestre : un point par
-  trimestre, l'axe gradué en années, la date exacte dans l'info-bulle. Les trimestres sans indicateurs (2019T1 à
+  trimestre, l'axe gradué en années, la date exacte dans l'info-bulle. Dans le fichier du visuel, l'axe continu
+  s'écrit `axisType` = « Scalar » (la valeur « Continuous » est ignorée : premier essai sans effet). Les trimestres sans indicateurs (2019T1 à
   2019T3, avant le début des données ; 2026T4, pas encore publié) n'ont pas de point.
 
 **Pourquoi ces choix.** Le segment du trimestre est réglé sur « Dernier trimestre complet » et non sur le

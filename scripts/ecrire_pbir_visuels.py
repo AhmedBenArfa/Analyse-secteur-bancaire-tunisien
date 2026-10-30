@@ -85,6 +85,26 @@ def regler(page, visuel, position, noms=None, titre=None, objets=None):
     ecrire(p, d)
 
 
+def filtre_colonne(page, visuel, table, colonne, valeur, nom):
+    """Filtre du visuel « colonne = valeur » (littéral, ex. "true") ; les filtres de mesure du visuel sont retirés (sur
+    un segment, un filtre de mesure tient compte de la sélection du segment lui-même et masque les autres valeurs)."""
+    p = PAGES / page / "visuals" / visuel / "visual.json"
+    d = lire(p)
+    config = d.setdefault("filterConfig", {"filters": []})
+    filtres = [f for f in config["filters"] if "Measure" not in f["field"] and f.get("name") != nom]
+    filtres.append({
+        "name": nom, "ordinal": len(filtres),
+        "field": {"Column": {"Expression": {"SourceRef": {"Entity": table}}, "Property": colonne}},
+        "type": "Categorical",
+        "filter": {"Version": 2, "From": [{"Name": "d", "Entity": table, "Type": 0}],
+                   "Where": [{"Condition": {"In": {
+                       "Expressions": [{"Column": {"Expression": {"SourceRef": {"Source": "d"}}, "Property": colonne}}],
+                       "Values": [[{"Literal": {"Value": valeur}}]]}}}]},
+        "howCreated": "User"})
+    config["filters"] = filtres
+    ecrire(p, d)
+
+
 def interactions(page, liste):
     """Interactions entre visuels de la page : [(source, cible, type)] ; type NoFilter = aucun effet."""
     p = PAGES / page / "page.json"
@@ -124,8 +144,14 @@ def vue_ensemble():
             "Mesures.Top 3 banques PNB": "Trois premières banques",
             "Mesures.Part 3 premieres banques PNB": "Part des trois premières"},
            titre="Concentration du PNB (indice HHI)",
-           objets={"categoryAxis": {"axisType": texte("Continuous")},
+           objets={"categoryAxis": {"axisType": texte("Scalar")},
                    "valueAxis": {"start": litteral("1000D"), "end": litteral("1300D")}})
+    # segment du trimestre : seulement les trimestres publiés (Dim_Date[Trimestre_Publie]), un seul à la fois
+    filtre_colonne(page, "fb55d5a1c75e90385c70", "Dim_Date", "Trimestre_Publie", "true", "trimestres_publies")
+    p = PAGES / page / "visuals" / "fb55d5a1c75e90385c70" / "visual.json"
+    d = lire(p)
+    d["visual"]["objects"]["selection"] = [{"properties": {"strictSingleSelect": litteral("true")}}]
+    ecrire(p, d)
     # le segment du trimestre ne filtre pas la courbe : toute la période reste visible
     interactions(page, [("fb55d5a1c75e90385c70", "1c3ebd2e2c48355e47e4", "NoFilter")])
     print("Vue d'ensemble : visuels réglés")
