@@ -1231,6 +1231,42 @@ tableau.
 Les 9 pages de la spécification (section 9) se construisent une à une dans Power BI Desktop ; chaque page
 sera décrite ici (visuels, champs, mesures, filtres) avant d'être construite.
 
+### 4.0 Méthode de construction des pages
+
+Chaque page suit les mêmes étapes :
+
+1. **Plan** : la page est décrite ici (visuels, position, champs et leur dossier dans la table `Mesures`, réglages,
+   valeurs attendues calculées à part depuis `donnees_publiees/`).
+2. **Création des visuels dans Power BI Desktop**, champs seulement (type de visuel et champs dans les zones), sans
+   s'occuper du format : Power BI écrit alors des fichiers corrects.
+3. **Réglages dans les fichiers du rapport** (format PBIR : un fichier `visual.json` par visuel, projet fermé) par
+   `python scripts/ecrire_pbir_visuels.py <page>` : position et taille, noms affichés, titres, axes, étiquettes,
+   interactions, filtres. Relancer le script ne change rien ; l'état d'avant est gardé dans l'historique.
+4. **Vérification** dans Power BI Desktop (actualisation, capture), contre les valeurs attendues.
+
+Réglages des fichiers du rapport utilisés (noms relevés dans les fichiers écrits par Power BI) :
+
+| Réglage | Propriété du fichier `visual.json` |
+|---|---|
+| Nom affiché d'un champ | `displayName` du champ (`projections`) |
+| Titre du visuel ; sous-titre automatique masqué | `visualContainerObjects.title` (`show`, `text`) ; `visualContainerObjects.subTitle` (`show` faux) |
+| Étiquettes de données | `objects.labels.show` |
+| Axe des abscisses continu ou catégoriel | `objects.categoryAxis.axisType` : « Scalar » (continu) ou « Categorical » |
+| Bornes de l'axe des valeurs | `objects.valueAxis.start`, `end` |
+| Carte : étiquette de référence et son titre | `objects.referenceLabel.value` (mesure) ; `objects.referenceLabelTitle` (`titleContentType` « custom », `titleText`) |
+| Segment : sélection unique | `objects.selection.strictSingleSelect` |
+| Filtre d'un visuel sur une colonne | `filterConfig.filters` (filtre catégoriel, condition `In`) |
+| Interaction entre deux visuels | `visualInteractions` de `page.json` (`source`, `target`, `type` « NoFilter » = aucun effet) |
+
+Trois constats faits en construisant la page 1, valables pour les suivantes :
+
+- la nouvelle carte abrège les grands nombres en milliers (« 1,9K ») et cette version de Power BI ne montre pas le
+  réglage des unités : les cartes des montants affichent des mesures de texte déjà mises en forme (`… texte`) ;
+- un filtre par **mesure** posé sur un segment se calcule avec la sélection du segment lui-même et ne laisse que la
+  valeur choisie : un segment se filtre par une **colonne** (`Dim_Date[Trimestre_Publie]`) ;
+- un graphique dans le temps doit ignorer le segment du trimestre (interaction « Aucun »), sinon il n'affiche
+  qu'un point.
+
 ### 4.1 Présentation commune à toutes les pages
 
 **Thème** (`powerbi/theme/secteur_bancaire.json`, produit par `python scripts/generer_theme.py`) : couleurs
@@ -1260,7 +1296,7 @@ pause, précédent et suivant qui font défiler les valeurs d'un champ (années,
 la page à chaque pas : utile pour les pages Vue d'ensemble, Classement et Évolution. Visuel certifié, il reste
 affiché après la publication sur le web.
 
-### 4.2 Page 1 : Vue d'ensemble
+### 4.2 Page 1 : Vue d'ensemble (terminée le 30/10/2026)
 
 **But** : en un coup d'œil, la taille du secteur au dernier trimestre complet (PNB, crédits, dépôts), son
 efficacité (coefficient d'exploitation harmonisé) et sa concentration (part de marché de chaque banque,
@@ -1321,3 +1357,7 @@ banque.
 PNB : BIAT 22,4 %, BNA 15,4 %, STB 10,0 %, Attijari 9,1 %, BH 8,5 %, AB 7,8 %, UIB 7,5 %, BT 6,8 %, ATB 5,0 %,
 UBCI 4,9 %, Wifak 1,7 %, BTE 1,0 % ; trois premières banques « BIAT, BNA, STB », 47,8 % du PNB ; HHI 1 209
 (entre 1 106 au T2 2021 et 1 209 au T3 2026 sur les 28 trimestres : marché peu concentré, en légère hausse).
+
+**Vérifiée le 30/10/2026** dans Power BI Desktop : toutes ces valeurs, médiane des coefficients 47,0 %, crédits
++2,1 % et dépôts +8,2 % sur un an ; segment limité aux trimestres publiés (« Dernier trimestre complet », 2019T4 à
+2026T2) ; courbe sur toute la période sans défilement.
