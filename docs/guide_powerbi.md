@@ -1362,7 +1362,7 @@ UBCI 4,9 %, Wifak 1,7 %, BTE 1,0 % ; trois premières banques « BIAT, BNA, STB 
 +2,1 % et dépôts +8,2 % sur un an ; segment limité aux trimestres publiés (« Dernier trimestre complet », 2019T4 à
 2026T2) ; courbe sur toute la période sans défilement.
 
-### 4.3 Page 2 : Classement (en construction)
+### 4.3 Page 2 : Classement (terminée le 30/10/2026)
 
 **But** : classer les 12 banques sur un trimestre (taille, efficacité, croissance) et voir, d'un trimestre à
 l'autre, comment le classement bouge. Le tableau montre, pour chaque banque, son PNB, sa part de marché et son rang,
@@ -1438,3 +1438,7 @@ médiane restent calculés sur les 12 banques.
 44,7 % (= coefficient du secteur), PNB +6,1 % sur un an, rangs et écart vides. Médiane des coefficients 47,0 %.
 Contrôle au **T2 2020** (segment ou axe de lecture du nuage) : BIAT 1re (19,68 %), BT coefficient le plus bas (23,1 %), Wifak 12e,
 médiane 45,9 %, secteur 45,7 %, UIB −78,6 % et Wifak +79,3 % sur un an, PNB du secteur −12,8 %.
+
+**Vérifiée le 30/10/2026** dans Power BI Desktop : toutes les valeurs du T3 2026 (rangs, coefficients, couleurs,
+croissances, ligne de total à +6,1 %) ; l'axe de lecture du nuage fait défiler les trimestres de 2019T4 à 2026T3 et
+s'arrête sur le dernier. Le tableau affiche 8 banques sans défilement (les 4 dernières par la barre verticale).

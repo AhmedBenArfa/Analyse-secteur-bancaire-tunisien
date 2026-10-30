@@ -20,7 +20,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
 | 6 | Modèle en étoile et mesures DAX | **Terminée le 24/10/2026** : table des dates, 32 relations (dont une inactive), 150 mesures (151 avec la mesure d'affichage de la page 2), colonnes calculées et journal des faits marquants, tout vérifié dans Power BI Desktop (détail ci-dessous) |
-| 7 | Pages du rapport | **En cours** : page 1 « Vue d'ensemble » terminée et vérifiée (30/10/2026) ; page 2 « Classement » construite (tableau, nuage animé, cartes), à vérifier |
+| 7 | Pages du rapport | **En cours** : page 1 « Vue d'ensemble » terminée et vérifiée (30/10/2026) ; page 2 « Classement » terminée et vérifiée (30/10/2026) ; prochaine : page 3 « Évolution 2020–2026 » |
 | 8 | README final et captures | README réécrit, section « Ouvrir le rapport » ; captures et lien de publication sur le web à faire |
 
 ## Étape 5 : requêtes Power Query (terminée)
