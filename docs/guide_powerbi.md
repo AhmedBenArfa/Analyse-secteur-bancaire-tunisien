@@ -1391,7 +1391,9 @@ classement` : positions, noms affichés, titres, tri du tableau par `Rang PNB`, 
 colonne de l'écart (forme relevée sur la mise en forme saisie dans Power BI pour le coefficient), barre de lecture
 limitée aux trimestres publiés, étiquettes des banques sur le nuage, titre de l'étiquette de référence ; puis Play
 Axis retiré, segment du trimestre copié de la page 1 et axe de lecture ajouté au nuage (fonctions `supprimer_visuel`,
-`copier_visuel`, `ajouter_colonne_role`). Une
+`copier_visuel`, `ajouter_colonne_role`). Première capture (30/10/2026) : valeurs justes ; logos à leur taille
+d'origine (une ligne de 120 pixels par banque, 4 banques visibles), libellé de la carte de la médiane coupé à 100
+pixels, titre du nuage sur deux lignes : corrigés (logos à 24 pixels, cartes à 130, en-têtes et titre raccourcis). Une
 extraction (*drillthrough*) sur `code_banque` posée par mégarde sur la page, avec le bouton « Retour » ajouté
 automatiquement, a été retirée (`retirer_extraction`) : l'extraction est réservée à la fiche banque (page 7). La
 ligne médiane du nuage n'est pas encore ajoutée.
@@ -1402,10 +1404,10 @@ ligne médiane du nuage n'est pas encore ajoutée.
 |---|---|---|---|
 | Fond, titre, segment des banques | comme la page 1 | copiés de la page 1 | titre « Classement des banques » |
 | Segment du trimestre | 24, 92, 250 × 52 | copie du segment de la page 1 : `Dim_Date[Choix_Trimestre]` | « Dernier trimestre complet », sélection unique, filtre `Trimestre_Publie` = Vrai ; ne filtre pas le nuage |
-| Trimestre affiché | 16, 162, 365 × 100 | carte (nouvelle) : `Trimestre affiche` (`2. Secteur\Affichage`) | libellé « Trimestre affiché » |
-| Médiane des coefficients | 391, 162, 365 × 100 | carte (nouvelle) : `Coef mediane` (`3. Ratios\Comparaison au secteur`) ; étiquette de référence `Coef secteur` | libellé « Médiane des coefficients » ; référence « coefficient du secteur » |
-| Classement | 16, 272, 740 × 412 | tableau : `Dim_Banque[icone]`, `Dim_Banque[code_banque]`, `PNB` (`1. Bases\Flux du trimestre`), `Part de marche PNB` (`2. Secteur\Parts de marché`), `Rang PNB` (`2. Secteur\Rangs`), `Coef exploitation harmonise` (`3. Ratios\Coefficient d'exploitation`), `Rang coef`, `Ecart coef / mediane` (`3. Ratios\Comparaison au secteur`), `Var PNB A/A %` (`4. Croissances\Sur un an`) | tri par `Rang PNB` croissant ; couleur de police du coefficient et de l'écart = valeur du champ `Couleur coef` ; titre « Classement des banques au trimestre » |
-| Croissance et efficacité | 766, 162, 498 × 522 | nuage de points : axe X `Var PNB A/A %`, axe Y `Coef exploitation harmonise`, valeurs `Dim_Banque[code_banque]`, taille `PNB`, axe de lecture `Dim_Date[Annee_Trimestre]`, info-bulles `Rang PNB`, `Rang coef` | étiquettes de catégorie (code de la banque) ; filtre `Trimestre_Publie` = Vrai ; titre « Croissance du PNB et coefficient d'exploitation (▶ : tous les trimestres) » |
+| Trimestre affiché | 16, 162, 365 × 130 | carte (nouvelle) : `Trimestre affiche` (`2. Secteur\Affichage`) | libellé « Trimestre affiché » |
+| Médiane des coefficients | 391, 162, 365 × 130 | carte (nouvelle) : `Coef mediane` (`3. Ratios\Comparaison au secteur`) ; étiquette de référence `Coef secteur` | libellé « Médiane des coefficients » ; référence « coefficient du secteur » |
+| Classement | 16, 302, 740 × 382 | tableau : `Dim_Banque[icone]`, `Dim_Banque[code_banque]`, `PNB` (`1. Bases\Flux du trimestre`), `Part de marche PNB` (`2. Secteur\Parts de marché`), `Rang PNB` (`2. Secteur\Rangs`), `Coef exploitation harmonise` (`3. Ratios\Coefficient d'exploitation`), `Rang coef`, `Ecart coef / mediane` (`3. Ratios\Comparaison au secteur`), `Var PNB A/A %` (`4. Croissances\Sur un an`) | logos de 24 pixels de haut (`grid.imageHeight`) ; en-têtes courts (« Écart médiane », « PNB A/A ») ; tri par `Rang PNB` croissant ; couleur de police du coefficient et de l'écart = valeur du champ `Couleur coef` ; titre « Classement des banques au trimestre » |
+| Croissance et efficacité | 766, 162, 498 × 522 | nuage de points : axe X `Var PNB A/A %`, axe Y `Coef exploitation harmonise`, valeurs `Dim_Banque[code_banque]`, taille `PNB`, axe de lecture `Dim_Date[Annee_Trimestre]`, info-bulles `Rang PNB`, `Rang coef` | étiquettes de catégorie (code de la banque) ; filtre `Trimestre_Publie` = Vrai ; titre « Croissance du PNB et coefficient (▶ : les trimestres) » |
 
 **Pourquoi ces choix.** Le classement utilise le coefficient **harmonisé** (frais de personnel + charges générales,
 3.5), seul comparable d'une banque à l'autre. La croissance est celle du **trimestre seul sur un an**, lue dans le

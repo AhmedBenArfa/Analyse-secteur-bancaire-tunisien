@@ -3,9 +3,9 @@
   "name": "a65d1a3a157cddcdd761",
   "position": {
     "x": 16,
-    "y": 272,
+    "y": 302,
     "z": 2004,
-    "height": 412,
+    "height": 382,
     "width": 740,
     "tabOrder": 2004
   },
@@ -133,7 +133,7 @@
               },
               "queryRef": "Mesures.Ecart coef / mediane",
               "nativeQueryRef": "Ecart coef / mediane",
-              "displayName": "Écart à la médiane"
+              "displayName": "Écart médiane"
             },
             {
               "field": {
@@ -148,7 +148,7 @@
               },
               "queryRef": "Mesures.Var PNB A/A %",
               "nativeQueryRef": "Var PNB A/A %",
-              "displayName": "PNB sur un an"
+              "displayName": "PNB A/A"
             }
           ]
         }
@@ -232,6 +232,19 @@
               }
             ],
             "metadata": "Mesures.Ecart coef / mediane"
+          }
+        }
+      ],
+      "grid": [
+        {
+          "properties": {
+            "imageHeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "24D"
+                }
+              }
+            }
           }
         }
       ]

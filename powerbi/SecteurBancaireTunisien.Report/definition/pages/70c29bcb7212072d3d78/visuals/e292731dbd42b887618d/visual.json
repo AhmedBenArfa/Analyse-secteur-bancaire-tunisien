@@ -162,7 +162,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Croissance du PNB et coefficient d''exploitation (▶ : tous les trimestres)'"
+                  "Value": "'Croissance du PNB et coefficient (▶ : les trimestres)'"
                 }
               }
             }

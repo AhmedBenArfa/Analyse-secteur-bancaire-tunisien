@@ -232,17 +232,20 @@ def classement():
     supprimer_visuel(page, "b6865abd3591c07d0656")
     segment = copier_visuel("ae07c11e46023397cb08", "fb55d5a1c75e90385c70", page)
     regler(page, segment, (24, 92, 250, 52))
-    regler(page, "b9106fd5eec51c3d7967", (16, 162, 365, 100), {"Mesures.Trimestre affiche": "Trimestre affiché"})
-    regler(page, "997bf12c95589026ae69", (391, 162, 365, 100), {"Mesures.Coef mediane": "Médiane des coefficients"})
+    # cartes de 130 de haut (à 100, le libellé de la carte avec étiquette de référence était coupé, comme en page 1)
+    regler(page, "b9106fd5eec51c3d7967", (16, 162, 365, 130), {"Mesures.Trimestre affiche": "Trimestre affiché"})
+    regler(page, "997bf12c95589026ae69", (391, 162, 365, 130), {"Mesures.Coef mediane": "Médiane des coefficients"})
     titre_etiquette_reference(page, "997bf12c95589026ae69", "coefficient du secteur")
-    # tableau : trié par rang du PNB, coefficient et écart à la médiane colorés par Couleur coef
+    # tableau : trié par rang du PNB, coefficient et écart à la médiane colorés par Couleur coef ; logos de 24 pixels
+    # de haut (à la taille d'origine, une ligne par logo de 120 pixels : 4 banques visibles), en-têtes courts (sans
+    # barre de défilement horizontale)
     tableau = "a65d1a3a157cddcdd761"
-    regler(page, tableau, (16, 272, 740, 412),
+    regler(page, tableau, (16, 302, 740, 382),
            {"Dim_Banque.icone": "Logo", "Dim_Banque.code_banque": "Banque", "Mesures.PNB": "PNB (MDT)",
             "Mesures.Part de marche PNB": "Part du PNB", "Mesures.Rang PNB": "Rang PNB",
             "Mesures.Coef exploitation harmonise": "Coefficient", "Mesures.Rang coef": "Rang coef.",
-            "Mesures.Ecart coef / mediane": "Écart à la médiane", "Mesures.Var PNB A/A %": "PNB sur un an"},
-           titre="Classement des banques au trimestre")
+            "Mesures.Ecart coef / mediane": "Écart médiane", "Mesures.Var PNB A/A %": "PNB A/A"},
+           titre="Classement des banques au trimestre", objets={"grid": {"imageHeight": litteral("24D")}})
     trier(page, tableau, "Mesures", "Rang PNB")
     couleur_par_mesure(page, tableau, ["Mesures.Coef exploitation harmonise", "Mesures.Ecart coef / mediane"],
                        "Couleur coef")
@@ -254,7 +257,7 @@ def classement():
            {"Dim_Banque.code_banque": "Banque", "Mesures.Var PNB A/A %": "PNB sur un an",
             "Mesures.Coef exploitation harmonise": "Coefficient d'exploitation", "Mesures.PNB": "PNB (MDT)",
             "Mesures.Rang PNB": "Rang PNB", "Mesures.Rang coef": "Rang coef.", "Dim_Date.Annee_Trimestre": "Trimestre"},
-           titre="Croissance du PNB et coefficient d'exploitation (▶ : tous les trimestres)",
+           titre="Croissance du PNB et coefficient (▶ : les trimestres)",
            objets={"categoryLabels": {"show": litteral("true")}})
     filtre_colonne(page, nuage, "Dim_Date", "Trimestre_Publie", "true", "trimestres_publies")
     interactions(page, [(segment, nuage, "NoFilter")])
