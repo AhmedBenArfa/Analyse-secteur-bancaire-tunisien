@@ -528,6 +528,22 @@ MEASURE Mesures[Rupture PNB cumul] =
         [PNB depuis debut annee]
     )
 
+// [4. Croissances\Annotations | texte] Ruptures de série du point (banque et trimestre) pour les indicateurs de la page Évolution (PNB, frais de personnel, charges générales, crédits, dépôts) : code et détail de la révision de plus de 2 %, un par ligne ; vide sans rupture
+MEASURE Mesures[Ruptures texte] =
+    VAR Lignes =
+        FILTER (
+            Fait_Indicateurs,
+            Fait_Indicateurs[Rupture_Cumul] = "oui"
+                && Fait_Indicateurs[code_indicateur] IN { "PNB", "FRAIS_PERS", "CHG_GEN", "CREDITS", "DEPOTS" }
+        )
+    RETURN
+        CONCATENATEX (
+            Lignes,
+            Fait_Indicateurs[code_indicateur] & " : " & Fait_Indicateurs[Detail_Rupture_Cumul],
+            UNICHAR ( 10 ),
+            Fait_Indicateurs[code_indicateur]
+        )
+
 // ===== 5. Rentabilité : ROE et ROA (spécification 7.7) =====
 // Source : états financiers individuels (Fait_Etats_Financiers), au 30/06 et au 31/12 seulement : ROE et ROA sont
 // semestriels et annuels, jamais trimestriels. Résultat net avant modifications comptables, annualisé (× 2 au

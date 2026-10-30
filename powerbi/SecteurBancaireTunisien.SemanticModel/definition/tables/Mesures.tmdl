@@ -702,6 +702,24 @@ table Mesures
 		displayFolder: 4. Croissances\Annotations
 		lineageTag: fdb32c05-17f0-4e5e-b742-92a029821b9d
 
+	/// Ruptures de série du point (banque et trimestre) pour les indicateurs de la page Évolution (PNB, frais de personnel, charges générales, crédits, dépôts) : code et détail de la révision de plus de 2 %, un par ligne ; vide sans rupture
+	measure 'Ruptures texte' =
+			VAR Lignes =
+			    FILTER (
+			        Fait_Indicateurs,
+			        Fait_Indicateurs[Rupture_Cumul] = "oui"
+			            && Fait_Indicateurs[code_indicateur] IN { "PNB", "FRAIS_PERS", "CHG_GEN", "CREDITS", "DEPOTS" }
+			    )
+			RETURN
+			    CONCATENATEX (
+			        Lignes,
+			        Fait_Indicateurs[code_indicateur] & " : " & Fait_Indicateurs[Detail_Rupture_Cumul],
+			        UNICHAR ( 10 ),
+			        Fait_Indicateurs[code_indicateur]
+			    )
+		displayFolder: 4. Croissances\Annotations
+		lineageTag: d2d7dd21-a846-4353-988f-476c34b49e02
+
 	/// Somme des valeurs retenues des états financiers ; vide si plusieurs dates d'arrêté
 	measure 'EF valeur' = IF ( DISTINCTCOUNT ( Fait_Etats_Financiers[date_arrete] ) = 1, SUM ( Fait_Etats_Financiers[valeur_mdt] ) )
 		formatString: #,0.000

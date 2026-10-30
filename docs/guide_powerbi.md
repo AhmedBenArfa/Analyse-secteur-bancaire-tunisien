@@ -1379,7 +1379,7 @@ chaque visuel cachait ses boutons (code public du visuel, `mprozil/PlayAxis` sur
 s'ouvre sur le dernier trimestre complet) pour le tableau et les cartes, et l'**axe de lecture intégré au nuage de
 points** de Power BI (zone « Axe de lecture », `Dim_Date[Annee_Trimestre]`, trimestres publiés seulement) : le
 bouton ▶ du nuage fait défiler les 28 trimestres (en 2020, le recul du PNB et la hausse des coefficients ; au T2
-2020, le PNB de l'UIB recule de 78,6 % sur un an, effet du moratoire Covid). Le segment ne filtre pas le nuage
+2020, le PNB de l'UIB recule de 78,7 % sur un an, effet du moratoire Covid). Le segment ne filtre pas le nuage
 (interaction « Aucun »), sinon l'animation n'aurait qu'une image. La carte « Trimestre affiché » (mesure
 `Trimestre affiche`, `SELECTEDVALUE ( Dim_Date[Annee_Trimestre], "plusieurs trimestres" )`, dossier
 `2. Secteur\Affichage`) dit quel trimestre le tableau montre.
@@ -1437,8 +1437,70 @@ médiane restent calculés sur les 12 banques.
 Écart à la médiane en points de pourcentage. Ligne de total du tableau : PNB 1 936,564, part 100 %, coefficient
 44,7 % (= coefficient du secteur), PNB +6,1 % sur un an, rangs et écart vides. Médiane des coefficients 47,0 %.
 Contrôle au **T2 2020** (segment ou axe de lecture du nuage) : BIAT 1re (19,68 %), BT coefficient le plus bas (23,1 %), Wifak 12e,
-médiane 45,9 %, secteur 45,7 %, UIB −78,6 % et Wifak +79,3 % sur un an, PNB du secteur −12,8 %.
+médiane 45,9 %, secteur 45,7 %, UIB −78,7 % et Wifak +79,3 % sur un an, PNB du secteur −12,8 %.
 
 **Vérifiée le 30/10/2026** dans Power BI Desktop : toutes les valeurs du T3 2026 (rangs, coefficients, couleurs,
 croissances, ligne de total à +6,1 %) ; l'axe de lecture du nuage fait défiler les trimestres de 2019T4 à 2026T3 et
 s'arrête sur le dernier. Le tableau affiche 8 banques sans défilement (les 4 dernières par la barre verticale).
+
+### 4.4 Page 3 : Évolution 2020–2026 (en construction)
+
+**But** : suivre chaque banque trimestre par trimestre, de 2019T4 à 2026T3, sur l'indicateur choisi, avec la
+période Covid repérée et l'explication des sauts de série (révisions de plus de 2 %, événements datés).
+
+**Sélecteur d'indicateur : paramètre de champ « Indicateur affiché »** (créé dans Power BI Desktop :
+**Modélisation › Nouveau paramètre › Champs**). Un paramètre de champ est une petite table calculée dont chaque
+ligne pointe vers une mesure (`NAMEOF`) ; posé sur l'axe d'un graphique, il remplace la mesure affichée par celle
+choisie dans son segment, sans dupliquer le graphique. Cinq mesures, dans cet ordre : `PNB`, `Coef exploitation
+harmonise`, `Credits / Depots`, `Part de marche PNB`, `Var PNB A/A %`. Le segment du paramètre prend la place du
+segment du trimestre : sur une page qui montre toute la période, choisir un trimestre n'a pas de sens.
+
+**Période Covid** : deux lignes verticales sur l'axe des dates, au 01/03/2020 (début) et au 01/01/2022 (fin), les
+bornes de `Dim_Date[Periode]` (3.1). Une bande grise derrière les courbes n'est pas possible ici : avec une courbe
+par banque (légende), le graphique n'accepte qu'une mesure, et le graphique combiné (courbes et colonnes) ne sait
+pas répartir ses courbes par banque.
+
+**Ruptures de série et événements** : dans l'info-bulle de chaque point, `Ruptures texte` (mesure ajoutée le
+30/10/2026, dossier `4. Croissances\Annotations`) liste les révisions de plus de 2 % du point pour le PNB, les frais
+de personnel, les charges générales, les crédits et les dépôts (`Fait_Indicateurs[Detail_Rupture_Cumul]`,
+`CONCATENATEX`), et `Evenement texte` les événements datés de la banque (`Evenements` : don au Fonds 1818,
+moratoire de l'UIB, accord salarial APTBEF–FGBEF, retraitement BH 2024). Le même contenu est lisible sans survol
+dans le tableau des événements, à droite, filtré par la banque et le point cliqués. La superposition de marqueurs
+`Rupture PNB` sur les courbes, prévue au départ, se heurte à la même limite que la bande (une seule mesure avec une
+légende) : l'info-bulle la remplace.
+
+**Création de la page** : `python scripts/ecrire_pbir_visuels.py nouvelle_page "Évolution" "Évolution 2020–2026"`
+(fond, titre et segment des banques copiés de la page 1).
+
+**Mise en page** (positions : x, y, largeur × hauteur) :
+
+| Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
+|---|---|---|---|
+| Fond, titre, segment des banques | comme la page 1 | copiés de la page 1 | titre « Évolution 2020–2026 » |
+| Indicateur affiché | 24, 92, 250 × 52 | segment du paramètre de champ `Indicateur affiché` | liste déroulante, sélection unique, « PNB » par défaut |
+| Évolution par banque | 16, 162, 860 × 522 | graphique en courbes : axe X `Dim_Date[Date]`, axe Y `Indicateur affiché`, légende `Dim_Banque[code_banque]`, info-bulles `Evenement texte`, `Ruptures texte` (`4. Croissances\Annotations`) | axe X continu ; lignes verticales Covid au 01/03/2020 et au 01/01/2022 ; filtre `Trimestre_Publie` = Vrai ; titre « Évolution par banque » |
+| Événements | 886, 162, 378 × 522 | tableau : `Evenements[date]`, `Evenements[banque]`, `Evenements[description]`, `Evenements[montant_mdt]` | tri par date ; titre « Événements qui expliquent un saut » ; un clic dans le tableau ne filtre pas les courbes (interaction « Aucun ») |
+
+**Pourquoi ces choix.** L'axe des dates est continu, comme pour le HHI de la page 1 : les 28 trimestres tiennent sans
+défilement et chaque mesure n'a de valeur qu'au dernier jour d'un trimestre (un point par trimestre). Le segment des
+banques sert à alléger le graphique (12 courbes ensemble se lisent mal) : choisir deux ou trois banques. La
+croissance affichée vient de `Variations_Comparables` (3.6) : la valeur N-1 est lue dans le même document que la
+valeur N, la courbe des variations ne mélange donc jamais deux bases différentes.
+
+**Valeurs attendues** (calculées à part depuis `donnees_publiees/`) :
+
+| Banque | Trimestre | PNB | Coefficient | Crédits / dépôts | Part du PNB | PNB sur un an |
+|---|---|---|---|---|---|---|
+| BIAT | 2019T4 | 264,279 | 35,9 % | 79,9 % | 18,91 % | +10,9 % |
+| BIAT | 2020T2 | 224,319 | 41,8 % | 84,6 % | 19,68 % | −1,3 % |
+| BIAT | 2026T3 | 433,328 | 39,7 % | 56,7 % | 22,38 % | +6,5 % |
+| UIB | 2020T2 | 87,556 | 52,6 % | 112,3 % | 7,68 % | −78,7 % |
+| BH | 2024T4 | 177,219 | 32,9 % | 117,4 % | 9,90 % | +7,6 % |
+| BH | 2026T3 | 165,030 | 47,6 % | 98,5 % | 8,52 % | −4,9 % |
+
+BH 2019T4 n'a pas de variation sur un an (document publié en image, colonne N-1 non lue). Info-bulle de BH au
+2024T4 : « PNB : 2024T4 révisé de -8.5 % sur le cumul (765.932 publié, 701.188 dans le document 2025T4) » et
+l'événement du retraitement BH 2024. 93 points (banque × trimestre) ont au moins une rupture sur ces cinq
+indicateurs. Le PNB de l'UIB au T2 2020 (87,556, valeur révisée) et sa variation (−78,7 %, valeurs du document du
+T2 2020, avant la réintégration des intérêts du moratoire) ne reposent pas sur la même base : c'est ce que signale
+l'événement « moratoire Covid de l'UIB ».
