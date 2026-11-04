@@ -171,9 +171,25 @@ MEASURE Mesures[Actionnaire principal] =
             & FORMAT ( SELECTEDVALUE ( Dim_Banque[date_actionnariat] ), "dd/mm/yyyy" ) & ")"
     )
 
-// [1. Bases\Fiche banque | 0] 1 si le filtre ne laisse qu'une banque (fiche ouverte par extraction), vide sinon : filtre des visuels de la fiche banque, qui restent vides sans banque choisie au lieu de montrer le total des 12 banques
+// [1. Bases\Fiche banque | 0] 1 si la page ne laisse qu'une banque (fiche ouverte par extraction), vide sinon ; ALLSELECTED : les lignes d'un tableau groupé par une colonne de Dim_Banque ne comptent pas, seuls les filtres de la page et du visuel ; filtre des tableaux de la fiche banque, qui restent vides sans banque choisie au lieu de montrer les 12 banques
 MEASURE Mesures[Banque unique] =
-    IF ( HASONEVALUE ( Dim_Banque[code_banque] ), 1 )
+    IF ( CALCULATE ( HASONEVALUE ( Dim_Banque[code_banque] ), ALLSELECTED ( Dim_Banque ) ), 1 )
+
+// [1. Bases\Fiche banque | #,0.000] PNB du trimestre de la banque de la fiche ; vide sans banque unique (une carte ne tient pas compte d'un filtre de mesure)
+MEASURE Mesures[PNB fiche] =
+    IF ( [Banque unique] = 1, [PNB] )
+
+// [1. Bases\Fiche banque | 0.0 %] Coefficient d'exploitation harmonisé de la banque de la fiche ; vide sans banque unique
+MEASURE Mesures[Coef harmonise fiche] =
+    IF ( [Banque unique] = 1, [Coef exploitation harmonise] )
+
+// [1. Bases\Fiche banque | 0.0 %] Coefficient d'exploitation publié par la banque de la fiche ; vide sans banque unique
+MEASURE Mesures[Coef publie fiche] =
+    IF ( [Banque unique] = 1, [Coef exploitation publie] )
+
+// [1. Bases\Fiche banque | 0.0 %] Crédits / dépôts de la banque de la fiche ; vide sans banque unique
+MEASURE Mesures[Credits / Depots fiche] =
+    IF ( [Banque unique] = 1, [Credits / Depots] )
 
 // ===== 2. Secteur : banques présentes, totaux, parts de marché, rangs (spécification 7.4) =====
 // Un total du secteur, une part de marché, un rang ou un indice de concentration n'est calculé que si les

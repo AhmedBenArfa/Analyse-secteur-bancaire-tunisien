@@ -232,11 +232,35 @@ table Mesures
 		displayFolder: 1. Bases\Fiche banque
 		lineageTag: dd0716b5-b29d-4ee8-83a7-608aa2890cba
 
-	/// 1 si le filtre ne laisse qu'une banque (fiche ouverte par extraction), vide sinon : filtre des visuels de la fiche banque, qui restent vides sans banque choisie au lieu de montrer le total des 12 banques
-	measure 'Banque unique' = IF ( HASONEVALUE ( Dim_Banque[code_banque] ), 1 )
+	/// 1 si la page ne laisse qu'une banque (fiche ouverte par extraction), vide sinon ; ALLSELECTED : les lignes d'un tableau groupé par une colonne de Dim_Banque ne comptent pas, seuls les filtres de la page et du visuel ; filtre des tableaux de la fiche banque, qui restent vides sans banque choisie au lieu de montrer les 12 banques
+	measure 'Banque unique' = IF ( CALCULATE ( HASONEVALUE ( Dim_Banque[code_banque] ), ALLSELECTED ( Dim_Banque ) ), 1 )
 		formatString: 0
 		displayFolder: 1. Bases\Fiche banque
 		lineageTag: d875fae3-56ca-4aa6-9957-b1c517e9a340
+
+	/// PNB du trimestre de la banque de la fiche ; vide sans banque unique (une carte ne tient pas compte d'un filtre de mesure)
+	measure 'PNB fiche' = IF ( [Banque unique] = 1, [PNB] )
+		formatString: #,0.000
+		displayFolder: 1. Bases\Fiche banque
+		lineageTag: 108fbf82-44bd-46be-8b54-b1335316b1ff
+
+	/// Coefficient d'exploitation harmonisé de la banque de la fiche ; vide sans banque unique
+	measure 'Coef harmonise fiche' = IF ( [Banque unique] = 1, [Coef exploitation harmonise] )
+		formatString: 0.0 %
+		displayFolder: 1. Bases\Fiche banque
+		lineageTag: eef36902-8eb0-45ab-a898-94335383914b
+
+	/// Coefficient d'exploitation publié par la banque de la fiche ; vide sans banque unique
+	measure 'Coef publie fiche' = IF ( [Banque unique] = 1, [Coef exploitation publie] )
+		formatString: 0.0 %
+		displayFolder: 1. Bases\Fiche banque
+		lineageTag: 527b4d09-7d95-4685-8b59-503f7a072090
+
+	/// Crédits / dépôts de la banque de la fiche ; vide sans banque unique
+	measure 'Credits / Depots fiche' = IF ( [Banque unique] = 1, [Credits / Depots] )
+		formatString: 0.0 %
+		displayFolder: 1. Bases\Fiche banque
+		lineageTag: 5002a696-5cf7-473a-86a3-d6a1cfb64b89
 
 	/// Nombre de banques du modèle (12)
 	measure 'Nombre de banques' = COUNTROWS ( ALL ( Dim_Banque ) )

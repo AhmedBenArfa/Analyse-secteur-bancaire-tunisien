@@ -631,10 +631,20 @@ def fiche_banque():
         for q, l in (("Mesures.Banque affichee", 330), ("Mesures.Chaine de controle", 470),
                      ("Mesures.Actionnaire principal", 400))]
     ecrire(p, d)
-    regler(page, "12cc8472e5b986c92239", (16, 282, 1248, 120),
-           {"Mesures.PNB": "PNB du trimestre (MDT)", "Mesures.Coef exploitation harmonise": "Coefficient harmonisé",
-            "Mesures.Coef exploitation publie": "Coefficient publié par la banque",
-            "Mesures.Credits / Depots": "Crédits / dépôts"})
+    # chiffres : mesures « fiche », vides sans banque unique (la carte ne tient pas compte d'un filtre de mesure)
+    chiffres = "12cc8472e5b986c92239"
+    for mesure, fiche in (("PNB", "PNB fiche"), ("Coef exploitation harmonise", "Coef harmonise fiche"),
+                          ("Coef exploitation publie", "Coef publie fiche"), ("Credits / Depots", "Credits / Depots fiche")):
+        remplacer_mesure(page, chiffres, mesure, fiche)
+    regler(page, chiffres, (16, 282, 1248, 120),
+           {"Mesures.PNB fiche": "PNB du trimestre (MDT)", "Mesures.Coef harmonise fiche": "Coefficient harmonisé",
+            "Mesures.Coef publie fiche": "Coefficient publié par la banque",
+            "Mesures.Credits / Depots fiche": "Crédits / dépôts"})
+    pc = PAGES / page / "visuals" / chiffres / "visual.json"
+    dc = lire(pc)
+    if "filterConfig" in dc:
+        dc["filterConfig"]["filters"] = [f for f in dc["filterConfig"]["filters"] if f.get("name") != "banque_unique"]
+        ecrire(pc, dc)
     # indicateurs dans l'ordre de Dim_Indicateur (libelle trié par ordre)
     indicateurs = "8e30af2040eae71d00db"
     colonnes = [("Dim_Indicateur.libelle", "Indicateur", 300), ("Mesures.Valeur Trim", "Trimestre", 130),
@@ -662,7 +672,7 @@ def fiche_banque():
     ecrire(p, d)
     # sans banque unique (page ouverte par son onglet), chiffres et tableaux vides plutôt que le total des 12 banques ;
     # la carte d'identité reste visible et dit comment ouvrir la fiche
-    for visuel in ("12cc8472e5b986c92239", indicateurs, definitions):
+    for visuel in (indicateurs, definitions):
         filtre_mesure(page, visuel, "Banque unique", "1L", "banque_unique")
     print("Fiche banque : visuels réglés")
 

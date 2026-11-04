@@ -23,11 +23,11 @@
                       "Entity": "Mesures"
                     }
                   },
-                  "Property": "PNB"
+                  "Property": "PNB fiche"
                 }
               },
-              "queryRef": "Mesures.PNB",
-              "nativeQueryRef": "PNB",
+              "queryRef": "Mesures.PNB fiche",
+              "nativeQueryRef": "PNB fiche",
               "displayName": "PNB du trimestre (MDT)"
             },
             {
@@ -38,11 +38,11 @@
                       "Entity": "Mesures"
                     }
                   },
-                  "Property": "Coef exploitation harmonise"
+                  "Property": "Coef harmonise fiche"
                 }
               },
-              "queryRef": "Mesures.Coef exploitation harmonise",
-              "nativeQueryRef": "Coef exploitation harmonise",
+              "queryRef": "Mesures.Coef harmonise fiche",
+              "nativeQueryRef": "Coef harmonise fiche",
               "displayName": "Coefficient harmonisé"
             },
             {
@@ -53,11 +53,11 @@
                       "Entity": "Mesures"
                     }
                   },
-                  "Property": "Coef exploitation publie"
+                  "Property": "Coef publie fiche"
                 }
               },
-              "queryRef": "Mesures.Coef exploitation publie",
-              "nativeQueryRef": "Coef exploitation publie",
+              "queryRef": "Mesures.Coef publie fiche",
+              "nativeQueryRef": "Coef publie fiche",
               "displayName": "Coefficient publié par la banque"
             },
             {
@@ -68,11 +68,11 @@
                       "Entity": "Mesures"
                     }
                   },
-                  "Property": "Credits / Depots"
+                  "Property": "Credits / Depots fiche"
                 }
               },
-              "queryRef": "Mesures.Credits / Depots",
-              "nativeQueryRef": "Credits / Depots",
+              "queryRef": "Mesures.Credits / Depots fiche",
+              "nativeQueryRef": "Credits / Depots fiche",
               "displayName": "Crédits / dépôts"
             }
           ]
@@ -88,7 +88,7 @@
                     "Entity": "Mesures"
                   }
                 },
-                "Property": "PNB"
+                "Property": "PNB fiche"
               }
             },
             "direction": "Descending"
@@ -110,7 +110,7 @@
                 "Entity": "Mesures"
               }
             },
-            "Property": "PNB"
+            "Property": "PNB fiche"
           }
         },
         "type": "Advanced"
@@ -124,7 +124,7 @@
                 "Entity": "Mesures"
               }
             },
-            "Property": "Coef exploitation harmonise"
+            "Property": "Coef harmonise fiche"
           }
         },
         "type": "Advanced"
@@ -138,7 +138,7 @@
                 "Entity": "Mesures"
               }
             },
-            "Property": "Coef exploitation publie"
+            "Property": "Coef publie fiche"
           }
         },
         "type": "Advanced"
@@ -152,59 +152,10 @@
                 "Entity": "Mesures"
               }
             },
-            "Property": "Credits / Depots"
+            "Property": "Credits / Depots fiche"
           }
         },
         "type": "Advanced"
-      },
-      {
-        "name": "banque_unique",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "Banque unique"
-          }
-        },
-        "type": "Advanced",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "m",
-              "Entity": "Mesures",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "Comparison": {
-                  "ComparisonKind": 0,
-                  "Left": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Source": "m"
-                        }
-                      },
-                      "Property": "Banque unique"
-                    }
-                  },
-                  "Right": {
-                    "Literal": {
-                      "Value": "1L"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        "howCreated": "User"
       }
     ]
   }
