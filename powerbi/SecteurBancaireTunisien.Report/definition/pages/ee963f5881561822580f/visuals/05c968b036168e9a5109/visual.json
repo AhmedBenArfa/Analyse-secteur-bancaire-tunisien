@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "05c968b036168e9a5109",
   "position": {
-    "x": 31,
-    "y": 490.5,
+    "x": 16,
+    "y": 432,
     "z": 2003,
-    "height": 150,
-    "width": 182,
+    "height": 252,
+    "width": 760,
     "tabOrder": 2003
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Banque.code_banque",
               "nativeQueryRef": "code_banque",
-              "active": true
+              "active": true,
+              "displayName": "Banque"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Mesures.Rendement total",
-              "nativeQueryRef": "Rendement total"
+              "nativeQueryRef": "Rendement total",
+              "displayName": "Rendement total"
             },
             {
               "field": {
@@ -60,7 +62,8 @@
                 }
               },
               "queryRef": "Mesures.Taux seances sans transaction",
-              "nativeQueryRef": "Taux seances sans transaction"
+              "nativeQueryRef": "Taux seances sans transaction",
+              "displayName": "Séances sans transaction"
             }
           ]
         },
@@ -79,7 +82,8 @@
               },
               "queryRef": "Mesures.TCAM PNB 2020-2025",
               "nativeQueryRef": "TCAM PNB 2020-2025",
-              "active": true
+              "active": true,
+              "displayName": "Croissance annuelle du PNB"
             }
           ]
         },
@@ -97,44 +101,67 @@
                 }
               },
               "queryRef": "Mesures.Rendement annuel moyen",
-              "nativeQueryRef": "Rendement annuel moyen"
+              "nativeQueryRef": "Rendement annuel moyen",
+              "displayName": "Rendement annuel en Bourse"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Rendement annuel en Bourse et croissance annuelle du PNB, 2021–2025'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "categoryLabels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [
-      {
-        "name": "da3a3913ee5d1162ba5e",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "TCAM PNB 2020-2025"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "ea741ffd665d0402c94d",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "Rendement annuel moyen"
-          }
-        },
-        "type": "Advanced"
-      },
       {
         "name": "d3d0c5cf61babc38b8ab",
         "field": {
@@ -150,32 +177,87 @@
         "type": "Categorical"
       },
       {
-        "name": "8f48ee134a8cda02a206",
+        "name": "annees_2021_2025",
+        "ordinal": 1,
         "field": {
-          "Measure": {
+          "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Mesures"
+                "Entity": "Dim_Date"
               }
             },
-            "Property": "Rendement total"
+            "Property": "Annee"
           }
         },
-        "type": "Advanced"
-      },
-      {
-        "name": "ac303d605653ee82607c",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim_Date",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "Annee"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "2021L"
+                        }
+                      }
+                    ],
+                    [
+                      {
+                        "Literal": {
+                          "Value": "2022L"
+                        }
+                      }
+                    ],
+                    [
+                      {
+                        "Literal": {
+                          "Value": "2023L"
+                        }
+                      }
+                    ],
+                    [
+                      {
+                        "Literal": {
+                          "Value": "2024L"
+                        }
+                      }
+                    ],
+                    [
+                      {
+                        "Literal": {
+                          "Value": "2025L"
+                        }
+                      }
+                    ]
+                  ]
+                }
               }
-            },
-            "Property": "Taux seances sans transaction"
-          }
+            }
+          ]
         },
-        "type": "Advanced"
+        "howCreated": "User"
       }
     ]
   }

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "468f763ed1797d654128",
   "position": {
-    "x": 290,
-    "y": 281,
+    "x": 786,
+    "y": 162,
     "z": 2004,
-    "height": 150,
-    "width": 966,
+    "height": 522,
+    "width": 478,
     "tabOrder": 2004
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Dim_Banque.code_banque",
-              "nativeQueryRef": "code_banque"
+              "nativeQueryRef": "code_banque",
+              "displayName": "Banque"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "Mesures.Dernier cours",
-              "nativeQueryRef": "Dernier cours"
+              "nativeQueryRef": "Dernier cours",
+              "displayName": "Cours (DT)"
             },
             {
               "field": {
@@ -55,7 +57,8 @@
                 }
               },
               "queryRef": "Mesures.Performance prix",
-              "nativeQueryRef": "Performance prix"
+              "nativeQueryRef": "Performance prix",
+              "displayName": "Prix"
             },
             {
               "field": {
@@ -69,7 +72,8 @@
                 }
               },
               "queryRef": "Mesures.Rendement total",
-              "nativeQueryRef": "Rendement total"
+              "nativeQueryRef": "Rendement total",
+              "displayName": "Total"
             },
             {
               "field": {
@@ -83,7 +87,8 @@
                 }
               },
               "queryRef": "Mesures.Rendement annuel moyen",
-              "nativeQueryRef": "Rendement annuel moyen"
+              "nativeQueryRef": "Rendement annuel moyen",
+              "displayName": "Par an"
             },
             {
               "field": {
@@ -97,7 +102,8 @@
                 }
               },
               "queryRef": "Mesures.Volatilite annualisee",
-              "nativeQueryRef": "Volatilite annualisee"
+              "nativeQueryRef": "Volatilite annualisee",
+              "displayName": "Volatilité"
             },
             {
               "field": {
@@ -111,13 +117,201 @@
                 }
               },
               "queryRef": "Mesures.Taux seances sans transaction",
-              "nativeQueryRef": "Taux seances sans transaction"
+              "nativeQueryRef": "Taux seances sans transaction",
+              "displayName": "Sans transaction"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Mesures"
+                  }
+                },
+                "Property": "Rendement total"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Performance, risque et liquidité'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "56D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim_Banque.code_banque"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "62D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Dernier cours"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "62D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Performance prix"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "66D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Rendement total"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "58D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Rendement annuel moyen"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "62D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Volatilite annualisee"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "66D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Taux seances sans transaction"
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Mesures"
+                        }
+                      },
+                      "Property": "Couleur liquidite"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 1
+                }
+              }
+            ],
+            "metadata": "Mesures.Taux seances sans transaction"
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "d7429c44a33684706703",
   "position": {
-    "x": 31,
-    "y": 281,
+    "x": 16,
+    "y": 162,
     "z": 2002,
-    "height": 150,
-    "width": 182,
+    "height": 260,
+    "width": 760,
     "tabOrder": 2002
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Date.Date",
               "nativeQueryRef": "Date",
-              "active": true
+              "active": true,
+              "displayName": "Date"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Dim_Banque.code_banque",
-              "nativeQueryRef": "code_banque"
+              "nativeQueryRef": "code_banque",
+              "displayName": "Banque"
             }
           ]
         },
@@ -64,7 +66,8 @@
                 }
               },
               "queryRef": "Mesures.Indice rendement total",
-              "nativeQueryRef": "Indice rendement total"
+              "nativeQueryRef": "Indice rendement total",
+              "displayName": "Rendement total (base 100)"
             }
           ]
         }
@@ -88,7 +91,57 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Rendement total, dividendes réinvestis (base 100 au début de la période)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Scalar'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

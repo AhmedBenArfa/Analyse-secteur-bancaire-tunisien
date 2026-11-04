@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "c83d471420b0d74864d8",
   "position": {
-    "x": 30.735776608737996,
-    "y": 85.013850194381689,
+    "x": 24,
+    "y": 92,
     "z": 2001,
-    "height": 112.479863334105,
-    "width": 182.45280157101917,
+    "height": 52,
+    "width": 250,
     "tabOrder": 2001
   },
   "visual": {
@@ -42,6 +42,19 @@
               "expr": {
                 "Literal": {
                   "Value": "'Between'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "header": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Années'"
                 }
               }
             }

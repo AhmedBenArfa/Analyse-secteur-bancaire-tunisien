@@ -531,8 +531,50 @@ def bilan():
     print("Bilan : visuels réglés")
 
 
+def bourse():
+    """Page 6 « Bourse » (guide 4.7)."""
+    page = "ee963f5881561822580f"
+    retirer_extraction(page)
+    # segment des années en curseur (style « Entre » : déjà le réglage de Power BI pour une colonne de nombres)
+    annees = "c83d471420b0d74864d8"
+    regler(page, annees, (24, 92, 250, 52),
+           objets={"data": {"mode": texte("Between")}, "header": {"text": texte("Années")}})
+    # rendement total en base 100 au début de la période, une courbe par banque, axe des dates continu
+    courbes = "d7429c44a33684706703"
+    regler(page, courbes, (16, 162, 760, 260),
+           {"Dim_Date.Date": "Date", "Mesures.Indice rendement total": "Rendement total (base 100)",
+            "Dim_Banque.code_banque": "Banque"},
+           titre="Rendement total, dividendes réinvestis (base 100 au début de la période)",
+           objets={"categoryAxis": {"axisType": texte("Scalar")}})
+    # nuage : deux taux annuels sur la même période (2021–2025), sans effet du segment des années
+    nuage = "05c968b036168e9a5109"
+    regler(page, nuage, (16, 432, 760, 252),
+           {"Dim_Banque.code_banque": "Banque", "Mesures.TCAM PNB 2020-2025": "Croissance annuelle du PNB",
+            "Mesures.Rendement annuel moyen": "Rendement annuel en Bourse", "Mesures.Rendement total": "Rendement total",
+            "Mesures.Taux seances sans transaction": "Séances sans transaction"},
+           titre="Rendement annuel en Bourse et croissance annuelle du PNB, 2021–2025",
+           objets={"categoryLabels": {"show": litteral("true")}})
+    filtre_colonne(page, nuage, "Dim_Date", "Annee", [f"{a}L" for a in range(2021, 2026)], "annees_2021_2025")
+    # tableau : trié par rendement total, liquidité en rouge au-delà de 20 % de séances sans transaction
+    tableau = "468f763ed1797d654128"
+    colonnes = [("Dim_Banque.code_banque", "Banque", 56), ("Mesures.Dernier cours", "Cours (DT)", 62),
+                ("Mesures.Performance prix", "Prix", 62), ("Mesures.Rendement total", "Total", 66),
+                ("Mesures.Rendement annuel moyen", "Par an", 58), ("Mesures.Volatilite annualisee", "Volatilité", 62),
+                ("Mesures.Taux seances sans transaction", "Sans transaction", 66)]
+    regler(page, tableau, (786, 162, 478, 522), {q: n for q, n, _ in colonnes}, titre="Performance, risque et liquidité")
+    p = PAGES / page / "visuals" / tableau / "visual.json"
+    d = lire(p)
+    d["visual"].setdefault("objects", {})["columnWidth"] = [
+        {"properties": {"value": litteral(f"{l}D")}, "selector": {"metadata": q}} for q, _, l in colonnes]
+    ecrire(p, d)
+    trier(page, tableau, "Mesures", "Rendement total", "Descending")
+    couleur_par_mesure(page, tableau, ["Mesures.Taux seances sans transaction"], "Couleur liquidite")
+    interactions(page, [(annees, nuage, "NoFilter")])
+    print("Bourse : visuels réglés")
+
+
 PAGES_REGLEES = {"vue_ensemble": vue_ensemble, "classement": classement, "evolution": evolution,
-                 "structure_pnb": structure_pnb, "bilan": bilan}
+                 "structure_pnb": structure_pnb, "bilan": bilan, "bourse": bourse}
 
 if __name__ == "__main__":
     if len(sys.argv) == 4 and sys.argv[1] == "nouvelle_page":
