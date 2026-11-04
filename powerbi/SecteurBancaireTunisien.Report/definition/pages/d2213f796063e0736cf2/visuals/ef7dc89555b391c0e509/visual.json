@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "ef7dc89555b391c0e509",
   "position": {
-    "x": 369.48327199865889,
-    "y": 270.0824625406126,
+    "x": 646,
+    "y": 162,
     "z": 2003,
-    "height": 151,
-    "width": 271,
+    "height": 330,
+    "width": 618,
     "tabOrder": 2003
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Date.Annee_Trimestre",
               "nativeQueryRef": "Annee_Trimestre",
-              "active": true
+              "active": true,
+              "displayName": "Trimestre"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Mesures.Part marge interets",
-              "nativeQueryRef": "Part marge interets"
+              "nativeQueryRef": "Part marge interets",
+              "displayName": "Part marge d'intérêts"
             },
             {
               "field": {
@@ -60,7 +62,8 @@
                 }
               },
               "queryRef": "Mesures.Part commissions",
-              "nativeQueryRef": "Part commissions"
+              "nativeQueryRef": "Part commissions",
+              "displayName": "Part commissions"
             },
             {
               "field": {
@@ -74,7 +77,8 @@
                 }
               },
               "queryRef": "Mesures.Part portefeuille",
-              "nativeQueryRef": "Part portefeuille"
+              "nativeQueryRef": "Part portefeuille",
+              "displayName": "Part portefeuille"
             }
           ]
         },
@@ -92,7 +96,8 @@
                 }
               },
               "queryRef": "Mesures.Marge interets",
-              "nativeQueryRef": "Marge interets"
+              "nativeQueryRef": "Marge interets",
+              "displayName": "Marge d'intérêts"
             },
             {
               "field": {
@@ -106,7 +111,8 @@
                 }
               },
               "queryRef": "Mesures.Marge commissions",
-              "nativeQueryRef": "Marge commissions"
+              "nativeQueryRef": "Marge commissions",
+              "displayName": "Marge sur commissions"
             },
             {
               "field": {
@@ -120,7 +126,8 @@
                 }
               },
               "queryRef": "Mesures.Revenus portefeuille",
-              "nativeQueryRef": "Revenus portefeuille"
+              "nativeQueryRef": "Revenus portefeuille",
+              "displayName": "Revenus du portefeuille"
             },
             {
               "field": {
@@ -134,13 +141,82 @@
                 }
               },
               "queryRef": "Mesures.Autres elements PNB",
-              "nativeQueryRef": "Autres elements PNB"
+              "nativeQueryRef": "Autres elements PNB",
+              "displayName": "Autres éléments"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Dim_Date"
+                  }
+                },
+                "Property": "Annee_Trimestre"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Structure du PNB des banques choisies, 2019T4–2026T3'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Categorical'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [
@@ -159,102 +235,59 @@
         "type": "Categorical"
       },
       {
-        "name": "5f179f869a93400224e2",
+        "name": "trimestres_publies",
+        "ordinal": 1,
         "field": {
-          "Measure": {
+          "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Mesures"
+                "Entity": "Dim_Date"
               }
             },
-            "Property": "Marge interets"
+            "Property": "Trimestre_Publie"
           }
         },
-        "type": "Advanced"
-      },
-      {
-        "name": "99328e695dea0a610c7a",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim_Date",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "Trimestre_Publie"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "true"
+                        }
+                      }
+                    ]
+                  ]
+                }
               }
-            },
-            "Property": "Marge commissions"
-          }
+            }
+          ]
         },
-        "type": "Advanced"
-      },
-      {
-        "name": "19c18d6d2e1812d5ec4e",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "Revenus portefeuille"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "65befc91293b9051b086",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "Autres elements PNB"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "bc53454c3b4c5084e104",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "Part marge interets"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "6cf916f196948e4a3aa3",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "Part commissions"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "da85f6b88b2d40083d88",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "Part portefeuille"
-          }
-        },
-        "type": "Advanced"
+        "howCreated": "User"
       }
     ]
   }

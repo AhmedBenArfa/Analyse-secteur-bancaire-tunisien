@@ -1561,6 +1561,8 @@ une erreur d'extraction (Wifak, T2 2026 : feuille de route, décision du 30/10/2
 | Structure du secteur dans le temps | 646, 162, 618 × 330 | histogramme empilé 100 % : axe X `Dim_Date[Annee_Trimestre]`, mêmes quatre mesures | trimestres publiés seulement (`Trimestre_Publie`) ; le segment du trimestre ne le filtre pas (interaction « Aucun ») ; titre « Structure du PNB des banques choisies, 2019T4–2026T3 » |
 | Parts au trimestre | 646, 502, 618 × 182 | carte (nouvelle) : `Part marge interets`, `Part commissions`, `Part portefeuille` | libellés « Marge d'intérêts », « Commissions », « Portefeuille » |
 
+**Visuels créés dans Power BI Desktop (04/11/2026), réglés par `python scripts/ecrire_pbir_visuels.py structure_pnb`** : positions ci-dessus, titres, noms affichés (« Marge d'intérêts », « Marge sur commissions », « Revenus du portefeuille », « Autres éléments »), tri des barres par `Part marge interets` décroissante, histogramme trié par trimestre et limité aux trimestres publiés, interaction segment du trimestre → histogramme « Aucun », carte dans l'ordre des barres (nouvelle fonction `ordonner_role`). Une extraction posée par mégarde sur la page (champ `Part portefeuille`) et le bouton « Retour » que Power BI ajoute avec elle ont été retirés (`retirer_extraction`), comme sur la page 2. À vérifier sur la capture.
+
 **Pourquoi ces choix.** Des barres à 100 % comparent la composition du PNB sans que la taille des banques écrase les
 petites (BTE, Wifak). Les trois parts sont les mesures déjà vérifiées au groupe 3 (3.5). L'histogramme dans le temps
 garde l'axe en trimestres (`Annee_Trimestre`, catégoriel) : 28 colonnes tiennent dans la largeur. Le segment des

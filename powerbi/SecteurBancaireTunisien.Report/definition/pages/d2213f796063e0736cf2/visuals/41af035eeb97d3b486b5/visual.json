@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "41af035eeb97d3b486b5",
   "position": {
-    "x": 24.196249670708635,
-    "y": 262.23503021497737,
+    "x": 16,
+    "y": 162,
     "z": 2001,
-    "height": 296.894522986533,
-    "width": 271.3903679282185,
+    "height": 522,
+    "width": 620,
     "tabOrder": 2001
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Banque.code_banque",
               "nativeQueryRef": "code_banque",
-              "active": true
+              "active": true,
+              "displayName": "Banque"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Mesures.Part marge interets",
-              "nativeQueryRef": "Part marge interets"
+              "nativeQueryRef": "Part marge interets",
+              "displayName": "Part marge d'intérêts"
             },
             {
               "field": {
@@ -60,7 +62,8 @@
                 }
               },
               "queryRef": "Mesures.Part commissions",
-              "nativeQueryRef": "Part commissions"
+              "nativeQueryRef": "Part commissions",
+              "displayName": "Part commissions"
             },
             {
               "field": {
@@ -74,7 +77,8 @@
                 }
               },
               "queryRef": "Mesures.Part portefeuille",
-              "nativeQueryRef": "Part portefeuille"
+              "nativeQueryRef": "Part portefeuille",
+              "displayName": "Part portefeuille"
             }
           ]
         },
@@ -92,7 +96,8 @@
                 }
               },
               "queryRef": "Mesures.Marge interets",
-              "nativeQueryRef": "Marge interets"
+              "nativeQueryRef": "Marge interets",
+              "displayName": "Marge d'intérêts"
             },
             {
               "field": {
@@ -106,7 +111,8 @@
                 }
               },
               "queryRef": "Mesures.Marge commissions",
-              "nativeQueryRef": "Marge commissions"
+              "nativeQueryRef": "Marge commissions",
+              "displayName": "Marge sur commissions"
             },
             {
               "field": {
@@ -120,7 +126,8 @@
                 }
               },
               "queryRef": "Mesures.Revenus portefeuille",
-              "nativeQueryRef": "Revenus portefeuille"
+              "nativeQueryRef": "Revenus portefeuille",
+              "displayName": "Revenus du portefeuille"
             },
             {
               "field": {
@@ -134,7 +141,8 @@
                 }
               },
               "queryRef": "Mesures.Autres elements PNB",
-              "nativeQueryRef": "Autres elements PNB"
+              "nativeQueryRef": "Autres elements PNB",
+              "displayName": "Autres éléments"
             }
           ]
         }
@@ -149,7 +157,7 @@
                     "Entity": "Mesures"
                   }
                 },
-                "Property": "Marge interets"
+                "Property": "Part marge interets"
               }
             },
             "direction": "Descending"
@@ -158,7 +166,42 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Structure du PNB par banque (% du PNB du trimestre)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

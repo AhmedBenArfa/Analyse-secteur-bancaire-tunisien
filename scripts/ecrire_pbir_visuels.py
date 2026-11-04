@@ -420,7 +420,52 @@ def vue_ensemble():
     print("Vue d'ensemble : visuels réglés")
 
 
-PAGES_REGLEES = {"vue_ensemble": vue_ensemble, "classement": classement, "evolution": evolution}
+def ordonner_role(page, visuel, role, ordre):
+    """Ordre des champs d'une zone (rôle) d'un visuel : liste de queryRef ; les champs absents de la liste restent à
+    la fin."""
+    p = PAGES / page / "visuals" / visuel / "visual.json"
+    d = lire(p)
+    projections = d["visual"]["query"]["queryState"][role]["projections"]
+    rang = {q: i for i, q in enumerate(ordre)}
+    projections.sort(key=lambda pr: rang.get(pr["queryRef"], len(ordre)))
+    ecrire(p, d)
+
+
+def structure_pnb():
+    """Page 4 « Structure du PNB » (guide 4.5)."""
+    page = "d2213f796063e0736cf2"
+    retirer_extraction(page)
+    composantes = {"Mesures.Marge interets": "Marge d'intérêts", "Mesures.Marge commissions": "Marge sur commissions",
+                   "Mesures.Revenus portefeuille": "Revenus du portefeuille",
+                   "Mesures.Autres elements PNB": "Autres éléments"}
+    parts = {"Mesures.Part marge interets": "Part marge d'intérêts", "Mesures.Part commissions": "Part commissions",
+             "Mesures.Part portefeuille": "Part portefeuille"}
+    # barres à 100 % par banque, triées par part de la marge d'intérêts (de la plus forte à la plus faible)
+    barres = "41af035eeb97d3b486b5"
+    regler(page, barres, (16, 162, 620, 522), {"Dim_Banque.code_banque": "Banque", **composantes, **parts},
+           titre="Structure du PNB par banque (% du PNB du trimestre)")
+    trier(page, barres, "Mesures", "Part marge interets", "Descending")
+    # histogramme à 100 % du secteur (banques choisies) dans le temps : trimestres publiés, axe des trimestres
+    # catégoriel ; le segment du trimestre ne le filtre pas (toute la période reste visible)
+    colonnes = "ef7dc89555b391c0e509"
+    regler(page, colonnes, (646, 162, 618, 330), {"Dim_Date.Annee_Trimestre": "Trimestre", **composantes, **parts},
+           titre="Structure du PNB des banques choisies, 2019T4–2026T3",
+           objets={"categoryAxis": {"axisType": texte("Categorical")}})
+    trier(page, colonnes, "Dim_Date", "Annee_Trimestre", genre="Column")
+    filtre_colonne(page, colonnes, "Dim_Date", "Trimestre_Publie", "true", "trimestres_publies")
+    # carte des trois parts au trimestre choisi, dans l'ordre des barres
+    carte = "eae558f868b9ecb0908a"
+    ordonner_role(page, carte, "Data", list(parts))
+    regler(page, carte, (646, 502, 618, 182),
+           {"Mesures.Part marge interets": "Marge d'intérêts", "Mesures.Part commissions": "Commissions",
+            "Mesures.Part portefeuille": "Portefeuille"},
+           titre="Parts du PNB au trimestre choisi")
+    interactions(page, [("495183ff62f9d0795f2d", colonnes, "NoFilter")])
+    print("Structure du PNB : visuels réglés")
+
+
+PAGES_REGLEES = {"vue_ensemble": vue_ensemble, "classement": classement, "evolution": evolution,
+                 "structure_pnb": structure_pnb}
 
 if __name__ == "__main__":
     if len(sys.argv) == 4 and sys.argv[1] == "nouvelle_page":
