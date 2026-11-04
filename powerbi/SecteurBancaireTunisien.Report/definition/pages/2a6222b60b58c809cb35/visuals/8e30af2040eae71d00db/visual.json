@@ -1,0 +1,140 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "8e30af2040eae71d00db",
+  "position": {
+    "x": 629.75644413222744,
+    "y": 192.26209197806321,
+    "z": 1004,
+    "height": 150,
+    "width": 250,
+    "tabOrder": 1004
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Indicateur"
+                    }
+                  },
+                  "Property": "libelle"
+                }
+              },
+              "queryRef": "Dim_Indicateur.libelle",
+              "nativeQueryRef": "libelle"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Valeur Trim"
+                }
+              },
+              "queryRef": "Mesures.Valeur Trim",
+              "nativeQueryRef": "Valeur Trim"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Valeur Cumul"
+                }
+              },
+              "queryRef": "Mesures.Valeur Cumul",
+              "nativeQueryRef": "Valeur Cumul"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Var A/A cumul %"
+                }
+              },
+              "queryRef": "Mesures.Var A/A cumul %",
+              "nativeQueryRef": "Var A/A cumul %"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "ca8ae4b09de651a77029",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Indicateur"
+              }
+            },
+            "Property": "libelle"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "06f0f23d0e70120419c1",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Valeur Trim"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e47834b89eb443045ee8",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Valeur Cumul"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "1c76f2816c820977b04a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Var A/A cumul %"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "fed06e5570531dded83d",
+  "position": {
+    "x": 906.37843361086948,
+    "y": 197.49371352848669,
+    "z": 1005,
+    "height": 150,
+    "width": 250,
+    "tabOrder": 1005
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "Definition_Charges_Operatoires"
+                }
+              },
+              "queryRef": "Dim_Banque.Definition_Charges_Operatoires",
+              "nativeQueryRef": "Definition_Charges_Operatoires"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "Definition_Capitaux_Propres"
+                }
+              },
+              "queryRef": "Dim_Banque.Definition_Capitaux_Propres",
+              "nativeQueryRef": "Definition_Capitaux_Propres"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "ebbf09850aca8abb5111",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "Definition_Charges_Operatoires"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "757f5b90d2053a1abe42",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "Definition_Capitaux_Propres"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
+  }
+}

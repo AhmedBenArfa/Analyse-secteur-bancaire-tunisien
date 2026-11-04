@@ -1,0 +1,112 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "ad14d3be7d6017ddee8b",
+  "position": {
+    "x": 43.16087779099378,
+    "y": 175.91327463298981,
+    "z": 1002,
+    "height": 150,
+    "width": 250,
+    "tabOrder": 1002
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Banque affichee"
+                }
+              },
+              "queryRef": "Mesures.Banque affichee",
+              "nativeQueryRef": "Banque affichee"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Chaine de controle"
+                }
+              },
+              "queryRef": "Mesures.Chaine de controle",
+              "nativeQueryRef": "Chaine de controle"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Actionnaire principal"
+                }
+              },
+              "queryRef": "Mesures.Actionnaire principal",
+              "nativeQueryRef": "Actionnaire principal"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "ed30304d529bd5150b67",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Banque affichee"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "6cf1e51644ed6a09d7ab",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Chaine de controle"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "3a7fa2238549959a207a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Actionnaire principal"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}
