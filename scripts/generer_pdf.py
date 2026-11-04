@@ -737,7 +737,7 @@ def rapport():
          "journal des faits marquants ; chaque transformation expliquée dans <code>docs/Guide_PowerBI.pdf</code>"],
         ["7", "Pages du rapport Power BI",
          "En cours : thème, fonds de page et logos des banques ; pages « Vue d'ensemble », « Classement », "
-         "« Évolution 2020–2026 », « Structure du PNB », « Bilan » et « Bourse » terminées et vérifiées ; « Fiche banque » à suivre ; "
+         "« Évolution 2020–2026 », « Structure du PNB », « Bilan », « Bourse » et « Fiche banque » terminées et vérifiées ; « Rentabilité » à suivre ; "
          "9 pages prévues "
          "(captures et explications : <code>docs/Presentation_rapport.pdf</code>)"],
         ["8", "README final et captures pour le portfolio",

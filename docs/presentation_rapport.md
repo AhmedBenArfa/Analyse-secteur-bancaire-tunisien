@@ -14,7 +14,7 @@ UBCI, UIB, Wifak), **trimestre par trimestre, du T4 2019 au T3 2026**. Il cherch
 6. Quel a été l'effet du Covid, et comment le secteur s'est-il redressé ?
 7. La Bourse récompense-t-elle les banques les plus performantes ?
 
-Six pages sont terminées et vérifiées (section 4) ; elles répondent aux questions 1, 2, 3, 4, 6 et 7. Les trois
+Sept pages sont terminées et vérifiées (section 4) ; elles répondent aux questions 1, 2, 3, 4, 6 et 7. Les deux
 autres pages sont prévues (section 5).
 
 ## 2. Les données : publications officielles, tracées et contrôlées
@@ -56,7 +56,7 @@ toutes) ; le ROE et le ROA ne sont que semestriels et annuels.
 - **Modèle en étoile** : table des dates (avec la période Covid), dimensions banques et indicateurs, tables de
   faits (indicateurs, variations comparables, états financiers, cours, contrôles) ; 32 relations, dont une inactive
   activée par `USERELATIONSHIP`.
-- **158 mesures DAX**, rangées en dossiers (bases, secteur, ratios, croissances, rentabilité, Bourse, qualité), avec
+- **166 mesures DAX**, rangées en dossiers (bases, secteur, ratios, croissances, rentabilité, Bourse, qualité), avec
   des règles écrites : totaux du secteur, parts de marché et rangs seulement si les 12 banques sont présentes ;
   chiffres annuels tirés du cumul publié, jamais de la somme des trimestres ; aucun vide remplacé par zéro.
 - **Documentation** : chaque requête, chaque mesure et chaque page sont expliquées dans
@@ -198,11 +198,31 @@ performance se mesure entre deux dates ; sans réglage, la page couvre toute la 
 sinon une attribution gratuite passerait pour une chute du cours ; le rendement est ramené à un an pour être comparé
 à une croissance annuelle, et reste vide pour une période de moins d'un an.
 
+### Page 7 — Fiche banque
+
+![Page 7 : fiche de la banque Attijari](captures/page7_fiche_banque.png)
+
+**Ce que la page montre** : tout ce qu'on sait d'une banque au trimestre choisi. On l'ouvre depuis n'importe quelle
+autre page : clic droit sur une banque › **Extraire** › **Fiche banque** (page d'extraction) ; la capture montre la
+fiche d'Attijari au T3 2026.
+
+- Identité : nom, **chaîne de contrôle** (« Secteur › groupe étranger › Attijariwafa bank › TJARI ») et actionnaire
+  de référence avec sa part du capital (Andalu Carthage Holding, 57,21 %).
+- Chiffres du trimestre : PNB **176,968 MDT**, coefficient harmonisé **52,2 %** à côté du coefficient publié par la
+  banque (**55,3 %** : ses charges opératoires comprennent un reste non détaillé), crédits / dépôts 53,1 %.
+- Tous les indicateurs publiés (trimestre, cumul ou solde, variation sur un an), dont les capitaux propres
+  trimestriels, avec à droite ce que la banque met sous ces noms.
+
+**Choix de conception** : la chaîne de contrôle vient d'une hiérarchie parent-enfant (secteur › catégorie
+d'actionnariat › groupe › banque, 27 nœuds) parcourue par les fonctions DAX `PATH`, `PATHITEM`, `PATHLENGTH` et
+`PATHCONTAINS`. Le coefficient publié et les capitaux propres trimestriels n'apparaissent que sur cette page, avec leur
+définition : leur contenu change d'une banque à l'autre, ils ne servent à aucune comparaison. Ouverte sans banque, la
+page reste vide et indique comment l'ouvrir.
+
 ## 5. Suite du rapport
 
 | Page | Contenu prévu | Question |
 |---|---|---|
-| 7. Fiche banque | tous les indicateurs d'une banque (clic droit depuis une autre page), définitions propres à la banque, chaîne de contrôle de l'actionnariat | 1 à 5 |
 | 8. Rentabilité | ROE et ROA semestriels et annuels, rentabilité face à l'efficacité | 5 |
 | 9. Qualité des données | statut de chaque document, révisions, écarts expliqués, sources et limites | — |
 

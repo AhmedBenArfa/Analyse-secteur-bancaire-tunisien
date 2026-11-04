@@ -1780,7 +1780,7 @@ Nuage, 2021–2025 (rendement du 04/01/2021 au 31/12/2025 ; croissance du PNB de
 Lecture : la Bourse n'a pas suivi la croissance du PNB banque par banque (Wifak, croissance la plus forte, rendement
 parmi les plus faibles ; titre peu liquide) ; les données montrent l'écart, elles n'en donnent pas la cause.
 
-### 4.8 Page 7 : Fiche banque (en construction)
+### 4.8 Page 7 : Fiche banque (terminée le 04/11/2026)
 
 **But** : tout ce qu'on sait d'une banque au trimestre choisi, sur une page qu'on ouvre depuis n'importe quelle
 autre : clic droit sur une banque (barre, ligne de tableau, point) › **Extraire** › **Fiche banque** (spécification 9,
@@ -1813,7 +1813,9 @@ directement, sans banque, la page l'indique (`Banque affichee`).
 
 **Deuxième capture (04/11/2026, fiche de TJARI ouverte par extraction depuis la page 2)** : toutes les valeurs du tableau ci-dessous justes, filtre d'extraction « code_banque est TJARI ». La nouvelle carte d'identité écrivait en trop gros (chaîne de contrôle et actionnaire coupés) : changée en tableau d'une ligne, mêmes champs, texte sur plusieurs lignes (nouvelle fonction `changer_type` de l'outil : type du visuel et zone des champs changés dans le fichier, « Data » de la carte → « Values » du tableau).
 
-**Troisième capture (04/11/2026)** : tableau d'identité complet et lisible (TJARI). Page ouverte par son onglet : tableau des indicateurs bien vide, mais (1) la carte des chiffres montrait encore le total des 12 banques : une carte ne tient pas compte d'un filtre de mesure ; elle affiche maintenant des mesures « fiche » vides sans banque unique (`PNB fiche`, `Coef harmonise fiche`, `Coef publie fiche`, `Credits / Depots fiche`, `1. Bases\Fiche banque`) ; (2) le tableau des définitions gardait les lignes propres à une seule banque (le filtre se calculait ligne par ligne) : `Banque unique` regarde maintenant la sélection de la page (`CALCULATE ( HASONEVALUE ( … ), ALLSELECTED ( Dim_Banque ) )`) ; 166 mesures. À vérifier.
+**Troisième capture (04/11/2026)** : tableau d'identité complet et lisible (TJARI). Page ouverte par son onglet : tableau des indicateurs bien vide, mais (1) la carte des chiffres montrait encore le total des 12 banques : une carte ne tient pas compte d'un filtre de mesure ; elle affiche maintenant des mesures « fiche » vides sans banque unique (`PNB fiche`, `Coef harmonise fiche`, `Coef publie fiche`, `Credits / Depots fiche`, `1. Bases\Fiche banque`) ; (2) le tableau des définitions gardait les lignes propres à une seule banque (le filtre se calculait ligne par ligne) : `Banque unique` regarde maintenant la sélection de la page (`CALCULATE ( HASONEVALUE ( … ), ALLSELECTED ( Dim_Banque ) )`) ; 166 mesures.
+
+**Vérifiée le 04/11/2026** (fiche d'Attijari ouverte par extraction : toutes les valeurs du tableau ci-dessous justes, identité lisible) ; capture `docs/captures/page7_fiche_banque.png`, ajoutée à la présentation et au README. La page ouverte par son onglet après la dernière correction n'a pas été montrée sur une capture.
 
 **Pourquoi ces choix.** Le coefficient publié à côté du coefficient harmonisé montre l'effet des définitions : BH
 publie des charges opératoires sans dotations (les deux coefficients sont égaux), Attijari un reste non détaillé
