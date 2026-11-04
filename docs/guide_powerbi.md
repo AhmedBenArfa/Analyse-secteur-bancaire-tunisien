@@ -1815,7 +1815,7 @@ directement, sans banque, la page l'indique (`Banque affichee`).
 
 **Troisième capture (04/11/2026)** : tableau d'identité complet et lisible (TJARI). Page ouverte par son onglet : tableau des indicateurs bien vide, mais (1) la carte des chiffres montrait encore le total des 12 banques : une carte ne tient pas compte d'un filtre de mesure ; elle affiche maintenant des mesures « fiche » vides sans banque unique (`PNB fiche`, `Coef harmonise fiche`, `Coef publie fiche`, `Credits / Depots fiche`, `1. Bases\Fiche banque`) ; (2) le tableau des définitions gardait les lignes propres à une seule banque (le filtre se calculait ligne par ligne) : `Banque unique` regarde maintenant la sélection de la page (`CALCULATE ( HASONEVALUE ( … ), ALLSELECTED ( Dim_Banque ) )`) ; 166 mesures.
 
-**Vérifiée le 04/11/2026** (fiche d'Attijari ouverte par extraction : toutes les valeurs du tableau ci-dessous justes, identité lisible) ; capture `docs/captures/page7_fiche_banque.png`, ajoutée à la présentation et au README. La page ouverte par son onglet après la dernière correction n'a pas été montrée sur une capture.
+**Vérifiée le 04/11/2026** (fiche d'Attijari ouverte par extraction : toutes les valeurs du tableau ci-dessous justes, identité lisible) ; capture `docs/captures/page7_fiche_banque.png`, ajoutée à la présentation et au README. Page ouverte par son onglet, sans banque (capture du 04/11/2026, 21:22) : consigne dans le tableau d'identité, « -- » dans les quatre chiffres, tableaux vides : bon.
 
 **Pourquoi ces choix.** Le coefficient publié à côté du coefficient harmonisé montre l'effet des définitions : BH
 publie des charges opératoires sans dotations (les deux coefficients sont égaux), Attijari un reste non détaillé
