@@ -597,15 +597,40 @@ def filtre_mesure(page, visuel, mesure, valeur, nom):
     ecrire(p, d)
 
 
+def changer_type(page, visuel, type_visuel, roles):
+    """Change le type d'un visuel en gardant ses champs : roles = {ancienne zone: nouvelle zone} (ex. carte « Data »
+    → tableau « Values ») ; les réglages propres à l'ancien type sont retirés ; rien si le type est déjà le bon."""
+    p = PAGES / page / "visuals" / visuel / "visual.json"
+    d = lire(p)
+    if d["visual"]["visualType"] == type_visuel:
+        return
+    etat = d["visual"]["query"]["queryState"]
+    d["visual"]["query"]["queryState"] = {roles.get(k, k): v for k, v in etat.items()}
+    d["visual"]["visualType"] = type_visuel
+    d["visual"].pop("objects", None)
+    ecrire(p, d)
+
+
 def fiche_banque():
     """Page 7 « Fiche banque » (guide 4.8) : page d'extraction sur Dim_Banque[code_banque] (liaison voulue : pas de
     retirer_extraction ici)."""
     page = "2a6222b60b58c809cb35"
     # bouton « Retour » ajouté par Power BI avec l'extraction : dans la bande blanche, à droite du segment du trimestre
     regler(page, "c7bedd76ad2030a06c82", (290, 98, 48, 44))
-    regler(page, "ad14d3be7d6017ddee8b", (16, 162, 1248, 110),
+    # identité : tableau d'une ligne (la nouvelle carte écrivait trop gros : chaîne et actionnaire coupés)
+    identite = "ad14d3be7d6017ddee8b"
+    changer_type(page, identite, "tableEx", {"Data": "Values"})
+    regler(page, identite, (16, 162, 1248, 110),
            {"Mesures.Banque affichee": "Banque", "Mesures.Chaine de controle": "Chaîne de contrôle",
-            "Mesures.Actionnaire principal": "Actionnaire de référence"})
+            "Mesures.Actionnaire principal": "Actionnaire de référence"},
+           objets={"values": {"wordWrap": litteral("true")}, "total": {"totals": litteral("false")}})
+    p = PAGES / page / "visuals" / identite / "visual.json"
+    d = lire(p)
+    d["visual"]["objects"]["columnWidth"] = [
+        {"properties": {"value": litteral(f"{l}D")}, "selector": {"metadata": q}}
+        for q, l in (("Mesures.Banque affichee", 330), ("Mesures.Chaine de controle", 470),
+                     ("Mesures.Actionnaire principal", 400))]
+    ecrire(p, d)
     regler(page, "12cc8472e5b986c92239", (16, 282, 1248, 120),
            {"Mesures.PNB": "PNB du trimestre (MDT)", "Mesures.Coef exploitation harmonise": "Coefficient harmonisé",
             "Mesures.Coef exploitation publie": "Coefficient publié par la banque",
