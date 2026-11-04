@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "5e468efb1020459e6081",
   "position": {
-    "x": 457.76688566205524,
-    "y": 196.83976083468377,
+    "x": 426,
+    "y": 162,
     "z": 2002,
-    "height": 258.96526674596271,
-    "width": 465.61431798769053,
+    "height": 522,
+    "width": 400,
     "tabOrder": 2002
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Banque.code_banque",
               "nativeQueryRef": "code_banque",
-              "active": true
+              "active": true,
+              "displayName": "Banque"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Mesures.Part depots a vue",
-              "nativeQueryRef": "Part depots a vue"
+              "nativeQueryRef": "Part depots a vue",
+              "displayName": "Part des dépôts à vue"
             }
           ]
         },
@@ -64,7 +66,8 @@
                 }
               },
               "queryRef": "Mesures.Depots a vue",
-              "nativeQueryRef": "Depots a vue"
+              "nativeQueryRef": "Depots a vue",
+              "displayName": "À vue"
             },
             {
               "field": {
@@ -78,7 +81,8 @@
                 }
               },
               "queryRef": "Mesures.Depots epargne",
-              "nativeQueryRef": "Depots epargne"
+              "nativeQueryRef": "Depots epargne",
+              "displayName": "Épargne"
             },
             {
               "field": {
@@ -92,7 +96,8 @@
                 }
               },
               "queryRef": "Mesures.Depots terme et autres",
-              "nativeQueryRef": "Depots terme et autres"
+              "nativeQueryRef": "Depots terme et autres",
+              "displayName": "Terme et autres"
             }
           ]
         }
@@ -107,7 +112,7 @@
                     "Entity": "Mesures"
                   }
                 },
-                "Property": "Depots a vue"
+                "Property": "Part depots a vue"
               }
             },
             "direction": "Descending"
@@ -116,7 +121,42 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Structure des dépôts par banque'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

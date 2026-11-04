@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "d320de5203510898aede",
   "position": {
-    "x": 0,
-    "y": 481.9631353327639,
+    "x": 836,
+    "y": 162,
     "z": 2003,
-    "height": 170.68165308256633,
-    "width": 394.98742705697339,
+    "height": 330,
+    "width": 428,
     "tabOrder": 2003
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Date.Date",
               "nativeQueryRef": "Date",
-              "active": true
+              "active": true,
+              "displayName": "Fin du trimestre"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Mesures.Credits / Depots",
-              "nativeQueryRef": "Credits / Depots"
+              "nativeQueryRef": "Credits / Depots",
+              "displayName": "Crédits / dépôts"
             }
           ]
         },
@@ -64,7 +66,8 @@
                 }
               },
               "queryRef": "Mesures.Credits",
-              "nativeQueryRef": "Credits"
+              "nativeQueryRef": "Credits",
+              "displayName": "Crédits"
             },
             {
               "field": {
@@ -78,7 +81,8 @@
                 }
               },
               "queryRef": "Mesures.Depots",
-              "nativeQueryRef": "Depots"
+              "nativeQueryRef": "Depots",
+              "displayName": "Dépôts"
             }
           ]
         }
@@ -102,7 +106,57 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Crédits et dépôts des banques choisies (MDT)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Scalar'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [
@@ -121,46 +175,59 @@
         "type": "Categorical"
       },
       {
-        "name": "6f63009c205d3574c893",
+        "name": "trimestres_publies",
+        "ordinal": 1,
         "field": {
-          "Measure": {
+          "Column": {
             "Expression": {
               "SourceRef": {
-                "Entity": "Mesures"
+                "Entity": "Dim_Date"
               }
             },
-            "Property": "Credits"
+            "Property": "Trimestre_Publie"
           }
         },
-        "type": "Advanced"
-      },
-      {
-        "name": "1e1e856b04eccc00d2a0",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dim_Date",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "Trimestre_Publie"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "true"
+                        }
+                      }
+                    ]
+                  ]
+                }
               }
-            },
-            "Property": "Depots"
-          }
+            }
+          ]
         },
-        "type": "Advanced"
-      },
-      {
-        "name": "6510ef947e7927ecd03c",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Mesures"
-              }
-            },
-            "Property": "Credits / Depots"
-          }
-        },
-        "type": "Advanced"
+        "howCreated": "User"
       }
     ]
   }

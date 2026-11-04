@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "ba585f6394b10e0b05dc",
   "position": {
-    "x": 0,
-    "y": 197.49371352848669,
+    "x": 16,
+    "y": 162,
     "z": 2001,
-    "height": 275.31408409103608,
-    "width": 403.48881207641159,
+    "height": 522,
+    "width": 400,
     "tabOrder": 2001
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Banque.code_banque",
               "nativeQueryRef": "code_banque",
-              "active": true
+              "active": true,
+              "displayName": "Banque"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Mesures.Credits",
-              "nativeQueryRef": "Credits"
+              "nativeQueryRef": "Credits",
+              "displayName": "Crédits (MDT)"
             },
             {
               "field": {
@@ -60,7 +62,8 @@
                 }
               },
               "queryRef": "Mesures.Depots",
-              "nativeQueryRef": "Depots"
+              "nativeQueryRef": "Depots",
+              "displayName": "Dépôts (MDT)"
             },
             {
               "field": {
@@ -74,7 +77,8 @@
                 }
               },
               "queryRef": "Mesures.Part de marche credits",
-              "nativeQueryRef": "Part de marche credits"
+              "nativeQueryRef": "Part de marche credits",
+              "displayName": "Part des crédits"
             },
             {
               "field": {
@@ -88,7 +92,8 @@
                 }
               },
               "queryRef": "Mesures.Part de marche depots",
-              "nativeQueryRef": "Part de marche depots"
+              "nativeQueryRef": "Part de marche depots",
+              "displayName": "Part des dépôts"
             },
             {
               "field": {
@@ -102,7 +107,8 @@
                 }
               },
               "queryRef": "Mesures.Var Credits A/A %",
-              "nativeQueryRef": "Var Credits A/A %"
+              "nativeQueryRef": "Var Credits A/A %",
+              "displayName": "Crédits sur un an"
             },
             {
               "field": {
@@ -116,7 +122,8 @@
                 }
               },
               "queryRef": "Mesures.Var Depots A/A %",
-              "nativeQueryRef": "Var Depots A/A %"
+              "nativeQueryRef": "Var Depots A/A %",
+              "displayName": "Dépôts sur un an"
             }
           ]
         },
@@ -134,7 +141,8 @@
                 }
               },
               "queryRef": "Mesures.Credits / Depots",
-              "nativeQueryRef": "Credits / Depots"
+              "nativeQueryRef": "Credits / Depots",
+              "displayName": "Crédits / dépôts"
             }
           ]
         }
@@ -172,7 +180,7 @@
             "displayName": {
               "expr": {
                 "Literal": {
-                  "Value": "'Ligne de constante de l''axe X 1'"
+                  "Value": "'100 % : crédits = dépôts'"
                 }
               }
             },
@@ -182,15 +190,106 @@
                   "Value": "1D"
                 }
               }
+            },
+            "lineColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#C62828'"
+                    }
+                  }
+                }
+              }
+            },
+            "style": {
+              "expr": {
+                "Literal": {
+                  "Value": "'dashed'"
+                }
+              }
+            },
+            "dataLabelShow": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "dataLabelText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Name'"
+                }
+              }
+            },
+            "dataLabelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#C62828'"
+                    }
+                  }
+                }
+              }
             }
           },
           "selector": {
             "id": "1"
           }
         }
+      ],
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
       ]
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Crédits / dépôts par banque'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

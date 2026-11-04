@@ -474,8 +474,60 @@ def structure_pnb():
     print("Structure du PNB : visuels réglés")
 
 
+def ligne_constante(page, visuel, nom, valeur, couleur, objet="y1AxisReferenceLine"):
+    """Ligne constante de l'axe des valeurs (volet Analyse ; objet y1AxisReferenceLine, relevé sur une ligne saisie
+    dans Power BI, valeur en nombre : 1 = 100 % pour une mesure en pourcentage), en pointillé, nom affiché sur la
+    ligne."""
+    p = PAGES / page / "visuals" / visuel / "visual.json"
+    d = lire(p)
+    d["visual"].setdefault("objects", {})[objet] = [{
+        "properties": {"show": litteral("true"), "displayName": texte(nom), "value": litteral(f"{valeur}D"),
+                       "lineColor": {"solid": {"color": litteral(f"'{couleur}'")}},
+                       "style": texte("dashed"), "dataLabelShow": litteral("true"), "dataLabelText": texte("Name"),
+                       "dataLabelColor": {"solid": {"color": litteral(f"'{couleur}'")}}},
+        "selector": {"id": "1"}}]
+    ecrire(p, d)
+
+
+def bilan():
+    """Page 5 « Bilan » (guide 4.6)."""
+    page = "f829ffbfd733d63d36b1"
+    retirer_extraction(page)
+    # crédits / dépôts par banque, du plus haut au plus bas, étiquettes, ligne à 100 % (crédits = dépôts)
+    ratio = "ba585f6394b10e0b05dc"
+    regler(page, ratio, (16, 162, 400, 522),
+           {"Dim_Banque.code_banque": "Banque", "Mesures.Credits / Depots": "Crédits / dépôts",
+            "Mesures.Credits": "Crédits (MDT)", "Mesures.Depots": "Dépôts (MDT)",
+            "Mesures.Part de marche credits": "Part des crédits", "Mesures.Part de marche depots": "Part des dépôts",
+            "Mesures.Var Credits A/A %": "Crédits sur un an", "Mesures.Var Depots A/A %": "Dépôts sur un an"},
+           titre="Crédits / dépôts par banque", objets={"labels": {"show": litteral("true")}})
+    ligne_constante(page, ratio, "100 % : crédits = dépôts", 1, "#C62828")
+    trier(page, ratio, "Mesures", "Credits / Depots", "Descending")
+    # structure des dépôts à 100 %, triée par part des dépôts à vue
+    structure = "5e468efb1020459e6081"
+    regler(page, structure, (426, 162, 400, 522),
+           {"Dim_Banque.code_banque": "Banque", "Mesures.Depots a vue": "À vue", "Mesures.Depots epargne": "Épargne",
+            "Mesures.Depots terme et autres": "Terme et autres", "Mesures.Part depots a vue": "Part des dépôts à vue"},
+           titre="Structure des dépôts par banque")
+    trier(page, structure, "Mesures", "Part depots a vue", "Descending")
+    # encours dans le temps : axe des dates continu, trimestres publiés, sans filtre du segment du trimestre
+    courbes = "d320de5203510898aede"
+    regler(page, courbes, (836, 162, 428, 330),
+           {"Dim_Date.Date": "Fin du trimestre", "Mesures.Credits": "Crédits", "Mesures.Depots": "Dépôts",
+            "Mesures.Credits / Depots": "Crédits / dépôts"},
+           titre="Crédits et dépôts des banques choisies (MDT)",
+           objets={"categoryAxis": {"axisType": texte("Scalar")}})
+    filtre_colonne(page, courbes, "Dim_Date", "Trimestre_Publie", "true", "trimestres_publies")
+    carte = "aa7ea3d0e40579d7c29d"
+    regler(page, carte, (836, 502, 428, 182),
+           {"Mesures.Credits / Depots": "Crédits / dépôts", "Mesures.Part depots a vue": "Part des dépôts à vue"},
+           titre="Ratios au trimestre choisi")
+    interactions(page, [("f7d3d14bf253529e4ae9", courbes, "NoFilter")])
+    print("Bilan : visuels réglés")
+
+
 PAGES_REGLEES = {"vue_ensemble": vue_ensemble, "classement": classement, "evolution": evolution,
-                 "structure_pnb": structure_pnb}
+                 "structure_pnb": structure_pnb, "bilan": bilan}
 
 if __name__ == "__main__":
     if len(sys.argv) == 4 and sys.argv[1] == "nouvelle_page":

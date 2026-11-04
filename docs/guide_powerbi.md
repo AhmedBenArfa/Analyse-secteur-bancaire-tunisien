@@ -1625,6 +1625,8 @@ de la page 1 (`copier_visuel`, « Dernier trimestre complet »).
 | Crédits et dépôts dans le temps | 836, 162, 428 × 330 | graphique en courbes : axe X `Dim_Date[Date]`, axe Y `Credits`, `Depots` (`1. Bases\Encours`) ; info-bulle `Credits / Depots` | axe continu ; trimestres publiés seulement (`Trimestre_Publie`) ; le segment du trimestre ne le filtre pas (interaction « Aucun ») ; titre « Crédits et dépôts des banques choisies (MDT) » |
 | Ratios au trimestre | 836, 502, 428 × 182 | carte (nouvelle) : `Credits / Depots`, `Part depots a vue` (`3. Ratios\Bilan`) | libellés « Crédits / dépôts », « Part des dépôts à vue » |
 
+**Visuels créés dans Power BI Desktop (04/11/2026), réglés par `python scripts/ecrire_pbir_visuels.py bilan`** : positions ci-dessus, titres, noms affichés, étiquettes du ratio, tri des deux graphiques à barres, axe des dates continu et trimestres publiés pour la courbe, interaction segment du trimestre → courbe « Aucun ». La ligne à 100 % a été ajoutée une fois dans Power BI (volet Analyse › Ligne constante X, valeur 1) pour relever son nom dans le fichier : `y1AxisReferenceLine` (sur un graphique à barres horizontales, l'axe des valeurs est affiché en X mais reste « y1 » dans le fichier) ; l'outil la reprend avec un nom affiché, une couleur et un pointillé (nouvelle fonction `ligne_constante`). À vérifier sur la capture.
+
 **Pourquoi ces choix.** Le ratio crédits / dépôts dit si une banque finance ses crédits par ses dépôts (sous 100 %)
 ou doit trouver d'autres ressources (emprunts, refinancement) ; la ligne à 100 % en donne la lecture d'un coup d'œil.
 Les montants et les parts de marché, déjà sur la page 1 pour le secteur, restent dans l'info-bulle : la page compare

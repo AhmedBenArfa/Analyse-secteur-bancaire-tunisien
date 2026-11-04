@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "aa7ea3d0e40579d7c29d",
   "position": {
-    "x": 458,
-    "y": 482,
+    "x": 836,
+    "y": 502,
     "z": 2004,
-    "height": 171,
-    "width": 466,
+    "height": 182,
+    "width": 428,
     "tabOrder": 2004
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Mesures.Credits / Depots",
-              "nativeQueryRef": "Credits / Depots"
+              "nativeQueryRef": "Credits / Depots",
+              "displayName": "Crédits / dépôts"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "Mesures.Part depots a vue",
-              "nativeQueryRef": "Part depots a vue"
+              "nativeQueryRef": "Part depots a vue",
+              "displayName": "Part des dépôts à vue"
             }
           ]
         }
@@ -65,7 +67,42 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Ratios au trimestre choisi'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [
