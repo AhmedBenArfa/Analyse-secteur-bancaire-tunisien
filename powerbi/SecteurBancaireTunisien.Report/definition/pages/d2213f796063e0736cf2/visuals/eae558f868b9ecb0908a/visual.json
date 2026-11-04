@@ -1,0 +1,130 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "eae558f868b9ecb0908a",
+  "position": {
+    "x": 744.19816554774127,
+    "y": 298.85638106794181,
+    "z": 2004,
+    "height": 151,
+    "width": 271,
+    "tabOrder": 2004
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Part marge interets"
+                }
+              },
+              "queryRef": "Mesures.Part marge interets",
+              "nativeQueryRef": "Part marge interets"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Part portefeuille"
+                }
+              },
+              "queryRef": "Mesures.Part portefeuille",
+              "nativeQueryRef": "Part portefeuille"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Part commissions"
+                }
+              },
+              "queryRef": "Mesures.Part commissions",
+              "nativeQueryRef": "Part commissions"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Mesures"
+                  }
+                },
+                "Property": "Part marge interets"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "0d35eb1953109bd5009a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part marge interets"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b0a659680cccc0640493",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part commissions"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "a86b421ce06b304ca030",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part portefeuille"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

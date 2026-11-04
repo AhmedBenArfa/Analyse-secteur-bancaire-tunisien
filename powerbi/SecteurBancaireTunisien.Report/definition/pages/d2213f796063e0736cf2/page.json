@@ -5,6 +5,47 @@
   "displayOption": "FitToPage",
   "height": 720,
   "width": 1280,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "5bd6325b0706eb8bb5c2",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part portefeuille"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "Drillthrough"
+      }
+    ]
+  },
+  "pageBinding": {
+    "name": "08b4f186643b0de53720",
+    "type": "Drillthrough",
+    "parameters": [
+      {
+        "name": "fbce709500d89410b4b2",
+        "boundFilter": "5bd6325b0706eb8bb5c2",
+        "asAggregation": false,
+        "qnaSingleSelectRequired": false,
+        "fieldExpr": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part portefeuille"
+          }
+        }
+      }
+    ]
+  },
   "objects": {
     "background": [
       {

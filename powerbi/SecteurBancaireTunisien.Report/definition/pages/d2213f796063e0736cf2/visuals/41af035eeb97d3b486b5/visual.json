@@ -1,0 +1,279 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "41af035eeb97d3b486b5",
+  "position": {
+    "x": 24.196249670708635,
+    "y": 262.23503021497737,
+    "z": 2001,
+    "height": 296.894522986533,
+    "width": 271.3903679282185,
+    "tabOrder": 2001
+  },
+  "visual": {
+    "visualType": "hundredPercentStackedBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "code_banque"
+                }
+              },
+              "queryRef": "Dim_Banque.code_banque",
+              "nativeQueryRef": "code_banque",
+              "active": true
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Part marge interets"
+                }
+              },
+              "queryRef": "Mesures.Part marge interets",
+              "nativeQueryRef": "Part marge interets"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Part commissions"
+                }
+              },
+              "queryRef": "Mesures.Part commissions",
+              "nativeQueryRef": "Part commissions"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Part portefeuille"
+                }
+              },
+              "queryRef": "Mesures.Part portefeuille",
+              "nativeQueryRef": "Part portefeuille"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Marge interets"
+                }
+              },
+              "queryRef": "Mesures.Marge interets",
+              "nativeQueryRef": "Marge interets"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Marge commissions"
+                }
+              },
+              "queryRef": "Mesures.Marge commissions",
+              "nativeQueryRef": "Marge commissions"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Revenus portefeuille"
+                }
+              },
+              "queryRef": "Mesures.Revenus portefeuille",
+              "nativeQueryRef": "Revenus portefeuille"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Autres elements PNB"
+                }
+              },
+              "queryRef": "Mesures.Autres elements PNB",
+              "nativeQueryRef": "Autres elements PNB"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Mesures"
+                  }
+                },
+                "Property": "Marge interets"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "8caa6c20d5bc3dca0dc7",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "code_banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "52d9e3cb015109b4edde",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Marge interets"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "a3c4511370a81d839e1c",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Marge commissions"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "aa1ce5dd83b597b91100",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Revenus portefeuille"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "1e2d586e3480bea25d79",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Autres elements PNB"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e2d08e2d50ce6390eebc",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part marge interets"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "d9cb36e126020a40a22a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part commissions"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "3ca9e515e890760666be",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part portefeuille"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}
