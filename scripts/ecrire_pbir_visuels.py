@@ -442,16 +442,17 @@ def structure_pnb():
              "Mesures.Part portefeuille": "Part portefeuille"}
     # barres à 100 % par banque, triées par part de la marge d'intérêts (de la plus forte à la plus faible)
     barres = "41af035eeb97d3b486b5"
-    regler(page, barres, (16, 162, 620, 522), {"Dim_Banque.code_banque": "Banque", **composantes, **parts},
+    regler(page, barres, (16, 162, 560, 522), {"Dim_Banque.code_banque": "Banque", **composantes, **parts},
            titre="Structure du PNB par banque (% du PNB du trimestre)")
     trier(page, barres, "Mesures", "Part marge interets", "Descending")
     # histogramme à 100 % du secteur (banques choisies) dans le temps : trimestres publiés, axe des trimestres
     # catégoriel ; le segment du trimestre ne le filtre pas (toute la période reste visible)
     colonnes = "ef7dc89555b391c0e509"
-    # largeur minimale d'une colonne réduite (20 pixels par défaut : barre de défilement, 2026T2 et 2026T3 cachés)
-    regler(page, colonnes, (646, 162, 618, 330), {"Dim_Date.Annee_Trimestre": "Trimestre", **composantes, **parts},
+    # 678 pixels de large : à 618, les 28 trimestres ne tenaient pas (une colonne fait au moins 20 pixels ; barre de
+    # défilement, 2026T2 et 2026T3 cachés ; une largeur minimale plus petite, preferredCategoryWidth, est ignorée)
+    regler(page, colonnes, (586, 162, 678, 330), {"Dim_Date.Annee_Trimestre": "Trimestre", **composantes, **parts},
            titre="Structure du PNB des banques choisies, 2019T4–2026T3",
-           objets={"categoryAxis": {"axisType": texte("Categorical"), "preferredCategoryWidth": litteral("12D")}})
+           objets={"categoryAxis": {"axisType": texte("Categorical")}})
     # « Autres éléments » en gris : la quatrième couleur du thème est un bleu proche de celle de la marge d'intérêts
     for visuel in (barres, colonnes):
         p = PAGES / page / "visuals" / visuel / "visual.json"
@@ -465,7 +466,7 @@ def structure_pnb():
     # carte des trois parts au trimestre choisi, dans l'ordre des barres
     carte = "eae558f868b9ecb0908a"
     ordonner_role(page, carte, "Data", list(parts))
-    regler(page, carte, (646, 502, 618, 182),
+    regler(page, carte, (586, 502, 678, 182),
            {"Mesures.Part marge interets": "Marge d'intérêts", "Mesures.Part commissions": "Commissions",
             "Mesures.Part portefeuille": "Portefeuille"},
            titre="Parts du PNB au trimestre choisi")
