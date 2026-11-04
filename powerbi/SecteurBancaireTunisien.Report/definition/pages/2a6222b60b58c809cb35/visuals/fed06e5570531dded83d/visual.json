@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "fed06e5570531dded83d",
   "position": {
-    "x": 906.37843361086948,
-    "y": 197.49371352848669,
+    "x": 786,
+    "y": 412,
     "z": 1005,
-    "height": 150,
-    "width": 250,
+    "height": 272,
+    "width": 478,
     "tabOrder": 1005
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Dim_Banque.Definition_Charges_Operatoires",
-              "nativeQueryRef": "Definition_Charges_Operatoires"
+              "nativeQueryRef": "Definition_Charges_Operatoires",
+              "displayName": "Charges opératoires publiées"
             },
             {
               "field": {
@@ -41,13 +42,94 @@
                 }
               },
               "queryRef": "Dim_Banque.Definition_Capitaux_Propres",
-              "nativeQueryRef": "Definition_Capitaux_Propres"
+              "nativeQueryRef": "Definition_Capitaux_Propres",
+              "displayName": "Capitaux propres trimestriels"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Ce que la banque publie sous ces noms'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "215D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim_Banque.Definition_Charges_Operatoires"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "215D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim_Banque.Definition_Capitaux_Propres"
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

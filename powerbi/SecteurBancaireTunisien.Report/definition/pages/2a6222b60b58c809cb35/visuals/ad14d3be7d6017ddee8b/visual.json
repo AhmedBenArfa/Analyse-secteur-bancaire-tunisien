@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "ad14d3be7d6017ddee8b",
   "position": {
-    "x": 43.16087779099378,
-    "y": 175.91327463298981,
+    "x": 16,
+    "y": 162,
     "z": 1002,
-    "height": 150,
-    "width": 250,
+    "height": 110,
+    "width": 1248,
     "tabOrder": 1002
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Mesures.Banque affichee",
-              "nativeQueryRef": "Banque affichee"
+              "nativeQueryRef": "Banque affichee",
+              "displayName": "Banque"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "Mesures.Chaine de controle",
-              "nativeQueryRef": "Chaine de controle"
+              "nativeQueryRef": "Chaine de controle",
+              "displayName": "Chaîne de contrôle"
             },
             {
               "field": {
@@ -55,7 +57,8 @@
                 }
               },
               "queryRef": "Mesures.Actionnaire principal",
-              "nativeQueryRef": "Actionnaire principal"
+              "nativeQueryRef": "Actionnaire principal",
+              "displayName": "Actionnaire de référence"
             }
           ]
         }

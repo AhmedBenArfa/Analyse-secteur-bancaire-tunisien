@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "12cc8472e5b986c92239",
   "position": {
-    "x": 347.902833103162,
-    "y": 192.26209197806321,
+    "x": 16,
+    "y": 282,
     "z": 1003,
-    "height": 150,
-    "width": 250,
+    "height": 120,
+    "width": 1248,
     "tabOrder": 1003
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Mesures.PNB",
-              "nativeQueryRef": "PNB"
+              "nativeQueryRef": "PNB",
+              "displayName": "PNB du trimestre (MDT)"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "Mesures.Coef exploitation harmonise",
-              "nativeQueryRef": "Coef exploitation harmonise"
+              "nativeQueryRef": "Coef exploitation harmonise",
+              "displayName": "Coefficient harmonisé"
             },
             {
               "field": {
@@ -55,7 +57,8 @@
                 }
               },
               "queryRef": "Mesures.Coef exploitation publie",
-              "nativeQueryRef": "Coef exploitation publie"
+              "nativeQueryRef": "Coef exploitation publie",
+              "displayName": "Coefficient publié par la banque"
             },
             {
               "field": {
@@ -69,7 +72,8 @@
                 }
               },
               "queryRef": "Mesures.Credits / Depots",
-              "nativeQueryRef": "Credits / Depots"
+              "nativeQueryRef": "Credits / Depots",
+              "displayName": "Crédits / dépôts"
             }
           ]
         }

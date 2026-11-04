@@ -74,7 +74,7 @@ def regler(page, visuel, position, noms=None, titre=None, objets=None):
     p = PAGES / page / "visuals" / visuel / "visual.json"
     d = lire(p)
     d["position"].update(dict(zip(("x", "y", "width", "height"), position)))
-    for role in d["visual"]["query"]["queryState"].values():
+    for role in d["visual"].get("query", {}).get("queryState", {}).values():
         for pr in role["projections"]:
             if noms and pr["queryRef"] in noms:
                 pr["displayName"] = noms[pr["queryRef"]]
@@ -576,8 +576,48 @@ def bourse():
     print("Bourse : visuels réglés")
 
 
+def fiche_banque():
+    """Page 7 « Fiche banque » (guide 4.8) : page d'extraction sur Dim_Banque[code_banque] (liaison voulue : pas de
+    retirer_extraction ici)."""
+    page = "2a6222b60b58c809cb35"
+    # bouton « Retour » ajouté par Power BI avec l'extraction : dans la bande blanche, à droite du segment du trimestre
+    regler(page, "c7bedd76ad2030a06c82", (290, 98, 48, 44))
+    regler(page, "ad14d3be7d6017ddee8b", (16, 162, 1248, 110),
+           {"Mesures.Banque affichee": "Banque", "Mesures.Chaine de controle": "Chaîne de contrôle",
+            "Mesures.Actionnaire principal": "Actionnaire de référence"})
+    regler(page, "12cc8472e5b986c92239", (16, 282, 1248, 120),
+           {"Mesures.PNB": "PNB du trimestre (MDT)", "Mesures.Coef exploitation harmonise": "Coefficient harmonisé",
+            "Mesures.Coef exploitation publie": "Coefficient publié par la banque",
+            "Mesures.Credits / Depots": "Crédits / dépôts"})
+    # indicateurs dans l'ordre de Dim_Indicateur (libelle trié par ordre)
+    indicateurs = "8e30af2040eae71d00db"
+    colonnes = [("Dim_Indicateur.libelle", "Indicateur", 300), ("Mesures.Valeur Trim", "Trimestre", 130),
+                ("Mesures.Valeur Cumul", "Cumul ou solde", 140), ("Mesures.Var A/A cumul %", "Sur un an", 130)]
+    regler(page, indicateurs, (16, 412, 760, 272), {q: n for q, n, _ in colonnes},
+           titre="Indicateurs publiés au trimestre (MDT)")
+    p = PAGES / page / "visuals" / indicateurs / "visual.json"
+    d = lire(p)
+    d["visual"].setdefault("objects", {})["columnWidth"] = [
+        {"properties": {"value": litteral(f"{l}D")}, "selector": {"metadata": q}} for q, _, l in colonnes]
+    ecrire(p, d)
+    trier(page, indicateurs, "Dim_Indicateur", "libelle", genre="Column")
+    # définitions propres à la banque, sur plusieurs lignes
+    definitions = "fed06e5570531dded83d"
+    regler(page, definitions, (786, 412, 478, 272),
+           {"Dim_Banque.Definition_Charges_Operatoires": "Charges opératoires publiées",
+            "Dim_Banque.Definition_Capitaux_Propres": "Capitaux propres trimestriels"},
+           titre="Ce que la banque publie sous ces noms", objets={"values": {"wordWrap": litteral("true")}})
+    p = PAGES / page / "visuals" / definitions / "visual.json"
+    d = lire(p)
+    d["visual"]["objects"]["columnWidth"] = [
+        {"properties": {"value": litteral("215D")}, "selector": {"metadata": q}}
+        for q in ("Dim_Banque.Definition_Charges_Operatoires", "Dim_Banque.Definition_Capitaux_Propres")]
+    ecrire(p, d)
+    print("Fiche banque : visuels réglés")
+
+
 PAGES_REGLEES = {"vue_ensemble": vue_ensemble, "classement": classement, "evolution": evolution,
-                 "structure_pnb": structure_pnb, "bilan": bilan, "bourse": bourse}
+                 "structure_pnb": structure_pnb, "bilan": bilan, "bourse": bourse, "fiche_banque": fiche_banque}
 
 if __name__ == "__main__":
     if len(sys.argv) == 4 and sys.argv[1] == "nouvelle_page":

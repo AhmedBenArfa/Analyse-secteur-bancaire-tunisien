@@ -1807,6 +1807,8 @@ directement, sans banque, la page l'indique (`Banque affichee`).
 | Indicateurs publiés | 16, 412, 760 × 272 | tableau : `Dim_Indicateur[libelle]`, `Valeur Trim`, `Valeur Cumul` (`1. Bases\Intermédiaires`), `Var A/A cumul %` (`4. Croissances\Sur un an`) | ordre des indicateurs (`ordre`) ; lignes sans valeur masquées (comportement normal d'un tableau) ; titre « Indicateurs publiés au trimestre (MDT) » |
 | Définitions de la banque | 786, 412, 478 × 272 | tableau : `Dim_Banque[Definition_Charges_Operatoires]`, `Dim_Banque[Definition_Capitaux_Propres]` | retour à la ligne ; titre « Ce que la banque publie sous ces noms » |
 
+**Visuels créés dans Power BI Desktop (04/11/2026), réglés par `python scripts/ecrire_pbir_visuels.py fiche_banque`** : extraction posée par l'utilisateur sur `Dim_Banque[code_banque]` (liaison de la page gardée), bouton « Retour » placé dans la bande blanche à droite du segment du trimestre (290, 98, 48 × 44), positions ci-dessus, libellés des cartes, tableau des indicateurs trié par l'ordre de `Dim_Indicateur` avec des colonnes « Indicateur », « Trimestre », « Cumul ou solde », « Sur un an », définitions sur plusieurs lignes. À vérifier sur une capture, en ouvrant la fiche depuis une autre page.
+
 **Pourquoi ces choix.** Le coefficient publié à côté du coefficient harmonisé montre l'effet des définitions : BH
 publie des charges opératoires sans dotations (les deux coefficients sont égaux), Attijari un reste non détaillé
 (55,3 % publié contre 52,2 % harmonisé). Les capitaux propres trimestriels (ligne du tableau) n'ont pas la même

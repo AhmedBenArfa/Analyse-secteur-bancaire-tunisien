@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "8e30af2040eae71d00db",
   "position": {
-    "x": 629.75644413222744,
-    "y": 192.26209197806321,
+    "x": 16,
+    "y": 412,
     "z": 1004,
-    "height": 150,
-    "width": 250,
+    "height": 272,
+    "width": 760,
     "tabOrder": 1004
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Dim_Indicateur.libelle",
-              "nativeQueryRef": "libelle"
+              "nativeQueryRef": "libelle",
+              "displayName": "Indicateur"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "Mesures.Valeur Trim",
-              "nativeQueryRef": "Valeur Trim"
+              "nativeQueryRef": "Valeur Trim",
+              "displayName": "Trimestre"
             },
             {
               "field": {
@@ -55,7 +57,8 @@
                 }
               },
               "queryRef": "Mesures.Valeur Cumul",
-              "nativeQueryRef": "Valeur Cumul"
+              "nativeQueryRef": "Valeur Cumul",
+              "displayName": "Cumul ou solde"
             },
             {
               "field": {
@@ -69,13 +72,127 @@
                 }
               },
               "queryRef": "Mesures.Var A/A cumul %",
-              "nativeQueryRef": "Var A/A cumul %"
+              "nativeQueryRef": "Var A/A cumul %",
+              "displayName": "Sur un an"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Dim_Indicateur"
+                  }
+                },
+                "Property": "libelle"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Indicateurs publiés au trimestre (MDT)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "300D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Dim_Indicateur.libelle"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "130D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Valeur Trim"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "140D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Valeur Cumul"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "130D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Mesures.Var A/A cumul %"
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [
