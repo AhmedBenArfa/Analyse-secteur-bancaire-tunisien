@@ -1,0 +1,311 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "ba585f6394b10e0b05dc",
+  "position": {
+    "x": 0,
+    "y": 197.49371352848669,
+    "z": 2001,
+    "height": 275.31408409103608,
+    "width": 403.48881207641159,
+    "tabOrder": 2001
+  },
+  "visual": {
+    "visualType": "barChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "code_banque"
+                }
+              },
+              "queryRef": "Dim_Banque.code_banque",
+              "nativeQueryRef": "code_banque",
+              "active": true
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Credits"
+                }
+              },
+              "queryRef": "Mesures.Credits",
+              "nativeQueryRef": "Credits"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Depots"
+                }
+              },
+              "queryRef": "Mesures.Depots",
+              "nativeQueryRef": "Depots"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Part de marche credits"
+                }
+              },
+              "queryRef": "Mesures.Part de marche credits",
+              "nativeQueryRef": "Part de marche credits"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Part de marche depots"
+                }
+              },
+              "queryRef": "Mesures.Part de marche depots",
+              "nativeQueryRef": "Part de marche depots"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Var Credits A/A %"
+                }
+              },
+              "queryRef": "Mesures.Var Credits A/A %",
+              "nativeQueryRef": "Var Credits A/A %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Var Depots A/A %"
+                }
+              },
+              "queryRef": "Mesures.Var Depots A/A %",
+              "nativeQueryRef": "Var Depots A/A %"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Credits / Depots"
+                }
+              },
+              "queryRef": "Mesures.Credits / Depots",
+              "nativeQueryRef": "Credits / Depots"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Mesures"
+                  }
+                },
+                "Property": "Credits / Depots"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "y1AxisReferenceLine": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "displayName": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Ligne de constante de l''axe X 1'"
+                }
+              }
+            },
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "1"
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "8fd450a10c36bee9ce80",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "code_banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "3e69a121e108b0652e25",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Credits / Depots"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "7f570771b6925d60d28b",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Credits"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ddc6eedce40e01e24ec7",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Depots"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b839d8b270e6620d09c7",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part de marche credits"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "97492456eba5bb0c616c",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part de marche depots"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "886f41760cd0dc1192cd",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Var Credits A/A %"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "63e920cc07d010927429",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Var Depots A/A %"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

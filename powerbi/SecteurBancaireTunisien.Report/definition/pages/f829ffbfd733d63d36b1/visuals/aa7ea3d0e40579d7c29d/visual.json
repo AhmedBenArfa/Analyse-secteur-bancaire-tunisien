@@ -1,0 +1,102 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "aa7ea3d0e40579d7c29d",
+  "position": {
+    "x": 458,
+    "y": 482,
+    "z": 2004,
+    "height": 171,
+    "width": 466,
+    "tabOrder": 2004
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Credits / Depots"
+                }
+              },
+              "queryRef": "Mesures.Credits / Depots",
+              "nativeQueryRef": "Credits / Depots"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Part depots a vue"
+                }
+              },
+              "queryRef": "Mesures.Part depots a vue",
+              "nativeQueryRef": "Part depots a vue"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Mesures"
+                  }
+                },
+                "Property": "Credits / Depots"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "00d357b100d770c570ba",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Credits / Depots"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "6c14daabdc91b5524d38",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part depots a vue"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

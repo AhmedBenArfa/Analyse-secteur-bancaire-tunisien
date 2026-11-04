@@ -1,0 +1,195 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "5e468efb1020459e6081",
+  "position": {
+    "x": 457.76688566205524,
+    "y": 196.83976083468377,
+    "z": 2002,
+    "height": 258.96526674596271,
+    "width": 465.61431798769053,
+    "tabOrder": 2002
+  },
+  "visual": {
+    "visualType": "hundredPercentStackedBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "code_banque"
+                }
+              },
+              "queryRef": "Dim_Banque.code_banque",
+              "nativeQueryRef": "code_banque",
+              "active": true
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Part depots a vue"
+                }
+              },
+              "queryRef": "Mesures.Part depots a vue",
+              "nativeQueryRef": "Part depots a vue"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Depots a vue"
+                }
+              },
+              "queryRef": "Mesures.Depots a vue",
+              "nativeQueryRef": "Depots a vue"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Depots epargne"
+                }
+              },
+              "queryRef": "Mesures.Depots epargne",
+              "nativeQueryRef": "Depots epargne"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Depots terme et autres"
+                }
+              },
+              "queryRef": "Mesures.Depots terme et autres",
+              "nativeQueryRef": "Depots terme et autres"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Mesures"
+                  }
+                },
+                "Property": "Depots a vue"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "821de865e2c94e60bc08",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "code_banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "537f75f10c950bae0094",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Depots a vue"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "a5993345354519b471c0",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Depots epargne"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "56b1635f033312dd72b5",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Depots terme et autres"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "cec7d82cb7020e98726a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part depots a vue"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}
