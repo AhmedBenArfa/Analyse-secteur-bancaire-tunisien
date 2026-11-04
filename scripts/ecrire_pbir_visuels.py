@@ -474,16 +474,17 @@ def structure_pnb():
     print("Structure du PNB : visuels réglés")
 
 
-def ligne_constante(page, visuel, nom, valeur, couleur, objet="y1AxisReferenceLine"):
+def ligne_constante(page, visuel, nom, valeur, couleur, objet="y1AxisReferenceLine", libelle=True):
     """Ligne constante de l'axe des valeurs (volet Analyse ; objet y1AxisReferenceLine, relevé sur une ligne saisie
     dans Power BI, valeur en nombre : 1 = 100 % pour une mesure en pourcentage), en pointillé, nom affiché sur la
-    ligne."""
+    ligne (sauf libelle=False)."""
     p = PAGES / page / "visuals" / visuel / "visual.json"
     d = lire(p)
     d["visual"].setdefault("objects", {})[objet] = [{
         "properties": {"show": litteral("true"), "displayName": texte(nom), "value": litteral(f"{valeur}D"),
                        "lineColor": {"solid": {"color": litteral(f"'{couleur}'")}},
-                       "style": texte("dashed"), "dataLabelShow": litteral("true"), "dataLabelText": texte("Name"),
+                       "style": texte("dashed"), "dataLabelShow": litteral("true" if libelle else "false"),
+                       "dataLabelText": texte("Name"),
                        "dataLabelColor": {"solid": {"color": litteral(f"'{couleur}'")}}},
         "selector": {"id": "1"}}]
     ecrire(p, d)
@@ -500,8 +501,12 @@ def bilan():
             "Mesures.Credits": "Crédits (MDT)", "Mesures.Depots": "Dépôts (MDT)",
             "Mesures.Part de marche credits": "Part des crédits", "Mesures.Part de marche depots": "Part des dépôts",
             "Mesures.Var Credits A/A %": "Crédits sur un an", "Mesures.Var Depots A/A %": "Dépôts sur un an"},
-           titre="Crédits / dépôts par banque", objets={"labels": {"show": litteral("true")}})
-    ligne_constante(page, ratio, "100 % : crédits = dépôts", 1, "#C62828")
+           titre="Crédits / dépôts par banque (pointillé : 100 %)",
+           objets={"labels": {"show": litteral("true"), "labelPosition": texte("InsideEnd"),
+                              "color": {"solid": {"color": litteral("'#FFFFFF'")}}}})
+    # libellé de la ligne masqué (il chevauchait la première barre) ; étiquettes dans le bout des barres, en blanc,
+    # pour que la ligne ne les barre pas
+    ligne_constante(page, ratio, "100 % : crédits = dépôts", 1, "#C62828", libelle=False)
     trier(page, ratio, "Mesures", "Credits / Depots", "Descending")
     # structure des dépôts à 100 %, triée par part des dépôts à vue
     structure = "5e468efb1020459e6081"
