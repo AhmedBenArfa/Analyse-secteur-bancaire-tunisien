@@ -14,8 +14,8 @@ UBCI, UIB, Wifak), **trimestre par trimestre, du T4 2019 au T3 2026**. Il cherch
 6. Quel a été l'effet du Covid, et comment le secteur s'est-il redressé ?
 7. La Bourse récompense-t-elle les banques les plus performantes ?
 
-Trois pages sont terminées et vérifiées (section 4) ; elles répondent aux questions 1, 2, 4 (concentration) et 6.
-Les six autres pages sont prévues (section 5).
+Quatre pages sont terminées et vérifiées (section 4) ; elles répondent aux questions 1, 2, 3, 4 (concentration) et
+6. Les cinq autres pages sont prévues (section 5).
 
 ## 2. Les données : publications officielles, tracées et contrôlées
 
@@ -128,11 +128,33 @@ marquée par deux lignes verticales (mars 2020 et fin 2021).
 **Choix de conception** : axe des dates continu (les 28 trimestres sans défilement) ; courbes droites entre deux
 trimestres, sans lissage, pour ne pas dessiner de creux ou de pics qui n'existent pas dans les données.
 
+### Page 4 — Structure du PNB
+
+![Page 4 : structure du PNB](captures/page4_structure_pnb.png)
+
+**Ce que la page montre** : de quoi est fait le PNB de chaque banque au trimestre choisi, et comment la structure
+du secteur a changé depuis 2019. Le PNB y est découpé en marge d'intérêts (intérêts perçus − intérêts encourus),
+marge sur commissions (commissions perçues − commissions encourues), revenus du portefeuille-titres et autres
+éléments.
+
+- Barres à 100 % par banque, triées par part de la marge d'intérêts : au T3 2026, **Wifak** (banque islamique) tire
+  **68,7 %** de son PNB de sa marge, la **STB** seulement **15,8 %** ; à l'inverse, le portefeuille fait **68,4 %** du
+  PNB de la STB et **66,3 %** de celui de la BNA.
+- Secteur au T3 2026 (carte) : marge d'intérêts **33,4 %**, commissions **19,5 %**, portefeuille **47,0 %**.
+- Dans le temps (histogramme, 28 trimestres) : la part de la marge d'intérêts passe de **58,2 %** au T4 2019 à
+  **33,4 %** au T3 2026, celle du portefeuille de **21,5 %** à **47,0 %** ; les commissions restent entre 18 % et 20 %.
+  Les données montrent ce déplacement ; elles n'en donnent pas la cause, que le rapport n'avance pas.
+
+**Choix de conception** : des barres à 100 % pour comparer la composition sans que la taille des banques écrase les
+petites ; un quatrième élément, « autres éléments » (en gris), garde le reste du PNB hors des trois composantes pour
+que chaque barre fasse exactement 100 % : il n'existe que chez la BTE (gains de change, 4,3 %) et la BT (1,7 %).
+Le contrôle « PNB = somme des composantes », ajouté pour cette page, a fait trouver une erreur de lecture d'un PDF
+(Wifak, T2 2026 : deux nombres collés), corrigée avant la construction de la page.
+
 ## 5. Suite du rapport
 
 | Page | Contenu prévu | Question |
 |---|---|---|
-| 4. Structure du PNB (en construction) | part de la marge d'intérêts, des commissions et du portefeuille, par banque et dans le temps | 3 |
 | 5. Bilan | crédits, dépôts, ratio crédits / dépôts, structure des dépôts, parts de marché | 4 |
 | 6. Bourse | cours ajustés, performance, volatilité et liquidité du titre ; performance boursière face à la croissance du PNB | 7 |
 | 7. Fiche banque | tous les indicateurs d'une banque (clic droit depuis une autre page), définitions propres à la banque, chaîne de contrôle de l'actionnariat | 1 à 5 |

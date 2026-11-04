@@ -6,9 +6,9 @@
 > activity reports (PDF, published through the CMF and the BVMT), their financial statements and
 > daily stock prices. A Python pipeline extracts every figure with its source file and page; revised
 > figures, consistency checks and manual entries are tracked. The data layer, the Power Query layer
-> (22 queries), the star schema and the DAX measures (154) are complete; three of the nine report
-> pages are finished (sector overview, bank ranking, 2020–2026 trends) and the others are in
-> progress. Figures are provisional and unaudited.
+> (22 queries), the star schema and the DAX measures (154) are complete; four of the nine report
+> pages are finished (sector overview, bank ranking, 2020–2026 trends, revenue mix) and the others
+> are in progress. Figures are provisional and unaudited.
 > Documentation is in French.
 
 ![Page « Vue d'ensemble du secteur » du rapport Power BI](docs/captures/page1_vue_ensemble.png)
@@ -69,7 +69,7 @@ un fichier Excel et une URL.
 
 ## Aperçu du rapport
 
-Trois pages sur neuf sont terminées et vérifiées (captures exportées de Power BI Desktop, données au
+Quatre pages sur neuf sont terminées et vérifiées (captures exportées de Power BI Desktop, données au
 T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, dans
 [docs/Presentation_rapport.pdf](docs/Presentation_rapport.pdf).
 
@@ -78,10 +78,13 @@ T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, 
 | [Vue d'ensemble du secteur](docs/captures/page1_vue_ensemble.png) | PNB, coefficient d'exploitation, crédits et dépôts du secteur au dernier trimestre complet ; parts de marché du PNB ; concentration (indice HHI) de 2019 à 2026 |
 | [Classement des banques](docs/captures/page2_classement.png) | rangs au PNB et au coefficient d'exploitation harmonisé, écart à la médiane en couleur ; nuage croissance × efficacité animé trimestre par trimestre |
 | [Évolution 2020–2026](docs/captures/page3_evolution.png) | courbes par banque sur l'indicateur choisi (paramètre de champ), période Covid marquée, révisions et événements qui expliquent les sauts de série |
+| [Structure du PNB](docs/captures/page4_structure_pnb.png) | part de la marge d'intérêts, des commissions et du portefeuille dans le PNB, par banque et pour le secteur de 2019 à 2026 (marge d'intérêts de 58,2 % à 33,4 % du PNB, portefeuille de 21,5 % à 47,0 %) |
 
 ![Page « Classement des banques »](docs/captures/page2_classement.png)
 
 ![Page « Évolution 2020–2026 »](docs/captures/page3_evolution.png)
+
+![Page « Structure du PNB »](docs/captures/page4_structure_pnb.png)
 
 ## Chiffres clés (au 30/10/2026)
 
@@ -164,7 +167,7 @@ puisse s'ouvrir après un simple clonage du dépôt. Pour reproduire les donnée
 | Examen des écarts du contrôle annuel, actionnariat des banques | Terminé |
 | Requêtes Power Query (22 requêtes : dossier, Excel et URL ; dépivotage, fusions, colonnes conditionnelles, fonction personnalisée) | Terminé (détail et décisions : [docs/feuille_de_route.md](docs/feuille_de_route.md)) |
 | Modèle en étoile, mesures DAX (32 relations, 154 mesures) | Terminé |
-| Pages du rapport | En cours : 3 pages sur 9 terminées (vue d'ensemble, classement, évolution) ; suivantes : structure du PNB, bilan, Bourse, fiche banque, rentabilité, qualité des données |
+| Pages du rapport | En cours : 4 pages sur 9 terminées (vue d'ensemble, classement, évolution, structure du PNB) ; suivantes : bilan, Bourse, fiche banque, rentabilité, qualité des données |
 | Note de validation par échantillon (`docs/validation.md`), captures du rapport | À faire |
 
 ## Limites

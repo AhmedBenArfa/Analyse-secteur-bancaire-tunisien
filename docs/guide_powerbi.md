@@ -1534,7 +1534,7 @@ horizontale, « Trimestre » et la date coupés sur deux lignes).
 tableaux des révisions et des événements ; dernier réglage des largeurs de colonnes (en-tête « Banque » coupé) fait
 ensuite dans les fichiers.
 
-### 4.5 Page 4 : Structure du PNB (en construction)
+### 4.5 Page 4 : Structure du PNB (terminée le 04/11/2026)
 
 **But** : de quoi est fait le PNB de chaque banque au trimestre choisi, et comment la structure du secteur a changé
 depuis 2019 : marge d'intérêts (intérêts perçus − intérêts encourus), marge sur commissions (commissions perçues −
@@ -1564,6 +1564,8 @@ une erreur d'extraction (Wifak, T2 2026 : feuille de route, décision du 30/10/2
 **Visuels créés dans Power BI Desktop (04/11/2026), réglés par `python scripts/ecrire_pbir_visuels.py structure_pnb`** : positions ci-dessus, titres, noms affichés (« Marge d'intérêts », « Marge sur commissions », « Revenus du portefeuille », « Autres éléments »), tri des barres par `Part marge interets` décroissante, histogramme trié par trimestre et limité aux trimestres publiés, interaction segment du trimestre → histogramme « Aucun », carte dans l'ordre des barres (nouvelle fonction `ordonner_role`). Une extraction posée par mégarde sur la page (champ `Part portefeuille`) et le bouton « Retour » que Power BI ajoute avec elle ont été retirés (`retirer_extraction`), comme sur la page 2.
 
 **Première capture (04/11/2026)** : toutes les valeurs attendues ci-dessous sont justes (carte 33,4 / 19,5 / 47,0 %, barres de Wifak à STB, autres éléments chez BT et BTE seulement). Deux retouches : l'histogramme avait une barre de défilement et cachait 2026T2 et 2026T3 (largeur minimale d'une colonne de 20 pixels par défaut, ramenée à 12 : `categoryAxis.preferredCategoryWidth`) ; « Autres éléments » avait presque le même bleu que la marge d'intérêts (quatrième couleur du thème) : gris, par une couleur propre à la série (`dataPoint`, sélecteur de la mesure). Deuxième capture : le gris est pris ; la largeur minimale de 12 pixels est gardée dans le fichier mais sans effet (Power BI ne descend pas sous 20 pixels par colonne) : réglage retiré, histogramme et carte élargis à 678 pixels, barres par banque ramenées à 560.
+
+**Vérifiée le 04/11/2026** (troisième capture) : les 28 trimestres de l'histogramme visibles sans défilement (étiquettes de l'axe en biais), « Autres éléments » en gris chez BT et BTE, valeurs conformes au tableau ci-dessous. Capture `docs/captures/page4_structure_pnb.png` (export PDF de Power BI Desktop), ajoutée à la présentation et au README.
 
 **Pourquoi ces choix.** Des barres à 100 % comparent la composition du PNB sans que la taille des banques écrase les
 petites (BTE, Wifak). Les trois parts sont les mesures déjà vérifiées au groupe 3 (3.5). L'histogramme dans le temps
