@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "468f763ed1797d654128",
   "position": {
-    "x": 786,
+    "x": 666,
     "y": 162,
     "z": 2004,
     "height": 522,
-    "width": 478,
+    "width": 598,
     "tabOrder": 2004
   },
   "visual": {
@@ -185,7 +185,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "56D"
+                  "Value": "60D"
                 }
               }
             }
@@ -199,7 +199,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "62D"
+                  "Value": "76D"
                 }
               }
             }
@@ -213,7 +213,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "62D"
+                  "Value": "80D"
                 }
               }
             }
@@ -227,7 +227,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "66D"
+                  "Value": "84D"
                 }
               }
             }
@@ -241,7 +241,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "58D"
+                  "Value": "72D"
                 }
               }
             }
@@ -255,7 +255,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "62D"
+                  "Value": "80D"
                 }
               }
             }
@@ -269,7 +269,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "66D"
+                  "Value": "92D"
                 }
               }
             }
@@ -308,6 +308,19 @@
               }
             ],
             "metadata": "Mesures.Taux seances sans transaction"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
           }
         }
       ]

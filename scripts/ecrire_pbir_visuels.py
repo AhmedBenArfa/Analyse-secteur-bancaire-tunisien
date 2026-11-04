@@ -541,27 +541,30 @@ def bourse():
            objets={"data": {"mode": texte("Between")}, "header": {"text": texte("Années")}})
     # rendement total en base 100 au début de la période, une courbe par banque, axe des dates continu
     courbes = "d7429c44a33684706703"
-    regler(page, courbes, (16, 162, 760, 260),
+    regler(page, courbes, (16, 162, 640, 260),
            {"Dim_Date.Date": "Date", "Mesures.Indice rendement total": "Rendement total (base 100)",
             "Dim_Banque.code_banque": "Banque"},
            titre="Rendement total, dividendes réinvestis (base 100 au début de la période)",
            objets={"categoryAxis": {"axisType": texte("Scalar")}})
     # nuage : deux taux annuels sur la même période (2021–2025), sans effet du segment des années
     nuage = "05c968b036168e9a5109"
-    regler(page, nuage, (16, 432, 760, 252),
-           {"Dim_Banque.code_banque": "Banque", "Mesures.TCAM PNB 2020-2025": "Croissance annuelle du PNB",
-            "Mesures.Rendement annuel moyen": "Rendement annuel en Bourse", "Mesures.Rendement total": "Rendement total",
+    regler(page, nuage, (16, 432, 640, 252),
+           {"Dim_Banque.code_banque": "Banque", "Mesures.TCAM PNB 2020-2025": "PNB, par an",
+            "Mesures.Rendement annuel moyen": "Bourse, par an", "Mesures.Rendement total": "Rendement total",
             "Mesures.Taux seances sans transaction": "Séances sans transaction"},
            titre="Rendement annuel en Bourse et croissance annuelle du PNB, 2021–2025",
            objets={"categoryLabels": {"show": litteral("true")}})
     filtre_colonne(page, nuage, "Dim_Date", "Annee", [f"{a}L" for a in range(2021, 2026)], "annees_2021_2025")
     # tableau : trié par rendement total, liquidité en rouge au-delà de 20 % de séances sans transaction
     tableau = "468f763ed1797d654128"
-    colonnes = [("Dim_Banque.code_banque", "Banque", 56), ("Mesures.Dernier cours", "Cours (DT)", 62),
-                ("Mesures.Performance prix", "Prix", 62), ("Mesures.Rendement total", "Total", 66),
-                ("Mesures.Rendement annuel moyen", "Par an", 58), ("Mesures.Volatilite annualisee", "Volatilité", 62),
-                ("Mesures.Taux seances sans transaction", "Sans transaction", 66)]
-    regler(page, tableau, (786, 162, 478, 522), {q: n for q, n, _ in colonnes}, titre="Performance, risque et liquidité")
+    # 598 de large (à 478, valeurs et en-têtes sur deux lignes, défilement) ; pas de ligne de total (une somme de
+    # performances de banques différentes n'a pas de sens)
+    colonnes = [("Dim_Banque.code_banque", "Banque", 60), ("Mesures.Dernier cours", "Cours (DT)", 76),
+                ("Mesures.Performance prix", "Prix", 80), ("Mesures.Rendement total", "Total", 84),
+                ("Mesures.Rendement annuel moyen", "Par an", 72), ("Mesures.Volatilite annualisee", "Volatilité", 80),
+                ("Mesures.Taux seances sans transaction", "Sans transaction", 92)]
+    regler(page, tableau, (666, 162, 598, 522), {q: n for q, n, _ in colonnes}, titre="Performance, risque et liquidité",
+           objets={"total": {"totals": litteral("false")}})
     p = PAGES / page / "visuals" / tableau / "visual.json"
     d = lire(p)
     d["visual"].setdefault("objects", {})["columnWidth"] = [

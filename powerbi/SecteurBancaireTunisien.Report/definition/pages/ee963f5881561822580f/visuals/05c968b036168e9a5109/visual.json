@@ -6,7 +6,7 @@
     "y": 432,
     "z": 2003,
     "height": 252,
-    "width": 760,
+    "width": 640,
     "tabOrder": 2003
   },
   "visual": {
@@ -83,7 +83,7 @@
               "queryRef": "Mesures.TCAM PNB 2020-2025",
               "nativeQueryRef": "TCAM PNB 2020-2025",
               "active": true,
-              "displayName": "Croissance annuelle du PNB"
+              "displayName": "PNB, par an"
             }
           ]
         },
@@ -102,7 +102,7 @@
               },
               "queryRef": "Mesures.Rendement annuel moyen",
               "nativeQueryRef": "Rendement annuel moyen",
-              "displayName": "Rendement annuel en Bourse"
+              "displayName": "Bourse, par an"
             }
           ]
         }
