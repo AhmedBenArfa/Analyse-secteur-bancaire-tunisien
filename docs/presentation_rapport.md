@@ -14,8 +14,8 @@ UBCI, UIB, Wifak), **trimestre par trimestre, du T4 2019 au T3 2026**. Il cherch
 6. Quel a été l'effet du Covid, et comment le secteur s'est-il redressé ?
 7. La Bourse récompense-t-elle les banques les plus performantes ?
 
-Quatre pages sont terminées et vérifiées (section 4) ; elles répondent aux questions 1, 2, 3, 4 (concentration) et
-6. Les cinq autres pages sont prévues (section 5).
+Cinq pages sont terminées et vérifiées (section 4) ; elles répondent aux questions 1, 2, 3, 4 et 6. Les quatre
+autres pages sont prévues (section 5).
 
 ## 2. Les données : publications officielles, tracées et contrôlées
 
@@ -56,7 +56,7 @@ toutes) ; le ROE et le ROA ne sont que semestriels et annuels.
 - **Modèle en étoile** : table des dates (avec la période Covid), dimensions banques et indicateurs, tables de
   faits (indicateurs, variations comparables, états financiers, cours, contrôles) ; 32 relations, dont une inactive
   activée par `USERELATIONSHIP`.
-- **154 mesures DAX**, rangées en dossiers (bases, secteur, ratios, croissances, rentabilité, Bourse, qualité), avec
+- **155 mesures DAX**, rangées en dossiers (bases, secteur, ratios, croissances, rentabilité, Bourse, qualité), avec
   des règles écrites : totaux du secteur, parts de marché et rangs seulement si les 12 banques sont présentes ;
   chiffres annuels tirés du cumul publié, jamais de la somme des trimestres ; aucun vide remplacé par zéro.
 - **Documentation** : chaque requête, chaque mesure et chaque page sont expliquées dans
@@ -151,11 +151,32 @@ que chaque barre fasse exactement 100 % : il n'existe que chez la BTE (gains de 
 Le contrôle « PNB = somme des composantes », ajouté pour cette page, a fait trouver une erreur de lecture d'un PDF
 (Wifak, T2 2026 : deux nombres collés), corrigée avant la construction de la page.
 
+### Page 5 — Bilan : crédits et dépôts
+
+![Page 5 : bilan, crédits et dépôts](captures/page5_bilan.png)
+
+**Ce que la page montre** : comment chaque banque finance ses crédits par les dépôts de sa clientèle, de quoi sont
+faits ces dépôts, et comment le bilan du secteur a évolué depuis 2019.
+
+- Ratio crédits / dépôts par banque au T3 2026, avec une ligne à 100 % (crédits = dépôts) : de **98,6 %** (BNA),
+  98,5 % (BH) et 98,2 % (Wifak) à **53,1 %** (Attijari) et 56,7 % (BIAT) ; toutes les banques sont sous 100 %.
+- Structure des dépôts : la part des dépôts à vue (ressources peu coûteuses) va de **52,7 %** (UBCI) à **17,4 %**
+  (BTE, dont deux tiers des dépôts sont à terme ou autres).
+- Secteur (carte) : crédits / dépôts **77,0 %**, dépôts à vue **36,8 %** des dépôts.
+- Dans le temps : en 2019 et 2020, les crédits dépassaient les dépôts (ratio de **103,3 %** fin 2019) ; les dépôts
+  passent devant au T2 2021, puis l'écart se creuse : de fin 2022 au T3 2026, les dépôts passent de 85 143 à
+  **112 896 MDT** (+33 %), les crédits de 83 044 à **86 880 MDT** (+5 %), et le ratio tombe à 77,0 %. Les données
+  montrent l'écart ; elles n'en donnent pas la cause, que le rapport n'avance pas.
+
+**Choix de conception** : seules 4 banques publient leurs dépôts à terme à part ; pour que la structure couvre les
+12 banques, une mesure prend le reste des dépôts (dépôts − à vue − épargne), banque par banque, et reste vide si une
+banque n'a pas publié le détail, plutôt que de mélanger des banques avec et sans détail. Les encours sont pris à la
+fin de chaque trimestre, jamais additionnés dans le temps.
+
 ## 5. Suite du rapport
 
 | Page | Contenu prévu | Question |
 |---|---|---|
-| 5. Bilan | crédits, dépôts, ratio crédits / dépôts, structure des dépôts, parts de marché | 4 |
 | 6. Bourse | cours ajustés, performance, volatilité et liquidité du titre ; performance boursière face à la croissance du PNB | 7 |
 | 7. Fiche banque | tous les indicateurs d'une banque (clic droit depuis une autre page), définitions propres à la banque, chaîne de contrôle de l'actionnariat | 1 à 5 |
 | 8. Rentabilité | ROE et ROA semestriels et annuels, rentabilité face à l'efficacité | 5 |

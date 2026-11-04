@@ -1594,7 +1594,7 @@ Secteur dans le temps (12 banques) : marge d'intérêts 58,2 % du PNB au 2019T4,
 41,2 % au 2024T4, 33,4 % au 2026T3 ; portefeuille 21,5 %, 27,4 %, 31,3 %, 38,8 %, 47,0 % ; commissions stables entre 18 %
 et 20 %. Les données montrent le déplacement ; elles n'en donnent pas la cause, que le rapport n'avance pas.
 
-### 4.6 Page 5 : Bilan (en construction)
+### 4.6 Page 5 : Bilan (terminée le 04/11/2026)
 
 **But** : comment chaque banque finance ses crédits par les dépôts de sa clientèle, de quoi sont faits ces dépôts,
 et comment le bilan du secteur a évolué depuis 2019 (spécification 9, page 5 ; question 4).
@@ -1625,7 +1625,9 @@ de la page 1 (`copier_visuel`, « Dernier trimestre complet »).
 | Crédits et dépôts dans le temps | 836, 162, 428 × 330 | graphique en courbes : axe X `Dim_Date[Date]`, axe Y `Credits`, `Depots` (`1. Bases\Encours`) ; info-bulle `Credits / Depots` | axe continu ; trimestres publiés seulement (`Trimestre_Publie`) ; le segment du trimestre ne le filtre pas (interaction « Aucun ») ; titre « Crédits et dépôts des banques choisies (MDT) » |
 | Ratios au trimestre | 836, 502, 428 × 182 | carte (nouvelle) : `Credits / Depots`, `Part depots a vue` (`3. Ratios\Bilan`) | libellés « Crédits / dépôts », « Part des dépôts à vue » |
 
-**Visuels créés dans Power BI Desktop (04/11/2026), réglés par `python scripts/ecrire_pbir_visuels.py bilan`** : positions ci-dessus, titres, noms affichés, étiquettes du ratio, tri des deux graphiques à barres, axe des dates continu et trimestres publiés pour la courbe, interaction segment du trimestre → courbe « Aucun ». La ligne à 100 % a été ajoutée une fois dans Power BI (volet Analyse › Ligne constante X, valeur 1) pour relever son nom dans le fichier : `y1AxisReferenceLine` (sur un graphique à barres horizontales, l'axe des valeurs est affiché en X mais reste « y1 » dans le fichier) ; l'outil la reprend avec un nom affiché, une couleur et un pointillé (nouvelle fonction `ligne_constante`). À vérifier sur la capture.
+**Visuels créés dans Power BI Desktop (04/11/2026), réglés par `python scripts/ecrire_pbir_visuels.py bilan`** : positions ci-dessus, titres, noms affichés, étiquettes du ratio, tri des deux graphiques à barres, axe des dates continu et trimestres publiés pour la courbe, interaction segment du trimestre → courbe « Aucun ». La ligne à 100 % a été ajoutée une fois dans Power BI (volet Analyse › Ligne constante X, valeur 1) pour relever son nom dans le fichier : `y1AxisReferenceLine` (sur un graphique à barres horizontales, l'axe des valeurs est affiché en X mais reste « y1 » dans le fichier) ; l'outil la reprend avec un nom affiché, une couleur et un pointillé (nouvelle fonction `ligne_constante`).
+
+**Première capture (04/11/2026)** : toutes les valeurs du tableau ci-dessous justes. Deux retouches : le nom de la ligne chevauchait la barre de la BNA (libellé masqué, `dataLabelShow` false ; le titre dit « pointillé : 100 % ») et le pointillé barrait les étiquettes proches de 100 % (étiquettes dans le bout des barres, en blanc : `labels.labelPosition` 'InsideEnd' et `labels.color`). **Vérifiée le 04/11/2026** (deuxième capture) ; capture `docs/captures/page5_bilan.png`, ajoutée à la présentation et au README. Les dépôts du secteur dépassent les crédits à partir du T2 2021 (99,1 %).
 
 **Pourquoi ces choix.** Le ratio crédits / dépôts dit si une banque finance ses crédits par ses dépôts (sous 100 %)
 ou doit trouver d'autres ressources (emprunts, refinancement) ; la ligne à 100 % en donne la lecture d'un coup d'œil.

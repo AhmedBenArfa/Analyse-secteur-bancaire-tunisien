@@ -6,9 +6,9 @@
 > activity reports (PDF, published through the CMF and the BVMT), their financial statements and
 > daily stock prices. A Python pipeline extracts every figure with its source file and page; revised
 > figures, consistency checks and manual entries are tracked. The data layer, the Power Query layer
-> (22 queries), the star schema and the DAX measures (154) are complete; four of the nine report
-> pages are finished (sector overview, bank ranking, 2020–2026 trends, revenue mix) and the others
-> are in progress. Figures are provisional and unaudited.
+> (22 queries), the star schema and the DAX measures (155) are complete; five of the nine report
+> pages are finished (sector overview, bank ranking, 2020–2026 trends, revenue mix, loans and
+> deposits) and the others are in progress. Figures are provisional and unaudited.
 > Documentation is in French.
 
 ![Page « Vue d'ensemble du secteur » du rapport Power BI](docs/captures/page1_vue_ensemble.png)
@@ -69,7 +69,7 @@ un fichier Excel et une URL.
 
 ## Aperçu du rapport
 
-Quatre pages sur neuf sont terminées et vérifiées (captures exportées de Power BI Desktop, données au
+Cinq pages sur neuf sont terminées et vérifiées (captures exportées de Power BI Desktop, données au
 T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, dans
 [docs/Presentation_rapport.pdf](docs/Presentation_rapport.pdf).
 
@@ -79,12 +79,15 @@ T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, 
 | [Classement des banques](docs/captures/page2_classement.png) | rangs au PNB et au coefficient d'exploitation harmonisé, écart à la médiane en couleur ; nuage croissance × efficacité animé trimestre par trimestre |
 | [Évolution 2020–2026](docs/captures/page3_evolution.png) | courbes par banque sur l'indicateur choisi (paramètre de champ), période Covid marquée, révisions et événements qui expliquent les sauts de série |
 | [Structure du PNB](docs/captures/page4_structure_pnb.png) | part de la marge d'intérêts, des commissions et du portefeuille dans le PNB, par banque et pour le secteur de 2019 à 2026 (marge d'intérêts de 58,2 % à 33,4 % du PNB, portefeuille de 21,5 % à 47,0 %) |
+| [Bilan : crédits et dépôts](docs/captures/page5_bilan.png) | ratio crédits / dépôts et structure des dépôts par banque ; crédits et dépôts du secteur depuis 2019 (ratio de 103,3 % fin 2019 à 77,0 % au T3 2026) |
 
 ![Page « Classement des banques »](docs/captures/page2_classement.png)
 
 ![Page « Évolution 2020–2026 »](docs/captures/page3_evolution.png)
 
 ![Page « Structure du PNB »](docs/captures/page4_structure_pnb.png)
+
+![Page « Bilan : crédits et dépôts »](docs/captures/page5_bilan.png)
 
 ## Chiffres clés (au 30/10/2026)
 
@@ -98,7 +101,7 @@ T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, 
 | Valeurs saisies à la main | 682 (13 documents BTE publiés en image, deux valeurs STB superposées au libellé, deux valeurs Wifak dont les colonnes se touchent), toutes passées aux contrôles de cohérence ; un document relu une seconde fois en entier (BTE 2020T2) |
 | États financiers | 168 arrêtés, 504 valeurs retenues (résultat net, total de l'actif, capitaux propres), aucune vide |
 | Cours boursiers | 1 955 séances par banque, du 02/01/2019 au 20/10/2026 ; 63 opérations sur titres, chacune avec le cours de référence publié |
-| Modèle Power BI | 22 requêtes Power Query, table des dates (période Covid), 32 relations, 154 mesures DAX vérifiées une à une contre des valeurs calculées à part |
+| Modèle Power BI | 22 requêtes Power Query, table des dates (période Covid), 32 relations, 155 mesures DAX vérifiées une à une contre des valeurs calculées à part |
 | Tests automatiques | 48, tous réussis |
 
 ## Démarche qualité
@@ -166,8 +169,8 @@ puisse s'ouvrir après un simple clonage du dépôt. Pour reproduire les donnée
 | États financiers (ROE, ROA), cours boursiers, opérations sur titres | Terminé |
 | Examen des écarts du contrôle annuel, actionnariat des banques | Terminé |
 | Requêtes Power Query (22 requêtes : dossier, Excel et URL ; dépivotage, fusions, colonnes conditionnelles, fonction personnalisée) | Terminé (détail et décisions : [docs/feuille_de_route.md](docs/feuille_de_route.md)) |
-| Modèle en étoile, mesures DAX (32 relations, 154 mesures) | Terminé |
-| Pages du rapport | En cours : 4 pages sur 9 terminées (vue d'ensemble, classement, évolution, structure du PNB) ; suivantes : bilan, Bourse, fiche banque, rentabilité, qualité des données |
+| Modèle en étoile, mesures DAX (32 relations, 155 mesures) | Terminé |
+| Pages du rapport | En cours : 5 pages sur 9 terminées (vue d'ensemble, classement, évolution, structure du PNB, bilan) ; suivantes : Bourse, fiche banque, rentabilité, qualité des données |
 | Note de validation par échantillon (`docs/validation.md`), captures du rapport | À faire |
 
 ## Limites
