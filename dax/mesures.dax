@@ -115,6 +115,20 @@ MEASURE Mesures[Depots terme brut] =
 MEASURE Mesures[Depots terme] =
     CALCULATE ( [Depots terme brut], LASTNONBLANK ( Dim_Date[Date], [Depots terme brut] ) )
 
+// [1. Bases\Encours | #,0.000] Dépôts hors dépôts à vue et d'épargne (dépôts à terme, publiés à part par une partie des banques seulement, et autres dépôts), banque par banque ; vide si une banque de la sélection a des dépôts sans leur détail à vue et d'épargne
+MEASURE Mesures[Depots terme et autres] =
+    VAR Lignes =
+        ADDCOLUMNS (
+            VALUES ( Dim_Banque[code_banque] ),
+            "@Depots", [Depots],
+            "@Vue", [Depots a vue],
+            "@Epargne", [Depots epargne]
+        )
+    VAR AvecDepots = FILTER ( Lignes, NOT ISBLANK ( [@Depots] ) )
+    VAR SansDetail = COUNTROWS ( FILTER ( AvecDepots, ISBLANK ( [@Vue] ) || ISBLANK ( [@Epargne] ) ) )
+    RETURN
+        IF ( ISBLANK ( SansDetail ), SUMX ( AvecDepots, [@Depots] - [@Vue] - [@Epargne] ) )
+
 // [1. Bases\Intermédiaires | #,0.000] Emprunts et ressources spéciales à une date d'arrêté
 MEASURE Mesures[Emprunts brut] =
     CALCULATE ( [Valeur Cumul], Dim_Indicateur[code_indicateur] = "EMPRUNTS" )

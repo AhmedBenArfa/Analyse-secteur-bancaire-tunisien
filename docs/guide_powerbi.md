@@ -756,7 +756,7 @@ rendent la somme des trimestres fausse), et un encours ne s'additionne pas dans 
 | Flux du trimestre | `Marge interets`, `Marge commissions` | intérêts perçus − encourus, commissions en produits − encourues ; **vide si l'une des deux manque** (en DAX, `vide − x` vaut `−x` : le test `ISBLANK` empêche qu'un vide soit lu comme zéro) |
 | Flux cumulés | `PNB depuis debut annee` | cumul publié à la dernière date de la sélection qui a une valeur (`LASTNONBLANK`) |
 | Flux cumulés | `PNB annuel` | cumul publié au T4 (31/12) de l'année sélectionnée ; vide pour 2026 (pas encore de T4) |
-| Encours | `Credits`, `Depots`, `Depots a vue`, `Depots epargne`, `Depots terme`, `Emprunts` | solde à la dernière date de la sélection qui a une valeur ; dépôts à terme publiés par une partie des banques seulement |
+| Encours | `Credits`, `Depots`, `Depots a vue`, `Depots epargne`, `Depots terme`, `Depots terme et autres`, `Emprunts` | solde à la dernière date de la sélection qui a une valeur ; dépôts à terme publiés par une partie des banques seulement ; `Depots terme et autres` = dépôts − à vue − épargne, banque par banque (ajoutée le 04/11/2026 pour la page 5, 4.6) |
 | Fiche banque | `Capitaux propres hors resultat de la periode` | capitaux propres trimestriels, définition propre à chaque banque (`Definitions_Capitaux_Propres`) : jamais dans une comparaison entre banques (capitaux propres du bilan, groupe ROE/ROA) |
 | Intermédiaires | `Valeur Trim`, `Valeur Cumul`, `PNB cumul brut` et les `… brut` des encours | valeur à une date, avant le choix de la dernière date |
 
@@ -1593,3 +1593,64 @@ banques filtre les trois visuels : sans choix, l'histogramme et la carte montren
 Secteur dans le temps (12 banques) : marge d'intérêts 58,2 % du PNB au 2019T4, 54,2 % au 2020T2, 49,2 % au 2022T4,
 41,2 % au 2024T4, 33,4 % au 2026T3 ; portefeuille 21,5 %, 27,4 %, 31,3 %, 38,8 %, 47,0 % ; commissions stables entre 18 %
 et 20 %. Les données montrent le déplacement ; elles n'en donnent pas la cause, que le rapport n'avance pas.
+
+### 4.6 Page 5 : Bilan (en construction)
+
+**But** : comment chaque banque finance ses crédits par les dépôts de sa clientèle, de quoi sont faits ces dépôts,
+et comment le bilan du secteur a évolué depuis 2019 (spécification 9, page 5 ; question 4).
+
+**Structure des dépôts.** Toutes les banques publient leurs dépôts à vue et d'épargne (12 banques sur 12 à chaque
+trimestre, sauf la BTE de 2020T1 à 2021T3 : détail du bilan non saisi, guide 1) ; les dépôts à terme ne sont publiés
+à part que par 3 à 5 banques selon le trimestre (4 au T3 2026 : BT, BTE, UIB, Wifak), les autres les fondent dans
+« autres dépôts ». Pour que la structure couvre les 12 banques, la page montre les dépôts à vue, les dépôts d'épargne
+et le reste : mesure `Depots terme et autres` (ajoutée le 04/11/2026, dossier `1. Bases\Encours`) = dépôts − dépôts
+à vue − dépôts d'épargne, calculée banque par banque (`ADDCOLUMNS` sur `VALUES ( Dim_Banque[code_banque] )`, puis
+`SUMX`) et vide dès qu'une banque de la sélection a des dépôts sans leur détail (`COUNTROWS` des banques sans
+détail), pour qu'un total de plusieurs banques ne prenne jamais les dépôts d'une banque sans leurs composantes. Le
+reste n'est négatif pour aucune banque ni aucun trimestre. Limite : `Part depots a vue` (3.5) n'a pas cette garde ;
+pour les 12 banques ensemble entre 2020T1 et 2021T3, elle compte les dépôts de la BTE sans ses dépôts à vue (part du
+secteur un peu sous-estimée ces trimestres-là).
+
+**Création de la page** : `python scripts/ecrire_pbir_visuels.py nouvelle_page "Bilan" "Bilan : crédits et dépôts"`
+(page `f829ffbfd733d63d36b1` ; fond, titre et segment des banques copiés de la page 1) et copie du segment du trimestre
+de la page 1 (`copier_visuel`, « Dernier trimestre complet »).
+
+**Mise en page** (positions : x, y, largeur × hauteur) :
+
+| Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
+|---|---|---|---|
+| Fond, titre, segments du trimestre et des banques | comme la page 1 | copiés de la page 1 | titre « Bilan : crédits et dépôts » |
+| Crédits / dépôts par banque | 16, 162, 400 × 522 | graphique à barres groupées : axe Y `Dim_Banque[code_banque]`, axe X `Credits / Depots` (`3. Ratios\Bilan`) ; info-bulles `Credits`, `Depots` (`1. Bases\Encours`), `Part de marche credits`, `Part de marche depots` (`2. Secteur\Parts de marché`), `Var Credits A/A %`, `Var Depots A/A %` (`4. Croissances\Sur un an`) | tri par `Credits / Depots` décroissant ; étiquettes de données ; ligne constante à 100 % (la banque prête autant qu'elle collecte) ; titre « Crédits / dépôts par banque » |
+| Structure des dépôts par banque | 426, 162, 400 × 522 | graphique à barres empilées 100 % : axe Y `Dim_Banque[code_banque]`, axe X `Depots a vue`, `Depots epargne`, `Depots terme et autres` (`1. Bases\Encours`) ; info-bulle `Part depots a vue` (`3. Ratios\Bilan`) | tri par `Part depots a vue` décroissant ; titre « Structure des dépôts par banque » |
+| Crédits et dépôts dans le temps | 836, 162, 428 × 330 | graphique en courbes : axe X `Dim_Date[Date]`, axe Y `Credits`, `Depots` (`1. Bases\Encours`) ; info-bulle `Credits / Depots` | axe continu ; trimestres publiés seulement (`Trimestre_Publie`) ; le segment du trimestre ne le filtre pas (interaction « Aucun ») ; titre « Crédits et dépôts des banques choisies (MDT) » |
+| Ratios au trimestre | 836, 502, 428 × 182 | carte (nouvelle) : `Credits / Depots`, `Part depots a vue` (`3. Ratios\Bilan`) | libellés « Crédits / dépôts », « Part des dépôts à vue » |
+
+**Pourquoi ces choix.** Le ratio crédits / dépôts dit si une banque finance ses crédits par ses dépôts (sous 100 %)
+ou doit trouver d'autres ressources (emprunts, refinancement) ; la ligne à 100 % en donne la lecture d'un coup d'œil.
+Les montants et les parts de marché, déjà sur la page 1 pour le secteur, restent dans l'info-bulle : la page compare
+des structures, pas des tailles. Les crédits et les dépôts sont des encours : la courbe prend la valeur à la fin de
+chaque trimestre, jamais une somme dans le temps (`LASTNONBLANK`, 3.3). Le segment des banques filtre les quatre
+visuels : sans choix, la courbe et la carte montrent les 12 banques ensemble.
+
+**Valeurs attendues au T3 2026** (calculées à part depuis `donnees_publiees/`, encours au 30/09/2026, MDT) :
+
+| Banque | Crédits | Part des crédits | Sur un an | Dépôts | Part des dépôts | Sur un an | Crédits / dépôts | À vue | Épargne | Terme et autres |
+|---|---|---|---|---|---|---|---|---|---|---|
+| BNA | 15 597,5 | 17,95 % | +3,1 % | 15 819,1 | 14,01 % | +15,1 % | 98,6 % | 31,0 % | 31,8 % | 37,2 % |
+| BH | 10 297,4 | 11,85 % | −0,7 % | 10 457,1 | 9,26 % | +9,9 % | 98,5 % | 28,6 % | 42,2 % | 29,2 % |
+| Wifak | 1 568,0 | 1,80 % | +21,5 % | 1 596,8 | 1,41 % | +17,2 % | 98,2 % | 27,7 % | 31,8 % | 40,5 % |
+| BT | 6 759,5 | 7,78 % | +8,4 % | 7 103,7 | 6,29 % | −0,3 % | 95,2 % | 30,5 % | 36,7 % | 32,8 % |
+| UIB | 6 517,3 | 7,50 % | +3,7 % | 7 048,2 | 6,24 % | −1,2 % | 92,5 % | 31,5 % | 40,1 % | 28,4 % |
+| UBCI | 3 864,1 | 4,45 % | +5,9 % | 4 300,5 | 3,81 % | +8,6 % | 89,9 % | 52,7 % | 27,6 % | 19,7 % |
+| BTE | 1 214,9 | 1,40 % | +14,3 % | 1 393,0 | 1,23 % | +10,7 % | 87,2 % | 17,4 % | 16,6 % | 66,0 % |
+| AB | 7 545,2 | 8,68 % | +4,0 % | 9 312,6 | 8,25 % | +8,1 % | 81,0 % | 29,3 % | 32,6 % | 38,2 % |
+| ATB | 4 997,1 | 5,75 % | −4,0 % | 6 759,4 | 5,99 % | −0,9 % | 73,9 % | 32,0 % | 28,9 % | 39,1 % |
+| STB | 8 625,3 | 9,93 % | −1,6 % | 13 209,1 | 11,70 % | +10,4 % | 65,3 % | 35,4 % | 39,5 % | 25,2 % |
+| BIAT | 13 324,4 | 15,34 % | +3,4 % | 23 517,6 | 20,83 % | +9,0 % | 56,7 % | 46,2 % | 25,8 % | 28,1 % |
+| Attijari | 6 569,3 | 7,56 % | −5,1 % | 12 378,7 | 10,96 % | +9,4 % | 53,1 % | 48,0 % | 33,7 % | 18,3 % |
+| **12 banques** | **86 880,0** | 100 % | **+2,1 %** | **112 896,0** | 100 % | **+8,2 %** | **77,0 %** | **36,8 %** | **33,0 %** | **30,2 %** |
+
+Dans le temps (12 banques, fin de trimestre) : crédits 68 389 MDT au 2019T4, 73 720 au 2020T4, 83 044 au 2022T4,
+84 417 au 2024T4, 86 880 au 2026T3 ; dépôts 66 198, 72 376, 85 143, 99 233, 112 896 ; crédits / dépôts 103,3 %,
+101,9 %, 97,5 %, 85,1 %, 77,0 % : les dépôts ont crû bien plus vite que les crédits depuis 2022. Les données montrent
+l'écart ; elles n'en donnent pas la cause, que le rapport n'avance pas.
