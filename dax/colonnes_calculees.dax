@@ -32,3 +32,23 @@ COLUMN Dim_Banque[Definition_Capitaux_Propres] =
         Definitions_Capitaux_Propres[description],
         Definitions_Capitaux_Propres[banque], Dim_Banque[code_banque]
     )
+
+// [Chaine_Controle | string | -] Chemin du nœud depuis la racine, noms séparés par « | » (PATH : suit la colonne parent jusqu'au nœud sans parent)
+COLUMN Chaine_Controle[Chemin] =
+    PATH ( Chaine_Controle[noeud], Chaine_Controle[parent] )
+
+// [Chaine_Controle | int64 | 0] Nombre de niveaux du chemin (PATHLENGTH) : 1 pour le secteur, 4 pour une banque rattachée à un groupe
+COLUMN Chaine_Controle[Profondeur] =
+    PATHLENGTH ( Chaine_Controle[Chemin] )
+
+// [Chaine_Controle | string | -] Catégorie d'actionnariat du nœud : 2e élément du chemin (PATHITEM), vide pour le secteur
+COLUMN Chaine_Controle[Categorie] =
+    PATHITEM ( Chaine_Controle[Chemin], 2 )
+
+// [Chaine_Controle | string | -] Chemin écrit pour l'affichage (« Secteur › groupe étranger › Attijariwafa bank › TJARI »)
+COLUMN Chaine_Controle[Chaine] =
+    SUBSTITUTE ( Chaine_Controle[Chemin], "|", " › " )
+
+// [Chaine_Controle | boolean | -] Vrai si le nœud est sous la catégorie « groupe étranger » (PATHCONTAINS : le nom figure dans le chemin)
+COLUMN Chaine_Controle[Controle_Etranger] =
+    PATHCONTAINS ( Chaine_Controle[Chemin], "groupe étranger" )

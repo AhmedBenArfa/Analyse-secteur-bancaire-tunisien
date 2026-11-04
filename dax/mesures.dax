@@ -148,6 +148,29 @@ MEASURE Mesures[Capitaux propres hors resultat de la periode] =
         LASTNONBLANK ( Dim_Date[Date], [Capitaux propres hors resultat brut] )
     )
 
+// [1. Bases\Fiche banque | texte] Nom et code de la banque de la fiche ; sans banque unique (page ouverte directement), la façon d'y arriver
+MEASURE Mesures[Banque affichee] =
+    IF (
+        HASONEVALUE ( Dim_Banque[code_banque] ),
+        SELECTEDVALUE ( Dim_Banque[nom] ) & " (" & SELECTEDVALUE ( Dim_Banque[code_banque] ) & ")",
+        "Clic droit sur une banque dans une autre page › Extraire › Fiche banque"
+    )
+
+// [1. Bases\Fiche banque | texte] Chaîne de contrôle de la banque (table Chaine_Controle, colonne Chaine : PATH) ; vide sans banque unique
+MEASURE Mesures[Chaine de controle] =
+    VAR Banque = SELECTEDVALUE ( Dim_Banque[code_banque] )
+    RETURN
+        IF ( NOT ISBLANK ( Banque ), LOOKUPVALUE ( Chaine_Controle[Chaine], Chaine_Controle[code_banque], Banque ) )
+
+// [1. Bases\Fiche banque | texte] Actionnaire de référence en vigueur, sa part du capital et la date de cette part ; vide sans banque unique
+MEASURE Mesures[Actionnaire principal] =
+    IF (
+        HASONEVALUE ( Dim_Banque[code_banque] ),
+        SELECTEDVALUE ( Dim_Banque[actionnaire_reference] ) & " : "
+            & FORMAT ( SELECTEDVALUE ( Dim_Banque[part_capital_pct] ), "0.00" ) & " % du capital (au "
+            & FORMAT ( SELECTEDVALUE ( Dim_Banque[date_actionnariat] ), "dd/mm/yyyy" ) & ")"
+    )
+
 // ===== 2. Secteur : banques présentes, totaux, parts de marché, rangs (spécification 7.4) =====
 // Un total du secteur, une part de marché, un rang ou un indice de concentration n'est calculé que si les
 // 12 banques sont présentes ; sinon il reste vide, et le nombre de banques présentes s'affiche à côté.

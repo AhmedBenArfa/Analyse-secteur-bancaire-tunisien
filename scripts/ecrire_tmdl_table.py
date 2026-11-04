@@ -109,6 +109,13 @@ def ecrire_table_calculee(nom, description, colonnes, tri=None, cachees=(), tabl
         t += ["", "\t\tannotation SummarizationSetBy = User"]
         t += ["", "\t\tannotation UnderlyingDateTimeDataType = Date"] if typ == "date" else []
         t += [""]
+    # colonnes calculées de la table (écrites par ecrire_tmdl_segment.py colonnes) gardées telles quelles, avec leur
+    # lineageTag : réécrire la table ne doit pas les effacer
+    ancien = f.read_bytes().decode("utf-8") if f.exists() else ""
+    calculees = re.findall(
+        r"(?:\t/// [^\r\n]*\r\n)?\tcolumn \w+ =.*?(?=\r\n\t(?:///|column|measure|partition|hierarchy|annotation) )",
+        ancien, re.S)
+    t += [x + NL for x in calculees]
     t += [f"\tpartition {nom} = calculated", "\t\tmode: import", "\t\tsource =", *["\t\t\t\t" + l for l in dax], ""]
     f.write_bytes((NL.join(t) + NL).encode("utf-8"))
     ajouter_au_modele(nom)
@@ -292,6 +299,11 @@ TABLES_CALCULEES = {
                     "importantes des états financiers, une ligne par fait daté",
         colonnes=[("date", "date"), ("banque", "string"), ("indicateur", "string"), ("type_fait", "string"),
                   ("description", "string"), ("montant_mdt", "double"), ("fichier", "string")]),
+    "Chaine_Controle": dict(
+        description="Chaîne de contrôle des banques (DAX, table parent-enfant) : Secteur › catégorie d'actionnariat › "
+                    "groupe de contrôle › banque, actionnariat en vigueur ; chemins par PATH dans ses colonnes "
+                    "calculées (python scripts/ecrire_tmdl_segment.py colonnes, à relancer après cette table)",
+        colonnes=[("noeud", "string"), ("parent", "string"), ("niveau", "string"), ("code_banque", "string")]),
 }
 
 

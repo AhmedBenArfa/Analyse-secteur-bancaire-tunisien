@@ -44,3 +44,38 @@ def test_categories_et_sources():
     for l in lignes():
         assert l["actionnariat"] in CATEGORIES, l
         assert l["actionnaire_reference"] and l["source"] and l["page"], l
+
+
+def chaine_controle():
+    """Même construction que la table calculée Chaine_Controle (dax/Chaine_Controle.dax) : nœud → parent, du secteur
+    aux banques, actionnariat en vigueur (lignes sans date de fin)."""
+    actuel = [l for l in lignes() if l["date_fin"] is None]
+    noeuds = [("Secteur", None)]
+    noeuds += sorted({(l["actionnariat"], "Secteur") for l in actuel})
+    noeuds += sorted({(l["groupe"], l["actionnariat"]) for l in actuel if l["groupe"]})
+    noeuds += [(l["code_banque"], l["groupe"] or l["actionnariat"]) for l in actuel]
+    return noeuds
+
+
+def chemin(noeud, parents):
+    """Équivalent de PATH : noms du nœud racine au nœud, séparés par « | »."""
+    suite = [noeud]
+    while parents[suite[-1]] is not None:
+        suite.append(parents[suite[-1]])
+    return "|".join(reversed(suite))
+
+
+def test_chaine_controle_noeuds_uniques():
+    """PATH exige un nom unique par nœud : un groupe rattaché à deux catégories, ou un nom de groupe égal à une
+    catégorie ou à un code de banque, ferait échouer la table Chaine_Controle de Power BI. Chemins attendus :
+    TJARI « Secteur › groupe étranger › Attijariwafa bank › TJARI » ; 3 banques sous contrôle étranger."""
+    noeuds = chaine_controle()
+    noms = [n for n, _ in noeuds]
+    assert len(noms) == len(set(noms)), "nœud en double dans la chaîne de contrôle"
+    parents = dict(noeuds)
+    assert all(p is None or p in parents for p in parents.values()), "parent absent de la table"
+    chemins = {n: chemin(n, parents) for n in BANQUES}
+    assert chemins["TJARI"] == "Secteur|groupe étranger|Attijariwafa bank|TJARI"
+    assert chemins["BH"] == "Secteur|public|État tunisien|BH"
+    assert sorted(b for b, c in chemins.items() if "|groupe étranger|" in c) == ["ATB", "TJARI", "UIB"]
+    assert all(c.count("|") == 3 for c in chemins.values())

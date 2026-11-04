@@ -1,0 +1,46 @@
+// Auteur : Ahmed Ben Arfa
+// Chaîne de contrôle des banques (table calculée parent-enfant) : un nœud par ligne avec son parent, du secteur aux
+// banques, à partir de l'actionnariat en vigueur (lignes de Banques_Actionnariat sans date de fin) :
+// Secteur › catégorie d'actionnariat › groupe de contrôle › banque. Les colonnes Chemin, Profondeur, Categorie,
+// Chaine et Controle_Etranger (PATH, PATHLENGTH, PATHITEM, PATHCONTAINS) sont des colonnes calculées de cette table
+// (dax/colonnes_calculees.dax). Chaque nœud doit être unique (contrôlé par tests/test_actionnariat.py) : un groupe
+// rattaché à deux catégories ferait échouer PATH.
+VAR Actuel = FILTER ( Banques_Actionnariat, ISBLANK ( Banques_Actionnariat[date_fin] ) )
+VAR Racine = ROW ( "noeud", "Secteur", "parent", BLANK (), "niveau", "secteur", "code_banque", BLANK () )
+VAR Categories =
+    SELECTCOLUMNS (
+        DISTINCT ( SELECTCOLUMNS ( Actuel, "categorie", Banques_Actionnariat[actionnariat] ) ),
+        "noeud", [categorie],
+        "parent", "Secteur",
+        "niveau", "catégorie",
+        "code_banque", BLANK ()
+    )
+VAR Groupes =
+    SELECTCOLUMNS (
+        DISTINCT (
+            SELECTCOLUMNS (
+                FILTER ( Actuel, NOT ISBLANK ( Banques_Actionnariat[groupe] ) ),
+                "groupe", Banques_Actionnariat[groupe],
+                "categorie", Banques_Actionnariat[actionnariat]
+            )
+        ),
+        "noeud", [groupe],
+        "parent", [categorie],
+        "niveau", "groupe",
+        "code_banque", BLANK ()
+    )
+VAR Banques =
+    SELECTCOLUMNS (
+        Actuel,
+        "noeud", Banques_Actionnariat[code_banque],
+        "parent",
+            IF (
+                ISBLANK ( Banques_Actionnariat[groupe] ),
+                Banques_Actionnariat[actionnariat],
+                Banques_Actionnariat[groupe]
+            ),
+        "niveau", "banque",
+        "code_banque", Banques_Actionnariat[code_banque]
+    )
+RETURN
+    UNION ( Racine, Categories, Groupes, Banques )

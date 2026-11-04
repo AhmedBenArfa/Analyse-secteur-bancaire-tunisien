@@ -1177,6 +1177,31 @@ Le modèle compte désormais **32 relations** : les 28 de 3.2, les 3 du journal 
 | 2 | Écart annuel expliqué 22 ; Événement 11 ; Révision des états financiers 8 |
 | 3 | « BIAT, BNA, BH » ; 0.458 ; 3 ; 1 ; vide ; « BTE : Abou Dhabi Investment Authority (ADIA) (01/07/2024) » ; 10 faits en 2020 |
 
+**Chaîne de contrôle : hiérarchie parent-enfant et fonctions `PATH` (04/11/2026, demande de l'utilisateur, page 7).**
+Une hiérarchie parent-enfant range dans une seule table chaque nœud avec le nom de son parent ; les fonctions `PATH`
+reconstituent le chemin de la racine au nœud. Table calculée `Chaine_Controle` (`dax/Chaine_Controle.dax`, écrite
+par `python scripts/ecrire_tmdl_table.py Chaine_Controle`) : `UNION` de quatre tables de même forme (`noeud`,
+`parent`, `niveau`, `code_banque`) tirées de l'actionnariat en vigueur (`Banques_Actionnariat` sans date de fin) :
+la racine « Secteur » (`ROW`, parent vide : `BLANK ()`), les 4 catégories d'actionnariat (`DISTINCT`, parent
+« Secteur »), les 10 groupes de contrôle (parent : leur catégorie) et les 12 banques (parent : leur groupe) ; 27 nœuds.
+Ses colonnes calculées (`dax/colonnes_calculees.dax`, `python scripts/ecrire_tmdl_segment.py colonnes`) :
+
+| Colonne | Formule | TJARI |
+|---|---|---|
+| `Chemin` | `PATH ( noeud, parent )` : noms de la racine au nœud, séparés par « \| » | Secteur\|groupe étranger\|Attijariwafa bank\|TJARI |
+| `Profondeur` | `PATHLENGTH ( Chemin )` : nombre de niveaux | 4 |
+| `Categorie` | `PATHITEM ( Chemin, 2 )` : 2e élément du chemin | groupe étranger |
+| `Chaine` | `SUBSTITUTE ( Chemin, "\|", " › " )` : chemin à afficher | Secteur › groupe étranger › Attijariwafa bank › TJARI |
+| `Controle_Etranger` | `PATHCONTAINS ( Chemin, "groupe étranger" )` | vrai (aussi ATB, UIB) |
+
+`PATH` exige un nom unique par nœud : un groupe rattaché à deux catégories ferait échouer la table. Le test
+`test_chaine_controle_noeuds_uniques` (`tests/test_actionnariat.py`) refait la table depuis `banques.xlsx` et le
+vérifie, avec les chemins de TJARI et de BH et les 3 banques sous contrôle étranger. La table n'a pas de relation :
+la mesure `Chaine de controle` (`1. Bases\Fiche banque`) y cherche le chemin de la banque par `LOOKUPVALUE`. Réécrire
+la table garde ses colonnes calculées (l'outil les reprend avec leur identifiant). Deux autres mesures de la fiche :
+`Banque affichee` (nom et code, ou la façon d'ouvrir la fiche quand aucune banque n'est choisie) et `Actionnaire
+principal` (actionnaire de référence, part du capital et date) ; 161 mesures.
+
 ### 3.11 Fonctions DAX utilisées
 
 Chaque fonction DAX employée dans `dax/*.dax`, ce qu'elle fait ici et où elle sert. Le test
@@ -1238,6 +1263,11 @@ tableau.
 | `FORMAT` | nombre ou date mis en texte selon un format (« 53 % » dans l'avertissement, « 30/09/2026 » dans le titre) | `mesures` |
 | `LEFT` | premiers caractères d'un texte (« revisee » au début de la source d'une valeur) | `mesures` |
 | `DATEDIFF` | nombre d'intervalles (ici : jours) entre deux dates (durée de la période d'un rendement annuel moyen) | `mesures` |
+| `PATH` | chemin d'un nœud depuis la racine d'une hiérarchie parent-enfant (colonnes nœud et parent d'une même table), noms séparés par « \| » | `colonnes_calculees` |
+| `PATHLENGTH`, `PATHITEM`, `PATHCONTAINS` | nombre de niveaux d'un chemin ; n-ième élément d'un chemin ; vrai si un nom figure dans le chemin | `colonnes_calculees` |
+| `SUBSTITUTE` | remplace un texte par un autre dans un texte (« \| » par « › ») | `colonnes_calculees` |
+| `DISTINCT` | lignes distinctes d'une table (une ligne par catégorie, par groupe) | `Chaine_Controle` |
+| `BLANK` | valeur vide (parent de la racine, code de banque des nœuds qui ne sont pas des banques) | `Chaine_Controle` |
 | `ALLSELECTED` | dans `CALCULATE`, les valeurs choisies par les segments et filtres de la page, sans le filtre du point du visuel (première séance de la période pour une base 100) | `mesures` |
 
 ## 4. Pages du rapport : visuels, champs et mesures
@@ -1749,3 +1779,47 @@ Nuage, 2021–2025 (rendement du 04/01/2021 au 31/12/2025 ; croissance du PNB de
 
 Lecture : la Bourse n'a pas suivi la croissance du PNB banque par banque (Wifak, croissance la plus forte, rendement
 parmi les plus faibles ; titre peu liquide) ; les données montrent l'écart, elles n'en donnent pas la cause.
+
+### 4.8 Page 7 : Fiche banque (en construction)
+
+**But** : tout ce qu'on sait d'une banque au trimestre choisi, sur une page qu'on ouvre depuis n'importe quelle
+autre : clic droit sur une banque (barre, ligne de tableau, point) › **Extraire** › **Fiche banque** (spécification 9,
+page 7). C'est aussi la seule page où paraissent les capitaux propres trimestriels et le coefficient publié par la
+banque, avec la définition propre à la banque : ailleurs, les comparaisons utilisent des définitions communes.
+
+**Page d'extraction.** `Dim_Banque[code_banque]` est posé dans la zone **Extraire** de la page (Power BI écrit alors
+la liaison de la page, `pageBinding` de type Drillthrough, et ajoute un bouton « Retour ») ; « Garder tous les
+filtres » reste activé, la fiche s'ouvre donc sur le trimestre de la page d'origine. Pas de segment des banques sur
+cette page (il contredirait le filtre d'extraction) ; le segment du trimestre est copié de la page 1. Ouverte
+directement, sans banque, la page l'indique (`Banque affichee`).
+
+**Création de la page** : `python scripts/ecrire_pbir_visuels.py nouvelle_page "Fiche banque" "Fiche banque"`
+(page `2a6222b60b58c809cb35`), segment des banques retiré (`supprimer_visuel`), segment du trimestre copié de la page 1
+(`copier_visuel`).
+
+**Mise en page** (positions : x, y, largeur × hauteur) :
+
+| Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
+|---|---|---|---|
+| Fond, titre, segment du trimestre | comme la page 1 | copiés de la page 1 | titre « Fiche banque » ; bouton « Retour » en haut à droite |
+| Identité | 16, 162, 1 248 × 110 | carte (nouvelle) : `Banque affichee`, `Chaine de controle`, `Actionnaire principal` (`1. Bases\Fiche banque`) | libellés « Banque », « Chaîne de contrôle », « Actionnaire de référence » |
+| Chiffres du trimestre | 16, 282, 1 248 × 120 | carte (nouvelle) : `PNB` (`1. Bases\Flux du trimestre`), `Coef exploitation harmonise`, `Coef exploitation publie` (`3. Ratios\Coefficient d'exploitation`), `Credits / Depots` (`3. Ratios\Bilan`) | libellés « PNB du trimestre (MDT) », « Coefficient harmonisé », « Coefficient publié par la banque », « Crédits / dépôts » |
+| Indicateurs publiés | 16, 412, 760 × 272 | tableau : `Dim_Indicateur[libelle]`, `Valeur Trim`, `Valeur Cumul` (`1. Bases\Intermédiaires`), `Var A/A cumul %` (`4. Croissances\Sur un an`) | ordre des indicateurs (`ordre`) ; lignes sans valeur masquées (comportement normal d'un tableau) ; titre « Indicateurs publiés au trimestre (MDT) » |
+| Définitions de la banque | 786, 412, 478 × 272 | tableau : `Dim_Banque[Definition_Charges_Operatoires]`, `Dim_Banque[Definition_Capitaux_Propres]` | retour à la ligne ; titre « Ce que la banque publie sous ces noms » |
+
+**Pourquoi ces choix.** Le coefficient publié à côté du coefficient harmonisé montre l'effet des définitions : BH
+publie des charges opératoires sans dotations (les deux coefficients sont égaux), Attijari un reste non détaillé
+(55,3 % publié contre 52,2 % harmonisé). Les capitaux propres trimestriels (ligne du tableau) n'ont pas la même
+définition d'une banque à l'autre (hors résultat de la période, résultat inclus, après affectation au 31/12) : la
+définition est à côté, et ils ne servent à aucune comparaison entre banques (le ROE utilise ceux du bilan, page 8).
+
+**Valeurs attendues au T3 2026** (calculées à part depuis `donnees_publiees/`) :
+
+| Banque | Chaîne de contrôle | PNB du trimestre | Coefficient harmonisé | Coefficient publié | Crédits / dépôts | Capitaux propres trimestriels |
+|---|---|---|---|---|---|---|
+| Attijari | Secteur › groupe étranger › Attijariwafa bank › TJARI | 176,968 | 52,2 % | 55,3 % | 53,1 % | 920,091 |
+| BH | Secteur › public › État tunisien › BH | 165,030 | 47,6 % | 47,6 % | 98,5 % | 1 363,757 |
+| BTE | Secteur › mixte › État tunisien / ADIA › BTE | 19,089 | 82,4 % | 82,4 % | 87,2 % | 29,585 |
+
+Attijari : actionnaire de référence « Andalu Carthage Holding : 57,21 % du capital » ; BTE : « Abou Dhabi Investment
+Authority (ADIA) : 40,80 % du capital » (période en vigueur depuis le 01/07/2024).

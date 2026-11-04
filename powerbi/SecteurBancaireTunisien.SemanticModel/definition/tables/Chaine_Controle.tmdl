@@ -1,0 +1,131 @@
+/// Chaîne de contrôle des banques (DAX, table parent-enfant) : Secteur › catégorie d'actionnariat › groupe de contrôle › banque, actionnariat en vigueur ; chemins par PATH dans ses colonnes calculées (python scripts/ecrire_tmdl_segment.py colonnes, à relancer après cette table)
+table Chaine_Controle
+	lineageTag: b071f955-958a-4bd7-ae42-3ec51c82b262
+
+	column noeud
+		dataType: string
+		lineageTag: fe61fe35-1106-4ec1-889e-e2f364ab2611
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [noeud]
+
+		annotation SummarizationSetBy = User
+
+	column parent
+		dataType: string
+		lineageTag: 6000a20c-0c1c-425b-a5fe-a47f5d4339cb
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [parent]
+
+		annotation SummarizationSetBy = User
+
+	column niveau
+		dataType: string
+		lineageTag: 2829ebd8-9875-4676-9251-a2cf2cfc82a2
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [niveau]
+
+		annotation SummarizationSetBy = User
+
+	column code_banque
+		dataType: string
+		lineageTag: a659cbf8-bd91-4408-9c30-6cc6ffefe53a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [code_banque]
+
+		annotation SummarizationSetBy = User
+
+	/// Chemin du nœud depuis la racine, noms séparés par « | » (PATH : suit la colonne parent jusqu'au nœud sans parent)
+	column Chemin = PATH ( Chaine_Controle[noeud], Chaine_Controle[parent] )
+		dataType: string
+		lineageTag: 8bf9c006-6c18-40d8-8d59-dd2e4afa71fa
+		summarizeBy: none
+
+		annotation SummarizationSetBy = User
+
+	/// Nombre de niveaux du chemin (PATHLENGTH) : 1 pour le secteur, 4 pour une banque rattachée à un groupe
+	column Profondeur = PATHLENGTH ( Chaine_Controle[Chemin] )
+		dataType: int64
+		formatString: 0
+		lineageTag: 9eacacd8-ad35-4144-b6e1-3ea249e75ad6
+		summarizeBy: none
+
+		annotation SummarizationSetBy = User
+
+	/// Catégorie d'actionnariat du nœud : 2e élément du chemin (PATHITEM), vide pour le secteur
+	column Categorie = PATHITEM ( Chaine_Controle[Chemin], 2 )
+		dataType: string
+		lineageTag: 94f82a7b-5d96-4600-a98b-b9d9a2fb5102
+		summarizeBy: none
+
+		annotation SummarizationSetBy = User
+
+	/// Chemin écrit pour l'affichage (« Secteur › groupe étranger › Attijariwafa bank › TJARI »)
+	column Chaine = SUBSTITUTE ( Chaine_Controle[Chemin], "|", " › " )
+		dataType: string
+		lineageTag: efcb6912-da5d-46bf-873d-8350c071e4a3
+		summarizeBy: none
+
+		annotation SummarizationSetBy = User
+
+	/// Vrai si le nœud est sous la catégorie « groupe étranger » (PATHCONTAINS : le nom figure dans le chemin)
+	column Controle_Etranger = PATHCONTAINS ( Chaine_Controle[Chemin], "groupe étranger" )
+		dataType: boolean
+		lineageTag: 30377f67-5218-4216-a9be-baf4208e85a7
+		summarizeBy: none
+
+		annotation SummarizationSetBy = User
+
+	partition Chaine_Controle = calculated
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Chaîne de contrôle des banques (table calculée parent-enfant) : un nœud par ligne avec son parent, du secteur aux
+				// banques, à partir de l'actionnariat en vigueur (lignes de Banques_Actionnariat sans date de fin) :
+				// Secteur › catégorie d'actionnariat › groupe de contrôle › banque. Les colonnes Chemin, Profondeur, Categorie,
+				// Chaine et Controle_Etranger (PATH, PATHLENGTH, PATHITEM, PATHCONTAINS) sont des colonnes calculées de cette table
+				// (dax/colonnes_calculees.dax). Chaque nœud doit être unique (contrôlé par tests/test_actionnariat.py) : un groupe
+				// rattaché à deux catégories ferait échouer PATH.
+				VAR Actuel = FILTER ( Banques_Actionnariat, ISBLANK ( Banques_Actionnariat[date_fin] ) )
+				VAR Racine = ROW ( "noeud", "Secteur", "parent", BLANK (), "niveau", "secteur", "code_banque", BLANK () )
+				VAR Categories =
+				    SELECTCOLUMNS (
+				        DISTINCT ( SELECTCOLUMNS ( Actuel, "categorie", Banques_Actionnariat[actionnariat] ) ),
+				        "noeud", [categorie],
+				        "parent", "Secteur",
+				        "niveau", "catégorie",
+				        "code_banque", BLANK ()
+				    )
+				VAR Groupes =
+				    SELECTCOLUMNS (
+				        DISTINCT (
+				            SELECTCOLUMNS (
+				                FILTER ( Actuel, NOT ISBLANK ( Banques_Actionnariat[groupe] ) ),
+				                "groupe", Banques_Actionnariat[groupe],
+				                "categorie", Banques_Actionnariat[actionnariat]
+				            )
+				        ),
+				        "noeud", [groupe],
+				        "parent", [categorie],
+				        "niveau", "groupe",
+				        "code_banque", BLANK ()
+				    )
+				VAR Banques =
+				    SELECTCOLUMNS (
+				        Actuel,
+				        "noeud", Banques_Actionnariat[code_banque],
+				        "parent",
+				            IF (
+				                ISBLANK ( Banques_Actionnariat[groupe] ),
+				                Banques_Actionnariat[actionnariat],
+				                Banques_Actionnariat[groupe]
+				            ),
+				        "niveau", "banque",
+				        "code_banque", Banques_Actionnariat[code_banque]
+				    )
+				RETURN
+				    UNION ( Racine, Categories, Groupes, Banques )
+
