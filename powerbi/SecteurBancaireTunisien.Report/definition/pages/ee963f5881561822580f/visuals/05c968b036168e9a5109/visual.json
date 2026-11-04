@@ -1,0 +1,182 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "05c968b036168e9a5109",
+  "position": {
+    "x": 31,
+    "y": 490.5,
+    "z": 2003,
+    "height": 150,
+    "width": 182,
+    "tabOrder": 2003
+  },
+  "visual": {
+    "visualType": "scatterChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "code_banque"
+                }
+              },
+              "queryRef": "Dim_Banque.code_banque",
+              "nativeQueryRef": "code_banque",
+              "active": true
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Rendement total"
+                }
+              },
+              "queryRef": "Mesures.Rendement total",
+              "nativeQueryRef": "Rendement total"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Taux seances sans transaction"
+                }
+              },
+              "queryRef": "Mesures.Taux seances sans transaction",
+              "nativeQueryRef": "Taux seances sans transaction"
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "TCAM PNB 2020-2025"
+                }
+              },
+              "queryRef": "Mesures.TCAM PNB 2020-2025",
+              "nativeQueryRef": "TCAM PNB 2020-2025",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Rendement annuel moyen"
+                }
+              },
+              "queryRef": "Mesures.Rendement annuel moyen",
+              "nativeQueryRef": "Rendement annuel moyen"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "da3a3913ee5d1162ba5e",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "TCAM PNB 2020-2025"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ea741ffd665d0402c94d",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Rendement annuel moyen"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "d3d0c5cf61babc38b8ab",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "code_banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "8f48ee134a8cda02a206",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Rendement total"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ac303d605653ee82607c",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Taux seances sans transaction"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

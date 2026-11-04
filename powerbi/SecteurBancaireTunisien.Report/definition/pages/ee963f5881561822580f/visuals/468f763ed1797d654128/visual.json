@@ -1,0 +1,224 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "468f763ed1797d654128",
+  "position": {
+    "x": 290,
+    "y": 281,
+    "z": 2004,
+    "height": 150,
+    "width": 966,
+    "tabOrder": 2004
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "code_banque"
+                }
+              },
+              "queryRef": "Dim_Banque.code_banque",
+              "nativeQueryRef": "code_banque"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Dernier cours"
+                }
+              },
+              "queryRef": "Mesures.Dernier cours",
+              "nativeQueryRef": "Dernier cours"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Performance prix"
+                }
+              },
+              "queryRef": "Mesures.Performance prix",
+              "nativeQueryRef": "Performance prix"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Rendement total"
+                }
+              },
+              "queryRef": "Mesures.Rendement total",
+              "nativeQueryRef": "Rendement total"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Rendement annuel moyen"
+                }
+              },
+              "queryRef": "Mesures.Rendement annuel moyen",
+              "nativeQueryRef": "Rendement annuel moyen"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Volatilite annualisee"
+                }
+              },
+              "queryRef": "Mesures.Volatilite annualisee",
+              "nativeQueryRef": "Volatilite annualisee"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Taux seances sans transaction"
+                }
+              },
+              "queryRef": "Mesures.Taux seances sans transaction",
+              "nativeQueryRef": "Taux seances sans transaction"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "fef8f2af2a8924140b0d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "code_banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "829c4c506ce01bd98c00",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Dernier cours"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "86ac00bea496670aa5b5",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Performance prix"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "3b73be82ce073631cad5",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Rendement total"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "5efcb18b69568bae8905",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Rendement annuel moyen"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "21690b45dddcbb877d93",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Volatilite annualisee"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e0c849d0906e57719601",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Taux seances sans transaction"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}
