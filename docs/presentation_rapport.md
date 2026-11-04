@@ -14,7 +14,7 @@ UBCI, UIB, Wifak), **trimestre par trimestre, du T4 2019 au T3 2026**. Il cherch
 6. Quel a été l'effet du Covid, et comment le secteur s'est-il redressé ?
 7. La Bourse récompense-t-elle les banques les plus performantes ?
 
-Cinq pages sont terminées et vérifiées (section 4) ; elles répondent aux questions 1, 2, 3, 4 et 6. Les quatre
+Six pages sont terminées et vérifiées (section 4) ; elles répondent aux questions 1, 2, 3, 4, 6 et 7. Les trois
 autres pages sont prévues (section 5).
 
 ## 2. Les données : publications officielles, tracées et contrôlées
@@ -56,7 +56,7 @@ toutes) ; le ROE et le ROA ne sont que semestriels et annuels.
 - **Modèle en étoile** : table des dates (avec la période Covid), dimensions banques et indicateurs, tables de
   faits (indicateurs, variations comparables, états financiers, cours, contrôles) ; 32 relations, dont une inactive
   activée par `USERELATIONSHIP`.
-- **155 mesures DAX**, rangées en dossiers (bases, secteur, ratios, croissances, rentabilité, Bourse, qualité), avec
+- **158 mesures DAX**, rangées en dossiers (bases, secteur, ratios, croissances, rentabilité, Bourse, qualité), avec
   des règles écrites : totaux du secteur, parts de marché et rangs seulement si les 12 banques sont présentes ;
   chiffres annuels tirés du cumul publié, jamais de la somme des trimestres ; aucun vide remplacé par zéro.
 - **Documentation** : chaque requête, chaque mesure et chaque page sont expliquées dans
@@ -173,11 +173,35 @@ faits ces dépôts, et comment le bilan du secteur a évolué depuis 2019.
 banque n'a pas publié le détail, plutôt que de mélanger des banques avec et sans détail. Les encours sont pris à la
 fin de chaque trimestre, jamais additionnés dans le temps.
 
+### Page 6 — Bourse : performance et liquidité
+
+![Page 6 : Bourse, performance et liquidité](captures/page6_bourse.png)
+
+**Ce que la page montre** : ce qu'a rapporté l'action de chaque banque, avec quel risque et quelle liquidité, et si
+la Bourse a suivi la croissance de l'activité. Un curseur des années remplace le segment du trimestre : une
+performance se mesure entre deux dates ; sans réglage, la page couvre toute la période des cours (du 02/01/2019 au
+20/10/2026).
+
+- Tableau : dernier cours, performance du prix, rendement total (dividendes réinvestis), rendement annuel moyen,
+  volatilité et part des séances sans transaction. Sur la période : **AB +587,2 %** (+28,0 % par an), BIAT +410,9 %,
+  Attijari +284,8 % ; à l'autre bout, ATB −4,5 % et **BTE −45,4 %**.
+- Liquidité : en rouge, les titres sans aucune transaction à plus de 20 % des séances, **UBCI (52,7 %), Wifak
+  (42,6 %) et BTE (37,6 %)** : leur volatilité et leur performance reposent sur peu d'échanges.
+- Courbes en base 100 au début de la période : des actions de 3 DT et de 164 DT sur la même échelle.
+- Nuage 2021–2025 : rendement annuel en Bourse face à la croissance annuelle du PNB. La Bourse n'a pas suivi le PNB
+  banque par banque : Wifak a la croissance du PNB la plus forte (+26,9 % par an) et un rendement de +3,5 % par an ;
+  Attijari, AB et BIAT dépassent +30 % par an avec une croissance du PNB de 8 à 11 %. Les données montrent l'écart ;
+  elles n'en donnent pas la cause, que le rapport n'avance pas.
+
+**Choix de conception** : les performances sont calculées sur des cours ajustés des opérations sur titres
+(attributions gratuites, division du nominal, dividendes : 63 opérations sourcées, facteurs publiés par la Bourse),
+sinon une attribution gratuite passerait pour une chute du cours ; le rendement est ramené à un an pour être comparé
+à une croissance annuelle, et reste vide pour une période de moins d'un an.
+
 ## 5. Suite du rapport
 
 | Page | Contenu prévu | Question |
 |---|---|---|
-| 6. Bourse | cours ajustés, performance, volatilité et liquidité du titre ; performance boursière face à la croissance du PNB | 7 |
 | 7. Fiche banque | tous les indicateurs d'une banque (clic droit depuis une autre page), définitions propres à la banque, chaîne de contrôle de l'actionnariat | 1 à 5 |
 | 8. Rentabilité | ROE et ROA semestriels et annuels, rentabilité face à l'efficacité | 5 |
 | 9. Qualité des données | statut de chaque document, révisions, écarts expliqués, sources et limites | — |

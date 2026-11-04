@@ -1673,7 +1673,7 @@ Dans le temps (12 banques, fin de trimestre) : crédits 68 389 MDT au 2019T4, 73
 101,9 %, 97,5 %, 85,1 %, 77,0 % : les dépôts ont crû bien plus vite que les crédits depuis 2022. Les données montrent
 l'écart ; elles n'en donnent pas la cause, que le rapport n'avance pas.
 
-### 4.7 Page 6 : Bourse (en construction)
+### 4.7 Page 6 : Bourse (terminée le 04/11/2026)
 
 **But** : ce qu'a rapporté l'action de chaque banque, avec quel risque et quelle liquidité, et si la Bourse a suivi
 la croissance de l'activité (spécification 9, page 6 ; question 7).
@@ -1700,7 +1700,7 @@ années est créé dans Power BI Desktop à la place de celui du trimestre.
 
 **Visuels créés dans Power BI Desktop (04/11/2026), réglés par `python scripts/ecrire_pbir_visuels.py bourse`** : positions ci-dessus, titres, noms affichés, segment nommé « Années » (Power BI l'avait déjà mis en curseur « Entre » : `data.mode` 'Between', réglage par défaut d'une colonne de nombres), axe des dates continu, filtre du nuage sur les années 2021 à 2025 (valeurs entières écrites « 2021L »), étiquettes des points, tableau trié par rendement total avec des colonnes étroites et le taux de séances sans transaction coloré par `Couleur liquidite`, interaction segment des années → nuage « Aucun ».
 
-**Première capture (04/11/2026)** : toutes les valeurs du tableau ci-dessous justes (tableau, couleur rouge pour UBCI et Wifak, nuage sur 2021–2025). Le curseur des années montre ses deux cases (2019, 2026) sans la glissière à 52 pixels de haut : suffisant. Retouches : tableau trop étroit (valeurs et en-têtes sur deux lignes, barre de défilement) : élargi à 598 pixels, graphiques ramenés à 640 ; ligne de total retirée (`total.totals` false : une somme de performances n'a pas de sens) ; titres d'axes du nuage raccourcis (« PNB, par an », « Bourse, par an »). À vérifier.
+**Première capture (04/11/2026)** : toutes les valeurs du tableau ci-dessous justes (tableau, couleur rouge pour UBCI et Wifak, nuage sur 2021–2025). Le curseur des années montre ses deux cases (2019, 2026) sans la glissière à 52 pixels de haut : suffisant. Retouches : tableau trop étroit (valeurs et en-têtes sur deux lignes, barre de défilement) : élargi à 598 pixels, graphiques ramenés à 640 ; ligne de total retirée (`total.totals` false : une somme de performances n'a pas de sens) ; titres d'axes du nuage raccourcis (« PNB, par an », « Bourse, par an »). **Vérifiée le 04/11/2026** (deuxième capture : une ligne par banque, 12 banques sans défilement, plus de ligne de total) ; capture `docs/captures/page6_bourse.png`, ajoutée à la présentation et au README.
 
 **Pourquoi ces choix.** Le rendement total (dividendes réinvestis) est la mesure juste de ce qu'a rapporté une
 action ; la performance du prix, à côté, montre la part des dividendes. Les courbes en base 100 mettent sur la même
