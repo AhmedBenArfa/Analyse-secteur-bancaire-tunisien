@@ -171,6 +171,10 @@ MEASURE Mesures[Actionnaire principal] =
             & FORMAT ( SELECTEDVALUE ( Dim_Banque[date_actionnariat] ), "dd/mm/yyyy" ) & ")"
     )
 
+// [1. Bases\Fiche banque | 0] 1 si le filtre ne laisse qu'une banque (fiche ouverte par extraction), vide sinon : filtre des visuels de la fiche banque, qui restent vides sans banque choisie au lieu de montrer le total des 12 banques
+MEASURE Mesures[Banque unique] =
+    IF ( HASONEVALUE ( Dim_Banque[code_banque] ), 1 )
+
 // ===== 2. Secteur : banques présentes, totaux, parts de marché, rangs (spécification 7.4) =====
 // Un total du secteur, une part de marché, un rang ou un indice de concentration n'est calculé que si les
 // 12 banques sont présentes ; sinon il reste vide, et le nombre de banques présentes s'affiche à côté.

@@ -576,6 +576,27 @@ def bourse():
     print("Bourse : visuels réglés")
 
 
+def filtre_mesure(page, visuel, mesure, valeur, nom):
+    """Filtre du visuel « mesure = valeur » (littéral, ex. "1L") : un visuel sans ligne qui le remplit reste vide."""
+    p = PAGES / page / "visuals" / visuel / "visual.json"
+    d = lire(p)
+    config = d.setdefault("filterConfig", {"filters": []})
+    filtres = [f for f in config["filters"] if f.get("name") != nom
+               and f["field"] != {"Measure": {"Expression": {"SourceRef": {"Entity": "Mesures"}}, "Property": mesure}}]
+    filtres.append({
+        "name": nom,
+        "field": {"Measure": {"Expression": {"SourceRef": {"Entity": "Mesures"}}, "Property": mesure}},
+        "type": "Advanced",
+        "filter": {"Version": 2, "From": [{"Name": "m", "Entity": "Mesures", "Type": 0}],
+                   "Where": [{"Condition": {"Comparison": {
+                       "ComparisonKind": 0,
+                       "Left": {"Measure": {"Expression": {"SourceRef": {"Source": "m"}}, "Property": mesure}},
+                       "Right": {"Literal": {"Value": valeur}}}}}]},
+        "howCreated": "User"})
+    config["filters"] = filtres
+    ecrire(p, d)
+
+
 def fiche_banque():
     """Page 7 « Fiche banque » (guide 4.8) : page d'extraction sur Dim_Banque[code_banque] (liaison voulue : pas de
     retirer_extraction ici)."""
@@ -594,7 +615,7 @@ def fiche_banque():
     colonnes = [("Dim_Indicateur.libelle", "Indicateur", 300), ("Mesures.Valeur Trim", "Trimestre", 130),
                 ("Mesures.Valeur Cumul", "Cumul ou solde", 140), ("Mesures.Var A/A cumul %", "Sur un an", 130)]
     regler(page, indicateurs, (16, 412, 760, 272), {q: n for q, n, _ in colonnes},
-           titre="Indicateurs publiés au trimestre (MDT)")
+           titre="Indicateurs publiés au trimestre (MDT)", objets={"total": {"totals": litteral("false")}})
     p = PAGES / page / "visuals" / indicateurs / "visual.json"
     d = lire(p)
     d["visual"].setdefault("objects", {})["columnWidth"] = [
@@ -606,13 +627,18 @@ def fiche_banque():
     regler(page, definitions, (786, 412, 478, 272),
            {"Dim_Banque.Definition_Charges_Operatoires": "Charges opératoires publiées",
             "Dim_Banque.Definition_Capitaux_Propres": "Capitaux propres trimestriels"},
-           titre="Ce que la banque publie sous ces noms", objets={"values": {"wordWrap": litteral("true")}})
+           titre="Ce que la banque publie sous ces noms",
+           objets={"values": {"wordWrap": litteral("true")}, "total": {"totals": litteral("false")}})
     p = PAGES / page / "visuals" / definitions / "visual.json"
     d = lire(p)
     d["visual"]["objects"]["columnWidth"] = [
         {"properties": {"value": litteral("215D")}, "selector": {"metadata": q}}
         for q in ("Dim_Banque.Definition_Charges_Operatoires", "Dim_Banque.Definition_Capitaux_Propres")]
     ecrire(p, d)
+    # sans banque unique (page ouverte par son onglet), chiffres et tableaux vides plutôt que le total des 12 banques ;
+    # la carte d'identité reste visible et dit comment ouvrir la fiche
+    for visuel in ("12cc8472e5b986c92239", indicateurs, definitions):
+        filtre_mesure(page, visuel, "Banque unique", "1L", "banque_unique")
     print("Fiche banque : visuels réglés")
 
 
