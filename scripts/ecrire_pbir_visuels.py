@@ -448,9 +448,18 @@ def structure_pnb():
     # histogramme à 100 % du secteur (banques choisies) dans le temps : trimestres publiés, axe des trimestres
     # catégoriel ; le segment du trimestre ne le filtre pas (toute la période reste visible)
     colonnes = "ef7dc89555b391c0e509"
+    # largeur minimale d'une colonne réduite (20 pixels par défaut : barre de défilement, 2026T2 et 2026T3 cachés)
     regler(page, colonnes, (646, 162, 618, 330), {"Dim_Date.Annee_Trimestre": "Trimestre", **composantes, **parts},
            titre="Structure du PNB des banques choisies, 2019T4–2026T3",
-           objets={"categoryAxis": {"axisType": texte("Categorical")}})
+           objets={"categoryAxis": {"axisType": texte("Categorical"), "preferredCategoryWidth": litteral("12D")}})
+    # « Autres éléments » en gris : la quatrième couleur du thème est un bleu proche de celle de la marge d'intérêts
+    for visuel in (barres, colonnes):
+        p = PAGES / page / "visuals" / visuel / "visual.json"
+        d = lire(p)
+        d["visual"].setdefault("objects", {})["dataPoint"] = [{
+            "properties": {"fill": {"solid": {"color": litteral("'#9E9E9E'")}}},
+            "selector": {"metadata": "Mesures.Autres elements PNB"}}]
+        ecrire(p, d)
     trier(page, colonnes, "Dim_Date", "Annee_Trimestre", genre="Column")
     filtre_colonne(page, colonnes, "Dim_Date", "Trimestre_Publie", "true", "trimestres_publies")
     # carte des trois parts au trimestre choisi, dans l'ordre des barres
