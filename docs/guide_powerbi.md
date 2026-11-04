@@ -1472,6 +1472,40 @@ dans le tableau des événements, à droite, filtré par la banque et le point c
 `Rupture PNB` sur les courbes, prévue au départ, se heurte à la même limite que la bande (une seule mesure avec une
 légende) : l'info-bulle la remplace.
 
+**Mise en page** (positions : x, y, largeur × hauteur) :
+
+| Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
+|---|---|---|---|
+| Fond, titre, segment des banques | comme la page 1 | copiés de la page 1 | titre « Évolution 2020–2026 » |
+| Indicateur affiché | 24, 92, 250 × 52 | segment du paramètre de champ `Indicateur affiché` | liste déroulante, sélection unique, « PNB » par défaut |
+| Évolution par banque | 16, 162, 860 × 522 | graphique en courbes : axe X `Dim_Date[Date]`, axe Y `Indicateur affiché`, légende `Dim_Banque[code_banque]`, info-bulles `Evenement texte`, `Ruptures texte` (`4. Croissances\Annotations`) | axe X continu ; lignes verticales Covid au 01/03/2020 et au 01/01/2022 ; filtre `Trimestre_Publie` = Vrai ; titre « Évolution par banque » |
+| Révisions de plus de 2 % | 886, 162, 378 × 300 | tableau : `Fait_Indicateurs[trimestre]`, `[banque]`, `[code_indicateur]`, `[Detail_Rupture_Cumul]` ; filtres du visuel `Rupture_Cumul` = « oui » et indicateur parmi PNB, FRAIS_PERS, CHG_GEN, CREDITS, DEPOTS | tri par trimestre ; retour à la ligne ; titre « Révisions de plus de 2 % (ruptures de série) » ; sans effet sur les courbes |
+| Événements datés | 886, 472, 378 × 212 | tableau : `Evenements[date]`, `Evenements[banque]`, `Evenements[description]`, `Evenements[montant_mdt]` | tri par date ; retour à la ligne ; un clic dans le tableau ne filtre pas les courbes (interaction « Aucun ») |
+
+**Pourquoi ces choix.** L'axe des dates est continu, comme pour le HHI de la page 1 : les 28 trimestres tiennent sans
+défilement et chaque mesure n'a de valeur qu'au dernier jour d'un trimestre (un point par trimestre). Le segment des
+banques sert à alléger le graphique (12 courbes ensemble se lisent mal) : choisir deux ou trois banques. La
+croissance affichée vient de `Variations_Comparables` (3.6) : la valeur N-1 est lue dans le même document que la
+valeur N, la courbe des variations ne mélange donc jamais deux bases différentes.
+
+**Valeurs attendues** (calculées à part depuis `donnees_publiees/`) :
+
+| Banque | Trimestre | PNB | Coefficient | Crédits / dépôts | Part du PNB | PNB sur un an |
+|---|---|---|---|---|---|---|
+| BIAT | 2019T4 | 264,279 | 35,9 % | 79,9 % | 18,91 % | +10,9 % |
+| BIAT | 2020T2 | 224,319 | 41,8 % | 84,6 % | 19,68 % | −1,3 % |
+| BIAT | 2026T3 | 433,328 | 39,7 % | 56,7 % | 22,38 % | +6,5 % |
+| UIB | 2020T2 | 87,556 | 52,6 % | 112,3 % | 7,68 % | −78,7 % |
+| BH | 2024T4 | 177,219 | 32,9 % | 117,4 % | 9,90 % | +7,6 % |
+| BH | 2026T3 | 165,030 | 47,6 % | 98,5 % | 8,52 % | −4,9 % |
+
+BH 2019T4 n'a pas de variation sur un an (document publié en image, colonne N-1 non lue). Info-bulle de BH au
+2024T4 : « PNB : 2024T4 révisé de -8.5 % sur le cumul (765.932 publié, 701.188 dans le document 2025T4) » et
+l'événement du retraitement BH 2024. 93 points (banque × trimestre) ont au moins une rupture sur ces cinq
+indicateurs. Le PNB de l'UIB au T2 2020 (87,556, valeur révisée) et sa variation (−78,7 %, valeurs du document du
+T2 2020, avant la réintégration des intérêts du moratoire) ne reposent pas sur la même base : c'est ce que signale
+l'événement « moratoire Covid de l'UIB ».
+
 **Création de la page** : `python scripts/ecrire_pbir_visuels.py nouvelle_page "Évolution" "Évolution 2020–2026"`
 (fond, titre et segment des banques copiés de la page 1). Visuels et paramètre de champ créés dans Power BI Desktop
 (30/10/2026), puis réglés par `python scripts/ecrire_pbir_visuels.py evolution` : positions, titres, noms affichés, axe
@@ -1553,37 +1587,3 @@ banques filtre les trois visuels : sans choix, l'histogramme et la carte montren
 Secteur dans le temps (12 banques) : marge d'intérêts 58,2 % du PNB au 2019T4, 54,2 % au 2020T2, 49,2 % au 2022T4,
 41,2 % au 2024T4, 33,4 % au 2026T3 ; portefeuille 21,5 %, 27,4 %, 31,3 %, 38,8 %, 47,0 % ; commissions stables entre 18 %
 et 20 %. Les données montrent le déplacement ; elles n'en donnent pas la cause, que le rapport n'avance pas.
-
-**Mise en page** (positions : x, y, largeur × hauteur) :
-
-| Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
-|---|---|---|---|
-| Fond, titre, segment des banques | comme la page 1 | copiés de la page 1 | titre « Évolution 2020–2026 » |
-| Indicateur affiché | 24, 92, 250 × 52 | segment du paramètre de champ `Indicateur affiché` | liste déroulante, sélection unique, « PNB » par défaut |
-| Évolution par banque | 16, 162, 860 × 522 | graphique en courbes : axe X `Dim_Date[Date]`, axe Y `Indicateur affiché`, légende `Dim_Banque[code_banque]`, info-bulles `Evenement texte`, `Ruptures texte` (`4. Croissances\Annotations`) | axe X continu ; lignes verticales Covid au 01/03/2020 et au 01/01/2022 ; filtre `Trimestre_Publie` = Vrai ; titre « Évolution par banque » |
-| Révisions de plus de 2 % | 886, 162, 378 × 300 | tableau : `Fait_Indicateurs[trimestre]`, `[banque]`, `[code_indicateur]`, `[Detail_Rupture_Cumul]` ; filtres du visuel `Rupture_Cumul` = « oui » et indicateur parmi PNB, FRAIS_PERS, CHG_GEN, CREDITS, DEPOTS | tri par trimestre ; retour à la ligne ; titre « Révisions de plus de 2 % (ruptures de série) » ; sans effet sur les courbes |
-| Événements datés | 886, 472, 378 × 212 | tableau : `Evenements[date]`, `Evenements[banque]`, `Evenements[description]`, `Evenements[montant_mdt]` | tri par date ; retour à la ligne ; un clic dans le tableau ne filtre pas les courbes (interaction « Aucun ») |
-
-**Pourquoi ces choix.** L'axe des dates est continu, comme pour le HHI de la page 1 : les 28 trimestres tiennent sans
-défilement et chaque mesure n'a de valeur qu'au dernier jour d'un trimestre (un point par trimestre). Le segment des
-banques sert à alléger le graphique (12 courbes ensemble se lisent mal) : choisir deux ou trois banques. La
-croissance affichée vient de `Variations_Comparables` (3.6) : la valeur N-1 est lue dans le même document que la
-valeur N, la courbe des variations ne mélange donc jamais deux bases différentes.
-
-**Valeurs attendues** (calculées à part depuis `donnees_publiees/`) :
-
-| Banque | Trimestre | PNB | Coefficient | Crédits / dépôts | Part du PNB | PNB sur un an |
-|---|---|---|---|---|---|---|
-| BIAT | 2019T4 | 264,279 | 35,9 % | 79,9 % | 18,91 % | +10,9 % |
-| BIAT | 2020T2 | 224,319 | 41,8 % | 84,6 % | 19,68 % | −1,3 % |
-| BIAT | 2026T3 | 433,328 | 39,7 % | 56,7 % | 22,38 % | +6,5 % |
-| UIB | 2020T2 | 87,556 | 52,6 % | 112,3 % | 7,68 % | −78,7 % |
-| BH | 2024T4 | 177,219 | 32,9 % | 117,4 % | 9,90 % | +7,6 % |
-| BH | 2026T3 | 165,030 | 47,6 % | 98,5 % | 8,52 % | −4,9 % |
-
-BH 2019T4 n'a pas de variation sur un an (document publié en image, colonne N-1 non lue). Info-bulle de BH au
-2024T4 : « PNB : 2024T4 révisé de -8.5 % sur le cumul (765.932 publié, 701.188 dans le document 2025T4) » et
-l'événement du retraitement BH 2024. 93 points (banque × trimestre) ont au moins une rupture sur ces cinq
-indicateurs. Le PNB de l'UIB au T2 2020 (87,556, valeur révisée) et sa variation (−78,7 %, valeurs du document du
-T2 2020, avant la réintégration des intérêts du moratoire) ne reposent pas sur la même base : c'est ce que signale
-l'événement « moratoire Covid de l'UIB ».
