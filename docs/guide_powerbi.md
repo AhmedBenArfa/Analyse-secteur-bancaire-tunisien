@@ -1202,6 +1202,38 @@ la table garde ses colonnes calculées (l'outil les reprend avec leur identifian
 `Banque affichee` (nom et code, ou la façon d'ouvrir la fiche quand aucune banque n'est choisie) et `Actionnaire
 principal` (actionnaire de référence, part du capital et date) ; 161 mesures.
 
+**Jointures DAX : `NATURALINNERJOIN` et `NATURALLEFTOUTERJOIN` (04/11/2026, demande de l'utilisateur, page 8).** Les
+jointures du projet se faisaient jusqu'ici dans Power Query (fusions, 2.x) ; DAX sait aussi réunir deux tables sur
+leurs colonnes de même nom. Deux tables calculées (`TABLES_CALCULEES` de `ecrire_tmdl_table.py`) :
+
+- `Rentabilite_Efficacite` (`dax/Rentabilite_Efficacite.dax`) = `NATURALINNERJOIN ( Rentabilite, Efficacite )` :
+  `Rentabilite`, une ligne par banque et par arrêté des états financiers (ROE et ROA, même calcul que les mesures
+  de 3.7 : résultat net × facteur d'annualisation / moyenne des capitaux propres, ou du total de l'actif, au
+  31/12/N-1 et à la date) ; `Efficacite`, une ligne par banque et par trimestre publié (coefficient d'exploitation
+  harmonisé **cumulé** depuis janvier : semestre au 30/06, année au 31/12). La jointure **interne** ne garde que les
+  lignes présentes des deux côtés : **168 lignes** (12 banques × 14 arrêtés), les 31/03 et 30/09 disparaissent ; ROE
+  vide au 31/12/2019 seulement (pas de capitaux propres d'ouverture 2018), soit 156 ROE ;
+- `Rentabilite_Trimestres` (`dax/Rentabilite_Trimestres.dax`) = `NATURALLEFTOUTERJOIN ( Trimestres,
+  Rentabilite )` : la jointure **externe gauche** garde toutes les lignes de la première table (**336 lignes**, 12
+  banques × 28 trimestres) et n'y ajoute le ROE et le ROA que là où la seconde a une ligne (30/06 et 31/12) ; ailleurs
+  ils restent vides. La seconde table reprend `Rentabilite_Efficacite` **sans** sa colonne `Coef_Cumul` : une colonne
+  de même nom des deux côtés deviendrait une colonne de jointure de plus.
+
+**Lignage.** Les colonnes de jointure (`banque`, `date_arrete`) sont écrites comme des expressions (`banque & ""`,
+`DATE ( YEAR ( … ), MONTH ( … ), DAY ( … ) )`) : elles perdent leur lien avec la colonne d'origine (le « lignage »),
+sans quoi DAX refuse de joindre deux colonnes venues de tables différentes du modèle. **Pas de mesure dans ces
+tables** : les ROE et le coefficient sont recalculés à partir des colonnes (`LOOKUPVALUE`), car une table calculée
+qui passe par une mesure (transition de contexte) ne peut pas être reliée à `Dim_Banque` et à `Dim_Date` sans
+dépendance circulaire. Ces relations (4, soit **36 relations**) permettent aux segments de la page de filtrer les
+deux tables. Contrôle : `tests/test_rentabilite.py` refait les deux jointures depuis `donnees_publiees/` (168 et 336
+lignes, ROE des 12 banques 11,85 % en 2024 et 12,46 % au S1 2026, BIAT S1 2026 : ROE 22,79 %, coefficient cumulé
+43,13 %).
+
+**Arrêtés dans `Dim_Date`** (pour le segment de la page 8) : colonnes `Arrete_EF` (« Dernier arrêté publié » pour le
+dernier arrêté où les 12 banques ont publié leur résultat, ici le 30/06/2026, sinon « S1 2025 », « Année 2024 »…, à
+partir du 30/06/2020), `Ordre_Arrete_EF` (masquée, tri du plus récent au plus ancien) et `Arrete_Publie` (vrai aux
+arrêtés : filtre du segment), calculées comme `Choix_Trimestre` (`GROUPBY` sur `Fait_Etats_Financiers`).
+
 ### 3.11 Fonctions DAX utilisées
 
 Chaque fonction DAX employée dans `dax/*.dax`, ce qu'elle fait ici et où elle sert. Le test
@@ -1268,6 +1300,9 @@ tableau.
 | `SUBSTITUTE` | remplace un texte par un autre dans un texte (« \| » par « › ») | `colonnes_calculees` |
 | `DISTINCT` | lignes distinctes d'une table (une ligne par catégorie, par groupe) | `Chaine_Controle` |
 | `BLANK` | valeur vide (parent de la racine, code de banque des nœuds qui ne sont pas des banques) | `Chaine_Controle` |
+| `NATURALINNERJOIN` | réunit deux tables sur leurs colonnes de même nom et ne garde que les lignes présentes des deux côtés (jointure interne) | `Rentabilite_Efficacite` |
+| `NATURALLEFTOUTERJOIN` | garde toutes les lignes de la première table et y ajoute les colonnes de la seconde quand les colonnes de même nom concordent (jointure externe gauche) | `Rentabilite_Trimestres` |
+| `DAY` | jour du mois d'une date (date réécrite pour casser le lignage d'une colonne de jointure) | `Rentabilite_Efficacite`, `Rentabilite_Trimestres` |
 | `ALLSELECTED` | dans `CALCULATE`, les valeurs choisies par les segments et filtres de la page, sans le filtre du point du visuel (première séance de la période pour une base 100) | `mesures` |
 
 ## 4. Pages du rapport : visuels, champs et mesures
@@ -1833,3 +1868,54 @@ définition est à côté, et ils ne servent à aucune comparaison entre banques
 
 Attijari : actionnaire de référence « Andalu Carthage Holding : 57,21 % du capital » ; BTE : « Abou Dhabi Investment
 Authority (ADIA) : 40,80 % du capital » (période en vigueur depuis le 01/07/2024).
+
+### 4.9 Page 8 : Rentabilité (en construction)
+
+**But** : quelles banques sont les plus rentables (question 5), et la rentabilité suit-elle l'efficacité. Le ROE et
+le ROA viennent des états financiers : ils n'existent qu'au 30/06 (semestre, **annualisé** : résultat × 2) et au
+31/12 (exercice) ; les comptes semestriels ne sont pas audités (revue limitée).
+
+**Un arrêté au lieu d'un trimestre.** Le segment du trimestre de la page 1 donnerait le T3 2026, où il n'y a pas
+d'états financiers (ROE vide). La page a donc un segment des **arrêtés** (`Dim_Date[Arrete_EF]`, liste déroulante,
+sélection unique, « Dernier arrêté publié » au départ, filtré par `Arrete_Publie`), créé dans les fichiers par copie
+du segment de la page 1 (`segment_arretes` de l'outil).
+
+**Création de la page** : `python scripts/ecrire_pbir_visuels.py nouvelle_page "Rentabilité" "Rentabilité : ROE et
+ROA"` (page `2b82a38d89b9638e3ab2` ; fond, titre et segment des banques copiés de la page 1) puis
+`python scripts/ecrire_pbir_visuels.py rentabilite` (segment des arrêtés).
+
+**Mise en page** (positions : x, y, largeur × hauteur) :
+
+| Élément | Position | Champs et mesures | Réglages |
+|---|---|---|---|
+| Fond, titre, segments | comme la page 1 | segment des arrêtés et segment des banques | titre « Rentabilité : ROE et ROA » |
+| ROE par banque | 16, 162, 400 × 522 | graphique à barres groupées : axe Y `Dim_Banque[code_banque]`, axe X `ROE` (`5. Rentabilité\Ratios`) ; info-bulles `ROA` (même dossier), `Resultat net annualise`, `Cap propres moyens` (`5. Rentabilité\Bilan et résultat`) | tri par ROE décroissant ; étiquettes ; titre « ROE par banque (au 30/06 : semestre annualisé, non audité) » |
+| Rentabilité et efficacité | 426, 162, 420 × 330 | nuage de points depuis la table `Rentabilite_Efficacite` (jointure interne) : axe X `Coef_Cumul`, axe Y `ROE`, valeurs `Dim_Banque[code_banque]` | étiquettes des points ; titre « ROE et coefficient d'exploitation cumulé à l'arrêté » |
+| ROE et ROA des 12 banques | 426, 502, 420 × 182 | carte (nouvelle) : `ROE secteur`, `ROA secteur` (`5. Rentabilité\Ratios`) | libellés « ROE des 12 banques », « ROA des 12 banques » |
+| Tous les trimestres | 856, 162, 408 × 522 | tableau depuis la table `Rentabilite_Trimestres` (jointure externe gauche) : `banque`, `date_arrete`, `Coef_Cumul`, `ROE`, `ROA` | tri par date décroissante ; le segment des arrêtés ne le filtre pas (interaction « Aucun ») ; titre « Chaque trimestre : coefficient cumulé, ROE aux arrêtés » |
+
+**Pourquoi ces choix.** Le nuage met face à face deux mesures de la même période : le ROE de l'arrêté et le
+coefficient d'exploitation cumulé à la même date (semestre ou année), réunis par la jointure interne. Le tableau
+montre ce que fait la jointure externe gauche : tous les trimestres gardent leur coefficient, le ROE n'apparaît
+qu'aux 30/06 et 31/12. Le segment des banques filtre les quatre visuels.
+
+**Valeurs attendues au 30/06/2026 (« Dernier arrêté publié »)** (calculées à part depuis `donnees_publiees/`) :
+
+| Banque | ROE | ROA | Coefficient cumulé |
+|---|---|---|---|
+| BIAT | 22,8 % | 1,99 % | 43,1 % |
+| Attijari | 22,6 % | 1,77 % | 48,1 % |
+| AB | 18,8 % | 2,51 % | 33,7 % |
+| BNA | 12,9 % | 1,24 % | 36,1 % |
+| BT | 12,7 % | 2,15 % | 31,4 % |
+| UBCI | 10,2 % | 1,01 % | 59,2 % |
+| BTE | 9,7 % | 0,17 % | 78,0 % |
+| UIB | 9,6 % | 1,20 % | 51,5 % |
+| Wifak | 2,6 % | 0,21 % | 69,1 % |
+| BH | 2,2 % | 0,20 % | 47,8 % |
+| STB | 1,4 % | 0,12 % | 56,9 % |
+| ATB | −9,2 % | −0,69 % | 70,4 % |
+| **12 banques** | **12,46 %** | **1,22 %** | |
+
+Contrôles sur d'autres arrêtés : « Année 2024 » : ROE des 12 banques 11,85 %, ROA 1,19 %, BIAT 16,6 %, BTE −63,7 % ;
+« Année 2025 » : 11,3 % et 1,13 %, Attijari en tête (20,7 %), BTE −29,1 %.

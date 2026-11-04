@@ -97,12 +97,13 @@ def ecrire_table_calculee(nom, description, colonnes, tri=None, cachees=(), tabl
     assert all(l.strip() for l in dax), f"ligne vide dans {nom}.dax (interdite dans le TMDL)"
     t = [f"/// {description}", f"table {nom}", f"\tlineageTag: {table_tag}"]
     t += ["\tdataCategory: Time", ""] if table_de_dates else [""]
-    for col, typ in colonnes:
+    for col, typ, *fmt in colonnes:
         t += [f"\tcolumn {col}", f"\t\tdataType: {'dateTime' if typ == 'date' else typ}"]
         t += ["\t\tisKey"] if col == table_de_dates else []
         t += ["\t\tisHidden"] if col in cachees else []
-        t += {"date": ["\t\tformatString: Short Date"], "int64": ["\t\tformatString: 0"],
-              "double": ["\t\tformatString: #,0.000"]}.get(typ, [])
+        t += [f"\t\tformatString: {fmt[0]}"] if fmt else {
+            "date": ["\t\tformatString: Short Date"], "int64": ["\t\tformatString: 0"],
+            "double": ["\t\tformatString: #,0.000"]}.get(typ, [])
         t += [f"\t\tlineageTag: {anciens.get(col, uuid.uuid4())}", "\t\tsummarizeBy: none", "\t\tisNameInferred",
               f"\t\tsourceColumn: [{col}]"]
         t += [f"\t\tsortByColumn: {tri[col]}"] if col in tri else []
@@ -115,7 +116,7 @@ def ecrire_table_calculee(nom, description, colonnes, tri=None, cachees=(), tabl
     calculees = re.findall(
         r"(?:\t/// [^\r\n]*\r\n)?\tcolumn \w+ =.*?(?=\r\n\t(?:///|column|measure|partition|hierarchy|annotation) )",
         ancien, re.S)
-    t += [x + NL for x in calculees]
+    t += [x.rstrip(NL) + NL for x in calculees]
     t += [f"\tpartition {nom} = calculated", "\t\tmode: import", "\t\tsource =", *["\t\t\t\t" + l for l in dax], ""]
     f.write_bytes((NL.join(t) + NL).encode("utf-8"))
     ajouter_au_modele(nom)
@@ -225,7 +226,9 @@ RELATIONS = ([(t, c, "Dim_Date", "Date") for t, c in FAITS_DATES]
                 ("Journal_Faits_Marquants", "banque", "Dim_Banque", "code_banque"),
                 ("Journal_Faits_Marquants", "indicateur", "Dim_Indicateur", "code_indicateur")]
              # relation inactive : date d'entrée en fonction d'un actionnaire de référence (USERELATIONSHIP)
-             + [("Banques_Actionnariat", "date_debut", "Dim_Date", "Date", False)])
+             + [("Banques_Actionnariat", "date_debut", "Dim_Date", "Date", False)]
+             + [(t, c, d, k) for t in ("Rentabilite_Efficacite", "Rentabilite_Trimestres")
+                for c, d, k in (("banque", "Dim_Banque", "code_banque"), ("date_arrete", "Dim_Date", "Date"))])
 
 
 def ecrire_diagramme(onglets):
@@ -290,15 +293,26 @@ TABLES_CALCULEES = {
         colonnes=[("Date", "date"), ("Annee", "int64"), ("Trimestre", "string"), ("Annee_Trimestre", "string"),
                   ("Cle_Trimestre", "int64"), ("Fin_Trimestre", "boolean"), ("Periode", "string"),
                   ("Ordre_Periode", "int64"), ("Choix_Trimestre", "string"), ("Ordre_Choix_Trimestre", "int64"),
-                  ("Trimestre_Publie", "boolean")],
+                  ("Trimestre_Publie", "boolean"), ("Arrete_EF", "string"), ("Ordre_Arrete_EF", "int64"),
+                  ("Arrete_Publie", "boolean")],
         tri={"Annee_Trimestre": "Cle_Trimestre", "Periode": "Ordre_Periode",
-             "Choix_Trimestre": "Ordre_Choix_Trimestre"},
-        cachees=["Cle_Trimestre", "Ordre_Periode", "Ordre_Choix_Trimestre"], table_de_dates="Date"),
+             "Choix_Trimestre": "Ordre_Choix_Trimestre", "Arrete_EF": "Ordre_Arrete_EF"},
+        cachees=["Cle_Trimestre", "Ordre_Periode", "Ordre_Choix_Trimestre", "Ordre_Arrete_EF"], table_de_dates="Date"),
     "Journal_Faits_Marquants": dict(
         description="Journal des faits marquants (DAX, UNION) : événements, écarts annuels expliqués et révisions "
                     "importantes des états financiers, une ligne par fait daté",
         colonnes=[("date", "date"), ("banque", "string"), ("indicateur", "string"), ("type_fait", "string"),
                   ("description", "string"), ("montant_mdt", "double"), ("fichier", "string")]),
+    "Rentabilite_Efficacite": dict(
+        description="ROE, ROA (états financiers) et coefficient d'exploitation harmonisé cumulé, par banque et par "
+                    "arrêté (30/06, 31/12) : jointure interne NATURALINNERJOIN, page « Rentabilité »",
+        colonnes=[("banque", "string"), ("date_arrete", "date"), ("ROE", "double", "0.0 %"), ("ROA", "double", "0.00 %"),
+                  ("Coef_Cumul", "double", "0.0 %")]),
+    "Rentabilite_Trimestres": dict(
+        description="Coefficient d'exploitation harmonisé cumulé de chaque trimestre publié, avec le ROE et le ROA aux "
+                    "dates des états financiers (vides ailleurs) : jointure externe gauche NATURALLEFTOUTERJOIN",
+        colonnes=[("banque", "string"), ("date_arrete", "date"), ("Coef_Cumul", "double", "0.0 %"),
+                  ("ROE", "double", "0.0 %"), ("ROA", "double", "0.00 %")]),
     "Chaine_Controle": dict(
         description="Chaîne de contrôle des banques (DAX, table parent-enfant) : Secteur › catégorie d'actionnariat › "
                     "groupe de contrôle › banque, actionnariat en vigueur ; chemins par PATH dans ses colonnes "

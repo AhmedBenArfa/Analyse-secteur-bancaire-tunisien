@@ -1,0 +1,116 @@
+/// Coefficient d'exploitation harmonisé cumulé de chaque trimestre publié, avec le ROE et le ROA aux dates des états financiers (vides ailleurs) : jointure externe gauche NATURALLEFTOUTERJOIN
+table Rentabilite_Trimestres
+	lineageTag: e727f732-866d-4861-91d6-2c47acf8ec6a
+
+	column banque
+		dataType: string
+		lineageTag: 0034d4af-b34c-42bc-9c57-247aec81189d
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [banque]
+
+		annotation SummarizationSetBy = User
+
+	column date_arrete
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: cab7eb54-9d4e-431e-b3e1-f378ca1891e7
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [date_arrete]
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Coef_Cumul
+		dataType: double
+		formatString: 0.0 %
+		lineageTag: 85bb7a62-8be1-47eb-8ee1-9cdedadb8389
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Coef_Cumul]
+
+		annotation SummarizationSetBy = User
+
+	column ROE
+		dataType: double
+		formatString: 0.0 %
+		lineageTag: 23f2aad2-cb52-4f3b-9acb-9f833bf2426e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ROE]
+
+		annotation SummarizationSetBy = User
+
+	column ROA
+		dataType: double
+		formatString: 0.00 %
+		lineageTag: 20574fae-7c28-4052-9063-7f8b3e3086d0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ROA]
+
+		annotation SummarizationSetBy = User
+
+	partition Rentabilite_Trimestres = calculated
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Tous les trimestres avec la rentabilité quand elle existe (table calculée, jointure externe gauche
+				// NATURALLEFTOUTERJOIN) : une ligne par banque et par trimestre publié, le coefficient d'exploitation harmonisé
+				// cumulé à la date, et le ROE et le ROA aux seules dates des états financiers (30/06, 31/12), vides ailleurs.
+				// NATURALLEFTOUTERJOIN garde toutes les lignes de la première table et y ajoute les colonnes de la seconde quand
+				// les colonnes de même nom (banque, date_arrete) concordent. La seconde table reprend Rentabilite_Efficacite sans
+				// sa colonne Coef_Cumul : une colonne de même nom des deux côtés deviendrait une colonne de jointure de plus.
+				// Lignage des colonnes de jointure cassé par des expressions (& "", DATE (…)), comme dans Rentabilite_Efficacite.
+				VAR Trimestres =
+				    SELECTCOLUMNS (
+				        FILTER (
+				            Fait_Indicateurs,
+				            Fait_Indicateurs[code_indicateur] = "PNB" && NOT ISBLANK ( Fait_Indicateurs[Valeur_Cumul] )
+				        ),
+				        "banque", Fait_Indicateurs[banque] & "",
+				        "date_arrete",
+				            DATE (
+				                YEAR ( Fait_Indicateurs[date_arrete] ),
+				                MONTH ( Fait_Indicateurs[date_arrete] ),
+				                DAY ( Fait_Indicateurs[date_arrete] )
+				            ),
+				        "Coef_Cumul",
+				            VAR Personnel =
+				                LOOKUPVALUE (
+				                    Fait_Indicateurs[Valeur_Cumul],
+				                    Fait_Indicateurs[banque], Fait_Indicateurs[banque],
+				                    Fait_Indicateurs[date_arrete], Fait_Indicateurs[date_arrete],
+				                    Fait_Indicateurs[code_indicateur], "FRAIS_PERS"
+				                )
+				            VAR Generales =
+				                LOOKUPVALUE (
+				                    Fait_Indicateurs[Valeur_Cumul],
+				                    Fait_Indicateurs[banque], Fait_Indicateurs[banque],
+				                    Fait_Indicateurs[date_arrete], Fait_Indicateurs[date_arrete],
+				                    Fait_Indicateurs[code_indicateur], "CHG_GEN"
+				                )
+				            RETURN
+				                IF (
+				                    NOT ISBLANK ( Personnel ) && NOT ISBLANK ( Generales ),
+				                    DIVIDE ( Personnel + Generales, Fait_Indicateurs[Valeur_Cumul] )
+				                )
+				    )
+				VAR Rentabilite =
+				    SELECTCOLUMNS (
+				        Rentabilite_Efficacite,
+				        "banque", Rentabilite_Efficacite[banque] & "",
+				        "date_arrete",
+				            DATE (
+				                YEAR ( Rentabilite_Efficacite[date_arrete] ),
+				                MONTH ( Rentabilite_Efficacite[date_arrete] ),
+				                DAY ( Rentabilite_Efficacite[date_arrete] )
+				            ),
+				        "ROE", Rentabilite_Efficacite[ROE],
+				        "ROA", Rentabilite_Efficacite[ROA]
+				    )
+				RETURN
+				    NATURALLEFTOUTERJOIN ( Trimestres, Rentabilite )
+

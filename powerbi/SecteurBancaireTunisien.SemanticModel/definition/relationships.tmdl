@@ -127,3 +127,19 @@ relationship 089369ad-449b-4ec1-813b-a1d9dba98f41
 	fromColumn: Banques_Actionnariat.date_debut
 	toColumn: Dim_Date.Date
 
+relationship b1057ef5-303a-4a50-9911-d0aebd44514e
+	fromColumn: Rentabilite_Efficacite.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship f44ee49b-26d5-4b21-bf1c-993931a7e90f
+	fromColumn: Rentabilite_Efficacite.date_arrete
+	toColumn: Dim_Date.Date
+
+relationship 32c8a870-e315-4977-ae5c-6ad0238f4b90
+	fromColumn: Rentabilite_Trimestres.banque
+	toColumn: Dim_Banque.code_banque
+
+relationship e673e623-849d-4a71-a692-2b6a1a2fed1f
+	fromColumn: Rentabilite_Trimestres.date_arrete
+	toColumn: Dim_Date.Date
+

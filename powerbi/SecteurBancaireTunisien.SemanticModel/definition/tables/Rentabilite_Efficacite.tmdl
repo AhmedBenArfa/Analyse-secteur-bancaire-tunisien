@@ -1,0 +1,154 @@
+/// ROE, ROA (états financiers) et coefficient d'exploitation harmonisé cumulé, par banque et par arrêté (30/06, 31/12) : jointure interne NATURALINNERJOIN, page « Rentabilité »
+table Rentabilite_Efficacite
+	lineageTag: e2f9a22e-e027-4a6b-9b37-d6346729339a
+
+	column banque
+		dataType: string
+		lineageTag: e517b83b-b367-4a43-b7bf-2fe00d0184b2
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [banque]
+
+		annotation SummarizationSetBy = User
+
+	column date_arrete
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 2907a097-2905-4079-86a4-963ec7c78c1f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [date_arrete]
+
+		annotation SummarizationSetBy = User
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ROE
+		dataType: double
+		formatString: 0.0 %
+		lineageTag: aae9496e-43bd-4c33-a530-4a2fee475266
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ROE]
+
+		annotation SummarizationSetBy = User
+
+	column ROA
+		dataType: double
+		formatString: 0.00 %
+		lineageTag: 8667dd41-d6c7-4684-a2a6-13d3125f48ef
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ROA]
+
+		annotation SummarizationSetBy = User
+
+	column Coef_Cumul
+		dataType: double
+		formatString: 0.0 %
+		lineageTag: 5d358df0-3f3a-4451-9519-5566e6246434
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Coef_Cumul]
+
+		annotation SummarizationSetBy = User
+
+	partition Rentabilite_Efficacite = calculated
+		mode: import
+		source =
+				// Auteur : Ahmed Ben Arfa
+				// Rentabilité et efficacité aux dates des états financiers (table calculée, jointure interne NATURALINNERJOIN) :
+				// une ligne par banque et par arrêté (30/06 et 31/12), avec le ROE et le ROA des états financiers et le coefficient
+				// d'exploitation harmonisé cumulé à la même date (semestre au 30/06, année au 31/12) des indicateurs trimestriels.
+				// NATURALINNERJOIN réunit deux tables sur leurs colonnes de même nom (banque, date_arrete) et ne garde que les
+				// lignes présentes des deux côtés : les trimestres sans états financiers (31/03, 30/09) disparaissent. Les colonnes
+				// de jointure sont des expressions (& "", DATE (…)) : leur lignage est cassé, sinon DAX refuserait de joindre deux
+				// colonnes venues de tables différentes du modèle. Les ROE et ROA sont calculés comme les mesures ROE et ROA (7.7),
+				// à partir des colonnes (LOOKUPVALUE) et non des mesures : une table calculée qui passerait par une mesure ne
+				// pourrait pas être reliée à Dim_Banque et à Dim_Date sans dépendance circulaire.
+				VAR Rentabilite =
+				    SELECTCOLUMNS (
+				        ADDCOLUMNS (
+				            FILTER ( Fait_Etats_Financiers, Fait_Etats_Financiers[code] = "RES_NET" ),
+				            "@Ouverture", DATE ( YEAR ( Fait_Etats_Financiers[date_arrete] ) - 1, 12, 31 ),
+				            "@ResultatAnnualise", Fait_Etats_Financiers[valeur_mdt] * Fait_Etats_Financiers[facteur_annualisation]
+				        ),
+				        "banque", Fait_Etats_Financiers[banque] & "",
+				        "date_arrete",
+				            DATE (
+				                YEAR ( Fait_Etats_Financiers[date_arrete] ),
+				                MONTH ( Fait_Etats_Financiers[date_arrete] ),
+				                DAY ( Fait_Etats_Financiers[date_arrete] )
+				            ),
+				        "ROE",
+				            VAR Fin =
+				                LOOKUPVALUE (
+				                    Fait_Etats_Financiers[valeur_mdt],
+				                    Fait_Etats_Financiers[banque], Fait_Etats_Financiers[banque],
+				                    Fait_Etats_Financiers[date_arrete], Fait_Etats_Financiers[date_arrete],
+				                    Fait_Etats_Financiers[code], "CAP_PROPRES_EF"
+				                )
+				            VAR Ouverture =
+				                LOOKUPVALUE (
+				                    Fait_Etats_Financiers[valeur_mdt],
+				                    Fait_Etats_Financiers[banque], Fait_Etats_Financiers[banque],
+				                    Fait_Etats_Financiers[date_arrete], [@Ouverture],
+				                    Fait_Etats_Financiers[code], "CAP_PROPRES_EF"
+				                )
+				            RETURN
+				                IF ( NOT ISBLANK ( Fin ) && NOT ISBLANK ( Ouverture ), DIVIDE ( [@ResultatAnnualise], ( Fin + Ouverture ) / 2 ) ),
+				        "ROA",
+				            VAR Fin =
+				                LOOKUPVALUE (
+				                    Fait_Etats_Financiers[valeur_mdt],
+				                    Fait_Etats_Financiers[banque], Fait_Etats_Financiers[banque],
+				                    Fait_Etats_Financiers[date_arrete], Fait_Etats_Financiers[date_arrete],
+				                    Fait_Etats_Financiers[code], "TOTAL_ACTIF"
+				                )
+				            VAR Ouverture =
+				                LOOKUPVALUE (
+				                    Fait_Etats_Financiers[valeur_mdt],
+				                    Fait_Etats_Financiers[banque], Fait_Etats_Financiers[banque],
+				                    Fait_Etats_Financiers[date_arrete], [@Ouverture],
+				                    Fait_Etats_Financiers[code], "TOTAL_ACTIF"
+				                )
+				            RETURN
+				                IF ( NOT ISBLANK ( Fin ) && NOT ISBLANK ( Ouverture ), DIVIDE ( [@ResultatAnnualise], ( Fin + Ouverture ) / 2 ) )
+				    )
+				VAR Efficacite =
+				    SELECTCOLUMNS (
+				        FILTER (
+				            Fait_Indicateurs,
+				            Fait_Indicateurs[code_indicateur] = "PNB" && NOT ISBLANK ( Fait_Indicateurs[Valeur_Cumul] )
+				        ),
+				        "banque", Fait_Indicateurs[banque] & "",
+				        "date_arrete",
+				            DATE (
+				                YEAR ( Fait_Indicateurs[date_arrete] ),
+				                MONTH ( Fait_Indicateurs[date_arrete] ),
+				                DAY ( Fait_Indicateurs[date_arrete] )
+				            ),
+				        "Coef_Cumul",
+				            VAR Personnel =
+				                LOOKUPVALUE (
+				                    Fait_Indicateurs[Valeur_Cumul],
+				                    Fait_Indicateurs[banque], Fait_Indicateurs[banque],
+				                    Fait_Indicateurs[date_arrete], Fait_Indicateurs[date_arrete],
+				                    Fait_Indicateurs[code_indicateur], "FRAIS_PERS"
+				                )
+				            VAR Generales =
+				                LOOKUPVALUE (
+				                    Fait_Indicateurs[Valeur_Cumul],
+				                    Fait_Indicateurs[banque], Fait_Indicateurs[banque],
+				                    Fait_Indicateurs[date_arrete], Fait_Indicateurs[date_arrete],
+				                    Fait_Indicateurs[code_indicateur], "CHG_GEN"
+				                )
+				            RETURN
+				                IF (
+				                    NOT ISBLANK ( Personnel ) && NOT ISBLANK ( Generales ),
+				                    DIVIDE ( Personnel + Generales, Fait_Indicateurs[Valeur_Cumul] )
+				                )
+				    )
+				RETURN
+				    NATURALINNERJOIN ( Rentabilite, Efficacite )
+

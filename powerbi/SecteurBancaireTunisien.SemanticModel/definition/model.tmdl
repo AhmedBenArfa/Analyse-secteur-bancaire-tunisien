@@ -32,6 +32,8 @@ ref table Mesures
 ref table Journal_Faits_Marquants
 ref table 'Indicateur affiché'
 ref table Chaine_Controle
+ref table Rentabilite_Efficacite
+ref table Rentabilite_Trimestres
 
 ref cultureInfo fr-FR
 

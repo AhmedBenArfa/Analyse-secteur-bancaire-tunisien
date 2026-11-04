@@ -22,6 +22,22 @@ VAR Presences =
     )
 VAR DernierComplet = MAXX ( FILTER ( Presences, [@Valeurs] = 3 * NbBanques ), Fait_Indicateurs[date_arrete] )
 VAR CleDernier = YEAR ( DernierComplet ) * 10 + QUARTER ( DernierComplet )
+// Arrete_EF : arrêtés des états financiers (30/06, 31/12) où au moins une banque a publié son résultat net, à
+// partir du 30/06/2020 (au 31/12/2019, pas de capitaux propres d'ouverture pour un ROE) ; « Dernier arrêté publié »
+// pour le dernier où les 12 banques ont publié ; triée du plus récent au plus ancien (Ordre_Arrete_EF) ; segment de
+// la page « Rentabilité ».
+VAR ArretesEF =
+    GROUPBY (
+        FILTER ( Fait_Etats_Financiers, Fait_Etats_Financiers[code] = "RES_NET" ),
+        Fait_Etats_Financiers[date_arrete],
+        "@Banques", COUNTX ( CURRENTGROUP (), 1 )
+    )
+VAR DernierArrete = MAXX ( FILTER ( ArretesEF, [@Banques] = NbBanques ), Fait_Etats_Financiers[date_arrete] )
+VAR DatesArretes =
+    SELECTCOLUMNS (
+        FILTER ( ArretesEF, Fait_Etats_Financiers[date_arrete] >= DATE ( 2020, 6, 30 ) ),
+        "@Date", Fait_Etats_Financiers[date_arrete]
+    )
 VAR ClesPubliees =
     SELECTCOLUMNS ( Presences, "@Cle", YEAR ( Fait_Indicateurs[date_arrete] ) * 10 + QUARTER ( Fait_Indicateurs[date_arrete] ) )
 RETURN
@@ -58,5 +74,20 @@ RETURN
                 0,
                 YEAR ( [Date] ) * 10 + QUARTER ( [Date] )
             ),
-        "Trimestre_Publie", YEAR ( [Date] ) * 10 + QUARTER ( [Date] ) IN ClesPubliees
+        "Trimestre_Publie", YEAR ( [Date] ) * 10 + QUARTER ( [Date] ) IN ClesPubliees,
+        "Arrete_EF",
+            IF (
+                [Date] IN DatesArretes,
+                IF (
+                    [Date] = DernierArrete,
+                    "Dernier arrêté publié",
+                    IF ( MONTH ( [Date] ) = 6, "S1 ", "Année " ) & YEAR ( [Date] )
+                )
+            ),
+        "Ordre_Arrete_EF",
+            IF (
+                [Date] IN DatesArretes,
+                IF ( [Date] = DernierArrete, 0, 300000 - ( YEAR ( [Date] ) * 100 + MONTH ( [Date] ) ) )
+            ),
+        "Arrete_Publie", [Date] IN DatesArretes
     )

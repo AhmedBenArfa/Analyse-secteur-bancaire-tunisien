@@ -677,8 +677,36 @@ def fiche_banque():
     print("Fiche banque : visuels réglés")
 
 
+def segment_arretes(page):
+    """Segment des arrêtés des états financiers : copie du segment du trimestre de la page 1 (liste déroulante,
+    sélection unique), passé sur Dim_Date[Arrete_EF], arrêtés publiés seulement, « Dernier arrêté publié » choisi.
+    Renvoie son identifiant."""
+    segment = copier_visuel("ae07c11e46023397cb08", "fb55d5a1c75e90385c70", page)
+    remplacer_champ(page, segment, "Dim_Date", "Choix_Trimestre", "Arrete_EF")
+    p = PAGES / page / "visuals" / segment / "visual.json"
+    t = p.read_bytes().decode("utf-8")
+    for a, b in (("'Dernier trimestre complet'", "'Dernier arrêté publié'"), ("'Trimestre'", "'Arrêté'")):
+        t = t.replace(a, b)
+    p.write_bytes(t.encode("utf-8"))
+    filtre_colonne(page, segment, "Dim_Date", "Arrete_Publie", "true", "trimestres_publies")
+    d = lire(p)
+    d["filterConfig"]["filters"] = [f for f in d["filterConfig"]["filters"]
+                                    if f["field"]["Column"]["Property"] != "Trimestre_Publie"]
+    ecrire(p, d)
+    return segment
+
+
+def rentabilite():
+    """Page 8 « Rentabilité » (guide 4.9)."""
+    page = "2b82a38d89b9638e3ab2"
+    retirer_extraction(page)
+    segment_arretes(page)
+    print("Rentabilité : visuels réglés")
+
+
 PAGES_REGLEES = {"vue_ensemble": vue_ensemble, "classement": classement, "evolution": evolution,
-                 "structure_pnb": structure_pnb, "bilan": bilan, "bourse": bourse, "fiche_banque": fiche_banque}
+                 "structure_pnb": structure_pnb, "bilan": bilan, "bourse": bourse, "fiche_banque": fiche_banque,
+                 "rentabilite": rentabilite}
 
 if __name__ == "__main__":
     if len(sys.argv) == 4 and sys.argv[1] == "nouvelle_page":

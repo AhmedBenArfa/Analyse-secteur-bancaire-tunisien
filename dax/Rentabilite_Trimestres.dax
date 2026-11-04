@@ -1,0 +1,57 @@
+// Auteur : Ahmed Ben Arfa
+// Tous les trimestres avec la rentabilité quand elle existe (table calculée, jointure externe gauche
+// NATURALLEFTOUTERJOIN) : une ligne par banque et par trimestre publié, le coefficient d'exploitation harmonisé
+// cumulé à la date, et le ROE et le ROA aux seules dates des états financiers (30/06, 31/12), vides ailleurs.
+// NATURALLEFTOUTERJOIN garde toutes les lignes de la première table et y ajoute les colonnes de la seconde quand
+// les colonnes de même nom (banque, date_arrete) concordent. La seconde table reprend Rentabilite_Efficacite sans
+// sa colonne Coef_Cumul : une colonne de même nom des deux côtés deviendrait une colonne de jointure de plus.
+// Lignage des colonnes de jointure cassé par des expressions (& "", DATE (…)), comme dans Rentabilite_Efficacite.
+VAR Trimestres =
+    SELECTCOLUMNS (
+        FILTER (
+            Fait_Indicateurs,
+            Fait_Indicateurs[code_indicateur] = "PNB" && NOT ISBLANK ( Fait_Indicateurs[Valeur_Cumul] )
+        ),
+        "banque", Fait_Indicateurs[banque] & "",
+        "date_arrete",
+            DATE (
+                YEAR ( Fait_Indicateurs[date_arrete] ),
+                MONTH ( Fait_Indicateurs[date_arrete] ),
+                DAY ( Fait_Indicateurs[date_arrete] )
+            ),
+        "Coef_Cumul",
+            VAR Personnel =
+                LOOKUPVALUE (
+                    Fait_Indicateurs[Valeur_Cumul],
+                    Fait_Indicateurs[banque], Fait_Indicateurs[banque],
+                    Fait_Indicateurs[date_arrete], Fait_Indicateurs[date_arrete],
+                    Fait_Indicateurs[code_indicateur], "FRAIS_PERS"
+                )
+            VAR Generales =
+                LOOKUPVALUE (
+                    Fait_Indicateurs[Valeur_Cumul],
+                    Fait_Indicateurs[banque], Fait_Indicateurs[banque],
+                    Fait_Indicateurs[date_arrete], Fait_Indicateurs[date_arrete],
+                    Fait_Indicateurs[code_indicateur], "CHG_GEN"
+                )
+            RETURN
+                IF (
+                    NOT ISBLANK ( Personnel ) && NOT ISBLANK ( Generales ),
+                    DIVIDE ( Personnel + Generales, Fait_Indicateurs[Valeur_Cumul] )
+                )
+    )
+VAR Rentabilite =
+    SELECTCOLUMNS (
+        Rentabilite_Efficacite,
+        "banque", Rentabilite_Efficacite[banque] & "",
+        "date_arrete",
+            DATE (
+                YEAR ( Rentabilite_Efficacite[date_arrete] ),
+                MONTH ( Rentabilite_Efficacite[date_arrete] ),
+                DAY ( Rentabilite_Efficacite[date_arrete] )
+            ),
+        "ROE", Rentabilite_Efficacite[ROE],
+        "ROA", Rentabilite_Efficacite[ROA]
+    )
+RETURN
+    NATURALLEFTOUTERJOIN ( Trimestres, Rentabilite )
