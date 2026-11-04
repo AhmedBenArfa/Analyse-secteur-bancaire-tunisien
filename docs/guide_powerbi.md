@@ -1078,6 +1078,18 @@ l'avertissement « Titre peu liquide : 53 % / 43 % / 38 % … »), puis BH 8,6 %
 Résultat 3 : BIAT 2019-2025 performance prix +125,76 %, rendement total +232,85 %, premier cours 118,000, dernier
 cours 111,000 ; dernier cours sans banque : vide.
 
+**Ajouts du 04/11/2026 (page 6, 4.7).** Trois mesures :
+
+- `Rendement annuel moyen` (`6. Bourse\Performance`) = (1 + `Rendement total`) ^ (365,25 / nombre de jours entre la
+  première et la dernière clôture) − 1 (`DATEDIFF`) : le rendement ramené à un an, pour le comparer à une croissance
+  annuelle (le PNB) ; vide pour moins d'un an (porter à l'année un rendement de quelques mois exagère) ;
+- `Indice rendement total` (`6. Bourse\Cours`) = clôture ajustée du jour / clôture ajustée de la première séance
+  de la période choisie × 100 : la première séance est cherchée dans toutes les dates de la sélection de la page
+  (`ALLSELECTED ( Dim_Date )` : segments et filtres, pas la date du point de la courbe), pour la banque du point ;
+  des banques aux cours de 4 DT et de 164 DT partent ainsi toutes de 100 ;
+- `Couleur liquidite` (`7. Qualité\Affichage`) : rouge si plus de 20 % des séances de la période sont sans
+  transaction, rien sinon (couleur du thème), pour la mise en forme du tableau de la page 6.
+
 ### 3.9 Affichage et qualité des données (groupe 7, spécification 7.8)
 
 Ces mesures alimentent la page « Qualité des données » : elles montrent d'où viennent les chiffres et ce qui a
@@ -1225,6 +1237,8 @@ tableau.
 | `SQRT` | racine carrée (√252 pour annualiser une volatilité quotidienne) | `mesures` |
 | `FORMAT` | nombre ou date mis en texte selon un format (« 53 % » dans l'avertissement, « 30/09/2026 » dans le titre) | `mesures` |
 | `LEFT` | premiers caractères d'un texte (« revisee » au début de la source d'une valeur) | `mesures` |
+| `DATEDIFF` | nombre d'intervalles (ici : jours) entre deux dates (durée de la période d'un rendement annuel moyen) | `mesures` |
+| `ALLSELECTED` | dans `CALCULATE`, les valeurs choisies par les segments et filtres de la page, sans le filtre du point du visuel (première séance de la période pour une base 100) | `mesures` |
 
 ## 4. Pages du rapport : visuels, champs et mesures
 
@@ -1658,3 +1672,76 @@ Dans le temps (12 banques, fin de trimestre) : crédits 68 389 MDT au 2019T4, 73
 84 417 au 2024T4, 86 880 au 2026T3 ; dépôts 66 198, 72 376, 85 143, 99 233, 112 896 ; crédits / dépôts 103,3 %,
 101,9 %, 97,5 %, 85,1 %, 77,0 % : les dépôts ont crû bien plus vite que les crédits depuis 2022. Les données montrent
 l'écart ; elles n'en donnent pas la cause, que le rapport n'avance pas.
+
+### 4.7 Page 6 : Bourse (en construction)
+
+**But** : ce qu'a rapporté l'action de chaque banque, avec quel risque et quelle liquidité, et si la Bourse a suivi
+la croissance de l'activité (spécification 9, page 6 ; question 7).
+
+**Une période au lieu d'un trimestre.** Une performance se mesure entre deux dates : sur un seul trimestre, elle
+dirait peu. Cette page remplace donc le segment du trimestre par un **segment des années en curseur** (style
+« Entre », `Dim_Date[Annee]`, de 2019 à 2026) : sans réglage, toute la période des cours (du 02/01/2019 au
+20/10/2026) ; en le resserrant, une année ou plusieurs années consécutives (le curseur ne permet pas de sauter
+une année, ce qu'une liste à cases permettrait et qui fausserait une performance).
+
+**Création de la page** : `python scripts/ecrire_pbir_visuels.py nouvelle_page "Bourse" "Bourse : performance et
+liquidité"` (page `ee963f5881561822580f` ; fond, titre et segment des banques copiés de la page 1) ; le segment des
+années est créé dans Power BI Desktop à la place de celui du trimestre.
+
+**Mise en page** (positions : x, y, largeur × hauteur) :
+
+| Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
+|---|---|---|---|
+| Fond, titre, segment des banques | comme la page 1 | copiés de la page 1 | titre « Bourse : performance et liquidité » |
+| Années | 24, 92, 250 × 52 | segment : `Dim_Date[Annee]` | style « Entre » (curseur) |
+| Rendement total dans le temps | 16, 162, 760 × 260 | graphique en courbes : axe X `Dim_Date[Date]`, axe Y `Indice rendement total` (`6. Bourse\Cours`), légende `Dim_Banque[code_banque]` | axe continu ; titre « Rendement total, dividendes réinvestis (base 100 au début de la période) » |
+| Bourse et croissance du PNB | 16, 432, 760 × 252 | nuage de points : axe X `TCAM PNB 2020-2025` (`4. Croissances\Sur plusieurs années`), axe Y `Rendement annuel moyen` (`6. Bourse\Performance`), valeurs `Dim_Banque[code_banque]` ; info-bulles `Rendement total`, `Taux seances sans transaction` | filtre du visuel : années 2021 à 2025 (de la première séance de 2021 à la dernière de 2025, la période des 5 croissances annuelles du PNB) ; le segment des années ne le filtre pas (interaction « Aucun ») ; étiquettes des points ; titre « Rendement annuel en Bourse et croissance annuelle du PNB, 2021–2025 » |
+| Performance par banque | 786, 162, 478 × 522 | tableau : `Dim_Banque[code_banque]`, `Dernier cours` (`6. Bourse\Cours`), `Performance prix`, `Rendement total`, `Rendement annuel moyen` (`6. Bourse\Performance`), `Volatilite annualisee`, `Taux seances sans transaction` (`6. Bourse\Risque et liquidité`) | tri par `Rendement total` décroissant ; taux de séances sans transaction en rouge au-delà de 20 % (`Couleur liquidite`, `7. Qualité\Affichage`) ; titre « Performance, risque et liquidité » |
+
+**Pourquoi ces choix.** Le rendement total (dividendes réinvestis) est la mesure juste de ce qu'a rapporté une
+action ; la performance du prix, à côté, montre la part des dividendes. Les courbes en base 100 mettent sur la même
+échelle des cours de 3 DT et de 164 DT ; avec 12 banques, la courbe se lit mal : choisir deux ou trois banques dans
+le segment. Le nuage compare deux taux annuels sur la même période (2021–2025) : la croissance annuelle moyenne du
+PNB (3.6) et le rendement annuel moyen de l'action. Une volatilité ou une performance d'un titre peu liquide repose
+sur peu d'échanges : le taux de séances sans transaction est affiché à côté, en rouge au-delà de 20 % (3.8).
+
+**Valeurs attendues** (calculées à part depuis `donnees_publiees/cours_banques.csv` et `operations_titres.csv`,
+mêmes facteurs que Power Query ; contrôles : BIAT 2019-2025 prix +125,76 % et total +232,85 %, BIAT 2025 prix
++18,21 %, comme en 3.8).
+
+Toute la période (segment des années sans réglage, du 02/01/2019 au 20/10/2026, 1 955 séances par banque) :
+
+| Banque | Dernier cours (DT) | Performance prix | Rendement total | Par an | Volatilité | Sans transaction |
+|---|---|---|---|---|---|---|
+| AB | 88,600 | +320,9 % | +587,2 % | +28,0 % | 16,1 % | 3,5 % |
+| BIAT | 164,000 | +233,6 % | +410,9 % | +23,3 % | 16,9 % | 0,1 % |
+| Attijari | 75,890 | +120,4 % | +284,8 % | +18,9 % | 20,1 % | 0,5 % |
+| BNA | 19,270 | +42,3 % | +143,6 % | +12,1 % | 21,6 % | 0,8 % |
+| UBCI | 39,400 | +71,3 % | +140,4 % | +11,9 % | 24,2 % | **52,7 %** |
+| UIB | 35,900 | +56,1 % | +101,9 % | +9,4 % | 21,5 % | 4,7 % |
+| BT | 8,690 | +33,6 % | +91,8 % | +8,7 % | 15,5 % | 0,4 % |
+| BH | 13,460 | +6,3 % | +56,1 % | +5,9 % | 27,3 % | 8,6 % |
+| STB | 4,770 | +29,3 % | +33,7 % | +3,8 % | 27,5 % | 1,5 % |
+| Wifak | 8,000 | +11,9 % | +11,9 % | +1,4 % | 18,7 % | **42,6 %** |
+| ATB | 3,400 | −6,9 % | −4,5 % | −0,6 % | 26,9 % | 4,2 % |
+| BTE | 6,320 | −45,4 % | −45,4 % | −7,5 % | 36,0 % | **37,6 %** |
+
+Nuage, 2021–2025 (rendement du 04/01/2021 au 31/12/2025 ; croissance du PNB de 2020 à 2025) :
+
+| Banque | Rendement annuel moyen | Croissance annuelle du PNB |
+|---|---|---|
+| Attijari | +35,6 % | +8,0 % |
+| AB | +34,2 % | +8,0 % |
+| BIAT | +31,0 % | +11,1 % |
+| BNA | +17,8 % | +9,3 % |
+| UBCI | +16,7 % | +7,8 % |
+| UIB | +12,0 % | +5,6 % |
+| BH | +10,1 % | +8,2 % |
+| BT | +8,8 % | +7,4 % |
+| ATB | +5,2 % | +8,0 % |
+| STB | +4,0 % | +2,8 % |
+| Wifak | +3,5 % | +26,9 % |
+| BTE | −15,7 % | +7,5 % |
+
+Lecture : la Bourse n'a pas suivi la croissance du PNB banque par banque (Wifak, croissance la plus forte, rendement
+parmi les plus faibles ; titre peu liquide) ; les données montrent l'écart, elles n'en donnent pas la cause.

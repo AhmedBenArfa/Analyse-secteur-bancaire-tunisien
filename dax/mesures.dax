@@ -746,6 +746,26 @@ MEASURE Mesures[Rendement total] =
     RETURN
         IF ( NOT ISBLANK ( Debut ) && NOT ISBLANK ( Fin ), DIVIDE ( Fin, Debut ) - 1 )
 
+// [6. Bourse\Performance | +0.0 %;-0.0 %;0.0 %] Rendement total ramené à un an (taux annuel moyen composé), pour comparer des périodes de longueurs différentes ou une croissance annuelle ; vide pour une période de moins d'un an (un rendement de quelques mois porté à l'année exagère)
+MEASURE Mesures[Rendement annuel moyen] =
+    VAR Total = [Rendement total]
+    VAR Jours = DATEDIFF ( [Date premier cours], [Date dernier cours], DAY )
+    RETURN
+        IF ( NOT ISBLANK ( Total ) && Jours >= 365, ( 1 + Total ) ^ ( 365.25 / Jours ) - 1 )
+
+// [6. Bourse\Cours | #,0.0] Indice du rendement total (dividendes réinvestis), base 100 à la première clôture de la banque dans la période choisie (segments, filtres) : courbes de banques aux cours très différents sur la même échelle ; pour une banque
+MEASURE Mesures[Indice rendement total] =
+    VAR PremiereSeance =
+        CALCULATE (
+            MIN ( Fait_Cours[date] ),
+            ALLSELECTED ( Dim_Date ),
+            NOT ISBLANK ( Fait_Cours[cloture_ajustee_rendement] )
+        )
+    VAR Base = CALCULATE ( [Cloture ajustee rendement brut], Dim_Date[Date] = PremiereSeance )
+    VAR Jour = [Cloture ajustee rendement brut]
+    RETURN
+        IF ( NOT ISBLANK ( Base ) && NOT ISBLANK ( Jour ), DIVIDE ( Jour, Base ) * 100 )
+
 // [6. Bourse\Risque et liquidité | 0.0 %] Volatilité annualisée : écart-type des rendements quotidiens (série rendement total) × racine de 252 séances, pour une banque ; vide sous 20 rendements ; à lire avec l'avertissement de liquidité
 MEASURE Mesures[Volatilite annualisee] =
     VAR Rendements = FILTER ( Fait_Cours, NOT ISBLANK ( Fait_Cours[rendement] ) )
@@ -794,6 +814,10 @@ MEASURE Mesures[Couleur coef] =
     VAR Ecart = [Ecart coef / mediane]
     RETURN
         IF ( NOT ISBLANK ( Ecart ), IF ( Ecart <= 0, "#2E7D32", "#C62828" ) )
+
+// [7. Qualité\Affichage | texte] Couleur de mise en forme de la liquidité : rouge si le titre est peu liquide (plus de 20 % des séances sans transaction dans la période), rien sinon (couleur du thème)
+MEASURE Mesures[Couleur liquidite] =
+    IF ( [Taux seances sans transaction] > [Seuil titre peu liquide], "#C62828" )
 
 // [7. Qualité\Documents | #,0] Nombre de documents trimestriels (un par banque et par trimestre)
 MEASURE Mesures[Nb documents] =
