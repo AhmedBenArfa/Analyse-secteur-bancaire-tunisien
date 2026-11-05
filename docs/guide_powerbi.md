@@ -1869,7 +1869,7 @@ définition est à côté, et ils ne servent à aucune comparaison entre banques
 Attijari : actionnaire de référence « Andalu Carthage Holding : 57,21 % du capital » ; BTE : « Abou Dhabi Investment
 Authority (ADIA) : 40,80 % du capital » (période en vigueur depuis le 01/07/2024).
 
-### 4.9 Page 8 : Rentabilité (en construction)
+### 4.9 Page 8 : Rentabilité (terminée le 05/11/2026)
 
 **But** : quelles banques sont les plus rentables (question 5), et la rentabilité suit-elle l'efficacité. Le ROE et
 le ROA viennent des états financiers : ils n'existent qu'au 30/06 (semestre, **annualisé** : résultat × 2) et au
@@ -1896,7 +1896,9 @@ ROA"` (page `2b82a38d89b9638e3ab2` ; fond, titre et segment des banques copiés 
 
 **Visuels créés dans Power BI Desktop (05/11/2026), réglés par `python scripts/ecrire_pbir_visuels.py rentabilite`.** Trois corrections au passage : (1) le nuage affichait une erreur : ses deux axes étaient des colonnes de la table de jointure sans agrégation (aucune mesure, donc aucun point) ; elles sont passées en somme (nouvelle fonction `agreger` de l'outil : une ligne par banque et par arrêté, la somme vaut la valeur) ; (2) le tableau avait été construit sur `Rentabilite_Efficacite` : passé sur `Rentabilite_Trimestres` (jointure externe), avec le ROA, trié par date décroissante, sans ligne de total, et le segment des arrêtés ne le filtre plus ; (3) un bouton « Retour » posé en haut à gauche, sans extraction sur la page, a été retiré. Carte vérifiée sur la capture de construction : ROE des 12 banques 12,5 %, ROA 1,22 % (« Dernier arrêté publié »).
 
-**Première capture (05/11/2026)** : barres, nuage (12 points), carte et tableau justes (au 30/09/2026 coefficient sans ROE, au 30/06/2026 les deux : AB 33,7 % et 18,8 %) ; Attijari 22,7 % (22,65 %). Retouche : colonnes du tableau resserrées (barre de défilement horizontale, ROA coupé). À vérifier, avec le contrôle « Année 2024 ».
+**Première capture (05/11/2026)** : barres, nuage (12 points), carte et tableau justes (au 30/09/2026 coefficient sans ROE, au 30/06/2026 les deux : AB 33,7 % et 18,8 %) ; Attijari 22,7 % (22,65 %). Retouche : colonnes du tableau resserrées (barre de défilement horizontale, ROA coupé).
+
+**Vérifiée le 05/11/2026** (deuxième capture, arrêté « Année 2024 » : ROE des 12 banques 11,8 %, ROA 1,19 %, BIAT 16,6 %, BTE −63,7 % ; tableau sans défilement horizontal) ; capture `docs/captures/page8_rentabilite.png` (export avec « Dernier arrêté publié »), ajoutée à la présentation et au README.
 
 **Pourquoi ces choix.** Le nuage met face à face deux mesures de la même période : le ROE de l'arrêté et le
 coefficient d'exploitation cumulé à la même date (semestre ou année), réunis par la jointure interne. Le tableau

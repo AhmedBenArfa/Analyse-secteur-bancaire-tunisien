@@ -14,8 +14,8 @@ UBCI, UIB, Wifak), **trimestre par trimestre, du T4 2019 au T3 2026**. Il cherch
 6. Quel a été l'effet du Covid, et comment le secteur s'est-il redressé ?
 7. La Bourse récompense-t-elle les banques les plus performantes ?
 
-Sept pages sont terminées et vérifiées (section 4) ; elles répondent aux questions 1, 2, 3, 4, 6 et 7. Les deux
-autres pages sont prévues (section 5).
+Huit pages sont terminées et vérifiées (section 4) ; elles répondent aux sept questions. La neuvième page (qualité
+des données) est prévue (section 5).
 
 ## 2. Les données : publications officielles, tracées et contrôlées
 
@@ -30,7 +30,7 @@ autres pages sont prévues (section 5).
 **Contrôles et validation.**
 
 - 438 valeurs relevées à la main sur l'image des PDF (41 documents) et 169 pour les états financiers (24 documents),
-  comparées automatiquement à l'extraction ; 48 tests automatiques au total.
+  comparées automatiquement à l'extraction ; 50 tests automatiques au total.
 - Contrôles de cohérence à chaque extraction : produits − charges = PNB, somme des quatre trimestres = cumul
   annuel, PNB = marge d'intérêts + marge sur commissions + revenus du portefeuille.
 - 13 documents publiés en image (BTE) saisis à la main avec les mêmes contrôles.
@@ -54,7 +54,7 @@ toutes) ; le ROE et le ROA ne sont que semestriels et annuels.
   dépivotage, colonnes conditionnelles, types avec paramètres régionaux, requêtes intermédiaires non chargées,
   paramètre de chemin, fonction personnalisée (catégorie d'actionnariat de la banque à la date de chaque valeur).
 - **Modèle en étoile** : table des dates (avec la période Covid), dimensions banques et indicateurs, tables de
-  faits (indicateurs, variations comparables, états financiers, cours, contrôles) ; 32 relations, dont une inactive
+  faits (indicateurs, variations comparables, états financiers, cours, contrôles) ; 36 relations, dont une inactive
   activée par `USERELATIONSHIP`.
 - **166 mesures DAX**, rangées en dossiers (bases, secteur, ratios, croissances, rentabilité, Bourse, qualité), avec
   des règles écrites : totaux du secteur, parts de marché et rangs seulement si les 12 banques sont présentes ;
@@ -219,16 +219,39 @@ d'actionnariat › groupe › banque, 27 nœuds) parcourue par les fonctions DAX
 définition : leur contenu change d'une banque à l'autre, ils ne servent à aucune comparaison. Ouverte sans banque, la
 page reste vide et indique comment l'ouvrir.
 
+### Page 8 — Rentabilité : ROE et ROA
+
+![Page 8 : rentabilité, ROE et ROA](captures/page8_rentabilite.png)
+
+**Ce que la page montre** : quelles banques sont les plus rentables, et si la rentabilité suit l'efficacité. Le ROE
+(résultat net / capitaux propres moyens) et le ROA (résultat net / total de l'actif moyen) viennent des états
+financiers individuels : ils n'existent qu'au 30/06 (semestre **annualisé**, comptes **non audités**) et au 31/12. La
+page a donc un segment des **arrêtés** (« Dernier arrêté publié », ici le 30/06/2026) au lieu du trimestre.
+
+- ROE par banque au S1 2026 : **BIAT 22,8 %**, Attijari 22,7 %, AB 18,8 %… jusqu'à **ATB −9,2 %** (perte) ; les 12
+  banques ensemble : **ROE 12,5 %, ROA 1,22 %**. En 2024 : 11,8 % et 1,19 %, BTE à −63,7 %.
+- Nuage ROE × coefficient d'exploitation cumulé à la même date : les banques les plus efficaces (AB, BT, BNA, BIAT)
+  sont parmi les plus rentables ; ATB et Wifak, coefficients élevés, ont un ROE faible ou négatif. BTE fait exception
+  au S1 2026 (ROE 9,7 % avec un coefficient de 78 %) : ses capitaux propres, très réduits par les pertes passées,
+  grossissent le ratio.
+- Tableau de tous les trimestres : coefficient cumulé à chaque trimestre, ROE et ROA aux seuls 30/06 et 31/12.
+
+**Choix de conception** : deux **jointures DAX** réunissent les deux sources. `NATURALINNERJOIN` réunit le ROE des
+états financiers et le coefficient des indicateurs trimestriels sur la banque et la date : seules les dates
+présentes des deux côtés restent (168 lignes, les 30/06 et 31/12), ce que montre le nuage. `NATURALLEFTOUTERJOIN`
+garde tous les trimestres (336 lignes) et n'y ajoute le ROE que là où il existe, ce que montre le tableau. Les
+colonnes de jointure sont réécrites pour perdre leur lien avec la colonne d'origine (sinon DAX refuse la jointure),
+et un test refait les deux jointures depuis les données publiées.
+
 ## 5. Suite du rapport
 
 | Page | Contenu prévu | Question |
 |---|---|---|
-| 8. Rentabilité | ROE et ROA semestriels et annuels, rentabilité face à l'efficacité | 5 |
 | 9. Qualité des données | statut de chaque document, révisions, écarts expliqués, sources et limites | — |
 
-Fonctions DAX prévues en plus de celles déjà utilisées : jointures `NATURALINNERJOIN` et `NATURALLEFTOUTERJOIN`
-(page 8), hiérarchie parent-enfant `PATH`, `PATHITEM`, `PATHLENGTH`, `PATHCONTAINS` (page 7). Ensuite : publication
-du rapport sur le web, captures et page d'accueil du dépôt.
+Fonctions DAX ajoutées pendant la construction des pages : hiérarchie parent-enfant `PATH`, `PATHITEM`,
+`PATHLENGTH`, `PATHCONTAINS` (page 7), jointures `NATURALINNERJOIN` et `NATURALLEFTOUTERJOIN` (page 8). Ensuite :
+publication du rapport sur le web, captures et page d'accueil du dépôt.
 
 **Dépôt du projet** : https://github.com/AhmedBenArfa/Analyse-secteur-bancaire-tunisien — code, données publiées,
 projet Power BI, spécification (`docs/Specification_projet.pdf`), guide de chaque transformation
