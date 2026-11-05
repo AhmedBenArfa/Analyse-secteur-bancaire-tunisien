@@ -3,9 +3,9 @@
   "name": "62f2182945d8d31d61ac",
   "position": {
     "x": 956,
-    "y": 482,
+    "y": 512,
     "z": 5000,
-    "height": 202,
+    "height": 172,
     "width": 308,
     "tabOrder": 5000
   },
@@ -31,7 +31,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Sources : indicateurs d'activité trimestriels publiés par les banques (CMF, Bourse de Tunis, sites des banques), états financiers individuels, cours et bulletins de la Bourse de Tunis ; chaque valeur garde son fichier et sa page.",
+                    "value": "Sources : indicateurs trimestriels des banques (CMF, Bourse de Tunis, sites des banques), états financiers individuels, cours de la Bourse ; chaque valeur garde son fichier et sa page.",
                     "textStyle": {
                       "fontSize": "9pt",
                       "color": "#252423"
@@ -42,7 +42,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Limites : indicateurs provisoires et non audités, souvent révisés d'un document à l'autre (la version révisée est retenue) ; comptes semestriels non audités, ROE au 30/06 annualisé ; charges opératoires et capitaux propres définis différemment selon les banques (coefficient harmonisé pour comparer) ; 13 documents BTE publiés en image, saisis à la main avec des contrôles de cohérence.",
+                    "value": "Limites : chiffres provisoires et non audités, souvent révisés (version révisée retenue) ; ROE au 30/06 annualisé ; charges et capitaux propres définis par chaque banque (coefficient harmonisé pour comparer) ; 13 documents BTE en image saisis à la main.",
                     "textStyle": {
                       "fontSize": "9pt",
                       "color": "#252423"

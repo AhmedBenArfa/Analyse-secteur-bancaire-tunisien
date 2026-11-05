@@ -5,7 +5,7 @@
     "x": 426,
     "y": 272,
     "z": 5003,
-    "height": 200,
+    "height": 230,
     "width": 838,
     "tabOrder": 5003
   },
@@ -210,7 +210,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "48D"
+                  "Value": "56D"
                 }
               }
             }
@@ -252,7 +252,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "150D"
+                  "Value": "116D"
                 }
               }
             }
@@ -266,7 +266,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "360D"
+                  "Value": "420D"
                 }
               }
             }

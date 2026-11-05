@@ -27,15 +27,17 @@ let
         each if [alertes] = null then 0 else List.Count(Text.Split([alertes], " | ")),
         Int64.Type
     ),
-    // colonne conditionnelle : statut en clair, regroupé pour la page qualité
+    // colonne conditionnelle : statut en clair, regroupé pour la page qualité (noms courts pour la légende) :
+    // écart signalé = vient de la banque, non bloquant ; image reprise = tableau en image, repris du document
+    // suivant ; erreur vérifiée = alerte bloquante, erreur du document de la banque vérifiée sur l'image
     CategorieStatut = Table.AddColumn(
         NbAlertes, "Categorie_Statut",
         each if [statut] = "ok" then "conforme"
             else if List.Contains({"retraitement possible", "ecart trimestre/cumul", "ecart composantes"}, [statut])
-                then "écart signalé (vient de la banque, non bloquant)"
-            else if [statut] = "saisie manuelle" then "tableau en image, saisi à la main"
-            else if [statut] = "illisible (image)" then "tableau en image, repris du document suivant"
-            else if [statut] = "a verifier" then "alerte bloquante (erreur du document vérifiée)"
+                then "écart signalé"
+            else if [statut] = "saisie manuelle" then "saisi à la main"
+            else if [statut] = "illisible (image)" then "image reprise"
+            else if [statut] = "a verifier" then "erreur vérifiée"
             else [statut],
         type text
     )

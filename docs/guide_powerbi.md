@@ -442,7 +442,7 @@ fichier, gabarit de mise en page.
 | `Fichier`, `Source`, `EnTetes`, `Types`, `VidesEnNull` | lit `controle_extraction.csv` ; textes vides → `null` |
 | `DateArrete` | **colonne calculée** `date_arrete` : fin du trimestre à partir du texte « 2024T3 » (année = 4 premiers caractères, mois = 3 × rang du trimestre, dernier jour du mois) ; servira à la relation avec la table des dates |
 | `NbAlertes` | nombre d'alertes du document (elles sont séparées par « \| ») ; 0 sans alerte |
-| `CategorieStatut` | **colonne conditionnelle** : conforme (`ok`) ; écart signalé, qui vient de la banque et ne bloque pas (`retraitement possible`, `ecart trimestre/cumul`, `ecart composantes`) ; tableau en image saisi à la main ; tableau en image repris du document suivant ; alerte bloquante (2 erreurs du document de la banque, vérifiées sur l'image) |
+| `CategorieStatut` | **colonne conditionnelle** (noms courts depuis le 05/11/2026, pour la légende de la page 9) : « conforme » (`ok`) ; « écart signalé », qui vient de la banque et ne bloque pas (`retraitement possible`, `ecart trimestre/cumul`, `ecart composantes`) ; « saisi à la main » (tableau en image) ; « image reprise » (tableau en image repris du document suivant ; alerte bloquante (2 erreurs du document de la banque, vérifiées sur l'image) |
 
 **Pourquoi** : la page qualité montre, pour chaque banque et chaque trimestre, comment le chiffre a été
 obtenu ; les statuts techniques du script deviennent cinq catégories lisibles.
@@ -1948,7 +1948,9 @@ fichiers par copie de la zone de titre (`zone_texte` de l'outil, texte dans `SOU
 | Journal des faits marquants | 426, 482, 520 × 202 | tableau : `Journal_Faits_Marquants[date]`, `[banque]`, `[type_fait]`, `[description]`, `[montant_mdt]` | tri par date ; retour à la ligne ; titre « Journal des faits marquants » |
 | Sources et limites | 956, 482, 308 × 202 | zone de texte (écrite dans les fichiers) | texte 9 pt |
 
-**Visuels créés dans Power BI Desktop (05/11/2026), réglés par `python scripts/ecrire_pbir_visuels.py qualite`** : positions ci-dessus, libellés de la carte, titres, filtre « `statut` = ecart » sur le tableau des écarts annuels, retour à la ligne et largeurs de colonnes des deux tableaux, journal trié par date, lignes de total retirées. À vérifier sur une capture.
+**Visuels créés dans Power BI Desktop (05/11/2026), réglés par `python scripts/ecrire_pbir_visuels.py qualite`** : positions ci-dessus, libellés de la carte, titres, filtre « `statut` = ecart » sur le tableau des écarts annuels, retour à la ligne et largeurs de colonnes des deux tableaux, journal trié par date, lignes de total retirées.
+
+**Première capture (05/11/2026)** : toutes les valeurs attendues justes (336 ; 27,1 % ; 13 ; 813 ; 450 ; 22 ; BTE 13 saisis à la main). Retouches : libellés de la carte raccourcis (« Révisions > 2 % », « Écarts expliqués ») ; légende des barres coupée : noms des statuts raccourcis dans la requête `Controle` (2.12e : « conforme », « écart signalé », « saisi à la main », « image reprise », « erreur vérifiée » ; actualiser) ; tableau des écarts plus haut (230) avec une colonne d'explication plus large ; journal et encadré ramenés à 172 de haut, texte des sources et limites raccourci (il débordait). À vérifier.
 
 **Pourquoi ces choix.** Un lecteur doit pouvoir juger les chiffres des autres pages : combien de documents ont été
 lus sans alerte, combien ont été saisis à la main, combien de valeurs ont été révisées par les banques elles-mêmes,

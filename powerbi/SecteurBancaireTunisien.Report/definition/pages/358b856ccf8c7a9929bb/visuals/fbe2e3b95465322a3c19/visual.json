@@ -73,7 +73,7 @@
               },
               "queryRef": "Mesures.Nb revisions importantes",
               "nativeQueryRef": "Nb revisions importantes",
-              "displayName": "Révisions de plus de 2 %"
+              "displayName": "Révisions > 2 %"
             },
             {
               "field": {
@@ -103,7 +103,7 @@
               },
               "queryRef": "Mesures.Nb ecarts expliques",
               "nativeQueryRef": "Nb ecarts expliques",
-              "displayName": "Écarts annuels expliqués"
+              "displayName": "Écarts expliqués"
             }
           ]
         }
