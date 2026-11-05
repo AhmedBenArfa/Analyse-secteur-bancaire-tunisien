@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "50ae35d1b92ae0d02677",
   "position": {
-    "x": 290,
-    "y": 262,
+    "x": 426,
+    "y": 502,
     "z": 2003,
-    "height": 150,
-    "width": 966,
+    "height": 182,
+    "width": 420,
     "tabOrder": 2003
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Mesures.ROE secteur",
-              "nativeQueryRef": "ROE secteur"
+              "nativeQueryRef": "ROE secteur",
+              "displayName": "ROE des 12 banques"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "Mesures.ROA secteur",
-              "nativeQueryRef": "ROA secteur"
+              "nativeQueryRef": "ROA secteur",
+              "displayName": "ROA des 12 banques"
             }
           ]
         }

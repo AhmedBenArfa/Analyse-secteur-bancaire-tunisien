@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "bcf6ca2e900519dda551",
   "position": {
-    "x": 24,
-    "y": 262,
+    "x": 16,
+    "y": 162,
     "z": 2001,
-    "height": 150,
-    "width": 250,
+    "height": 522,
+    "width": 400,
     "tabOrder": 2001
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Banque.code_banque",
               "nativeQueryRef": "code_banque",
-              "active": true
+              "active": true,
+              "displayName": "Banque"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Mesures.ROA",
-              "nativeQueryRef": "ROA"
+              "nativeQueryRef": "ROA",
+              "displayName": "ROA"
             },
             {
               "field": {
@@ -60,7 +62,8 @@
                 }
               },
               "queryRef": "Mesures.Resultat net annualise",
-              "nativeQueryRef": "Resultat net annualise"
+              "nativeQueryRef": "Resultat net annualise",
+              "displayName": "Résultat net annualisé (MDT)"
             },
             {
               "field": {
@@ -74,7 +77,8 @@
                 }
               },
               "queryRef": "Mesures.Cap propres moyens",
-              "nativeQueryRef": "Cap propres moyens"
+              "nativeQueryRef": "Cap propres moyens",
+              "displayName": "Capitaux propres moyens (MDT)"
             }
           ]
         },
@@ -92,7 +96,8 @@
                 }
               },
               "queryRef": "Mesures.ROE",
-              "nativeQueryRef": "ROE"
+              "nativeQueryRef": "ROE",
+              "displayName": "ROE"
             }
           ]
         }
@@ -116,7 +121,57 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'ROE par banque (au 30/06 : semestre annualisé, non audité)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

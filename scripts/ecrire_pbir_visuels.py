@@ -699,9 +699,55 @@ def segment_arretes(page):
 def rentabilite():
     """Page 8 « Rentabilité » (guide 4.9)."""
     page = "2b82a38d89b9638e3ab2"
+    # bouton « Retour » ajouté avec une extraction (aucune sur cette page) : retiré
     retirer_extraction(page)
-    segment_arretes(page)
+    segment = segment_arretes(page)
+    # ROE par banque à l'arrêté choisi
+    barres = "bcf6ca2e900519dda551"
+    regler(page, barres, (16, 162, 400, 522),
+           {"Dim_Banque.code_banque": "Banque", "Mesures.ROE": "ROE", "Mesures.ROA": "ROA",
+            "Mesures.Resultat net annualise": "Résultat net annualisé (MDT)",
+            "Mesures.Cap propres moyens": "Capitaux propres moyens (MDT)"},
+           titre="ROE par banque (au 30/06 : semestre annualisé, non audité)",
+           objets={"labels": {"show": litteral("true")}})
+    trier(page, barres, "Mesures", "ROE", "Descending")
+    # nuage depuis la table de la jointure interne : colonnes en somme (une ligne par banque et par arrêté ;
+    # deux colonnes sans agrégation ne donnent aucun point : erreur du visuel)
+    nuage = "d5f8fae19a67e882cb97"
+    agreger(page, nuage, "X")
+    agreger(page, nuage, "Y")
+    regler(page, nuage, (426, 162, 420, 330),
+           {"Dim_Banque.code_banque": "Banque", "Sum(Rentabilite_Efficacite.Coef_Cumul)": "Coefficient cumulé",
+            "Sum(Rentabilite_Efficacite.ROE)": "ROE"},
+           titre="ROE et coefficient d'exploitation cumulé à l'arrêté",
+           objets={"categoryLabels": {"show": litteral("true")}})
+    regler(page, "50ae35d1b92ae0d02677", (426, 502, 420, 182),
+           {"Mesures.ROE secteur": "ROE des 12 banques", "Mesures.ROA secteur": "ROA des 12 banques"})
+    # tableau depuis la table de la jointure externe gauche : tous les trimestres, sans filtre de l'arrêté
+    tableau = "3b05f5e09ecc60b3900a"
+    colonnes = [("banque", "Banque", 62), ("date_arrete", "Trimestre", 92), ("Coef_Cumul", "Coef. cumulé", 92),
+                ("ROE", "ROE", 70), ("ROA", "ROA", 70)]
+    tableau_colonnes(page, tableau, [("Rentabilite_Trimestres", c) for c, _, _ in colonnes],
+                     {("Rentabilite_Trimestres", c): l for c, _, l in colonnes})
+    regler(page, tableau, (856, 162, 408, 522), {f"Rentabilite_Trimestres.{c}": n for c, n, _ in colonnes},
+           titre="Chaque trimestre : coefficient cumulé, ROE aux arrêtés", objets={"total": {"totals": litteral("false")}})
+    trier(page, tableau, "Rentabilite_Trimestres", "date_arrete", "Descending", genre="Column")
+    interactions(page, [(segment, tableau, "NoFilter")])
     print("Rentabilité : visuels réglés")
+
+
+def agreger(page, visuel, role, fonction=0, nom="Sum"):
+    """Colonnes d'une zone d'un visuel passées en agrégation (0 = somme) ; queryRef « Sum(Table.Colonne) » ; rien si
+    c'est déjà fait."""
+    p = PAGES / page / "visuals" / visuel / "visual.json"
+    d = lire(p)
+    for pr in d["visual"]["query"]["queryState"][role]["projections"]:
+        if "Column" in pr["field"]:
+            col = pr["field"]["Column"]
+            pr["field"] = {"Aggregation": {"Expression": {"Column": col}, "Function": fonction}}
+            pr["queryRef"] = f"{nom}({col['Expression']['SourceRef']['Entity']}.{col['Property']})"
+            pr["nativeQueryRef"] = f"Somme de {col['Property']}"
+    ecrire(p, d)
 
 
 PAGES_REGLEES = {"vue_ensemble": vue_ensemble, "classement": classement, "evolution": evolution,

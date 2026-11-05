@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "3b05f5e09ecc60b3900a",
   "position": {
-    "x": 290,
-    "y": 477,
+    "x": 856,
+    "y": 162,
     "z": 2004,
-    "height": 150,
-    "width": 966,
+    "height": 522,
+    "width": 408,
     "tabOrder": 2004
   },
   "visual": {
@@ -20,121 +20,223 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Rentabilite_Efficacite"
+                      "Entity": "Rentabilite_Trimestres"
                     }
                   },
                   "Property": "banque"
                 }
               },
-              "queryRef": "Rentabilite_Efficacite.banque",
-              "nativeQueryRef": "banque"
+              "queryRef": "Rentabilite_Trimestres.banque",
+              "nativeQueryRef": "banque",
+              "displayName": "Banque"
             },
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Rentabilite_Efficacite"
+                      "Entity": "Rentabilite_Trimestres"
                     }
                   },
                   "Property": "date_arrete"
                 }
               },
-              "queryRef": "Rentabilite_Efficacite.date_arrete",
-              "nativeQueryRef": "date_arrete"
+              "queryRef": "Rentabilite_Trimestres.date_arrete",
+              "nativeQueryRef": "date_arrete",
+              "displayName": "Trimestre"
             },
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Rentabilite_Efficacite"
+                      "Entity": "Rentabilite_Trimestres"
                     }
                   },
                   "Property": "Coef_Cumul"
                 }
               },
-              "queryRef": "Rentabilite_Efficacite.Coef_Cumul",
-              "nativeQueryRef": "Coef_Cumul"
+              "queryRef": "Rentabilite_Trimestres.Coef_Cumul",
+              "nativeQueryRef": "Coef_Cumul",
+              "displayName": "Coef. cumulé"
             },
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Rentabilite_Efficacite"
+                      "Entity": "Rentabilite_Trimestres"
                     }
                   },
                   "Property": "ROE"
                 }
               },
-              "queryRef": "Rentabilite_Efficacite.ROE",
-              "nativeQueryRef": "ROE"
+              "queryRef": "Rentabilite_Trimestres.ROE",
+              "nativeQueryRef": "ROE",
+              "displayName": "ROE"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Rentabilite_Trimestres"
+                    }
+                  },
+                  "Property": "ROA"
+                }
+              },
+              "queryRef": "Rentabilite_Trimestres.ROA",
+              "nativeQueryRef": "ROA",
+              "displayName": "ROA"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Rentabilite_Trimestres"
+                  }
+                },
+                "Property": "date_arrete"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "62D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Rentabilite_Trimestres.banque"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "92D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Rentabilite_Trimestres.date_arrete"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "92D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Rentabilite_Trimestres.Coef_Cumul"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "70D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Rentabilite_Trimestres.ROE"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "70D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Rentabilite_Trimestres.ROA"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Chaque trimestre : coefficient cumulé, ROE aux arrêtés'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
-    "filters": [
-      {
-        "name": "7a1fbd0648a6017ae6c0",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Rentabilite_Efficacite"
-              }
-            },
-            "Property": "banque"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "c9eeacfd8c9b41e99d9c",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Rentabilite_Efficacite"
-              }
-            },
-            "Property": "date_arrete"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "ccc6099f6696591e37b3",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Rentabilite_Efficacite"
-              }
-            },
-            "Property": "Coef_Cumul"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "8e5f7a3e811995655bd0",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Rentabilite_Efficacite"
-              }
-            },
-            "Property": "ROE"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
+    "filters": []
   }
 }

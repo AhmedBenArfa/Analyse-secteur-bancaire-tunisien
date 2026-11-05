@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "d5f8fae19a67e882cb97",
   "position": {
-    "x": 24,
-    "y": 477,
+    "x": 426,
+    "y": 162,
     "z": 2002,
-    "height": 150,
-    "width": 250,
+    "height": 330,
+    "width": 420,
     "tabOrder": 2002
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Banque.code_banque",
               "nativeQueryRef": "code_banque",
-              "active": true
+              "active": true,
+              "displayName": "Banque"
             }
           ]
         },
@@ -36,18 +37,24 @@
           "projections": [
             {
               "field": {
-                "Column": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Rentabilite_Efficacite"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Rentabilite_Efficacite"
+                        }
+                      },
+                      "Property": "Coef_Cumul"
                     }
                   },
-                  "Property": "Coef_Cumul"
+                  "Function": 0
                 }
               },
-              "queryRef": "Rentabilite_Efficacite.Coef_Cumul",
-              "nativeQueryRef": "Coef_Cumul",
-              "active": true
+              "queryRef": "Sum(Rentabilite_Efficacite.Coef_Cumul)",
+              "nativeQueryRef": "Somme de Coef_Cumul",
+              "active": true,
+              "displayName": "Coefficient cumulé"
             }
           ]
         },
@@ -55,23 +62,79 @@
           "projections": [
             {
               "field": {
-                "Column": {
+                "Aggregation": {
                   "Expression": {
-                    "SourceRef": {
-                      "Entity": "Rentabilite_Efficacite"
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Rentabilite_Efficacite"
+                        }
+                      },
+                      "Property": "ROE"
                     }
                   },
-                  "Property": "ROE"
+                  "Function": 0
                 }
               },
-              "queryRef": "Rentabilite_Efficacite.ROE",
-              "nativeQueryRef": "ROE"
+              "queryRef": "Sum(Rentabilite_Efficacite.ROE)",
+              "nativeQueryRef": "Somme de ROE",
+              "displayName": "ROE"
             }
           ]
         }
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'ROE et coefficient d''exploitation cumulé à l''arrêté'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "categoryLabels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [
