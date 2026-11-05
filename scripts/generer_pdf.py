@@ -736,9 +736,9 @@ def rapport():
          f"Fait : table des dates, {nb_relations} relations, {nb_mesures} mesures, {nb_colonnes} colonnes calculées, "
          "journal des faits marquants ; chaque transformation expliquée dans <code>docs/Guide_PowerBI.pdf</code>"],
         ["7", "Pages du rapport Power BI",
-         "En cours : thème, fonds de page et logos des banques ; pages « Vue d'ensemble », « Classement », "
-         "« Évolution 2020–2026 », « Structure du PNB », « Bilan », « Bourse », « Fiche banque » et « Rentabilité » terminées et vérifiées ; « Qualité des données » à suivre ; "
-         "9 pages prévues "
+         "Terminé : thème, fonds de page et logos des banques ; les 9 pages (« Vue d'ensemble », « Classement », "
+         "« Évolution 2020–2026 », « Structure du PNB », « Bilan », « Bourse », « Fiche banque », « Rentabilité », "
+         "« Qualité des données ») terminées et vérifiées "
          "(captures et explications : <code>docs/Presentation_rapport.pdf</code>)"],
         ["8", "README final et captures pour le portfolio",
          "README réécrit en page d'accueil du dépôt ; captures et mise à jour finale après le rapport"]]))

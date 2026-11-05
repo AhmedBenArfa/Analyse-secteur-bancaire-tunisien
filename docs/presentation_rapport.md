@@ -14,8 +14,8 @@ UBCI, UIB, Wifak), **trimestre par trimestre, du T4 2019 au T3 2026**. Il cherch
 6. Quel a été l'effet du Covid, et comment le secteur s'est-il redressé ?
 7. La Bourse récompense-t-elle les banques les plus performantes ?
 
-Huit pages sont terminées et vérifiées (section 4) ; elles répondent aux sept questions. La neuvième page (qualité
-des données) est prévue (section 5).
+Les neuf pages sont terminées et vérifiées (section 4) ; elles répondent aux sept questions, et la neuvième montre
+la qualité des données.
 
 ## 2. Les données : publications officielles, tracées et contrôlées
 
@@ -243,15 +243,36 @@ garde tous les trimestres (336 lignes) et n'y ajoute le ROE que là où il exist
 colonnes de jointure sont réécrites pour perdre leur lien avec la colonne d'origine (sinon DAX refuse la jointure),
 et un test refait les deux jointures depuis les données publiées.
 
-## 5. Suite du rapport
+### Page 9 — Qualité des données
 
-| Page | Contenu prévu | Question |
-|---|---|---|
-| 9. Qualité des données | statut de chaque document, révisions, écarts expliqués, sources et limites | — |
+![Page 9 : qualité des données](captures/page9_qualite.png)
 
-Fonctions DAX ajoutées pendant la construction des pages : hiérarchie parent-enfant `PATH`, `PATHITEM`,
-`PATHLENGTH`, `PATHCONTAINS` (page 7), jointures `NATURALINNERJOIN` et `NATURALLEFTOUTERJOIN` (page 8). Ensuite :
-publication du rapport sur le web, captures et page d'accueil du dépôt.
+**Ce que la page montre** : d'où viennent les chiffres des huit autres pages, ce qui a été corrigé, révisé ou saisi,
+et les limites des données, sans rien cacher.
+
+- Chiffres clés : **336 documents** trimestriels (12 banques × 28 trimestres) ; **27,1 %** lus sans aucune alerte ;
+  **13 saisis à la main** (tableaux de la BTE publiés en image) ; **813 révisions de plus de 2 %** faites par les
+  banques elles-mêmes d'un document à l'autre ; 450 ruptures de série ; **22 écarts annuels, tous expliqués**.
+- Statut des 28 documents de chaque banque : la plupart ont un « écart signalé », qui vient de la banque (révision
+  ou retraitement de ses propres chiffres), jamais d'une erreur de lecture ; la STB retraite le plus souvent ses
+  trimestres (26 documents sur 28).
+- Tableau des écarts entre la somme des quatre trimestres et le cumul annuel, avec la cause et la preuve de
+  chacun : 11 retraitements de la banque, 7 erreurs dans le document de la banque, 3 reclassements, 1 arrondi,
+  0 erreur d'extraction.
+- Journal des faits marquants (41) : événements datés qui expliquent un saut de série, écarts annuels, révisions
+  importantes des états financiers ; encadré des sources et des limites.
+
+**Choix de conception** : les statuts techniques du script d'extraction deviennent cinq catégories lisibles
+(colonne conditionnelle de Power Query) ; les écarts et les faits marquants sont montrés avec leur explication écrite,
+pour que le lecteur puisse juger lui-même la fiabilité des chiffres.
+
+## 5. Suite du projet
+
+Les neuf pages du rapport sont terminées. Fonctions DAX ajoutées pendant leur construction : hiérarchie
+parent-enfant `PATH`, `PATHITEM`, `PATHLENGTH`, `PATHCONTAINS` (page 7), jointures `NATURALINNERJOIN` et
+`NATURALLEFTOUTERJOIN` (page 8). Restent : la note de validation par échantillon (`docs/validation.md`, à partir des
+607 valeurs relevées à la main sur l'image des PDF) et la publication du rapport sur le web, avec son lien en tête
+de la page d'accueil du dépôt.
 
 **Dépôt du projet** : https://github.com/AhmedBenArfa/Analyse-secteur-bancaire-tunisien — code, données publiées,
 projet Power BI, spécification (`docs/Specification_projet.pdf`), guide de chaque transformation

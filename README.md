@@ -6,9 +6,9 @@
 > activity reports (PDF, published through the CMF and the BVMT), their financial statements and
 > daily stock prices. A Python pipeline extracts every figure with its source file and page; revised
 > figures, consistency checks and manual entries are tracked. The data layer, the Power Query layer
-> (22 queries), the star schema and the DAX measures (166) are complete; eight of the nine report
+> (22 queries), the star schema and the DAX measures (166) are complete; all nine report
 > pages are finished (sector overview, bank ranking, 2020–2026 trends, revenue mix, loans and
-> deposits, stock market, bank profile, profitability); the data-quality page is in progress. Figures are provisional and unaudited.
+> deposits, stock market, bank profile, profitability, data quality). Figures are provisional and unaudited.
 > Documentation is in French.
 
 ![Page « Vue d'ensemble du secteur » du rapport Power BI](docs/captures/page1_vue_ensemble.png)
@@ -69,7 +69,7 @@ un fichier Excel et une URL.
 
 ## Aperçu du rapport
 
-Huit pages sur neuf sont terminées et vérifiées (captures exportées de Power BI Desktop, données au
+Les neuf pages sont terminées et vérifiées (captures exportées de Power BI Desktop, données au
 T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, dans
 [docs/Presentation_rapport.pdf](docs/Presentation_rapport.pdf).
 
@@ -83,6 +83,7 @@ T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, 
 | [Bourse : performance et liquidité](docs/captures/page6_bourse.png) | rendement total (dividendes réinvestis) sur cours ajustés, volatilité et liquidité de chaque action, rendement en Bourse face à la croissance du PNB (2021–2025) |
 | [Fiche banque](docs/captures/page7_fiche_banque.png) | page d'extraction (clic droit sur une banque) : chaîne de contrôle (hiérarchie parent-enfant, fonctions `PATH`), chiffres du trimestre, coefficient publié à côté du coefficient harmonisé, tous les indicateurs et les définitions propres à la banque |
 | [Rentabilité : ROE et ROA](docs/captures/page8_rentabilite.png) | ROE et ROA des états financiers à chaque arrêté (30/06 annualisé, 31/12), rentabilité face au coefficient d'exploitation ; jointures DAX `NATURALINNERJOIN` et `NATURALLEFTOUTERJOIN` |
+| [Qualité des données](docs/captures/page9_qualite.png) | statut des 336 documents, révisions et ruptures de série, 22 écarts annuels avec leur cause, journal des faits marquants, sources et limites |
 
 ![Page « Classement des banques »](docs/captures/page2_classement.png)
 
@@ -97,6 +98,8 @@ T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, 
 ![Page « Fiche banque »](docs/captures/page7_fiche_banque.png)
 
 ![Page « Rentabilité : ROE et ROA »](docs/captures/page8_rentabilite.png)
+
+![Page « Qualité des données »](docs/captures/page9_qualite.png)
 
 ## Chiffres clés (au 05/11/2026)
 
@@ -179,8 +182,8 @@ puisse s'ouvrir après un simple clonage du dépôt. Pour reproduire les donnée
 | Examen des écarts du contrôle annuel, actionnariat des banques | Terminé |
 | Requêtes Power Query (22 requêtes : dossier, Excel et URL ; dépivotage, fusions, colonnes conditionnelles, fonction personnalisée) | Terminé (détail et décisions : [docs/feuille_de_route.md](docs/feuille_de_route.md)) |
 | Modèle en étoile, mesures DAX (36 relations, 166 mesures) | Terminé |
-| Pages du rapport | En cours : 8 pages sur 9 terminées (vue d'ensemble, classement, évolution, structure du PNB, bilan, Bourse, fiche banque, rentabilité) ; suivante : qualité des données |
-| Note de validation par échantillon (`docs/validation.md`), captures du rapport | À faire |
+| Pages du rapport (9 pages, captures dans `docs/captures/`, présentation dans `docs/Presentation_rapport.pdf`) | Terminé |
+| Note de validation par échantillon (`docs/validation.md`), publication du rapport sur le web | À faire |
 
 ## Limites
 

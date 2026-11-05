@@ -1926,7 +1926,7 @@ qu'aux 30/06 et 31/12. Le segment des banques filtre les quatre visuels.
 Contrôles sur d'autres arrêtés : « Année 2024 » : ROE des 12 banques 11,85 %, ROA 1,19 %, BIAT 16,6 %, BTE −63,7 % ;
 « Année 2025 » : 11,3 % et 1,13 %, Attijari en tête (20,7 %), BTE −29,1 %.
 
-### 4.10 Page 9 : Qualité des données (en construction)
+### 4.10 Page 9 : Qualité des données (terminée le 05/11/2026)
 
 **But** : montrer d'où viennent les chiffres, ce qui a été corrigé, révisé ou saisi, et les limites des données,
 sans rien cacher (spécification 9, page 9, et 10). La page couvre toute la période : pas de segment du trimestre ;
@@ -1952,7 +1952,9 @@ fichiers par copie de la zone de titre (`zone_texte` de l'outil, texte dans `SOU
 
 **Première capture (05/11/2026)** : toutes les valeurs attendues justes (336 ; 27,1 % ; 13 ; 813 ; 450 ; 22 ; BTE 13 saisis à la main). Retouches : libellés de la carte raccourcis (« Révisions > 2 % », « Écarts expliqués ») ; légende des barres coupée : noms des statuts raccourcis dans la requête `Controle` (2.12e : « conforme », « écart signalé », « saisi à la main », « image reprise », « erreur vérifiée » ; actualiser) ; tableau des écarts plus haut (230) avec une colonne d'explication plus large ; journal et encadré ramenés à 172 de haut, texte des sources et limites raccourci (il débordait).
 
-**Deuxième capture (05/11/2026, après actualisation)** : valeurs justes, statuts en noms courts ; la légende restait coupée à 400 pixels : placée à droite, en liste (`legend.position` 'Right') ; tableau des écarts sans défilement horizontal (explication à 396) ; journal : date et banque sur une ligne ; encadré en 8 points. À vérifier.
+**Deuxième capture (05/11/2026, après actualisation)** : valeurs justes, statuts en noms courts ; la légende restait coupée à 400 pixels : placée à droite, en liste (`legend.position` 'Right') ; tableau des écarts sans défilement horizontal (explication à 396) ; journal : date et banque sur une ligne ; encadré en 8 points.
+
+**Vérifiée le 05/11/2026** (troisième capture : légende à droite complète, tableaux sans défilement horizontal, encadré lisible en entier) ; capture `docs/captures/page9_qualite.png` (export de 20:13, 9 pages), ajoutée à la présentation et au README. **Les neuf pages du rapport sont terminées.**
 
 **Pourquoi ces choix.** Un lecteur doit pouvoir juger les chiffres des autres pages : combien de documents ont été
 lus sans alerte, combien ont été saisis à la main, combien de valeurs ont été révisées par les banques elles-mêmes,
