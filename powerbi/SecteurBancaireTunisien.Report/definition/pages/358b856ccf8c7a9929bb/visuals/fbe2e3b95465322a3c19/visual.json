@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "fbe2e3b95465322a3c19",
   "position": {
-    "x": 0,
-    "y": 161.5263153693252,
+    "x": 16,
+    "y": 162,
     "z": 5001,
-    "height": 150,
-    "width": 600,
+    "height": 100,
+    "width": 1248,
     "tabOrder": 5001
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Mesures.Nb documents",
-              "nativeQueryRef": "Nb documents"
+              "nativeQueryRef": "Nb documents",
+              "displayName": "Documents"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "Mesures.Part documents sans alerte",
-              "nativeQueryRef": "Part documents sans alerte"
+              "nativeQueryRef": "Part documents sans alerte",
+              "displayName": "Lus sans alerte"
             },
             {
               "field": {
@@ -55,7 +57,8 @@
                 }
               },
               "queryRef": "Mesures.Nb documents saisis",
-              "nativeQueryRef": "Nb documents saisis"
+              "nativeQueryRef": "Nb documents saisis",
+              "displayName": "Saisis à la main"
             },
             {
               "field": {
@@ -69,7 +72,8 @@
                 }
               },
               "queryRef": "Mesures.Nb revisions importantes",
-              "nativeQueryRef": "Nb revisions importantes"
+              "nativeQueryRef": "Nb revisions importantes",
+              "displayName": "Révisions de plus de 2 %"
             },
             {
               "field": {
@@ -83,7 +87,8 @@
                 }
               },
               "queryRef": "Mesures.Nb ruptures serie",
-              "nativeQueryRef": "Nb ruptures serie"
+              "nativeQueryRef": "Nb ruptures serie",
+              "displayName": "Ruptures de série"
             },
             {
               "field": {
@@ -97,7 +102,8 @@
                 }
               },
               "queryRef": "Mesures.Nb ecarts expliques",
-              "nativeQueryRef": "Nb ecarts expliques"
+              "nativeQueryRef": "Nb ecarts expliques",
+              "displayName": "Écarts annuels expliqués"
             }
           ]
         }

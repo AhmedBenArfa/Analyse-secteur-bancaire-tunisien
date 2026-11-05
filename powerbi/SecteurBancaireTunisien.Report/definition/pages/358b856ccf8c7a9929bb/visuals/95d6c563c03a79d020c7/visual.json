@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "95d6c563c03a79d020c7",
   "position": {
-    "x": 600,
-    "y": 322,
+    "x": 426,
+    "y": 482,
     "z": 5004,
-    "height": 150,
-    "width": 656,
+    "height": 202,
+    "width": 520,
     "tabOrder": 5004
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Journal_Faits_Marquants.date",
-              "nativeQueryRef": "date"
+              "nativeQueryRef": "date",
+              "displayName": "Date"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "Journal_Faits_Marquants.banque",
-              "nativeQueryRef": "banque"
+              "nativeQueryRef": "banque",
+              "displayName": "Banque"
             },
             {
               "field": {
@@ -55,7 +57,8 @@
                 }
               },
               "queryRef": "Journal_Faits_Marquants.type_fait",
-              "nativeQueryRef": "type_fait"
+              "nativeQueryRef": "type_fait",
+              "displayName": "Type"
             },
             {
               "field": {
@@ -69,7 +72,8 @@
                 }
               },
               "queryRef": "Journal_Faits_Marquants.description",
-              "nativeQueryRef": "description"
+              "nativeQueryRef": "description",
+              "displayName": "Description"
             },
             {
               "field": {
@@ -83,13 +87,167 @@
                 }
               },
               "queryRef": "Journal_Faits_Marquants.montant_mdt",
-              "nativeQueryRef": "montant_mdt"
+              "nativeQueryRef": "montant_mdt",
+              "displayName": "MDT"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Journal_Faits_Marquants"
+                  }
+                },
+                "Property": "date"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Journal des faits marquants'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "76D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Journal_Faits_Marquants.date"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "52D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Journal_Faits_Marquants.banque"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "92D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Journal_Faits_Marquants.type_fait"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "200D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Journal_Faits_Marquants.description"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "56D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Journal_Faits_Marquants.montant_mdt"
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

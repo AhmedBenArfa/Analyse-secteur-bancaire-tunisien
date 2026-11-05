@@ -1948,6 +1948,8 @@ fichiers par copie de la zone de titre (`zone_texte` de l'outil, texte dans `SOU
 | Journal des faits marquants | 426, 482, 520 × 202 | tableau : `Journal_Faits_Marquants[date]`, `[banque]`, `[type_fait]`, `[description]`, `[montant_mdt]` | tri par date ; retour à la ligne ; titre « Journal des faits marquants » |
 | Sources et limites | 956, 482, 308 × 202 | zone de texte (écrite dans les fichiers) | texte 9 pt |
 
+**Visuels créés dans Power BI Desktop (05/11/2026), réglés par `python scripts/ecrire_pbir_visuels.py qualite`** : positions ci-dessus, libellés de la carte, titres, filtre « `statut` = ecart » sur le tableau des écarts annuels, retour à la ligne et largeurs de colonnes des deux tableaux, journal trié par date, lignes de total retirées. À vérifier sur une capture.
+
 **Pourquoi ces choix.** Un lecteur doit pouvoir juger les chiffres des autres pages : combien de documents ont été
 lus sans alerte, combien ont été saisis à la main, combien de valeurs ont été révisées par les banques elles-mêmes,
 et pourquoi la somme des trimestres diffère parfois du cumul annuel (retraitement de la banque, erreur dans son

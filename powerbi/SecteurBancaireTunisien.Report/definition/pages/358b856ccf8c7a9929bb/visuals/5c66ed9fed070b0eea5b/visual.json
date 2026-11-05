@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "5c66ed9fed070b0eea5b",
   "position": {
-    "x": 0,
-    "y": 322,
+    "x": 16,
+    "y": 272,
     "z": 5002,
-    "height": 150,
-    "width": 600,
+    "height": 412,
+    "width": 400,
     "tabOrder": 5002
   },
   "visual": {
@@ -28,7 +28,8 @@
               },
               "queryRef": "Dim_Banque.code_banque",
               "nativeQueryRef": "code_banque",
-              "active": true
+              "active": true,
+              "displayName": "Banque"
             }
           ]
         },
@@ -46,7 +47,8 @@
                 }
               },
               "queryRef": "Controle.Categorie_Statut",
-              "nativeQueryRef": "Categorie_Statut"
+              "nativeQueryRef": "Categorie_Statut",
+              "displayName": "Statut"
             }
           ]
         },
@@ -64,7 +66,8 @@
                 }
               },
               "queryRef": "Mesures.Nb documents",
-              "nativeQueryRef": "Nb documents"
+              "nativeQueryRef": "Nb documents",
+              "displayName": "Documents"
             }
           ]
         }
@@ -88,7 +91,42 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Statut des 28 documents de chaque banque'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

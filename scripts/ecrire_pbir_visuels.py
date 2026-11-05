@@ -780,6 +780,43 @@ def qualite():
     page = PAGE_QUALITE
     retirer_extraction(page)
     zone_texte(page, "sources", (956, 482, 308, 202), SOURCES_LIMITES)
+    regler(page, "fbe2e3b95465322a3c19", (16, 162, 1248, 100),
+           {"Mesures.Nb documents": "Documents", "Mesures.Part documents sans alerte": "Lus sans alerte",
+            "Mesures.Nb documents saisis": "Saisis à la main", "Mesures.Nb revisions importantes": "Révisions de plus de 2 %",
+            "Mesures.Nb ruptures serie": "Ruptures de série", "Mesures.Nb ecarts expliques": "Écarts annuels expliqués"})
+    regler(page, "5c66ed9fed070b0eea5b", (16, 272, 400, 412),
+           {"Dim_Banque.code_banque": "Banque", "Mesures.Nb documents": "Documents",
+            "Controle.Categorie_Statut": "Statut"},
+           titre="Statut des 28 documents de chaque banque")
+    # écarts annuels : seulement les 22 années × indicateurs en écart, avec leur cause
+    ecarts = "167182c0a130a17bd76a"
+    colonnes = [("banque", "Banque", 56), ("annee", "Année", 48), ("code_indicateur", "Indicateur", 84),
+                ("Ecart_MDT", "Écart (MDT)", 74), ("categorie_ecart", "Cause", 150), ("cause_ecart", "Explication", 360)]
+    regler(page, ecarts, (426, 272, 838, 200), {f"Controle_Annuel.{c}": n for c, n, _ in colonnes},
+           titre="Somme des 4 trimestres ≠ cumul annuel : cause de chaque écart",
+           objets={"values": {"wordWrap": litteral("true")}, "total": {"totals": litteral("false")}})
+    p = PAGES / page / "visuals" / ecarts / "visual.json"
+    d = lire(p)
+    d["visual"]["objects"]["columnWidth"] = [
+        {"properties": {"value": litteral(f"{l}D")}, "selector": {"metadata": f"Controle_Annuel.{c}"}}
+        for c, _, l in colonnes]
+    ecrire(p, d)
+    filtre_colonne(page, ecarts, "Controle_Annuel", "statut", "'ecart'", "ecarts_seulement")
+    trier(page, ecarts, "Controle_Annuel", "banque", genre="Column")
+    # journal des faits marquants, par date
+    journal = "95d6c563c03a79d020c7"
+    colonnes = [("date", "Date", 76), ("banque", "Banque", 52), ("type_fait", "Type", 92),
+                ("description", "Description", 200), ("montant_mdt", "MDT", 56)]
+    regler(page, journal, (426, 482, 520, 202), {f"Journal_Faits_Marquants.{c}": n for c, n, _ in colonnes},
+           titre="Journal des faits marquants",
+           objets={"values": {"wordWrap": litteral("true")}, "total": {"totals": litteral("false")}})
+    p = PAGES / page / "visuals" / journal / "visual.json"
+    d = lire(p)
+    d["visual"]["objects"]["columnWidth"] = [
+        {"properties": {"value": litteral(f"{l}D")}, "selector": {"metadata": f"Journal_Faits_Marquants.{c}"}}
+        for c, _, l in colonnes]
+    ecrire(p, d)
+    trier(page, journal, "Journal_Faits_Marquants", "date", genre="Column")
     print("Qualité des données : visuels réglés")
 
 

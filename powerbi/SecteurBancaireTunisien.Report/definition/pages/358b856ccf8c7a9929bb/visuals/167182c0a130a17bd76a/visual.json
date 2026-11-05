@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "167182c0a130a17bd76a",
   "position": {
-    "x": 600,
-    "y": 162,
+    "x": 426,
+    "y": 272,
     "z": 5003,
-    "height": 150,
-    "width": 656,
+    "height": 200,
+    "width": 838,
     "tabOrder": 5003
   },
   "visual": {
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Controle_Annuel.banque",
-              "nativeQueryRef": "banque"
+              "nativeQueryRef": "banque",
+              "displayName": "Banque"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "Controle_Annuel.annee",
-              "nativeQueryRef": "annee"
+              "nativeQueryRef": "annee",
+              "displayName": "Année"
             },
             {
               "field": {
@@ -55,7 +57,8 @@
                 }
               },
               "queryRef": "Controle_Annuel.code_indicateur",
-              "nativeQueryRef": "code_indicateur"
+              "nativeQueryRef": "code_indicateur",
+              "displayName": "Indicateur"
             },
             {
               "field": {
@@ -69,7 +72,8 @@
                 }
               },
               "queryRef": "Controle_Annuel.Ecart_MDT",
-              "nativeQueryRef": "Ecart_MDT"
+              "nativeQueryRef": "Ecart_MDT",
+              "displayName": "Écart (MDT)"
             },
             {
               "field": {
@@ -83,7 +87,8 @@
                 }
               },
               "queryRef": "Controle_Annuel.categorie_ecart",
-              "nativeQueryRef": "categorie_ecart"
+              "nativeQueryRef": "categorie_ecart",
+              "displayName": "Cause"
             },
             {
               "field": {
@@ -97,13 +102,181 @@
                 }
               },
               "queryRef": "Controle_Annuel.cause_ecart",
-              "nativeQueryRef": "cause_ecart"
+              "nativeQueryRef": "cause_ecart",
+              "displayName": "Explication"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Controle_Annuel"
+                  }
+                },
+                "Property": "banque"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Somme des 4 trimestres ≠ cumul annuel : cause de chaque écart'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "56D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Controle_Annuel.banque"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "48D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Controle_Annuel.annee"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "84D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Controle_Annuel.code_indicateur"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "74D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Controle_Annuel.Ecart_MDT"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "150D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Controle_Annuel.categorie_ecart"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "360D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Controle_Annuel.cause_ecart"
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [
@@ -190,6 +363,61 @@
           }
         },
         "type": "Categorical"
+      },
+      {
+        "name": "ecarts_seulement",
+        "ordinal": 6,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Controle_Annuel"
+              }
+            },
+            "Property": "statut"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Controle_Annuel",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "statut"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'ecart'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
       }
     ]
   }
