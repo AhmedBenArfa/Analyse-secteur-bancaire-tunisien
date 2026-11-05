@@ -127,7 +127,7 @@
               },
               "queryRef": "Mesures.Revenus portefeuille",
               "nativeQueryRef": "Revenus portefeuille",
-              "displayName": "Revenus du portefeuille"
+              "displayName": "Portefeuille"
             },
             {
               "field": {

@@ -14,7 +14,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 |---|---|---|
 | 1 | Script de collecte et d'extraction des indicateurs trimestriels | Fait |
 | 2 | Collecte réelle T4 2019 → T3 2026 et corrections | Fait : 336/336 documents, 12 gabarits de mise en page ; 13 documents publiés en image saisis à la main ; 11 545 valeurs retenues |
-| 3 | Validation sur l'image des PDF | Valeurs de référence relevées à la main (438 sur 41 documents) ; `docs/validation.md` à écrire |
+| 3 | Validation sur l'image des PDF | **Terminée le 05/11/2026** : `docs/validation.md` ; 478 valeurs d'indicateurs sur 51 documents (dont 40 sur 10 documents tirés au hasard, graine 20261105) et 169 valeurs d'états financiers sur 24 documents, toutes identiques à l'extraction ; contrôles de cohérence sur toutes les données ; limites |
 | 4 | Cours boursiers 2019–2026 | Fait : 1 955 séances par banque, 63 opérations sur titres sourcées |
 | 4b | États financiers (ROE, ROA) | Fait : 168 arrêtés, 504 valeurs retenues |
 | 4c | Écarts du contrôle annuel | Fait : 22 écarts, cause et source de chacun (`docs/ecarts_annuels.csv`) |
@@ -76,8 +76,8 @@ par banque et par date ; les jointures faites jusqu'ici sont les fusions de Powe
 Page 7 « Fiche banque » (ajout du 30/10/2026, demande de l'utilisateur) : fonctions de hiérarchie parent-enfant
 `PATH`, `PATHITEM`, `PATHLENGTH`, `PATHCONTAINS` sur une table « chaîne de contrôle » (secteur → catégorie
 d'actionnariat → groupe de référence → banque), construite depuis l'actionnariat déjà sourcé (rien d'ajouté).
-Ensuite : `docs/validation.md` (étape 3), captures et publication sur le web avec le lien en tête du README
-(étape 8).
+Étape 3 (`docs/validation.md`) et pages : terminées le 05/11/2026. Reste : publication sur le web avec le lien
+en tête du README (étape 8).
 
 ### Règles pour les mesures DAX
 

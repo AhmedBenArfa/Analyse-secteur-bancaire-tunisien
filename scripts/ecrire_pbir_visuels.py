@@ -436,7 +436,7 @@ def structure_pnb():
     page = "d2213f796063e0736cf2"
     retirer_extraction(page)
     composantes = {"Mesures.Marge interets": "Marge d'intérêts", "Mesures.Marge commissions": "Marge sur commissions",
-                   "Mesures.Revenus portefeuille": "Revenus du portefeuille",
+                   "Mesures.Revenus portefeuille": "Portefeuille",
                    "Mesures.Autres elements PNB": "Autres éléments"}
     parts = {"Mesures.Part marge interets": "Part marge d'intérêts", "Mesures.Part commissions": "Part commissions",
              "Mesures.Part portefeuille": "Part portefeuille"}

@@ -107,7 +107,7 @@ T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, 
 |---|---|
 | Documents d'indicateurs trimestriels trouvés | **336 / 336** (12 banques × 28 trimestres) |
 | Valeurs retenues des indicateurs trimestriels | 11 545 (24 indicateurs, aucune vide) |
-| Valeurs relevées à la main sur l'image des PDF pour les tests | 438 sur 41 documents d'indicateurs, 169 sur 24 états financiers |
+| Valeurs relevées à la main sur l'image des PDF pour les tests | 478 sur 51 documents d'indicateurs (dont 40 sur 10 documents tirés au hasard), 169 sur 24 états financiers : toutes identiques à l'extraction ([note de validation](docs/validation.md)) |
 | Contrôle annuel (somme des 4 trimestres contre cumul annuel) | 288 contrôles : 205 ok, 41 en attente de révision, 20 ruptures de série, **22 écarts, tous expliqués** (11 retraitements de la banque, 7 erreurs dans le document de la banque, 3 reclassements, 1 arrondi, 0 erreur d'extraction) |
 | Révisions de plus de 2 % d'un total (cumul) | 137, chacune avec le document d'origine et le document révisé |
 | Valeurs saisies à la main | 682 (13 documents BTE publiés en image, deux valeurs STB superposées au libellé, deux valeurs Wifak dont les colonnes se touchent), toutes passées aux contrôles de cohérence ; un document relu une seconde fois en entier (BTE 2020T2) |
@@ -127,6 +127,9 @@ T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, 
   commissions + revenus du portefeuille dans chaque version publiée, trimestre contre cumul,
   composantes des charges opératoires, ordres de grandeur, somme des trimestres contre cumul annuel,
   équilibre du bilan. Chaque écart du contrôle annuel a sa cause et sa source dans `docs/ecarts_annuels.csv`.
+- **Validation sur l'image des PDF.** 647 valeurs lues à l'œil sur l'image des pages (dont 10 documents
+  tirés au hasard) sont comparées à l'extraction à chaque lancement des tests : toutes identiques. Méthode,
+  résultats et limites : [docs/validation.md](docs/validation.md).
 - **Colonnes fausses écartées.** Deux colonnes de comparaison erronées dans les documents des
   banques (UIB 2023T2, Wifak 2023T4), vérifiées sur l'image, ne sont jamais retenues.
 - **Saisies manuelles tracées.** Les documents publiés en image sont relevés à la main dans
@@ -162,9 +165,10 @@ T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, 
 │   ├── utilisation.md           mode d'emploi des scripts
 │   ├── guide_powerbi.md         requêtes et mesures expliquées pas à pas
 │   ├── feuille_de_route.md      état d'avancement et décisions prises
+│   ├── validation.md            note de validation des données (échantillons relevés sur l'image, contrôles)
 │   ├── ecarts_annuels.csv       cause de chaque écart du contrôle annuel
 │   ├── revisions_importantes.csv
-│   ├── captures/                captures des pages terminées du rapport
+│   ├── captures/                captures des 9 pages du rapport
 │   └── *.pdf                    spécification, guide Power BI (chaque transformation expliquée), rapport d'avancement, présentation du rapport
 └── donnees/                     dossier de travail : PDF et CSV produits par les scripts (non versionné)
 ```
@@ -183,7 +187,8 @@ puisse s'ouvrir après un simple clonage du dépôt. Pour reproduire les donnée
 | Requêtes Power Query (22 requêtes : dossier, Excel et URL ; dépivotage, fusions, colonnes conditionnelles, fonction personnalisée) | Terminé (détail et décisions : [docs/feuille_de_route.md](docs/feuille_de_route.md)) |
 | Modèle en étoile, mesures DAX (36 relations, 166 mesures) | Terminé |
 | Pages du rapport (9 pages, captures dans `docs/captures/`, présentation dans `docs/Presentation_rapport.pdf`) | Terminé |
-| Note de validation par échantillon (`docs/validation.md`), publication du rapport sur le web | À faire |
+| Note de validation par échantillon ([`docs/validation.md`](docs/validation.md) : 647 valeurs relevées sur l'image, dont 10 documents tirés au hasard, toutes conformes) | Terminé |
+| Publication du rapport sur le web | À faire |
 
 ## Limites
 

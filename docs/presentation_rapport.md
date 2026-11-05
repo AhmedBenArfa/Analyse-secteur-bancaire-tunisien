@@ -29,8 +29,9 @@ la qualité des données.
 
 **Contrôles et validation.**
 
-- 438 valeurs relevées à la main sur l'image des PDF (41 documents) et 169 pour les états financiers (24 documents),
-  comparées automatiquement à l'extraction ; 50 tests automatiques au total.
+- 478 valeurs relevées à la main sur l'image des PDF (51 documents, dont 10 tirés au hasard) et 169 pour les
+  états financiers (24 documents), comparées automatiquement à l'extraction : toutes identiques ; 50 tests
+  automatiques au total (note de validation : `docs/validation.md`).
 - Contrôles de cohérence à chaque extraction : produits − charges = PNB, somme des quatre trimestres = cumul
   annuel, PNB = marge d'intérêts + marge sur commissions + revenus du portefeuille.
 - 13 documents publiés en image (BTE) saisis à la main avec les mêmes contrôles.
@@ -270,9 +271,9 @@ pour que le lecteur puisse juger lui-même la fiabilité des chiffres.
 
 Les neuf pages du rapport sont terminées. Fonctions DAX ajoutées pendant leur construction : hiérarchie
 parent-enfant `PATH`, `PATHITEM`, `PATHLENGTH`, `PATHCONTAINS` (page 7), jointures `NATURALINNERJOIN` et
-`NATURALLEFTOUTERJOIN` (page 8). Restent : la note de validation par échantillon (`docs/validation.md`, à partir des
-607 valeurs relevées à la main sur l'image des PDF) et la publication du rapport sur le web, avec son lien en tête
-de la page d'accueil du dépôt.
+`NATURALLEFTOUTERJOIN` (page 8). La note de validation est écrite (`docs/validation.md` : 647 valeurs relevées sur l'image
+des PDF, dont 10 documents tirés au hasard, toutes conformes). Reste la publication du rapport sur le web, avec son
+lien en tête de la page d'accueil du dépôt.
 
 **Dépôt du projet** : https://github.com/AhmedBenArfa/Analyse-secteur-bancaire-tunisien — code, données publiées,
 projet Power BI, spécification (`docs/Specification_projet.pdf`), guide de chaque transformation

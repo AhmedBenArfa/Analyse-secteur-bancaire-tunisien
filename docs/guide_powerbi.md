@@ -1956,6 +1956,8 @@ fichiers par copie de la zone de titre (`zone_texte` de l'outil, texte dans `SOU
 
 **Vérifiée le 05/11/2026** (troisième capture : légende à droite complète, tableaux sans défilement horizontal, encadré lisible en entier) ; capture `docs/captures/page9_qualite.png` (export de 20:13, 9 pages), ajoutée à la présentation et au README. **Les neuf pages du rapport sont terminées.**
 
+**Retouche du 05/11/2026 (page 4, demande de l'utilisateur)** : légende des barres coupée (« Revenus du portef… ») : nom affiché « Portefeuille » dans les deux graphiques de la page 4 (changé directement dans les deux fichiers, sans relancer toute la page, et dans `structure_pnb()`).
+
 **Pourquoi ces choix.** Un lecteur doit pouvoir juger les chiffres des autres pages : combien de documents ont été
 lus sans alerte, combien ont été saisis à la main, combien de valeurs ont été révisées par les banques elles-mêmes,
 et pourquoi la somme des trimestres diffère parfois du cumul annuel (retraitement de la banque, erreur dans son

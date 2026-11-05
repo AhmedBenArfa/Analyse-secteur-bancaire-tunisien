@@ -689,8 +689,8 @@ def rapport():
       + ", ".join(f"{b} {t}" for b, t in autres[["banque", "trimestre"]].values) + ").</li>"
       "<li>Pas de résultat net dans les indicateurs trimestriels : ROE et ROA seulement semestriels "
       "et annuels (états financiers).</li>"
-      "<li>Le contrôle par échantillon (<code>docs/validation.md</code>) reste à écrire ; les "
-      f"{len(ref)} valeurs de référence en tiennent lieu pour l'instant.</li></ul>")
+      "<li>Validation par échantillon : <code>docs/validation.md</code> ("
+      f"{len(ref)} valeurs de référence relevées sur l'image, dont 10 documents tirés au hasard).</li></ul>")
 
     # 7. Cours boursiers et états financiers -------------------------------------------------
     A("<h2>7. Cours boursiers et états financiers</h2>")
@@ -724,7 +724,7 @@ def rapport():
         ["1–2", "Collecte et extraction des indicateurs (12 gabarits)",
          "Fait jusqu'au " + (lambda t: f"T{t[-1]} {t[:4]}")(sorted(ok.trimestre)[-1])
          + f" ({len(ok)}/{nb_att} documents)"],
-        ["3", "Validation manuelle d'un échantillon", f"{len(ref)} valeurs relevées ; <code>docs/validation.md</code> à écrire"],
+        ["3", "Validation manuelle d'un échantillon", f"Fait : {len(ref)} valeurs relevées sur l'image, toutes conformes ; <code>docs/validation.md</code>"],
         ["4", "Cours boursiers 2019–2026", f"Fait (jusqu'au {jour(cours.date.max())})"],
         ["4b", "États financiers (résultat net, total actif, capitaux propres) pour ROE et ROA",
          f"Fait ({len(efr)} valeurs retenues)"],
