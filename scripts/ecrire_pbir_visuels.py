@@ -777,7 +777,7 @@ def qualite():
     """Page 9 « Qualité des données » (guide 4.10)."""
     page = PAGE_QUALITE
     retirer_extraction(page)
-    zone_texte(page, "sources", (956, 512, 308, 172), SOURCES_LIMITES)
+    zone_texte(page, "sources", (956, 512, 308, 172), SOURCES_LIMITES, taille="8pt")
     regler(page, "fbe2e3b95465322a3c19", (16, 162, 1248, 100),
            {"Mesures.Nb documents": "Documents", "Mesures.Part documents sans alerte": "Lus sans alerte",
             "Mesures.Nb documents saisis": "Saisis à la main", "Mesures.Nb revisions importantes": "Révisions > 2 %",
@@ -785,12 +785,13 @@ def qualite():
     regler(page, "5c66ed9fed070b0eea5b", (16, 272, 400, 412),
            {"Dim_Banque.code_banque": "Banque", "Mesures.Nb documents": "Documents",
             "Controle.Categorie_Statut": "Statut"},
-           titre="Statut des 28 documents de chaque banque")
+           titre="Statut des 28 documents de chaque banque",
+           objets={"legend": {"position": texte("Right")}})
     # écarts annuels : seulement les 22 années × indicateurs en écart, avec leur cause
     ecarts = "167182c0a130a17bd76a"
     # 230 de haut, explication large (moins de lignes par écart) : au moins deux écarts visibles
     colonnes = [("banque", "Banque", 56), ("annee", "Année", 56), ("code_indicateur", "Indicateur", 84),
-                ("Ecart_MDT", "Écart (MDT)", 74), ("categorie_ecart", "Cause", 116), ("cause_ecart", "Explication", 420)]
+                ("Ecart_MDT", "Écart (MDT)", 74), ("categorie_ecart", "Cause", 116), ("cause_ecart", "Explication", 396)]
     regler(page, ecarts, (426, 272, 838, 230), {f"Controle_Annuel.{c}": n for c, n, _ in colonnes},
            titre="Somme des 4 trimestres ≠ cumul annuel : cause de chaque écart",
            objets={"values": {"wordWrap": litteral("true")}, "total": {"totals": litteral("false")}})
@@ -804,8 +805,8 @@ def qualite():
     trier(page, ecarts, "Controle_Annuel", "banque", genre="Column")
     # journal des faits marquants, par date
     journal = "95d6c563c03a79d020c7"
-    colonnes = [("date", "Date", 76), ("banque", "Banque", 52), ("type_fait", "Type", 92),
-                ("description", "Description", 200), ("montant_mdt", "MDT", 56)]
+    colonnes = [("date", "Date", 84), ("banque", "Banque", 62), ("type_fait", "Type", 90),
+                ("description", "Description", 184), ("montant_mdt", "MDT", 54)]
     regler(page, journal, (426, 512, 520, 172), {f"Journal_Faits_Marquants.{c}": n for c, n, _ in colonnes},
            titre="Journal des faits marquants",
            objets={"values": {"wordWrap": litteral("true")}, "total": {"totals": litteral("false")}})

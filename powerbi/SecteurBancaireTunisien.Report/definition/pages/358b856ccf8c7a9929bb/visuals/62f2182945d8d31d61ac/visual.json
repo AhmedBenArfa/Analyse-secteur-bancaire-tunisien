@@ -21,7 +21,7 @@
                   {
                     "value": "Sources et limites",
                     "textStyle": {
-                      "fontSize": "9pt",
+                      "fontSize": "8pt",
                       "color": "#252423",
                       "fontWeight": "bold"
                     }
@@ -33,7 +33,7 @@
                   {
                     "value": "Sources : indicateurs trimestriels des banques (CMF, Bourse de Tunis, sites des banques), états financiers individuels, cours de la Bourse ; chaque valeur garde son fichier et sa page.",
                     "textStyle": {
-                      "fontSize": "9pt",
+                      "fontSize": "8pt",
                       "color": "#252423"
                     }
                   }
@@ -44,7 +44,7 @@
                   {
                     "value": "Limites : chiffres provisoires et non audités, souvent révisés (version révisée retenue) ; ROE au 30/06 annualisé ; charges et capitaux propres définis par chaque banque (coefficient harmonisé pour comparer) ; 13 documents BTE en image saisis à la main.",
                     "textStyle": {
-                      "fontSize": "9pt",
+                      "fontSize": "8pt",
                       "color": "#252423"
                     }
                   }

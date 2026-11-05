@@ -126,6 +126,21 @@
           }
         }
       ]
+    },
+    "objects": {
+      "legend": [
+        {
+          "properties": {
+            "position": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Right'"
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   },
   "filterConfig": {
