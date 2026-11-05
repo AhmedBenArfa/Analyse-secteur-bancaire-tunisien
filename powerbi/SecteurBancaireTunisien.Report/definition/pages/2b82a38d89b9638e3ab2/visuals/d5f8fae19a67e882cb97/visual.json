@@ -1,0 +1,122 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "d5f8fae19a67e882cb97",
+  "position": {
+    "x": 24,
+    "y": 477,
+    "z": 2002,
+    "height": 150,
+    "width": 250,
+    "tabOrder": 2002
+  },
+  "visual": {
+    "visualType": "scatterChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "code_banque"
+                }
+              },
+              "queryRef": "Dim_Banque.code_banque",
+              "nativeQueryRef": "code_banque",
+              "active": true
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Rentabilite_Efficacite"
+                    }
+                  },
+                  "Property": "Coef_Cumul"
+                }
+              },
+              "queryRef": "Rentabilite_Efficacite.Coef_Cumul",
+              "nativeQueryRef": "Coef_Cumul",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Rentabilite_Efficacite"
+                    }
+                  },
+                  "Property": "ROE"
+                }
+              },
+              "queryRef": "Rentabilite_Efficacite.ROE",
+              "nativeQueryRef": "ROE"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "c0a25ff247b93e0bd0e0",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Rentabilite_Efficacite"
+              }
+            },
+            "Property": "Coef_Cumul"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "1420496e358217de302e",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Rentabilite_Efficacite"
+              }
+            },
+            "Property": "ROE"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "2cea0a9fdeb6471ec536",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "code_banque"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
+  }
+}

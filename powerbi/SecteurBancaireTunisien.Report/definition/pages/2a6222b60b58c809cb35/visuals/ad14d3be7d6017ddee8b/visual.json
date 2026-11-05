@@ -64,7 +64,6 @@
         }
       }
     },
-    "drillFilterOtherVisuals": true,
     "objects": {
       "values": [
         {
@@ -135,8 +134,14 @@
             "metadata": "Mesures.Actionnaire principal"
           }
         }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
       ]
-    }
+    },
+    "drillFilterOtherVisuals": true
   },
   "filterConfig": {
     "filters": [

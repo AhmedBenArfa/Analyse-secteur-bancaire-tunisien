@@ -1,0 +1,140 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "3b05f5e09ecc60b3900a",
+  "position": {
+    "x": 290,
+    "y": 477,
+    "z": 2004,
+    "height": 150,
+    "width": 966,
+    "tabOrder": 2004
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Rentabilite_Efficacite"
+                    }
+                  },
+                  "Property": "banque"
+                }
+              },
+              "queryRef": "Rentabilite_Efficacite.banque",
+              "nativeQueryRef": "banque"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Rentabilite_Efficacite"
+                    }
+                  },
+                  "Property": "date_arrete"
+                }
+              },
+              "queryRef": "Rentabilite_Efficacite.date_arrete",
+              "nativeQueryRef": "date_arrete"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Rentabilite_Efficacite"
+                    }
+                  },
+                  "Property": "Coef_Cumul"
+                }
+              },
+              "queryRef": "Rentabilite_Efficacite.Coef_Cumul",
+              "nativeQueryRef": "Coef_Cumul"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Rentabilite_Efficacite"
+                    }
+                  },
+                  "Property": "ROE"
+                }
+              },
+              "queryRef": "Rentabilite_Efficacite.ROE",
+              "nativeQueryRef": "ROE"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "7a1fbd0648a6017ae6c0",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Rentabilite_Efficacite"
+              }
+            },
+            "Property": "banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "c9eeacfd8c9b41e99d9c",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Rentabilite_Efficacite"
+              }
+            },
+            "Property": "date_arrete"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "ccc6099f6696591e37b3",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Rentabilite_Efficacite"
+              }
+            },
+            "Property": "Coef_Cumul"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "8e5f7a3e811995655bd0",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Rentabilite_Efficacite"
+              }
+            },
+            "Property": "ROE"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

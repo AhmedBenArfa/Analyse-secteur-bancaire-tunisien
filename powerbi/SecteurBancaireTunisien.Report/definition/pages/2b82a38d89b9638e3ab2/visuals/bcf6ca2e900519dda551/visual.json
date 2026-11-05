@@ -1,0 +1,195 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "bcf6ca2e900519dda551",
+  "position": {
+    "x": 24,
+    "y": 262,
+    "z": 2001,
+    "height": 150,
+    "width": 250,
+    "tabOrder": 2001
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Banque"
+                    }
+                  },
+                  "Property": "code_banque"
+                }
+              },
+              "queryRef": "Dim_Banque.code_banque",
+              "nativeQueryRef": "code_banque",
+              "active": true
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "ROA"
+                }
+              },
+              "queryRef": "Mesures.ROA",
+              "nativeQueryRef": "ROA"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Resultat net annualise"
+                }
+              },
+              "queryRef": "Mesures.Resultat net annualise",
+              "nativeQueryRef": "Resultat net annualise"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Cap propres moyens"
+                }
+              },
+              "queryRef": "Mesures.Cap propres moyens",
+              "nativeQueryRef": "Cap propres moyens"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "ROE"
+                }
+              },
+              "queryRef": "Mesures.ROE",
+              "nativeQueryRef": "ROE"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Mesures"
+                  }
+                },
+                "Property": "ROE"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "e7a280f84b0b70782d41",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dim_Banque"
+              }
+            },
+            "Property": "code_banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "ad39ff6b1abc1785a02d",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "ROE"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "f5a66c3d6c2ee42aaaa2",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "ROA"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "3e8220284bce0aba01b4",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Resultat net annualise"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "dd724717073c02c0d30b",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Cap propres moyens"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}
