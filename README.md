@@ -129,7 +129,8 @@ T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, 
   équilibre du bilan. Chaque écart du contrôle annuel a sa cause et sa source dans `docs/ecarts_annuels.csv`.
 - **Validation sur l'image des PDF.** 647 valeurs lues à l'œil sur l'image des pages (dont 10 documents
   tirés au hasard) sont comparées à l'extraction à chaque lancement des tests : toutes identiques. Méthode,
-  résultats et limites : [docs/validation.md](docs/validation.md).
+  résultats et limites : [docs/validation.md](docs/validation.md) (en PDF :
+  [docs/Validation_donnees.pdf](docs/Validation_donnees.pdf)).
 - **Colonnes fausses écartées.** Deux colonnes de comparaison erronées dans les documents des
   banques (UIB 2023T2, Wifak 2023T4), vérifiées sur l'image, ne sont jamais retenues.
 - **Saisies manuelles tracées.** Les documents publiés en image sont relevés à la main dans
@@ -169,7 +170,7 @@ T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, 
 │   ├── ecarts_annuels.csv       cause de chaque écart du contrôle annuel
 │   ├── revisions_importantes.csv
 │   ├── captures/                captures des 9 pages du rapport
-│   └── *.pdf                    spécification, guide Power BI (chaque transformation expliquée), rapport d'avancement, présentation du rapport
+│   └── *.pdf                    spécification, guide Power BI (chaque transformation expliquée), rapport d'avancement, présentation du rapport, note de validation
 └── donnees/                     dossier de travail : PDF et CSV produits par les scripts (non versionné)
 ```
 

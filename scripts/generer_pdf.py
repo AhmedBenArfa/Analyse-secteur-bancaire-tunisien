@@ -1,6 +1,6 @@
 # Auteur : Ahmed Ben Arfa
 """
-Génère les quatre documents PDF du dossier docs/ :
+Génère les cinq documents PDF du dossier docs/ :
   - docs/Specification_projet.pdf : rendu de docs/SPECIFICATION.md ;
   - docs/Guide_PowerBI.pdf : rendu de docs/guide_powerbi.md (chaque transformation expliquée), avec en
     annexe le code M de chaque requête (powerquery/*.pq) et la feuille de route (décisions) ;
@@ -13,12 +13,14 @@ d'environnement EDGE), puis numéros de page et métadonnées ajoutés avec PyMu
 Les tests (pytest) sont relancés pour donner leur résultat dans le rapport (environ 1 minute).
 
   - docs/Presentation_rapport.pdf : présentation du rapport Power BI (données, démarche, pages terminées avec
-    leurs captures docs/captures/*.png), rendu de docs/presentation_rapport.md.
+    leurs captures docs/captures/*.png), rendu de docs/presentation_rapport.md ;
+  - docs/Validation_donnees.pdf : note de validation des données, rendu de docs/validation.md.
 
 Utilisation :
-  python scripts/generer_pdf.py                 # les quatre documents
+  python scripts/generer_pdf.py                 # les cinq documents
   python scripts/generer_pdf.py guide           # seulement le guide (après chaque requête ou mesure)
   python scripts/generer_pdf.py presentation    # seulement la présentation (après chaque page terminée)
+  python scripts/generer_pdf.py validation      # seulement la note de validation
 """
 import collections, csv, datetime, html, os, posixpath, re, subprocess, sys, tempfile
 from pathlib import Path
@@ -225,6 +227,22 @@ def presentation():
     vers_pdf(page_html("Présentation du rapport", corps), R / "docs/Presentation_rapport.pdf",
              "Présentation du rapport Power BI — Analyse du secteur bancaire tunisien", "Présentation du rapport",
              f"Analyse du secteur bancaire tunisien — Présentation du rapport ({DATE})")
+
+
+def validation():
+    """Note de validation des données : rendu de docs/validation.md (échantillons relevés sur l'image des PDF,
+    tirage au hasard, contrôles de cohérence, limites)."""
+    md = re.sub(r"\A<!--.*?-->\s*", "", (R / "docs/validation.md").read_text(encoding="utf-8"), flags=re.S)
+    titre, reste = md.split("\n", 1)
+    rendu = mistune.create_markdown(plugins=["table", "strikethrough"], escape=False)(reste)
+    corps = (f'<div class="titre"><h1>{e(titre.lstrip("# ").strip())}</h1>'
+             f'<div class="soustitre">Comment les chiffres du rapport ont été vérifiés, et ce que la vérification '
+             f'ne garantit pas</div>'
+             f'<div class="meta">{AUTEUR} · version du {DATE} (générée à partir de docs/validation.md)</div></div>'
+             f'{rendu}')
+    vers_pdf(page_html("Note de validation", corps), R / "docs/Validation_donnees.pdf",
+             "Note de validation des données — Analyse du secteur bancaire tunisien", "Note de validation",
+             f"Analyse du secteur bancaire tunisien — Note de validation ({DATE})")
 
 
 # --------------------------------------------------------------------------- rapport
@@ -750,7 +768,8 @@ def rapport():
 
 if __name__ == "__main__":
     # sans argument : les trois documents ; sinon seulement ceux nommés (ex. « guide », plus rapide)
-    documents = {"specification": specification, "guide": guide, "rapport": rapport, "presentation": presentation}
+    documents = {"specification": specification, "guide": guide, "rapport": rapport, "presentation": presentation,
+                 "validation": validation}
     choix = sys.argv[1:] or list(documents)
     inconnus = set(choix) - set(documents)
     if inconnus:

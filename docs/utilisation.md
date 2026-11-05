@@ -232,9 +232,10 @@ extraction, avant le commit.
 ## 9. Documents PDF de `docs/`
 
 ```
-python scripts/generer_pdf.py                # les quatre documents
+python scripts/generer_pdf.py                # les cinq documents
 python scripts/generer_pdf.py guide          # seulement le guide Power BI (quelques secondes)
 python scripts/generer_pdf.py presentation   # présentation du rapport avec les captures des pages
+python scripts/generer_pdf.py validation     # note de validation des données (docs/validation.md)
 # captures : Power BI Desktop, Fichier › Exporter › Exporter au format PDF, puis une image par page
 # terminée dans docs/captures/ (marge blanche de 18 points retirée, 150 dpi)
 ```
