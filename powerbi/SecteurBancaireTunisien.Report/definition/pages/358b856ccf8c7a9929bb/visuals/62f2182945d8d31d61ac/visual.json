@@ -1,0 +1,60 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "62f2182945d8d31d61ac",
+  "position": {
+    "x": 956,
+    "y": 482,
+    "z": 5000,
+    "height": 202,
+    "width": 308,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Sources et limites",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#252423",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Sources : indicateurs d'activité trimestriels publiés par les banques (CMF, Bourse de Tunis, sites des banques), états financiers individuels, cours et bulletins de la Bourse de Tunis ; chaque valeur garde son fichier et sa page.",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#252423"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Limites : indicateurs provisoires et non audités, souvent révisés d'un document à l'autre (la version révisée est retenue) ; comptes semestriels non audités, ROE au 30/06 annualisé ; charges opératoires et capitaux propres définis différemment selon les banques (coefficient harmonisé pour comparer) ; 13 documents BTE publiés en image, saisis à la main avec des contrôles de cohérence.",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#252423"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

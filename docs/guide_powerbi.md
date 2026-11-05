@@ -1925,3 +1925,53 @@ qu'aux 30/06 et 31/12. Le segment des banques filtre les quatre visuels.
 
 Contrôles sur d'autres arrêtés : « Année 2024 » : ROE des 12 banques 11,85 %, ROA 1,19 %, BIAT 16,6 %, BTE −63,7 % ;
 « Année 2025 » : 11,3 % et 1,13 %, Attijari en tête (20,7 %), BTE −29,1 %.
+
+### 4.10 Page 9 : Qualité des données (en construction)
+
+**But** : montrer d'où viennent les chiffres, ce qui a été corrigé, révisé ou saisi, et les limites des données,
+sans rien cacher (spécification 9, page 9, et 10). La page couvre toute la période : pas de segment du trimestre ;
+le segment des banques la filtre.
+
+**Création de la page** : `python scripts/ecrire_pbir_visuels.py nouvelle_page "Qualité des données" "Qualité des
+données"` (page `358b856ccf8c7a9929bb`) ; l'encadré « Sources et limites » est une zone de texte écrite dans les
+fichiers par copie de la zone de titre (`zone_texte` de l'outil, texte dans `SOURCES_LIMITES`), par
+`python scripts/ecrire_pbir_visuels.py qualite`.
+
+**Mise en page** (positions : x, y, largeur × hauteur) :
+
+| Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
+|---|---|---|---|
+| Fond, titre, segment des banques | comme la page 1 | copiés de la page 1 | titre « Qualité des données » |
+| Chiffres clés | 16, 162, 1 248 × 100 | carte (nouvelle) : `Nb documents`, `Part documents sans alerte`, `Nb documents saisis` (`7. Qualité\Documents`), `Nb revisions importantes`, `Nb ruptures serie` (`7. Qualité\Révisions`), `Nb ecarts expliques` (`7. Qualité\Contrôle annuel`) | libellés « Documents », « Lus sans alerte », « Saisis à la main », « Révisions de plus de 2 % », « Ruptures de série », « Écarts annuels expliqués » |
+| Statut des documents par banque | 16, 272, 400 × 412 | graphique à barres empilées : axe Y `Dim_Banque[code_banque]`, axe X `Nb documents`, légende `Controle[Categorie_Statut]` | titre « Statut des 28 documents de chaque banque » |
+| Écarts annuels expliqués | 426, 272, 838 × 200 | tableau : `Controle_Annuel[banque]`, `[annee]`, `[code_indicateur]`, `[Ecart_MDT]`, `[categorie_ecart]`, `[cause_ecart]` | filtre `statut` = « ecart » ; retour à la ligne ; titre « Somme des 4 trimestres ≠ cumul annuel : cause de chaque écart » |
+| Journal des faits marquants | 426, 482, 520 × 202 | tableau : `Journal_Faits_Marquants[date]`, `[banque]`, `[type_fait]`, `[description]`, `[montant_mdt]` | tri par date ; retour à la ligne ; titre « Journal des faits marquants » |
+| Sources et limites | 956, 482, 308 × 202 | zone de texte (écrite dans les fichiers) | texte 9 pt |
+
+**Pourquoi ces choix.** Un lecteur doit pouvoir juger les chiffres des autres pages : combien de documents ont été
+lus sans alerte, combien ont été saisis à la main, combien de valeurs ont été révisées par les banques elles-mêmes,
+et pourquoi la somme des trimestres diffère parfois du cumul annuel (retraitement de la banque, erreur dans son
+document, reclassement, arrondi : jamais une erreur de lecture). Les « écarts signalés » viennent des banques
+(révisions d'un document à l'autre), pas de l'extraction.
+
+**Valeurs attendues** (12 banques, toute la période ; calculées à part depuis `donnees_publiees/` et
+`docs/ecarts_annuels.csv`) : 336 documents ; 91 lus sans alerte (27,1 %) ; 228 avec un écart signalé qui vient de
+la banque ; 13 saisis à la main (BTE) ; 2 illisibles repris du document suivant (BH 2019T4, UIB 2022T3) ; 2 avec une
+alerte bloquante (erreurs du document vérifiées : UBCI 2025T3, UIB 2023T2) ; 813 révisions de plus de 2 % ; 450
+ruptures de série ; 22 écarts annuels, tous expliqués ; 41 faits marquants (11 événements, 22 écarts annuels, 8
+révisions importantes des états financiers).
+
+| Banque | Sans alerte | Écart signalé | Saisis à la main | Illisible repris | Alerte bloquante |
+|---|---|---|---|---|---|
+| AB | 13 | 15 | 0 | 0 | 0 |
+| ATB | 8 | 20 | 0 | 0 | 0 |
+| BH | 7 | 20 | 0 | 1 | 0 |
+| BIAT | 13 | 15 | 0 | 0 | 0 |
+| BNA | 9 | 19 | 0 | 0 | 0 |
+| BT | 8 | 20 | 0 | 0 | 0 |
+| BTE | 1 | 14 | 13 | 0 | 0 |
+| STB | 2 | 26 | 0 | 0 | 0 |
+| Attijari | 7 | 21 | 0 | 0 | 0 |
+| UBCI | 9 | 18 | 0 | 0 | 1 |
+| UIB | 8 | 18 | 0 | 1 | 1 |
+| Wifak | 6 | 22 | 0 | 0 | 0 |

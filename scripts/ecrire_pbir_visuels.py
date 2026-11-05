@@ -737,6 +737,52 @@ def rentabilite():
     print("Rentabilité : visuels réglés")
 
 
+def zone_texte(page, cle, position, paragraphes, taille="9pt", couleur="#252423"):
+    """Zone de texte écrite dans les fichiers, par copie de la zone de titre de la page : paragraphes = [(texte,
+    gras)] ; fond et bordure du thème (ceux du titre retirés) ; identifiant stable tiré de la page et de la clé.
+    Renvoie l'identifiant."""
+    import hashlib
+    nom = hashlib.md5((page + cle).encode()).hexdigest()[:20]
+    titre = next(f for f in (PAGES / page / "visuals").glob("*/visual.json")
+                 if lire(f)["visual"]["visualType"] == "textbox" and f.parent.name != nom)
+    v = lire(titre)
+    v["name"] = nom
+    v["visual"].pop("visualContainerObjects", None)
+    v["visual"]["objects"]["general"][0]["properties"]["paragraphs"] = [
+        {"textRuns": [{"value": texte, "textStyle": {"fontSize": taille, "color": couleur,
+                                                     **({"fontWeight": "bold"} if gras else {})}}]}
+        for texte, gras in paragraphes]
+    v["position"].update(dict(zip(("x", "y", "width", "height"), position)))
+    v["position"]["z"] = v["position"]["tabOrder"] = 5000
+    cible = PAGES / page / "visuals" / nom / "visual.json"
+    cible.parent.mkdir(exist_ok=True)
+    ecrire(cible, v)
+    return nom
+
+
+SOURCES_LIMITES = [
+    ("Sources et limites", True),
+    ("Sources : indicateurs d'activité trimestriels publiés par les banques (CMF, Bourse de Tunis, sites des "
+     "banques), états financiers individuels, cours et bulletins de la Bourse de Tunis ; chaque valeur garde son "
+     "fichier et sa page.", False),
+    ("Limites : indicateurs provisoires et non audités, souvent révisés d'un document à l'autre (la version révisée "
+     "est retenue) ; comptes semestriels non audités, ROE au 30/06 annualisé ; charges opératoires et capitaux propres "
+     "définis différemment selon les banques (coefficient harmonisé pour comparer) ; 13 documents BTE publiés en "
+     "image, saisis à la main avec des contrôles de cohérence.", False),
+]
+
+
+PAGE_QUALITE = "358b856ccf8c7a9929bb"
+
+
+def qualite():
+    """Page 9 « Qualité des données » (guide 4.10)."""
+    page = PAGE_QUALITE
+    retirer_extraction(page)
+    zone_texte(page, "sources", (956, 482, 308, 202), SOURCES_LIMITES)
+    print("Qualité des données : visuels réglés")
+
+
 def agreger(page, visuel, role, fonction=0, nom="Sum"):
     """Colonnes d'une zone d'un visuel passées en agrégation (0 = somme) ; queryRef « Sum(Table.Colonne) » ; rien si
     c'est déjà fait."""
@@ -753,7 +799,7 @@ def agreger(page, visuel, role, fonction=0, nom="Sum"):
 
 PAGES_REGLEES = {"vue_ensemble": vue_ensemble, "classement": classement, "evolution": evolution,
                  "structure_pnb": structure_pnb, "bilan": bilan, "bourse": bourse, "fiche_banque": fiche_banque,
-                 "rentabilite": rentabilite}
+                 "rentabilite": rentabilite, "qualite": qualite}
 
 if __name__ == "__main__":
     if len(sys.argv) == 4 and sys.argv[1] == "nouvelle_page":
