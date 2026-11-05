@@ -725,8 +725,9 @@ def rentabilite():
            {"Mesures.ROE secteur": "ROE des 12 banques", "Mesures.ROA secteur": "ROA des 12 banques"})
     # tableau depuis la table de la jointure externe gauche : tous les trimestres, sans filtre de l'arrêté
     tableau = "3b05f5e09ecc60b3900a"
-    colonnes = [("banque", "Banque", 62), ("date_arrete", "Trimestre", 92), ("Coef_Cumul", "Coef. cumulé", 92),
-                ("ROE", "ROE", 70), ("ROA", "ROA", 70)]
+    # largeurs : leur somme reste sous la largeur utile (≈ 350 pixels, barre de défilement verticale comprise)
+    colonnes = [("banque", "Banque", 56), ("date_arrete", "Trimestre", 86), ("Coef_Cumul", "Coef. cumulé", 78),
+                ("ROE", "ROE", 62), ("ROA", "ROA", 62)]
     tableau_colonnes(page, tableau, [("Rentabilite_Trimestres", c) for c, _, _ in colonnes],
                      {("Rentabilite_Trimestres", c): l for c, _, l in colonnes})
     regler(page, tableau, (856, 162, 408, 522), {f"Rentabilite_Trimestres.{c}": n for c, n, _ in colonnes},
