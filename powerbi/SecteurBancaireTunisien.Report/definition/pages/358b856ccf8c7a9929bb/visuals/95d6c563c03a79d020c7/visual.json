@@ -1,0 +1,168 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "95d6c563c03a79d020c7",
+  "position": {
+    "x": 600,
+    "y": 322,
+    "z": 5004,
+    "height": 150,
+    "width": 656,
+    "tabOrder": 5004
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Journal_Faits_Marquants"
+                    }
+                  },
+                  "Property": "date"
+                }
+              },
+              "queryRef": "Journal_Faits_Marquants.date",
+              "nativeQueryRef": "date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Journal_Faits_Marquants"
+                    }
+                  },
+                  "Property": "banque"
+                }
+              },
+              "queryRef": "Journal_Faits_Marquants.banque",
+              "nativeQueryRef": "banque"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Journal_Faits_Marquants"
+                    }
+                  },
+                  "Property": "type_fait"
+                }
+              },
+              "queryRef": "Journal_Faits_Marquants.type_fait",
+              "nativeQueryRef": "type_fait"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Journal_Faits_Marquants"
+                    }
+                  },
+                  "Property": "description"
+                }
+              },
+              "queryRef": "Journal_Faits_Marquants.description",
+              "nativeQueryRef": "description"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Journal_Faits_Marquants"
+                    }
+                  },
+                  "Property": "montant_mdt"
+                }
+              },
+              "queryRef": "Journal_Faits_Marquants.montant_mdt",
+              "nativeQueryRef": "montant_mdt"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "ee7c182b0801e20b7153",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Journal_Faits_Marquants"
+              }
+            },
+            "Property": "date"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "2de0048f01e5a0992b82",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Journal_Faits_Marquants"
+              }
+            },
+            "Property": "banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "4e277121b4e4d9e7db14",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Journal_Faits_Marquants"
+              }
+            },
+            "Property": "type_fait"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "fdba75c3b200955c6e1b",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Journal_Faits_Marquants"
+              }
+            },
+            "Property": "description"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "08042a4e5c1a9ade0609",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Journal_Faits_Marquants"
+              }
+            },
+            "Property": "montant_mdt"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

@@ -1,0 +1,214 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "fbe2e3b95465322a3c19",
+  "position": {
+    "x": 0,
+    "y": 161.5263153693252,
+    "z": 5001,
+    "height": 150,
+    "width": 600,
+    "tabOrder": 5001
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Nb documents"
+                }
+              },
+              "queryRef": "Mesures.Nb documents",
+              "nativeQueryRef": "Nb documents"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Part documents sans alerte"
+                }
+              },
+              "queryRef": "Mesures.Part documents sans alerte",
+              "nativeQueryRef": "Part documents sans alerte"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Nb documents saisis"
+                }
+              },
+              "queryRef": "Mesures.Nb documents saisis",
+              "nativeQueryRef": "Nb documents saisis"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Nb revisions importantes"
+                }
+              },
+              "queryRef": "Mesures.Nb revisions importantes",
+              "nativeQueryRef": "Nb revisions importantes"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Nb ruptures serie"
+                }
+              },
+              "queryRef": "Mesures.Nb ruptures serie",
+              "nativeQueryRef": "Nb ruptures serie"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Mesures"
+                    }
+                  },
+                  "Property": "Nb ecarts expliques"
+                }
+              },
+              "queryRef": "Mesures.Nb ecarts expliques",
+              "nativeQueryRef": "Nb ecarts expliques"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Mesures"
+                  }
+                },
+                "Property": "Nb documents"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "4258c9de476a7ed6b0de",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Nb documents"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "fb7703c3b451e0c2cc7e",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Part documents sans alerte"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ec4388f0cca813312910",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Nb documents saisis"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "be824213c30c3e6001b5",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Nb revisions importantes"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "da1be1d290323da90927",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Nb ruptures serie"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "5ca6218e3a6a40ea4b0e",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Mesures"
+              }
+            },
+            "Property": "Nb ecarts expliques"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

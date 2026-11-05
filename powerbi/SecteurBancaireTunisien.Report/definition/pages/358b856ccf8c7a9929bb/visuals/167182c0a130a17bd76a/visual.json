@@ -1,0 +1,196 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "167182c0a130a17bd76a",
+  "position": {
+    "x": 600,
+    "y": 162,
+    "z": 5003,
+    "height": 150,
+    "width": 656,
+    "tabOrder": 5003
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Controle_Annuel"
+                    }
+                  },
+                  "Property": "banque"
+                }
+              },
+              "queryRef": "Controle_Annuel.banque",
+              "nativeQueryRef": "banque"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Controle_Annuel"
+                    }
+                  },
+                  "Property": "annee"
+                }
+              },
+              "queryRef": "Controle_Annuel.annee",
+              "nativeQueryRef": "annee"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Controle_Annuel"
+                    }
+                  },
+                  "Property": "code_indicateur"
+                }
+              },
+              "queryRef": "Controle_Annuel.code_indicateur",
+              "nativeQueryRef": "code_indicateur"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Controle_Annuel"
+                    }
+                  },
+                  "Property": "Ecart_MDT"
+                }
+              },
+              "queryRef": "Controle_Annuel.Ecart_MDT",
+              "nativeQueryRef": "Ecart_MDT"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Controle_Annuel"
+                    }
+                  },
+                  "Property": "categorie_ecart"
+                }
+              },
+              "queryRef": "Controle_Annuel.categorie_ecart",
+              "nativeQueryRef": "categorie_ecart"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Controle_Annuel"
+                    }
+                  },
+                  "Property": "cause_ecart"
+                }
+              },
+              "queryRef": "Controle_Annuel.cause_ecart",
+              "nativeQueryRef": "cause_ecart"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "95d1a87e47bae415d632",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Controle_Annuel"
+              }
+            },
+            "Property": "banque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "8a202b95a20a98e3c480",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Controle_Annuel"
+              }
+            },
+            "Property": "annee"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "568e711970054bdcc217",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Controle_Annuel"
+              }
+            },
+            "Property": "code_indicateur"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "5c1cba2f2d8790150b10",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Controle_Annuel"
+              }
+            },
+            "Property": "Ecart_MDT"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e992e0210075d0d67808",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Controle_Annuel"
+              }
+            },
+            "Property": "categorie_ecart"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "7f4a54e43000844986a0",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Controle_Annuel"
+              }
+            },
+            "Property": "cause_ecart"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
+  }
+}

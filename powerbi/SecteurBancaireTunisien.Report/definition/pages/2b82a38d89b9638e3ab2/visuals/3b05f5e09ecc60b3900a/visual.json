@@ -112,7 +112,6 @@
         "isDefaultSort": true
       }
     },
-    "drillFilterOtherVisuals": true,
     "objects": {
       "columnWidth": [
         {
@@ -234,9 +233,7 @@
           }
         }
       ]
-    }
-  },
-  "filterConfig": {
-    "filters": []
+    },
+    "drillFilterOtherVisuals": true
   }
 }
