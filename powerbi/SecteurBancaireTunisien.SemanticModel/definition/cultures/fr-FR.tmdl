@@ -2209,7 +2209,7 @@ cultureInfo fr-FR
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "Révisions > 2 % des totaux": {
+			          "Totaux révisés > 2 %": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
