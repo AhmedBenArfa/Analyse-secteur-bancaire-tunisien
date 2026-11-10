@@ -786,7 +786,7 @@ def qualite():
     regler(page, carte, (16, 162, 1248, 100),
            {"Mesures.Nb documents": "Documents", "Mesures.Part documents sans alerte": "Lus sans alerte",
             "Mesures.Nb documents saisis": "Saisis à la main",
-            "Mesures.Nb revisions importantes totaux": "Révisions > 2 % des totaux",
+            "Mesures.Nb revisions importantes totaux": "Totaux révisés > 2 %",
             "Mesures.Nb trimestres en rupture": "Trimestres en rupture", "Mesures.Nb ecarts expliques": "Écarts expliqués"})
     regler(page, "5c66ed9fed070b0eea5b", (16, 272, 400, 412),
            {"Dim_Banque.code_banque": "Banque", "Mesures.Nb documents": "Documents",

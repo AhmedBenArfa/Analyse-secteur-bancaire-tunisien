@@ -1915,19 +1915,7 @@ cultureInfo fr-FR
 			          "ConceptualProperty": "Nb revisions importantes"
 			        }
 			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Révisions > 2 %": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
+			      "State": "Generated"
 			    },
 			    "mesures.nb_ruptures_serie": {
 			      "Definition": {
@@ -1936,19 +1924,7 @@ cultureInfo fr-FR
 			          "ConceptualProperty": "Nb ruptures serie"
 			        }
 			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Ruptures de série": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
+			      "State": "Generated"
 			    },
 			    "mesures.nb_ecarts_expliques": {
 			      "Definition": {
@@ -2213,6 +2189,48 @@ cultureInfo fr-FR
 			      "Terms": [
 			        {
 			          "MDT": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "mesures.nb_revisions_importantes_totaux": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Mesures",
+			          "ConceptualProperty": "Nb revisions importantes totaux"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Révisions > 2 % des totaux": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "mesures.nb_trimestres_en_rupture": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Mesures",
+			          "ConceptualProperty": "Nb trimestres en rupture"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Trimestres en rupture": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",

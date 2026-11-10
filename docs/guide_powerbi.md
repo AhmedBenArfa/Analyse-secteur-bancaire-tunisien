@@ -1955,7 +1955,7 @@ fichiers par copie de la zone de titre (`zone_texte` de l'outil, texte dans `SOU
 | Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
 |---|---|---|---|
 | Fond, titre, segment des banques | comme la page 1 | copiés de la page 1 | titre « Qualité des données » |
-| Chiffres clés | 16, 162, 1 248 × 100 | carte (nouvelle) : `Nb documents`, `Part documents sans alerte`, `Nb documents saisis` (`7. Qualité\Documents`), `Nb revisions importantes totaux`, `Nb trimestres en rupture` (`7. Qualité\Révisions`), `Nb ecarts expliques` (`7. Qualité\Contrôle annuel`) | libellés « Documents », « Lus sans alerte », « Saisis à la main », « Révisions > 2 % des totaux », « Trimestres en rupture », « Écarts expliqués » (jusqu'au 10/11/2026 : `Nb revisions importantes` et `Nb ruptures serie`, voir plus bas) |
+| Chiffres clés | 16, 162, 1 248 × 100 | carte (nouvelle) : `Nb documents`, `Part documents sans alerte`, `Nb documents saisis` (`7. Qualité\Documents`), `Nb revisions importantes totaux`, `Nb trimestres en rupture` (`7. Qualité\Révisions`), `Nb ecarts expliques` (`7. Qualité\Contrôle annuel`) | libellés « Documents », « Lus sans alerte », « Saisis à la main », « Totaux révisés > 2 % », « Trimestres en rupture », « Écarts expliqués » (jusqu'au 10/11/2026 : `Nb revisions importantes` et `Nb ruptures serie`, voir plus bas) |
 | Statut des documents par banque | 16, 272, 400 × 412 | graphique à barres empilées : axe Y `Dim_Banque[code_banque]`, axe X `Nb documents`, légende `Controle[Categorie_Statut]` | titre « Statut des 28 documents de chaque banque » |
 | Écarts annuels expliqués | 426, 272, 838 × 200 | tableau : `Controle_Annuel[banque]`, `[annee]`, `[code_indicateur]`, `[Ecart_MDT]`, `[categorie_ecart]`, `[cause_ecart]` | filtre `statut` = « ecart » ; retour à la ligne ; titre « Somme des 4 trimestres ≠ cumul annuel : cause de chaque écart » |
 | Journal des faits marquants | 426, 482, 520 × 202 | tableau : `Journal_Faits_Marquants[date]`, `[banque]`, `[type_fait]`, `[description]`, `[montant_mdt]` | tri par date ; retour à la ligne ; titre « Journal des faits marquants » |
@@ -1971,7 +1971,7 @@ fichiers par copie de la zone de titre (`zone_texte` de l'outil, texte dans `SOU
 
 **Correction du 10/11/2026** : la carte affichait 813 sous le libellé « Révisions > 2 % » et 450 sous « Ruptures
 de série » ; ce sont des nombres de valeurs, pas de révisions ni de ruptures (guide 3.9). Elle affiche désormais
-`Nb revisions importantes totaux` (137, « Révisions > 2 % des totaux ») et `Nb trimestres en rupture` (138,
+`Nb revisions importantes totaux` (137, « Totaux révisés > 2 % » : « Révisions > 2 % des totaux » était coupé) et `Nb trimestres en rupture` (138,
 « Trimestres en rupture ») : mesures remplacées dans le visuel par `python scripts/ecrire_pbir_visuels.py qualite`
 (`remplacer_mesure`), puis projet rouvert, actualisé, vérifié et capture refaite.
 

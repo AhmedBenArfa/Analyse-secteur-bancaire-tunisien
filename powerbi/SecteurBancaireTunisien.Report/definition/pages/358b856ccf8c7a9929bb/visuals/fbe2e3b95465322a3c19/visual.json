@@ -73,7 +73,7 @@
               },
               "queryRef": "Mesures.Nb revisions importantes totaux",
               "nativeQueryRef": "Nb revisions importantes totaux",
-              "displayName": "Révisions > 2 % des totaux"
+              "displayName": "Totaux révisés > 2 %"
             },
             {
               "field": {
