@@ -217,7 +217,8 @@ Il n'y a pas de version publique en ligne : le rapport a été publié sur le se
 d'école, dont l'organisation n'autorise pas « Publier sur le web » ; le service Power BI n'accepte pas les
 comptes Microsoft personnels. Le rapport s'ouvre en revanche complet, avec ses données, dans Power BI Desktop.
 
-**Pour l'ouvrir dans Power BI Desktop** (Windows, gratuit) :
+**Pour l'ouvrir dans Power BI Desktop** (Windows, gratuit ; **version d'octobre 2026 ou plus récente** : le
+projet a été enregistré avec cette version, une version plus ancienne peut refuser de l'ouvrir) :
 
 1. Cloner le dépôt (ou le télécharger en ZIP).
 2. Ouvrir `powerbi/SecteurBancaireTunisien.pbip`. Le cache des données est versionné : le rapport
