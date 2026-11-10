@@ -21,7 +21,7 @@ projet est dans le [README](../README.md), le détail des règles dans la
 | 5 | Requêtes Power Query | **Terminée le 23/10/2026** : 22 requêtes, toutes vérifiées dans Power BI Desktop (détail ci-dessous) |
 | 6 | Modèle en étoile et mesures DAX | **Terminée le 24/10/2026** : table des dates, 32 relations (dont une inactive), 150 mesures (151 avec la mesure d'affichage de la page 2), colonnes calculées et journal des faits marquants, tout vérifié dans Power BI Desktop (détail ci-dessous) |
 | 7 | Pages du rapport | **Terminée le 05/11/2026** : les 9 pages construites et vérifiées sur captures (Vue d'ensemble, Classement, Évolution 2020–2026, Structure du PNB, Bilan, Bourse, Fiche banque, Rentabilité, Qualité des données) ; captures dans `docs/captures/`, présentation dans `docs/Presentation_rapport.pdf` ; détail par page dans le guide, section 4 |
-| 8 | README final et captures | README à jour au 30/10/2026 (aperçu et captures des trois pages terminées, chiffres clés, avancement) ; à compléter page par page, puis lien de publication sur le web |
+| 8 | README final et captures | **Terminée le 10/11/2026** : README avec l'aperçu et les captures des 9 pages, chiffres clés, note de validation ; rapport publié sur le service Power BI avec le compte d'école (partagé avec le professeur) ; pas de lien public : « Publier sur le web » désactivé par l'organisation, comptes personnels non acceptés par le service ; consultation complète en téléchargeant le dépôt (Power BI Desktop) |
 
 ## Étape 5 : requêtes Power Query (terminée)
 
@@ -76,8 +76,9 @@ par banque et par date ; les jointures faites jusqu'ici sont les fusions de Powe
 Page 7 « Fiche banque » (ajout du 30/10/2026, demande de l'utilisateur) : fonctions de hiérarchie parent-enfant
 `PATH`, `PATHITEM`, `PATHLENGTH`, `PATHCONTAINS` sur une table « chaîne de contrôle » (secteur → catégorie
 d'actionnariat → groupe de référence → banque), construite depuis l'actionnariat déjà sourcé (rien d'ajouté).
-Étape 3 (`docs/validation.md`) et pages : terminées le 05/11/2026. Reste : publication sur le web avec le lien
-en tête du README (étape 8).
+Étape 3 (`docs/validation.md`) et pages : terminées le 05/11/2026. Étape 8 terminée le 10/11/2026 : rapport publié
+sur le service Power BI (compte d'école) ; « Publier sur le web » désactivé par l'organisation de l'école et comptes
+personnels non acceptés par le service : pas de lien public ; le README renvoie au téléchargement du dépôt.
 
 ### Règles pour les mesures DAX
 

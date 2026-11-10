@@ -189,7 +189,7 @@ puisse s'ouvrir après un simple clonage du dépôt. Pour reproduire les donnée
 | Modèle en étoile, mesures DAX (36 relations, 166 mesures) | Terminé |
 | Pages du rapport (9 pages, captures dans `docs/captures/`, présentation dans `docs/Presentation_rapport.pdf`) | Terminé |
 | Note de validation par échantillon ([`docs/validation.md`](docs/validation.md) : 647 valeurs relevées sur l'image, dont 10 documents tirés au hasard, toutes conformes) | Terminé |
-| Publication du rapport sur le web | À faire |
+| Publication du rapport | Publié sur le service Power BI (compte d'école, consultation réservée à l'école) ; pas de lien public (« Publier sur le web » désactivé par l'organisation) : le rapport s'ouvre depuis le dépôt dans Power BI Desktop |
 
 ## Limites
 
@@ -210,10 +210,12 @@ Le détail des limites est dans la spécification, section 10.
 
 ## Ouvrir le rapport
 
-**Pour le consulter** : le lien de la version en ligne (« Publier sur le web », sans Power BI ni
-compte) sera ajouté ici quand le rapport sera terminé. En attendant : captures et lecture des pages
-terminées dans [docs/Presentation_rapport.pdf](docs/Presentation_rapport.pdf) ; préparation des
+**Pour le consulter sans Power BI** : captures et lecture des neuf pages dans
+[docs/Presentation_rapport.pdf](docs/Presentation_rapport.pdf) (et dans l'aperçu plus haut) ; préparation des
 données, modèle et mesures expliqués étape par étape dans [docs/Guide_PowerBI.pdf](docs/Guide_PowerBI.pdf).
+Il n'y a pas de version publique en ligne : le rapport a été publié sur le service Power BI avec un compte
+d'école, dont l'organisation n'autorise pas « Publier sur le web » ; le service Power BI n'accepte pas les
+comptes Microsoft personnels. Le rapport s'ouvre en revanche complet, avec ses données, dans Power BI Desktop.
 
 **Pour l'ouvrir dans Power BI Desktop** (Windows, gratuit) :
 

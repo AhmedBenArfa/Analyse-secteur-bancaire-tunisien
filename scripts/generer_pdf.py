@@ -759,7 +759,8 @@ def rapport():
          "« Qualité des données ») terminées et vérifiées "
          "(captures et explications : <code>docs/Presentation_rapport.pdf</code>)"],
         ["8", "README final et captures pour le portfolio",
-         "README réécrit en page d'accueil du dépôt ; captures et mise à jour finale après le rapport"]]))
+         "Fait : README avec les captures des 9 pages, chiffres clés, note de validation ; rapport publié sur le "
+         "service Power BI (compte d'école, sans lien public : « Publier sur le web » désactivé par l'organisation) "]]))
 
     vers_pdf(page_html("Rapport d'avancement", "".join(o)), R / "docs/Rapport_avancement.pdf",
              "Rapport d'avancement — Analyse du secteur bancaire tunisien", "Rapport d'avancement",

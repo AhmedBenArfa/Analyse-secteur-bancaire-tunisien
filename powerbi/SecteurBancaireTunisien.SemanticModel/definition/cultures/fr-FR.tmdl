@@ -860,7 +860,7 @@ cultureInfo fr-FR
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "Revenus du portefeuille": {
+			          "Portefeuille": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",

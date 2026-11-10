@@ -272,8 +272,10 @@ pour que le lecteur puisse juger lui-même la fiabilité des chiffres.
 Les neuf pages du rapport sont terminées. Fonctions DAX ajoutées pendant leur construction : hiérarchie
 parent-enfant `PATH`, `PATHITEM`, `PATHLENGTH`, `PATHCONTAINS` (page 7), jointures `NATURALINNERJOIN` et
 `NATURALLEFTOUTERJOIN` (page 8). La note de validation est écrite (`docs/validation.md` : 647 valeurs relevées sur l'image
-des PDF, dont 10 documents tirés au hasard, toutes conformes). Reste la publication du rapport sur le web, avec son
-lien en tête de la page d'accueil du dépôt.
+des PDF, dont 10 documents tirés au hasard, toutes conformes). Le rapport est publié sur le
+service Power BI avec le compte de l'école (consultation réservée à l'école, « Publier sur le web » n'y étant pas
+autorisé) ; il s'ouvre aussi complet, avec ses données, en téléchargeant le dépôt (fichier
+`powerbi/SecteurBancaireTunisien.pbip`, Power BI Desktop).
 
 **Dépôt du projet** : https://github.com/AhmedBenArfa/Analyse-secteur-bancaire-tunisien — code, données publiées,
 projet Power BI, spécification (`docs/Specification_projet.pdf`), guide de chaque transformation
