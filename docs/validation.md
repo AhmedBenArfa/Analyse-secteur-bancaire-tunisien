@@ -135,8 +135,13 @@ Les contrôles ont servi : ils ont fait trouver, avant toute utilisation dans le
   contrôles de la section 5 couvrent tout, mais seulement pour les erreurs qu'ils savent voir (une valeur fausse qui
   respecte toutes les égalités passerait).
 - **Une valeur conforme au PDF n'est pas une valeur exacte** : les indicateurs trimestriels sont provisoires et non
-  audités, et les banques les révisent souvent (813 révisions de plus de 2 % entre deux documents ; la version
-  révisée est retenue). Les comptes semestriels ne sont pas audités (revue limitée).
+  audités, et les banques les révisent souvent : **137 révisions de plus de 2 % des six totaux** (PNB, produits,
+  charges, charges opératoires, crédits, dépôts), mesurées sur le cumul, et 231 en comptant tous les indicateurs
+  jugés sur leur propre écart (capitaux propres, autres produits, emprunts…) ; la version révisée est retenue.
+  Ces révisions touchent **813 valeurs** : ce chiffre compte 22 indicateurs, le trimestre et le cumul, et les
+  composantes d'un total (intérêts, commissions, frais de personnel…) y prennent le statut de leur total même
+  quand elles ont peu ou pas bougé (192 des 813 valeurs ont changé de 2 % au plus) ; ce n'est donc pas un nombre
+  de révisions. Les comptes semestriels ne sont pas audités (revue limitée).
 - **Les relevés sont faits par une seule personne**, sauf le document BTE du T2 2020, relu par une seconde.
 - **Les définitions diffèrent d'une banque à l'autre** (contenu des charges opératoires, capitaux propres avec ou
   sans résultat) : les comparaisons du rapport utilisent des définitions communes (coefficient d'exploitation

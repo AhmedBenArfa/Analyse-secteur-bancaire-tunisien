@@ -57,7 +57,7 @@ toutes) ; le ROE et le ROA ne sont que semestriels et annuels.
 - **Modèle en étoile** : table des dates (avec la période Covid), dimensions banques et indicateurs, tables de
   faits (indicateurs, variations comparables, états financiers, cours, contrôles) ; 36 relations, dont une inactive
   activée par `USERELATIONSHIP`.
-- **166 mesures DAX**, rangées en dossiers (bases, secteur, ratios, croissances, rentabilité, Bourse, qualité), avec
+- **168 mesures DAX**, rangées en dossiers (bases, secteur, ratios, croissances, rentabilité, Bourse, qualité), avec
   des règles écrites : totaux du secteur, parts de marché et rangs seulement si les 12 banques sont présentes ;
   chiffres annuels tirés du cumul publié, jamais de la somme des trimestres ; aucun vide remplacé par zéro.
 - **Documentation** : chaque requête, chaque mesure et chaque page sont expliquées dans
@@ -252,8 +252,10 @@ et un test refait les deux jointures depuis les données publiées.
 et les limites des données, sans rien cacher.
 
 - Chiffres clés : **336 documents** trimestriels (12 banques × 28 trimestres) ; **27,1 %** lus sans aucune alerte ;
-  **13 saisis à la main** (tableaux de la BTE publiés en image) ; **813 révisions de plus de 2 %** faites par les
-  banques elles-mêmes d'un document à l'autre ; 450 ruptures de série ; **22 écarts annuels, tous expliqués**.
+  **13 saisis à la main** (tableaux de la BTE publiés en image) ; **137 révisions de plus de 2 %** des six totaux
+  (PNB, produits, charges, charges opératoires, crédits, dépôts) faites par les banques elles-mêmes d'un document
+  à l'autre (813 valeurs touchées, composantes comprises) ; 138 trimestres de banque en rupture de série ;
+  **22 écarts annuels, tous expliqués**.
 - Statut des 28 documents de chaque banque : la plupart ont un « écart signalé », qui vient de la banque (révision
   ou retraitement de ses propres chiffres), jamais d'une erreur de lecture ; la STB retraite le plus souvent ses
   trimestres (26 documents sur 28).

@@ -113,7 +113,7 @@ T3 2026). Chaque page est décrite, avec sa lecture et ses choix de conception, 
 | Valeurs saisies à la main | 682 (13 documents BTE publiés en image, deux valeurs STB superposées au libellé, deux valeurs Wifak dont les colonnes se touchent), toutes passées aux contrôles de cohérence ; un document relu une seconde fois en entier (BTE 2020T2) |
 | États financiers | 168 arrêtés, 504 valeurs retenues (résultat net, total de l'actif, capitaux propres), aucune vide |
 | Cours boursiers | 1 955 séances par banque, du 02/01/2019 au 20/10/2026 ; 63 opérations sur titres, chacune avec le cours de référence publié |
-| Modèle Power BI | 22 requêtes Power Query, table des dates (période Covid), 4 tables calculées (dont 2 par jointure DAX), 36 relations, 166 mesures DAX vérifiées une à une contre des valeurs calculées à part |
+| Modèle Power BI | 22 requêtes Power Query, table des dates (période Covid), 4 tables calculées (dont 2 par jointure DAX), 36 relations, 168 mesures DAX vérifiées une à une contre des valeurs calculées à part |
 | Tests automatiques | 50, tous réussis |
 
 ## Démarche qualité
@@ -186,7 +186,7 @@ puisse s'ouvrir après un simple clonage du dépôt. Pour reproduire les donnée
 | États financiers (ROE, ROA), cours boursiers, opérations sur titres | Terminé |
 | Examen des écarts du contrôle annuel, actionnariat des banques | Terminé |
 | Requêtes Power Query (22 requêtes : dossier, Excel et URL ; dépivotage, fusions, colonnes conditionnelles, fonction personnalisée) | Terminé (détail et décisions : [docs/feuille_de_route.md](docs/feuille_de_route.md)) |
-| Modèle en étoile, mesures DAX (36 relations, 166 mesures) | Terminé |
+| Modèle en étoile, mesures DAX (36 relations, 168 mesures) | Terminé |
 | Pages du rapport (9 pages, captures dans `docs/captures/`, présentation dans `docs/Presentation_rapport.pdf`) | Terminé |
 | Note de validation par échantillon ([`docs/validation.md`](docs/validation.md) : 647 valeurs relevées sur l'image, dont 10 documents tirés au hasard, toutes conformes) | Terminé |
 | Publication du rapport | Publié sur le service Power BI (compte d'école, consultation réservée à l'école) ; pas de lien public (« Publier sur le web » désactivé par l'organisation) : le rapport s'ouvre depuis le dépôt dans Power BI Desktop |

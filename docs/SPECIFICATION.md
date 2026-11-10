@@ -1254,9 +1254,15 @@ Part 31-12 provisoires =
              CALCULATE ( COUNTROWS ( Fait_Indicateurs ), NOT ISBLANK ( Fait_Indicateurs[Source_Cumul] ) ) )
 Nb revisions = CALCULATE ( COUNTROWS ( Revisions ), ABS ( Revisions[Ecart_MDT] ) > 0.002 )
 -- nature des révisions : portée par la ligne de la version initiale remplacée (règle 4)
+-- valeurs marquées (trimestre et cumul, composantes comprises : 813) ; ce n'est pas un nombre de révisions
 Nb revisions importantes =
     CALCULATE ( COUNTROWS ( Revisions ), Revisions[version] = "initiale",
                 Revisions[statut_revision] = "revision_importante" )
+-- révisions de plus de 2 % des six totaux, sur le cumul (137 ; docs/revisions_importantes.csv)
+Nb revisions importantes totaux =
+    CALCULATE ( COUNTROWS ( Revisions ), Revisions[version] = "initiale",
+                Revisions[statut_revision] = "revision_importante", Revisions[mesure] = "cumul",
+                Revisions[code_indicateur] IN { "PNB", "PROD_EXPL", "CHG_EXPL", "CHG_OPER", "CREDITS", "DEPOTS" } )
 Nb retraitements mineurs =
     CALCULATE ( COUNTROWS ( Revisions ), Revisions[version] = "initiale",
                 Revisions[statut_revision] = "retraitement_mineur" )
@@ -1272,6 +1278,11 @@ Ecart annuel MDT     = SUM ( Ecarts_Annuels[ecart_mdt] )
 Nb ruptures serie =
     CALCULATE ( COUNTROWS ( Fait_Indicateurs ),
                 Fait_Indicateurs[Rupture_Trim] = "oui" || Fait_Indicateurs[Rupture_Cumul] = "oui" )
+-- trimestres de banque (banque × trimestre) avec au moins un indicateur en rupture (138)
+Nb trimestres en rupture =
+    COUNTROWS ( SUMMARIZE ( FILTER ( Fait_Indicateurs,
+                    Fait_Indicateurs[Rupture_Trim] = "oui" || Fait_Indicateurs[Rupture_Cumul] = "oui" ),
+                Fait_Indicateurs[banque], Fait_Indicateurs[trimestre] ) )
 Nb documents illisibles = CALCULATE ( [Nb documents], Controle[statut] = "illisible (image)" )
 Nb documents saisis    = CALCULATE ( [Nb documents], Controle[statut] = "saisie manuelle" )
 Nb valeurs non disponibles =

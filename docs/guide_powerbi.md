@@ -1099,7 +1099,7 @@ Ces mesures alimentent la page « Qualité des données » : elles montrent d'o�
 |---|---|---|
 | Affichage | `Date derniere donnee`, `Titre rapport`, `Couleur coef` | date des dernières données (tous filtres ignorés), titre « Banques cotées — données au 30/09/2026 », couleur du coefficient (vert si la banque fait mieux que la médiane, rouge sinon, rien si l'écart est vide) |
 | Documents | `Nb documents`, `Part documents sans alerte`, `Nb ecarts signales`, `Nb ecarts trim cumul`, `Nb ecarts composantes`, `Nb documents a verifier`, `Nb documents illisibles`, `Nb documents saisis` | statut de chaque document trimestriel (`Controle`) |
-| Révisions | `Part cumuls revises`, `Part 31-12 provisoires`, `Nb revisions`, `Nb revisions importantes`, `Nb retraitements mineurs`, `Nb reclassements`, `Ecart revision MDT`, `Nb ruptures serie`, `Nb valeurs non disponibles` | versions non retenues (`Revisions`) et origine des valeurs affichées (`Fait_Indicateurs[Source_Cumul]`) |
+| Révisions | `Part cumuls revises`, `Part 31-12 provisoires`, `Nb revisions`, `Nb revisions importantes`, `Nb revisions importantes totaux`, `Nb retraitements mineurs`, `Nb reclassements`, `Ecart revision MDT`, `Nb ruptures serie`, `Nb trimestres en rupture`, `Nb valeurs non disponibles` | versions non retenues (`Revisions`) et origine des valeurs affichées (`Fait_Indicateurs[Source_Cumul]`) |
 | Contrôle annuel | `Nb annees conformes`, `Nb annees en attente`, `Nb ecarts annuels`, `Nb ecarts expliques`, `Nb ruptures annuelles`, `Ecart annuel MDT` | somme des 4 trimestres contre cumul annuel (`Controle_Annuel`, causes de `docs/ecarts_annuels.csv` fusionnées en 2.12f) |
 | États financiers | `Nb revisions importantes EF` | révisions de plus de 2 % des états financiers |
 
@@ -1112,6 +1112,18 @@ est vrai : sans ce test, une banque sans coefficient serait colorée en vert). L
 affiché » de la spécification se crée dans Power BI Desktop avec les pages du rapport (étape 7 : **Modélisation ›
 Nouveau paramètre › Champs**).
 
+**Révisions : 137, 231 ou 813 ?** (correction du 10/11/2026) `Nb revisions importantes` compte des **valeurs**,
+pas des révisions : 813 valeurs initiales marquées « révision importante », soit 450 cumuls et 363 trimestres, sur
+22 indicateurs. Parmi les 450 cumuls, 231 sont jugés sur leur propre écart (plus de 2 %) et 219 sont des
+composantes (intérêts, commissions, frais de personnel, charges générales…) qui prennent le statut de leur total
+(spécification 5.2, règle 4), même quand elles ont peu ou pas bougé : 192 des 813 valeurs ont changé de 2 % au plus,
+dont 109 pas du tout. Le nombre de révisions qu'un lecteur attend est celui des **six totaux** (PNB, produits,
+charges, charges opératoires, crédits, dépôts) mesurés sur le cumul : `Nb revisions importantes totaux` = 137, une
+par banque, période et total, comme la liste `docs/revisions_importantes.csv` et le README. De même,
+`Nb ruptures serie` compte 450 lignes de `Fait_Indicateurs` (indicateur × trimestre) ; `Nb trimestres en rupture`
+compte les trimestres de banque (banque × trimestre) dont au moins un indicateur est en rupture : 138
+(`SUMMARIZE` sur la banque et le trimestre des lignes en rupture, puis `COUNTROWS`). La page 9 affiche 137 et 138.
+
 **Contrôle** : vider la vue Requête DAX (**Ctrl+A**, **Suppr**), coller `dax/controle_qualite.dax`, **Exécuter** ;
 trois résultats, sans filtre (toutes les données). Valeurs attendues (calculées à part depuis
 `donnees_publiees/` et `docs/ecarts_annuels.csv`) :
@@ -1119,7 +1131,7 @@ trois résultats, sans filtre (toutes les données). Valeurs attendues (calculé
 | Résultat | Attendu |
 |---|---|
 | 1 | 336 documents ; sans alerte 27,1 % (91) ; écarts signalés 228 (136 retraitements possibles + 89 écarts trimestre/cumul + 3 écarts composantes) ; 89 ; 3 ; à vérifier 2 ; illisibles 2 ; saisis 13 ; « Banques cotées — données au 30/09/2026 » |
-| 2 | cumuls révisés 88,3 % (6 331 / 7 173) ; 31/12 provisoires 3,8 % (276) ; révisions de plus de 2 kDT 4 311 ; révisions importantes 813 ; retraitements mineurs 3 992 ; reclassements 99 ; ruptures de série 450 ; valeurs non disponibles : vide ; révisions importantes des états financiers 8 |
+| 2 | cumuls révisés 88,3 % (6 331 / 7 173) ; 31/12 provisoires 3,8 % (276) ; révisions de plus de 2 kDT 4 311 ; révisions importantes 813 (valeurs) ; révisions importantes des six totaux 137 ; retraitements mineurs 3 992 ; reclassements 99 ; ruptures de série 450 (lignes) ; trimestres en rupture 138 ; valeurs non disponibles : vide ; révisions importantes des états financiers 8 |
 | 3 | années conformes 205 ; en attente 41 ; écarts 22 ; écarts expliqués 22 ; ruptures 20 ; somme des écarts −9,953 MDT ; couleur BT T3 2024 « #2E7D32 » (vert, coefficient sous la médiane) ; BTE « #C62828 » (rouge) |
 
 ### 3.10 Compléments : colonnes calculées, table par UNION, relation inactive, TOPN (24/10/2026)
@@ -1257,6 +1269,7 @@ tableau.
 | `ISBLANK`, `NOT` | vrai si la valeur est vide ; négation | `mesures` |
 | `LASTNONBLANK` | dernière valeur d'une colonne (ici : dernier jour) pour laquelle une expression n'est pas vide | `mesures` |
 | `VAR` … `RETURN` | mots-clés : valeurs intermédiaires nommées, calculées une fois, puis résultat | `mesures` |
+| `SUMMARIZE` | table des combinaisons distinctes des colonnes de regroupement présentes dans une table (ici la banque et le trimestre des lignes en rupture) ; on en compte les lignes avec `COUNTROWS` | `mesures` (`Nb trimestres en rupture`) |
 | `SUMMARIZECOLUMNS` | requête : une ligne par valeur des colonnes de regroupement, avec les mesures demandées | `controle_bases` |
 | `TREATAS` | applique une liste de valeurs comme filtre sur une colonne (ici : « 2024T3 », 2024) | `controle_bases` |
 | `ROW` | table d'une ligne aux colonnes nommées (table `Mesures`, résultats d'une ligne des contrôles) | `mesures`, `controle_bases`, `controle_secteur` |
@@ -1942,7 +1955,7 @@ fichiers par copie de la zone de titre (`zone_texte` de l'outil, texte dans `SOU
 | Élément | Position | Champs et mesures (dossier de `Mesures`) | Réglages |
 |---|---|---|---|
 | Fond, titre, segment des banques | comme la page 1 | copiés de la page 1 | titre « Qualité des données » |
-| Chiffres clés | 16, 162, 1 248 × 100 | carte (nouvelle) : `Nb documents`, `Part documents sans alerte`, `Nb documents saisis` (`7. Qualité\Documents`), `Nb revisions importantes`, `Nb ruptures serie` (`7. Qualité\Révisions`), `Nb ecarts expliques` (`7. Qualité\Contrôle annuel`) | libellés « Documents », « Lus sans alerte », « Saisis à la main », « Révisions de plus de 2 % », « Ruptures de série », « Écarts annuels expliqués » |
+| Chiffres clés | 16, 162, 1 248 × 100 | carte (nouvelle) : `Nb documents`, `Part documents sans alerte`, `Nb documents saisis` (`7. Qualité\Documents`), `Nb revisions importantes totaux`, `Nb trimestres en rupture` (`7. Qualité\Révisions`), `Nb ecarts expliques` (`7. Qualité\Contrôle annuel`) | libellés « Documents », « Lus sans alerte », « Saisis à la main », « Révisions > 2 % des totaux », « Trimestres en rupture », « Écarts expliqués » (jusqu'au 10/11/2026 : `Nb revisions importantes` et `Nb ruptures serie`, voir plus bas) |
 | Statut des documents par banque | 16, 272, 400 × 412 | graphique à barres empilées : axe Y `Dim_Banque[code_banque]`, axe X `Nb documents`, légende `Controle[Categorie_Statut]` | titre « Statut des 28 documents de chaque banque » |
 | Écarts annuels expliqués | 426, 272, 838 × 200 | tableau : `Controle_Annuel[banque]`, `[annee]`, `[code_indicateur]`, `[Ecart_MDT]`, `[categorie_ecart]`, `[cause_ecart]` | filtre `statut` = « ecart » ; retour à la ligne ; titre « Somme des 4 trimestres ≠ cumul annuel : cause de chaque écart » |
 | Journal des faits marquants | 426, 482, 520 × 202 | tableau : `Journal_Faits_Marquants[date]`, `[banque]`, `[type_fait]`, `[description]`, `[montant_mdt]` | tri par date ; retour à la ligne ; titre « Journal des faits marquants » |
@@ -1956,6 +1969,12 @@ fichiers par copie de la zone de titre (`zone_texte` de l'outil, texte dans `SOU
 
 **Vérifiée le 05/11/2026** (troisième capture : légende à droite complète, tableaux sans défilement horizontal, encadré lisible en entier) ; capture `docs/captures/page9_qualite.png` (export de 20:13, 9 pages), ajoutée à la présentation et au README. **Les neuf pages du rapport sont terminées.**
 
+**Correction du 10/11/2026** : la carte affichait 813 sous le libellé « Révisions > 2 % » et 450 sous « Ruptures
+de série » ; ce sont des nombres de valeurs, pas de révisions ni de ruptures (guide 3.9). Elle affiche désormais
+`Nb revisions importantes totaux` (137, « Révisions > 2 % des totaux ») et `Nb trimestres en rupture` (138,
+« Trimestres en rupture ») : mesures remplacées dans le visuel par `python scripts/ecrire_pbir_visuels.py qualite`
+(`remplacer_mesure`), puis projet rouvert, actualisé, vérifié et capture refaite.
+
 **Retouche du 05/11/2026 (page 4, demande de l'utilisateur)** : légende des barres coupée (« Revenus du portef… ») : nom affiché « Portefeuille » dans les deux graphiques de la page 4 (changé directement dans les deux fichiers, sans relancer toute la page, et dans `structure_pnb()`).
 
 **Pourquoi ces choix.** Un lecteur doit pouvoir juger les chiffres des autres pages : combien de documents ont été
@@ -1967,8 +1986,9 @@ document, reclassement, arrondi : jamais une erreur de lecture). Les « écarts 
 **Valeurs attendues** (12 banques, toute la période ; calculées à part depuis `donnees_publiees/` et
 `docs/ecarts_annuels.csv`) : 336 documents ; 91 lus sans alerte (27,1 %) ; 228 avec un écart signalé qui vient de
 la banque ; 13 saisis à la main (BTE) ; 2 illisibles repris du document suivant (BH 2019T4, UIB 2022T3) ; 2 avec une
-alerte bloquante (erreurs du document vérifiées : UBCI 2025T3, UIB 2023T2) ; 813 révisions de plus de 2 % ; 450
-ruptures de série ; 22 écarts annuels, tous expliqués ; 41 faits marquants (11 événements, 22 écarts annuels, 8
+alerte bloquante (erreurs du document vérifiées : UBCI 2025T3, UIB 2023T2) ; 137 révisions de plus de 2 % des six
+totaux (813 valeurs marquées, composantes comprises : guide 3.9) ; 138 trimestres de banque en rupture de série
+(450 lignes indicateur × trimestre) ; 22 écarts annuels, tous expliqués ; 41 faits marquants (11 événements, 22 écarts annuels, 8
 révisions importantes des états financiers).
 
 | Banque | Sans alerte | Écart signalé | Saisis à la main | Illisible repris | Alerte bloquante |

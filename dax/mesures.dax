@@ -915,12 +915,22 @@ MEASURE Mesures[Part 31-12 provisoires] =
 MEASURE Mesures[Nb revisions] =
     CALCULATE ( COUNTROWS ( Revisions ), ABS ( Revisions[Ecart_MDT] ) > 0.002 )
 
-// [7. Qualité\Révisions | #,0] Valeurs initiales remplacées par une révision de plus de 2 % (sur le cumul)
+// [7. Qualité\Révisions | #,0] Valeurs initiales marquées « révision importante » : trimestre et cumul, 22 indicateurs, composantes comprises (elles prennent le statut de leur total) ; ce n'est pas un nombre de révisions
 MEASURE Mesures[Nb revisions importantes] =
     CALCULATE (
         COUNTROWS ( Revisions ),
         Revisions[version] = "initiale",
         Revisions[statut_revision] = "revision_importante"
+    )
+
+// [7. Qualité\Révisions | #,0] Révisions de plus de 2 % des six totaux (PNB, produits, charges, charges opératoires, crédits, dépôts), mesurées sur le cumul : une par banque, période et total (liste : docs/revisions_importantes.csv)
+MEASURE Mesures[Nb revisions importantes totaux] =
+    CALCULATE (
+        COUNTROWS ( Revisions ),
+        Revisions[version] = "initiale",
+        Revisions[statut_revision] = "revision_importante",
+        Revisions[mesure] = "cumul",
+        Revisions[code_indicateur] IN { "PNB", "PROD_EXPL", "CHG_EXPL", "CHG_OPER", "CREDITS", "DEPOTS" }
     )
 
 // [7. Qualité\Révisions | #,0] Valeurs initiales remplacées par une révision de 2 % au plus
@@ -944,6 +954,19 @@ MEASURE Mesures[Nb ruptures serie] =
     CALCULATE (
         COUNTROWS ( Fait_Indicateurs ),
         Fait_Indicateurs[Rupture_Trim] = "oui" || Fait_Indicateurs[Rupture_Cumul] = "oui"
+    )
+
+// [7. Qualité\Révisions | #,0] Trimestres de banque (banque × trimestre) dont au moins un indicateur est en rupture de série
+MEASURE Mesures[Nb trimestres en rupture] =
+    COUNTROWS (
+        SUMMARIZE (
+            FILTER (
+                Fait_Indicateurs,
+                Fait_Indicateurs[Rupture_Trim] = "oui" || Fait_Indicateurs[Rupture_Cumul] = "oui"
+            ),
+            Fait_Indicateurs[banque],
+            Fait_Indicateurs[trimestre]
+        )
     )
 
 // [7. Qualité\Révisions | #,0] Valeurs absentes parce que le document est en image et non repris (aucune depuis la saisie des documents BTE)

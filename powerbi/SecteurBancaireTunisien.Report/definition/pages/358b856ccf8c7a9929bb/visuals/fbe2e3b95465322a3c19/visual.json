@@ -68,12 +68,12 @@
                       "Entity": "Mesures"
                     }
                   },
-                  "Property": "Nb revisions importantes"
+                  "Property": "Nb revisions importantes totaux"
                 }
               },
-              "queryRef": "Mesures.Nb revisions importantes",
-              "nativeQueryRef": "Nb revisions importantes",
-              "displayName": "Révisions > 2 %"
+              "queryRef": "Mesures.Nb revisions importantes totaux",
+              "nativeQueryRef": "Nb revisions importantes totaux",
+              "displayName": "Révisions > 2 % des totaux"
             },
             {
               "field": {
@@ -83,12 +83,12 @@
                       "Entity": "Mesures"
                     }
                   },
-                  "Property": "Nb ruptures serie"
+                  "Property": "Nb trimestres en rupture"
                 }
               },
-              "queryRef": "Mesures.Nb ruptures serie",
-              "nativeQueryRef": "Nb ruptures serie",
-              "displayName": "Ruptures de série"
+              "queryRef": "Mesures.Nb trimestres en rupture",
+              "nativeQueryRef": "Nb trimestres en rupture",
+              "displayName": "Trimestres en rupture"
             },
             {
               "field": {
@@ -182,7 +182,7 @@
                 "Entity": "Mesures"
               }
             },
-            "Property": "Nb revisions importantes"
+            "Property": "Nb revisions importantes totaux"
           }
         },
         "type": "Advanced"
@@ -196,7 +196,7 @@
                 "Entity": "Mesures"
               }
             },
-            "Property": "Nb ruptures serie"
+            "Property": "Nb trimestres en rupture"
           }
         },
         "type": "Advanced"

@@ -118,6 +118,7 @@ Le total du secteur d'un indicateur n'est calculé que pour ses trimestres compl
 
 | Date | Sujet | Décision |
 |---|---|---|
+| 10/11/2026 | Révisions et ruptures affichées | « 813 révisions de plus de 2 % » était un nombre de valeurs marquées (trimestre et cumul, 22 indicateurs, composantes qui prennent le statut de leur total), pas de révisions : la page 9 affiche désormais 137 révisions de plus de 2 % des six totaux (mesure `Nb revisions importantes totaux`, comme le README) et 138 trimestres de banque en rupture (au lieu de 450 lignes indicateur × trimestre) ; note de validation, présentation, guide et spécification corrigés |
 | 17/10/2026 | Révisions des banques | La valeur retenue est toujours la version révisée quand elle existe (colonne N-1 du document de l'année suivante) ; écart mesuré sur le cumul ; plus de 2 % = révision importante et rupture de série |
 | 17/10/2026 | Colonnes de comparaison fausses | Une colonne N-1 fausse dans le document d'une banque n'est jamais retenue (UIB 2023T2 par règle automatique, Wifak 2023T4 par `exclusions_colonnes.csv`) |
 | 17/10/2026 | Coefficient d'exploitation | Coefficient harmonisé (frais de personnel + charges générales) / PNB pour toutes les comparaisons ; coefficient publié affiché pour information |

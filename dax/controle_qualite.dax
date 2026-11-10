@@ -21,9 +21,11 @@ ROW (
     "Part 31-12 provisoires", [Part 31-12 provisoires],
     "Nb revisions", [Nb revisions],
     "Nb revisions importantes", [Nb revisions importantes],
+    "Nb revisions importantes totaux", [Nb revisions importantes totaux],
     "Nb retraitements mineurs", [Nb retraitements mineurs],
     "Nb reclassements", [Nb reclassements],
     "Nb ruptures serie", [Nb ruptures serie],
+    "Nb trimestres en rupture", [Nb trimestres en rupture],
     "Nb valeurs non disponibles (vide attendu)", [Nb valeurs non disponibles],
     "Nb revisions importantes EF", [Nb revisions importantes EF]
 )
